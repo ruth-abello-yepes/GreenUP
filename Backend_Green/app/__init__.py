@@ -1,16 +1,22 @@
 from flask import Flask
 from flask_cors import CORS
 
+from app.common.swagger import configurar_swagger
+from app.controllers.usuarios_routes import usuarios_bp
+from app.controllers.tipo_documento_routes import tipo_documento_bp
+from app.controllers.roles_routes import roles_bp
 
 def crear_app():
     app = Flask(__name__)
 
     CORS(app)
 
-    from app.controllers.usuarios_routes import usuarios_bp
+    configurar_swagger(app)
 
     app.register_blueprint(usuarios_bp)
-
+    app.register_blueprint(tipo_documento_bp)
+    app.register_blueprint(roles_bp)
+    
     @app.route("/")
     def inicio():
         return {

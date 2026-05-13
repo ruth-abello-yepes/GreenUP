@@ -4,9 +4,9 @@ Una aplicación móvil diseñada para promover la conciencia ambiental y facilit
 
 - **main:** versión estable del proyecto.
 - **desarrollo:** integración de funciones antes de pasar a producción.
-- **ruth:** desarrollo del backend y lógica principal.
-- **anyeli:** diseño de la base de datos. Codigo SQL (script)
-- **oreste:** desarrollo del frontend.
+- **Todos:** desarrollo del backend y lógica principal.
+- **Todos:** diseño de la base de datos. Codigo SQL (script)
+- **Todos:** desarrollo del frontend.
 - **pruebas:** ejecución de test y control de calidad.
 
 ### Flujo de trabajo

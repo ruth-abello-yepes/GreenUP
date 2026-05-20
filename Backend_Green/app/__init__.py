@@ -14,7 +14,7 @@ from app.controllers.faq_routes import faq_bp
 from app.controllers.estadisticas_routes import estadisticas_bp
 from app.controllers.reportes_routes import reportes_bp
 from app.controllers.materiales_routes import materiales_bp
-from app.controllers.tipo_residuo_routes import tipos_residuo_bp
+from app.controllers.tipos_residuo_routes import tipos_residuo_bp
 
 def crear_app():
     app = Flask(__name__)

@@ -1,39 +1,35 @@
-# Rutas de novedades
-
-from flask import Blueprint, request, jsonify
-
-from app.services.novedades_service import (
-    servicio_crear_novedad,
-    servicio_listar_novedades,
-    servicio_buscar_novedad,
-    servicio_cambiar_estado_novedad
-)
+from app.common.database import obtener_conexion
 
 
-novedades_bp = Blueprint("novedades", __name__)
+def crear_contenido(titulo, descripcion, tipo, url_recurso, imagen, id_usuario):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = """
+    INSERT INTO contenido_educativo
+    (titulo, descripcion, tipo, url_recurso, imagen, id_usuario, id_estado)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+
+    datos = (titulo, descripcion, tipo, url_recurso, imagen, id_usuario, 1)
+
+    cursor.execute(sql, datos)
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
 
 
-@novedades_bp.route("/novedades", methods=["POST"])
-def ruta_crear_novedad():
-    data = request.get_json()
-    respuesta, estado = servicio_crear_novedad(data)
-    return jsonify(respuesta), estado
+def listar_contenidos():
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
 
+    sql = "SELECT * FROM contenido_educativo"
 
-@novedades_bp.route("/novedades", methods=["GET"])
-def ruta_listar_novedades():
-    respuesta, estado = servicio_listar_novedades()
-    return jsonify(respuesta), estado
+    cursor.execute(sql)
+    datos = cursor.fetchall()
 
+    cursor.close()
+    conexion.close()
 
-@novedades_bp.route("/novedades/<int:id_novedad>", methods=["GET"])
-def ruta_buscar_novedad(id_novedad):
-    respuesta, estado = servicio_buscar_novedad(id_novedad)
-    return jsonify(respuesta), estado
-
-
-@novedades_bp.route("/novedades/<int:id_novedad>/estado", methods=["PUT"])
-def ruta_cambiar_estado_novedad(id_novedad):
-    data = request.get_json()
-    respuesta, estado = servicio_cambiar_estado_novedad(id_novedad, data)
-    return jsonify(respuesta), estado
+    return datos

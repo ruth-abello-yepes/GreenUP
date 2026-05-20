@@ -13,6 +13,46 @@ contenido_bp = Blueprint("contenido", __name__)
 
 @contenido_bp.route("/contenido", methods=["POST"])
 def ruta_crear_contenido():
+    """
+    Crear contenido educativo
+    ---
+    tags:
+      - Contenido Educativo
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - titulo
+            - tipo
+            - id_usuario
+          properties:
+            titulo:
+              type: string
+              example: Como reciclar plastico
+            descripcion:
+              type: string
+              example: Guia basica para separar plastico reciclable.
+            tipo:
+              type: string
+              example: articulo
+            url_recurso:
+              type: string
+              example: https://ejemplo.com/reciclaje-plastico
+            imagen:
+              type: string
+              example: imagenes/plastico.jpg
+            id_usuario:
+              type: integer
+              example: 1
+    responses:
+      201:
+        description: Contenido creado correctamente
+      400:
+        description: Faltan datos obligatorios
+    """
     data = request.get_json()
     respuesta, estado = servicio_crear_contenido(data)
     return jsonify(respuesta), estado
@@ -20,5 +60,14 @@ def ruta_crear_contenido():
 
 @contenido_bp.route("/contenido", methods=["GET"])
 def ruta_listar_contenidos():
+    """
+    Listar contenidos educativos
+    ---
+    tags:
+      - Contenido Educativo
+    responses:
+      200:
+        description: Lista de contenidos educativos
+    """
     respuesta, estado = servicio_listar_contenidos()
     return jsonify(respuesta), estado

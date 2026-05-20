@@ -13,7 +13,8 @@ from app.controllers.contenido_routes import contenido_bp
 from app.controllers.faq_routes import faq_bp
 from app.controllers.estadisticas_routes import estadisticas_bp
 from app.controllers.reportes_routes import reportes_bp
-
+from app.controllers.materiales_routes import materiales_bp
+from app.controllers.tipo_residuo_routes import tipos_residuo_bp
 
 def crear_app():
     app = Flask(__name__)
@@ -33,6 +34,8 @@ def crear_app():
     app.register_blueprint(faq_bp)
     app.register_blueprint(estadisticas_bp)
     app.register_blueprint(reportes_bp)
+    app.register_blueprint(materiales_bp)
+    app.register_blueprint(tipos_residuo_bp)
     
     
     

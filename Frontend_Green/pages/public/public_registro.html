@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Permite usar tildes y caracteres especiales -->
+    <meta charset="UTF-8" />
+
+    <!-- Titulo que aparece en la pestana del navegador -->
+    <title>Registro - GreenUp</title>
+
+    <!-- Archivo de estilos general -->
+    <link rel="stylesheet" href="../../css/general.css" />
+  </head>
+  <body>
+    <h1>Registrarse</h1>
+
+    <!--
+        El formulario llama a registrarUsuario(event)
+        cuando se presiona el boton Registrarme.
+
+        Esa funcion esta en:
+        ../../js/usuarios.js
+    -->
+    <form onsubmit="registrarUsuario(event)">
+      <!-- Campo nombres -->
+      <label for="nombres">Nombres</label>
+      <input type="text" id="nombres" required />
+
+      <!-- Campo apellidos -->
+      <label for="apellidos">Apellidos</label>
+      <input type="text" id="apellidos" required />
+
+      <!-- Campo correo -->
+      <label for="correo">Correo</label>
+      <input type="email" id="correo" required />
+
+      <!-- Campo usuario -->
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" required />
+
+      <!-- Campo contrasena -->
+      <label for="contrasena">Contrasena</label>
+      <input type="password" id="contrasena" required />
+
+      <!-- Campo numero de documento -->
+      <label for="numero_documento">Numero de documento</label>
+      <input type="text" id="numero_documento" required />
+
+      <!-- Campo celular -->
+      <label for="celular">Celular</label>
+      <input type="text" id="celular" />
+
+      <!--
+            Tipo de documento.
+            Estos valores deben existir en la tabla tipo_documento.
+        -->
+      <label for="id_tipo_documento">Tipo de documento</label>
+      <select id="id_tipo_documento" required>
+        <option value="1">Cedula de ciudadania</option>
+        <option value="2">Tarjeta de identidad</option>
+        <option value="3">Cedula de extranjeria</option>
+      </select>
+
+      <!--
+            Tipo de usuario.
+            2 = Dueno de recicladora
+            3 = Ciudadano
+
+            No dejamos registrar administrador desde aqui
+            por seguridad.
+        -->
+      <label for="id_rol">Tipo de usuario</label>
+      <select id="id_rol" required>
+        <option value="3">Ciudadano</option>
+        <option value="2">Dueno de recicladora</option>
+      </select>
+
+      <button type="submit">Registrarme</button>
+    </form>
+
+    <!-- Enlace para ir al login -->
+    <p>
+      ¿Ya tienes cuenta?
+      <a href="public_login.html">Inicia sesion</a>
+    </p>
+
+    <!--
+        Primero cargamos api.js porque tiene la URL del backend.
+    -->
+    <script src="../../js/api.js"></script>
+
+    <!--
+        Luego cargamos usuarios.js porque usa API_URL.
+    -->
+    <script src="../../js/usuarios.js"></script>
+  </body>
+</html>

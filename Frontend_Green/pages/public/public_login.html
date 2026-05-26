@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Titulo que aparece en la pestaña del navegador -->
+    <title>Iniciar sesion - GreenUp</title>
+
+    <!-- Conectamos el archivo de estilos -->
+    <link rel="stylesheet" href="../../css/general.css" />
+  </head>
+  <body>
+    <h1>Iniciar sesion</h1>
+
+    <!-- 
+        Este formulario llama a la funcion iniciarSesion()
+        cuando el usuario presiona el boton Entrar.
+    -->
+    <form onsubmit="iniciarSesion(event)">
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" required />
+
+      <label for="contrasena">Contrasena</label>
+      <input type="password" id="contrasena" required />
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <!-- Primero cargamos api.js porque tiene la URL del backend -->
+    <script src="../../js/api.js"></script>
+
+    <!-- Luego cargamos auth.js porque usa la URL del backend -->
+    <script src="../../js/auth.js"></script>
+  </body>
+</html>

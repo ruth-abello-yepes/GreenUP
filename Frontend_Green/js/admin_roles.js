@@ -1,87 +1,58 @@
 /*
     Archivo: admin_roles.js
+
     Para que sirve:
-    Permite al administrador registrar y listar roles.
+    Carga los roles registrados en la base de datos
+    y los muestra en la tabla del panel administrador.
 */
 
-async function registrarRolAdmin(evento) {
-  // Evita que la pagina se recargue.
-  evento.preventDefault();
+async function cargarRoles() {
+  /*
+        Nos conectamos al backend para pedir la lista de roles.
 
-  // Tomamos los datos del formulario.
-  const nombre = document.getElementById("nombre").value;
-  const descripcion = document.getElementById("descripcion").value;
+        Ruta:
+        GET http://127.0.0.1:5000/api/roles/listar
+    */
+  const respuesta = await fetch(API_URL + "/api/roles/listar");
 
-  // Tomamos el usuario guardado para enviar headers.
-  const usuarioGuardado = localStorage.getItem("usuario");
-  const usuarioActual = JSON.parse(usuarioGuardado);
-
-  // Enviamos el rol al backend.
-  const respuesta = await fetch(API_URL + "/api/roles/registrar", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      id_usuario: usuarioActual.id_usuario,
-      id_rol: usuarioActual.id_rol,
-    },
-    body: JSON.stringify({
-      nombre: nombre,
-      descripcion: descripcion,
-    }),
-  });
-
+  /*
+        Convertimos la respuesta del backend a JavaScript.
+    */
   const datos = await respuesta.json();
 
-  alert(datos.mensaje);
-
-  if (respuesta.ok) {
-    listarRolesAdmin();
-  }
-}
-
-async function listarRolesAdmin() {
-  // Tomamos el usuario guardado para enviar headers.
-  const usuarioGuardado = localStorage.getItem("usuario");
-
-  if (!usuarioGuardado) {
-    alert("Debes iniciar sesion");
-    return;
-  }
-
-  const usuarioActual = JSON.parse(usuarioGuardado);
-
-  // Pedimos los roles al backend.
-  const respuesta = await fetch(API_URL + "/api/roles/listar", {
-    method: "GET",
-    headers: {
-      id_usuario: usuarioActual.id_usuario,
-      id_rol: usuarioActual.id_rol,
-    },
-  });
-
-  const datos = await respuesta.json();
-
-  const tabla = document.getElementById("tabla_roles");
-
-  // Limpiamos la tabla antes de llenarla.
-  tabla.innerHTML = "";
-
+  /*
+        Si hay error, mostramos el mensaje del backend.
+    */
   if (!respuesta.ok) {
     alert(datos.mensaje);
     return;
   }
 
-  // Agregamos cada rol a la tabla.
+  /*
+        Buscamos el cuerpo de la tabla en el HTML.
+    */
+  const tabla = document.getElementById("tabla-roles");
+
+  /*
+        Limpiamos la tabla antes de llenarla.
+    */
+  tabla.innerHTML = "";
+
+  /*
+        Recorremos todos los roles que llegaron del backend.
+    */
   datos.forEach(function (rol) {
-    const fila = document.createElement("tr");
-
-    fila.innerHTML = `
-            <td>${rol.id_rol}</td>
-            <td>${rol.nombre}</td>
-            <td>${rol.descripcion}</td>
-            <td>${rol.id_estado}</td>
+    tabla.innerHTML += `
+            <tr>
+                <td>${rol.id_rol}</td>
+                <td>${rol.nombre}</td>
+                <td>${rol.descripcion || ""}</td>
+                <td>
+                    <span class="${rol.id_estado === 1 ? "estado-activo" : "estado-inactivo"}">
+                        ${rol.id_estado === 1 ? "Activo" : "Inactivo"}
+                    </span>
+                </td>
+            </tr>
         `;
-
-    tabla.appendChild(fila);
   });
 }

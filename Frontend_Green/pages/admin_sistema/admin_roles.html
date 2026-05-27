@@ -1,91 +1,59 @@
 <!doctype html>
 <html lang="es">
   <head>
-    <!-- Permite usar tildes y caracteres especiales -->
     <meta charset="UTF-8" />
+    <title>Roles - GreenUp Admin</title>
 
-    <!-- Hace que la pagina se adapte a distintos tamaños -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Titulo de la pestana -->
-    <title>Roles - Administrador GreenUp</title>
-
-    <!-- Estilos generales -->
     <link rel="stylesheet" href="../../css/general.css" />
-
-    <!-- Estilos del administrador -->
     <link rel="stylesheet" href="../../css/admin_sistema.css" />
   </head>
-  <body>
-    <!-- Encabezado -->
-    <header>
-      <h1>Gestion de Roles</h1>
-      <p>Modulo para crear, consultar, actualizar e inhabilitar roles.</p>
 
-      <a href="admin_panel.html">Volver al panel</a>
-      <button onclick="cerrarSesion()">Cerrar sesion</button>
+  <body onload="cargarRoles()">
+    <header class="barra-superior">
+      <h1>Roles</h1>
+
+      <nav>
+        <a href="admin_panel.html">Inicio</a>
+        <a href="admin_usuarios.html">Usuarios</a>
+        <a href="admin_roles.html">Roles</a>
+        <button onclick="cerrarSesion()" class="boton-salir">
+          Cerrar sesion
+        </button>
+      </nav>
     </header>
 
-    <main>
-      <!-- Formulario para registrar roles -->
-      <section>
-        <h2>Registrar rol</h2>
-
-        <!-- Al enviar el formulario se ejecuta registrarRolAdmin(event) -->
-        <form onsubmit="registrarRolAdmin(event)">
-          <label for="nombre">Nombre del rol</label>
-          <input type="text" id="nombre" required />
-
-          <label for="descripcion">Descripcion</label>
-          <textarea id="descripcion"></textarea>
-
-          <button type="submit">Registrar rol</button>
-        </form>
+    <main class="contenido">
+      <section class="titulo-pagina">
+        <h2>Gestion de roles</h2>
+        <p>Consulta los roles existentes dentro del sistema GreenUp.</p>
       </section>
 
-      <!-- Tabla de roles -->
-      <section>
+      <section class="seccion">
         <h2>Roles registrados</h2>
 
-        <!-- Carga los roles desde el backend -->
-        <button onclick="listarRolesAdmin()">Cargar roles</button>
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
 
-        <table border="1">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Descripcion</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-
-          <!-- Aqui JavaScript agregara las filas -->
-          <tbody id="tabla_roles"></tbody>
-        </table>
+            <tbody id="tabla-roles">
+              <tr>
+                <td colspan="4">Cargando roles...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
 
-    <footer>
-      <p>GreenUp 1.0 - Gestion de roles</p>
-    </footer>
-
-    <!-- URL del backend -->
     <script src="../../js/api.js"></script>
-
-    <!-- Funciones de roles -->
-    <script src="../../js/admin_roles.js"></script>
-
-    <!-- Proteccion de sesion -->
-    <script src="../../js/proteger_ruta.js"></script>
-
-    <!-- Solo administrador -->
-    <script src="../../js/proteger_rol.js"></script>
-    <script>
-      protegerRol(1);
-    </script>
-
-    <!-- Cerrar sesion -->
     <script src="../../js/logout.js"></script>
+    <script src="../../js/admin_roles.js"></script>
   </body>
 </html>

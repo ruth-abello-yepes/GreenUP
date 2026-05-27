@@ -1,5 +1,14 @@
-/* Archivo: admin.css */
-/* Colores del panel administrador: azul oscuro y verde */
+/*
+    Archivo: admin_sistema.css
+
+    Para que sirve:
+    Da estilo a las pantallas del administrador del sistema.
+
+    Colores principales:
+    Azul oscuro: #0b2545
+    Verde GreenUp: #35b779
+    Fondo claro: #f4f7fb
+*/
 
 * {
   box-sizing: border-box;
@@ -8,76 +17,151 @@
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #f3f6f8;
-  color: #1f2933;
+  background-color: #f4f7fb;
+  color: #1f2937;
 }
 
-/* Barra superior */
+/* Barra superior del administrador */
 .barra-superior {
   background-color: #0b2545;
   color: white;
-  padding: 18px 30px;
+  padding: 18px 28px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #3cb371;
+  justify-content: space-between;
+  border-bottom: 5px solid #35b779;
 }
 
 .barra-superior h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
 }
 
-/* Boton cerrar sesion */
-.boton-salir {
-  background-color: #3cb371;
+.barra-superior nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.barra-superior a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.barra-superior a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Botones */
+button,
+.boton {
+  background-color: #35b779;
   color: white;
   border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 7px;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button:hover,
+.boton:hover {
+  background-color: #2fa269;
+}
+
+.boton-salir {
+  background-color: white;
+  color: #0b2545;
 }
 
 .boton-salir:hover {
-  background-color: #2e9b5d;
+  background-color: #e7eef8;
 }
 
-/* Contenido */
+/* Contenido principal */
 .contenido {
-  padding: 30px;
+  padding: 28px;
 }
 
-/* Cada bloque */
+/* Titulos */
+.titulo-pagina {
+  margin-bottom: 20px;
+}
+
+.titulo-pagina h2 {
+  margin: 0;
+  color: #0b2545;
+  font-size: 24px;
+}
+
+.titulo-pagina p {
+  margin-top: 6px;
+  color: #64748b;
+}
+
+/* Tarjetas del panel */
+.grid-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.tarjeta-admin {
+  background-color: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(11, 37, 69, 0.08);
+}
+
+.tarjeta-admin h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #0b2545;
+}
+
+.tarjeta-admin p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tarjeta-admin a {
+  margin-top: 10px;
+}
+
+/* Secciones */
 .seccion {
   background-color: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
   padding: 24px;
-  margin-bottom: 28px;
-  border-radius: 10px;
-  border: 1px solid #d9e2ec;
-  box-shadow: 0 4px 12px rgba(11, 37, 69, 0.08);
+  margin-bottom: 26px;
+  box-shadow: 0 4px 14px rgba(11, 37, 69, 0.08);
 }
 
 .seccion h2 {
   margin-top: 0;
-  margin-bottom: 18px;
   color: #0b2545;
-  font-size: 22px;
-  border-left: 5px solid #3cb371;
+  border-left: 5px solid #35b779;
   padding-left: 10px;
 }
 
-/* Contenedor para que la tabla no se rompa */
+/* Tablas */
 .tabla-contenedor {
   width: 100%;
   overflow-x: auto;
 }
 
-/* Tabla */
 table {
   width: 100%;
-  min-width: 950px;
+  min-width: 900px;
   border-collapse: collapse;
   background-color: white;
 }
@@ -89,40 +173,96 @@ thead {
 
 th {
   padding: 13px;
-  text-align: left;
   font-size: 14px;
-  font-weight: bold;
-  border-bottom: 3px solid #3cb371;
+  text-align: left;
+  border-bottom: 4px solid #35b779;
 }
 
 td {
   padding: 12px;
   font-size: 14px;
-  border-bottom: 1px solid #d9e2ec;
+  border-bottom: 1px solid #dbe3ee;
 }
 
 tbody tr:nth-child(even) {
-  background-color: #f7fafc;
+  background-color: #f8fafc;
 }
 
 tbody tr:hover {
-  background-color: #e8f7ef;
+  background-color: #eaf8f1;
 }
 
-/* Estado activo */
+/* Estados */
 .estado-activo {
-  background-color: #d9f5e5;
-  color: #1f7a4d;
+  background-color: #d9f8e8;
+  color: #177245;
   padding: 5px 10px;
   border-radius: 20px;
   font-weight: bold;
+  display: inline-block;
 }
 
-/* Estado inactivo */
 .estado-inactivo {
   background-color: #fde2e2;
   color: #b42318;
   padding: 5px 10px;
   border-radius: 20px;
   font-weight: bold;
+  display: inline-block;
+}
+
+/* Formularios */
+.formulario-admin {
+  display: grid;
+  gap: 14px;
+  max-width: 650px;
+}
+
+.formulario-admin label {
+  font-weight: bold;
+  color: #0b2545;
+}
+
+.formulario-admin input,
+.formulario-admin select,
+.formulario-admin textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 15px;
+}
+
+.formulario-admin input:focus,
+.formulario-admin select:focus,
+.formulario-admin textarea:focus {
+  outline: none;
+  border-color: #35b779;
+  box-shadow: 0 0 0 3px rgba(53, 183, 121, 0.18);
+}
+
+/* Alertas */
+.admin-alerta {
+  background-color: #ecfdf3;
+  border-left: 5px solid #35b779;
+  padding: 14px;
+  border-radius: 8px;
+  color: #14532d;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .barra-superior {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .barra-superior nav {
+    flex-wrap: wrap;
+  }
+
+  .contenido {
+    padding: 18px;
+  }
 }

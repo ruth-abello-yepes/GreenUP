@@ -1,129 +1,85 @@
 <!doctype html>
 <html lang="es">
   <head>
-    <!-- Permite usar tildes y caracteres especiales -->
     <meta charset="UTF-8" />
-
-    <!-- Hace que la pagina se adapte a celular, tablet y computador -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Titulo de la pestana del navegador -->
     <title>Panel Administrador - GreenUp</title>
 
-    <!-- Archivo de estilos general -->
     <link rel="stylesheet" href="../../css/general.css" />
-
-    <!-- Archivo de estilos solo para administrador -->
     <link rel="stylesheet" href="../../css/admin_sistema.css" />
   </head>
-  <body>
-    <!-- Encabezado principal -->
-    <header>
-      <h1>Panel del Administrador</h1>
-      <p>Bienvenido al modulo administrativo de GreenUp</p>
 
-      <!-- Boton para cerrar sesion -->
-      <button onclick="cerrarSesion()">Cerrar sesion</button>
+  <body>
+    <header class="barra-superior">
+      <h1>GreenUp Admin</h1>
+
+      <nav>
+        <a href="admin_panel.html">Inicio</a>
+        <a href="admin_usuarios.html">Usuarios</a>
+        <a href="admin_roles.html">Roles</a>
+        <a href="admin_tipo_documentos.html">Documentos</a>
+        <a href="admin_materiales.html">Materiales</a>
+        <a href="admin_residuos.html">Residuos</a>
+        <button onclick="cerrarSesion()" class="boton-salir">
+          Cerrar sesion
+        </button>
+      </nav>
     </header>
 
-    <!-- Menu de navegacion del administrador -->
-    <nav>
-      <ul>
-        <li><a href="admin_panel.html">Inicio</a></li>
-        <li><a href="admin_usuarios.html">Usuarios</a></li>
-        <li><a href="admin_roles.html">Roles</a></li>
-        <li><a href="admin_tipo_documento.html">Tipos de documento</a></li>
-        <li><a href="admin_materiales.html">Materiales</a></li>
-        <li><a href="admin_residuos.html">Tipos de residuo</a></li>
-        <li><a href="admin_puntos_reciclaje.html">Puntos de reciclaje</a></li>
-        <li><a href="admin_mapa.html">Mapa</a></li>
-        <li>
-          <a href="admin_registros_reciclaje.html">Registros de reciclaje</a>
-        </li>
-        <li>
-          <a href="admin_contenido_educativo.html">Contenido educativo</a>
-        </li>
-        <li><a href="admin_novedades.html">Novedades</a></li>
-        <li><a href="admin_faq.html">Preguntas frecuentes</a></li>
-        <li><a href="admin_estadisticas.html">Estadisticas</a></li>
-        <li><a href="admin_reportes.html">Reportes</a></li>
-        <li><a href="admin_configuracion.html">Configuracion</a></li>
-        <li><a href="admin_perfil.html">Perfil</a></li>
-      </ul>
-    </nav>
-
-    <!-- Contenido principal -->
-    <main>
-      <section>
-        <h2>Resumen del sistema</h2>
+    <main class="contenido">
+      <section class="titulo-pagina">
+        <h2>Panel del administrador del sistema</h2>
         <p>
-          Desde este panel puedes administrar usuarios, roles, documentos,
-          materiales, residuos, puntos de reciclaje, contenido educativo,
-          novedades, estadisticas y reportes.
+          Gestiona los usuarios, roles, documentos, materiales, residuos y
+          reportes de GreenUp.
         </p>
       </section>
 
-      <!-- Tarjetas de acceso rapido -->
-      <section>
-        <h2>Modulos principales</h2>
+      <section class="grid-admin">
+        <article class="tarjeta-admin">
+          <h3>Usuarios</h3>
+          <p>
+            Consulta ciudadanos y dueños de puntos ecológicos registrados en la
+            plataforma.
+          </p>
+          <a class="boton" href="admin_usuarios.html">Ver usuarios</a>
+        </article>
 
-        <div>
-          <article>
-            <h3>Usuarios</h3>
-            <p>Registrar, consultar, actualizar e inhabilitar usuarios.</p>
-            <a href="admin_usuarios.html">Ir a usuarios</a>
-          </article>
+        <article class="tarjeta-admin">
+          <h3>Roles</h3>
+          <p>Administra los roles del sistema y su estado.</p>
+          <a class="boton" href="admin_roles.html">Ver roles</a>
+        </article>
 
-          <article>
-            <h3>Roles</h3>
-            <p>Crear, consultar, actualizar e inhabilitar roles.</p>
-            <a href="admin_roles.html">Ir a roles</a>
-          </article>
+        <article class="tarjeta-admin">
+          <h3>Tipo de documento</h3>
+          <p>Gestiona los tipos de documento usados en el registro.</p>
+          <a class="boton" href="admin_tipo_documentos.html"
+            >Ver tipos de documento</a
+          >
+        </article>
 
-          <article>
-            <h3>Materiales</h3>
-            <p>Gestionar materiales reciclables.</p>
-            <a href="admin_materiales.html">Ir a materiales</a>
-          </article>
+        <article class="tarjeta-admin">
+          <h3>Materiales</h3>
+          <p>Administra los materiales reciclables disponibles.</p>
+          <a class="boton" href="admin_materiales.html">Ver materiales</a>
+        </article>
 
-          <article>
-            <h3>Puntos de reciclaje</h3>
-            <p>Gestionar puntos de reciclaje registrados en GreenUp.</p>
-            <a href="admin_puntos_reciclaje.html">Ir a puntos</a>
-          </article>
+        <article class="tarjeta-admin">
+          <h3>Tipos de residuo</h3>
+          <p>Consulta y administra las clasificaciones de residuos.</p>
+          <a class="boton" href="admin_residuos.html">Ver residuos</a>
+        </article>
 
-          <article>
-            <h3>Contenido educativo</h3>
-            <p>
-              Administrar articulos, videos, infografias y recursos educativos.
-            </p>
-            <a href="admin_contenido_educativo.html">Ir a contenido</a>
-          </article>
-
-          <article>
-            <h3>Reportes</h3>
-            <p>Consultar reportes del sistema.</p>
-            <a href="admin_reportes.html">Ir a reportes</a>
-          </article>
-        </div>
+        <article class="tarjeta-admin">
+          <h3>Reportes</h3>
+          <p>
+            Consulta informacion general del reciclaje registrado en el sistema.
+          </p>
+          <a class="boton" href="admin_reportes.html">Ver reportes</a>
+        </article>
       </section>
     </main>
 
-    <!-- Pie de pagina -->
-    <footer>
-      <p>GreenUp 1.0 - Administrador del sistema</p>
-    </footer>
-
-    <!-- Protege la pagina: solo entra quien inicio sesion -->
-    <script src="../../js/proteger_ruta.js"></script>
-
-    <!-- Protege por rol: 1 significa Administrador -->
-    <script src="../../js/proteger_rol.js"></script>
-    <script>
-      protegerRol(1);
-    </script>
-
-    <!-- Permite cerrar sesion -->
     <script src="../../js/logout.js"></script>
   </body>
 </html>

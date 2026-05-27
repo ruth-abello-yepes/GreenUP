@@ -55,7 +55,11 @@ async function cargarCiudadanos(admin) {
         <td>${ciudadano.numero_documento}</td>
         <td>${ciudadano.celular || ""}</td>
         <td>${ciudadano.fecha_registro}</td>
-        <td>${ciudadano.id_estado === 1 ? "Activo" : "Inactivo"}</td>
+        <td>
+  <span class="${ciudadano.id_estado === 1 ? "estado-activo" : "estado-inactivo"}">
+    ${ciudadano.id_estado === 1 ? "Activo" : "Inactivo"}
+  </span>
+</td>
       </tr>
     `;
   });
@@ -92,7 +96,11 @@ async function cargarDuenosRecicladora(admin) {
         <td>${dueno.nit_empresa}</td>
         <td>${dueno.direccion_empresa}</td>
         <td>${dueno.telefono_empresa || ""}</td>
-        <td>${dueno.id_estado === 1 ? "Activo" : "Inactivo"}</td>
+        <td>
+  <span class="${dueno.id_estado === 1 ? "estado-activo" : "estado-inactivo"}">
+    ${dueno.id_estado === 1 ? "Activo" : "Inactivo"}
+  </span>
+</td>
       </tr>
     `;
   });

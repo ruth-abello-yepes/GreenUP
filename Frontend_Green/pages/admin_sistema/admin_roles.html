@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Permite usar tildes y caracteres especiales -->
+    <meta charset="UTF-8" />
+
+    <!-- Hace que la pagina se adapte a distintos tamaños -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Titulo de la pestana -->
+    <title>Roles - Administrador GreenUp</title>
+
+    <!-- Estilos generales -->
+    <link rel="stylesheet" href="../../css/general.css" />
+
+    <!-- Estilos del administrador -->
+    <link rel="stylesheet" href="../../css/admin_sistema.css" />
+  </head>
+  <body>
+    <!-- Encabezado -->
+    <header>
+      <h1>Gestion de Roles</h1>
+      <p>Modulo para crear, consultar, actualizar e inhabilitar roles.</p>
+
+      <a href="admin_panel.html">Volver al panel</a>
+      <button onclick="cerrarSesion()">Cerrar sesion</button>
+    </header>
+
+    <main>
+      <!-- Formulario para registrar roles -->
+      <section>
+        <h2>Registrar rol</h2>
+
+        <!-- Al enviar el formulario se ejecuta registrarRolAdmin(event) -->
+        <form onsubmit="registrarRolAdmin(event)">
+          <label for="nombre">Nombre del rol</label>
+          <input type="text" id="nombre" required />
+
+          <label for="descripcion">Descripcion</label>
+          <textarea id="descripcion"></textarea>
+
+          <button type="submit">Registrar rol</button>
+        </form>
+      </section>
+
+      <!-- Tabla de roles -->
+      <section>
+        <h2>Roles registrados</h2>
+
+        <!-- Carga los roles desde el backend -->
+        <button onclick="listarRolesAdmin()">Cargar roles</button>
+
+        <table border="1">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripcion</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+
+          <!-- Aqui JavaScript agregara las filas -->
+          <tbody id="tabla_roles"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      <p>GreenUp 1.0 - Gestion de roles</p>
+    </footer>
+
+    <!-- URL del backend -->
+    <script src="../../js/api.js"></script>
+
+    <!-- Funciones de roles -->
+    <script src="../../js/admin_roles.js"></script>
+
+    <!-- Proteccion de sesion -->
+    <script src="../../js/proteger_ruta.js"></script>
+
+    <!-- Solo administrador -->
+    <script src="../../js/proteger_rol.js"></script>
+    <script>
+      protegerRol(1);
+    </script>
+
+    <!-- Cerrar sesion -->
+    <script src="../../js/logout.js"></script>
+  </body>
+</html>

@@ -1,14 +1,26 @@
-from functools import wraps # Para crear decoradores en Python
-from flask import request, jsonify # Para manejar las solicitudes HTTP y enviar respuestas JSON
+# Archivo: auth_middleware.py
+# Revisa si el usuario envio sus datos de sesion en los headers.
+
+from functools import wraps
+from flask import request, jsonify, g
 
 
 def login_requerido(funcion):
     @wraps(funcion)
     def decorador(*args, **kwargs):
-        id_usuario = request.headers.get("id_usuario") # Se espera que el cliente envíe el id_usuario en los encabezados de la solicitud
+        # Aceptamos ambas formas:
+        # id_usuario o id-usuario
+        # id_rol o id-rol
+        id_usuario = request.headers.get("id_usuario") or request.headers.get("id-usuario")
+        id_rol = request.headers.get("id_rol") or request.headers.get("id-rol")
 
-        if not id_usuario:
-            return jsonify({"mensaje": "Debes iniciar sesion para usar esta ruta"}), 401
+        if not id_usuario or not id_rol:
+            return jsonify({
+                "mensaje": "Debes iniciar sesion para usar esta ruta"
+            }), 401
+
+        g.id_usuario = int(id_usuario)
+        g.id_rol = int(id_rol)
 
         return funcion(*args, **kwargs)
 

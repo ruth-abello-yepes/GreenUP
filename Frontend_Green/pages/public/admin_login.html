@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login Administrador - GreenUp</title>
+
+    <link rel="stylesheet" href="../../css/general.css" />
+  </head>
+  <body class="login-fondo">
+    <main class="login-contenedor">
+      <section class="login-tarjeta">
+        <h1>GreenUp</h1>
+        <h2>Administrador del sistema</h2>
+
+        <form onsubmit="iniciarSesionAdmin(event)">
+          <label for="usuario">Usuario</label>
+          <input
+            type="text"
+            id="usuario"
+            placeholder="Usuario administrador"
+            required
+          />
+
+          <label for="contrasena">Contraseña</label>
+          <input
+            type="password"
+            id="contrasena"
+            placeholder="Contraseña"
+            required
+          />
+
+          <label for="codigo_admin">Código administrador</label>
+          <input
+            type="password"
+            id="codigo_admin"
+            placeholder="Código de acceso"
+            required
+          />
+
+          <button type="submit">Entrar al panel</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="../../js/api.js"></script>
+    <script src="../../js/admin_auth.js"></script>
+  </body>
+</html>

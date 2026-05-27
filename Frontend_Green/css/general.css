@@ -1,0 +1,239 @@
+/* Estilos generales para todo el frontend de GreenUp */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f7f2;
+  color: #1f2d24;
+}
+
+header {
+  background-color: #1f7a4d;
+  color: white;
+  padding: 24px;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+}
+
+header p {
+  margin: 0 0 16px 0;
+}
+
+nav {
+  background-color: #145c38;
+  padding: 12px 24px;
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  background-color: #1f7a4d;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+nav a:hover {
+  background-color: #2fa66a;
+}
+
+main {
+  padding: 24px;
+}
+
+section {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+h1,
+h2,
+h3 {
+  color: #17452f;
+}
+
+header h1,
+header p {
+  color: white;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+  max-width: 500px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #b8c7bc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 90px;
+}
+
+button,
+a.boton {
+  background-color: #1f7a4d;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+button:hover,
+a.boton:hover {
+  background-color: #2fa66a;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 16px;
+}
+
+th {
+  background-color: #1f7a4d;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #d9e4dc;
+}
+
+tr:hover {
+  background-color: #eef7f1;
+}
+
+footer {
+  padding: 16px 24px;
+  background-color: #17452f;
+  color: white;
+  text-align: center;
+}
+
+article {
+  border: 1px solid #d9e4dc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background-color: #f9fcfa;
+}
+
+article a {
+  color: #1f7a4d;
+  font-weight: bold;
+}
+/* Login GreenUp */
+
+.login-contenedor {
+  width: 100%;
+  max-width: 430px;
+  padding: 20px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-tarjeta {
+  width: 100%;
+  background-color: white;
+  padding: 34px;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(11, 37, 69, 0.28);
+}
+
+.login-tarjeta h1 {
+  margin: 0;
+  color: #0b2545;
+  text-align: center;
+  font-size: 34px;
+}
+
+.login-tarjeta h2 {
+  margin-top: 8px;
+  margin-bottom: 28px;
+  color: #3cb371;
+  text-align: center;
+  font-size: 18px;
+}
+
+.login-tarjeta label {
+  display: block;
+  margin-bottom: 6px;
+  color: #0b2545;
+  font-weight: bold;
+}
+
+.login-tarjeta input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.login-tarjeta input:focus {
+  outline: none;
+  border-color: #3cb371;
+  box-shadow: 0 0 0 3px rgba(60, 179, 113, 0.18);
+}
+
+.login-tarjeta button {
+  width: 100%;
+  background-color: #0b2545;
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-tarjeta button:hover {
+  background-color: #123761;
+}
+.login-fondo {
+  margin: 0;
+  background: linear-gradient(135deg, #0b2545, #3cb371);
+  font-family: Arial, Helvetica, sans-serif;
+}

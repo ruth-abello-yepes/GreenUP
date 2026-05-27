@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Usuarios - GreenUp Admin</title>
+
+    <link rel="stylesheet" href="../../css/admin_sistema.css" />
+  </head>
+
+  <body onload="cargarUsuariosAdmin()">
+    <header class="barra-superior">
+      <h1>Usuarios</h1>
+
+      <button onclick="cerrarSesion()" class="boton-salir">
+        Cerrar sesion
+      </button>
+    </header>
+
+    <main class="contenido">
+      <section class="seccion">
+        <h2>Ciudadanos</h2>
+
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre completo</th>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Documento</th>
+                <th>Celular</th>
+                <th>Fecha registro</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+
+            <tbody id="tabla-ciudadanos">
+              <tr>
+                <td colspan="8">Cargando ciudadanos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h2>Dueños de punto ecológico</h2>
+
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>ID usuario</th>
+                <th>Nombre completo</th>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Empresa</th>
+                <th>NIT</th>
+                <th>Direccion</th>
+                <th>Telefono</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+
+            <tbody id="tabla-duenos">
+              <tr>
+                <td colspan="9">Cargando dueños...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="../../js/api.js"></script>
+    <script src="../../js/logout.js"></script>
+    <script src="../../js/admin_usuarios.js"></script>
+  </body>
+</html>

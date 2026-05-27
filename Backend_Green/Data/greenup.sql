@@ -398,4 +398,18 @@ VALUES (
         7,
         1
     );
+
+# nuevoooo
+CREATE TABLE recicladoras (
+    id_recicladora INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL UNIQUE,
+    nit_empresa VARCHAR(30) NOT NULL UNIQUE,
+    nombre_empresa VARCHAR(150) NOT NULL,
+    direccion_empresa VARCHAR(200) NOT NULL,
+    telefono_empresa VARCHAR(20),
+    camara_comercio VARCHAR(255),
+    id_estado INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (id_estado) REFERENCES estado(id_estado)
+);
     

@@ -1,49 +1,55 @@
-// Esta funcion se ejecuta cuando el usuario envia el formulario de login.
+// Archivo: auth.js
+// Este archivo maneja el login normal.
+// Aqui entran solamente:
+// rol 2 = Dueno de punto ecologico
+// rol 3 = Ciudadano
+
 async function iniciarSesion(evento) {
-  // Evita que la pagina se recargue al enviar el formulario.
+  // Evita que el formulario recargue la pagina.
   evento.preventDefault();
 
-  // Tomamos lo que el usuario escribio en los inputs.
+  // Tomamos los datos escritos en el formulario.
   const usuario = document.getElementById("usuario").value;
   const contrasena = document.getElementById("contrasena").value;
 
-  // Enviamos los datos al backend usando fetch.
-  const respuesta = await fetch(API_URL + "/api/auth/login", {
+  // Enviamos los datos al backend.
+  const respuesta = await fetch(API_URL + "/api/login", {
     method: "POST",
-
-    // Le decimos al backend que estamos enviando JSON.
     headers: {
       "Content-Type": "application/json",
     },
-
-    // Convertimos los datos de JavaScript a JSON.
     body: JSON.stringify({
       usuario: usuario,
       contrasena: contrasena,
     }),
   });
 
-  // Convertimos la respuesta del backend a un objeto de JavaScript.
+  // Convertimos la respuesta del backend a JavaScript.
   const datos = await respuesta.json();
 
-  // Si la respuesta fue correcta, guardamos el usuario.
   if (respuesta.ok) {
+    // Guardamos los datos del usuario en el navegador.
     localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
-    // Dependiendo del rol, mandamos al usuario a su panel.
-    if (datos.usuario.id_rol === 1) {
-      window.location.href = "../admin_sistema/admin_panel.html";
-    }
+    // Convertimos el rol a numero por seguridad.
+    const rol = Number(datos.usuario.id_rol);
 
-    if (datos.usuario.id_rol === 2) {
+    // Rol 2: dueno de punto ecologico.
+    if (rol === 2) {
       window.location.href = "../dueno_recicladora/recicladora_panel.html";
+      return;
     }
 
-    if (datos.usuario.id_rol === 3) {
+    // Rol 3: ciudadano.
+    if (rol === 3) {
       window.location.href = "../ciudadano/ciudadano_panel.html";
+      return;
     }
+
+    // Si intenta entrar un admin por aqui, no lo dejamos avanzar.
+    alert("Este login es solo para ciudadanos y duenos de recicladora.");
+    localStorage.removeItem("usuario");
   } else {
-    // Si hubo error, mostramos el mensaje que manda el backend.
     alert(datos.mensaje);
   }
 }

@@ -1,7 +1,25 @@
+# Archivo: usuarios_model.py
+# Este archivo se encarga de hablar directamente con la tabla usuarios.
+# Aqui van los INSERT, SELECT, UPDATE de usuarios.
+
 from app.common.database import obtener_conexion
 
 
 def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado):
+    """
+    Registra un usuario en la tabla usuarios.
+
+    Este mismo metodo sirve para:
+    - Administrador del sistema
+    - Dueno de punto ecologico
+    - Ciudadano
+
+    La diferencia la marca el id_rol:
+    1 = Administrador
+    2 = Dueno de punto ecologico
+    3 = Ciudadano
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
@@ -11,16 +29,38 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    datos = (nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado)
+    datos = (
+        nombres,
+        apellidos,
+        correo,
+        usuario,
+        contrasena,
+        numero_documento,
+        celular,
+        foto_perfil,
+        id_tipo_documento,
+        id_rol,
+        id_estado
+    )
 
     cursor.execute(sql, datos)
     conexion.commit()
 
+    # Este es el ID del usuario que acabamos de crear.
+    # Lo necesitamos para registrar tambien los datos de la recicladora.
+    id_usuario_creado = cursor.lastrowid
+
     cursor.close()
     conexion.close()
 
+    return id_usuario_creado
+
 
 def listar_usuarios():
+    """
+    Lista todos los usuarios registrados.
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
@@ -35,7 +75,61 @@ def listar_usuarios():
     return usuarios
 
 
+def listar_ciudadanos():
+    """
+    Lista solamente los usuarios que son ciudadanos.
+
+    id_rol = 3 significa Ciudadano.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+    SELECT *
+    FROM usuarios
+    WHERE id_rol = 3
+    """
+
+    cursor.execute(sql)
+    ciudadanos = cursor.fetchall()
+
+    cursor.close()
+    conexion.close()
+
+    return ciudadanos
+
+
+def listar_duenos_recicladora():
+    """
+    Lista solamente los usuarios que son duenos de punto ecologico.
+
+    id_rol = 2 significa Dueno de punto ecologico.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+    SELECT *
+    FROM usuarios
+    WHERE id_rol = 2
+    """
+
+    cursor.execute(sql)
+    duenos = cursor.fetchall()
+
+    cursor.close()
+    conexion.close()
+
+    return duenos
+
+
 def buscar_usuario_por_id(id_usuario):
+    """
+    Busca un usuario por su ID.
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
@@ -50,7 +144,35 @@ def buscar_usuario_por_id(id_usuario):
     return usuario
 
 
+def buscar_usuario_por_usuario(usuario):
+    """
+    Busca un usuario por su nombre de usuario.
+
+    Esta funcion se usa en el login.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = "SELECT * FROM usuarios WHERE usuario = %s"
+
+    cursor.execute(sql, (usuario,))
+    usuario_encontrado = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario_encontrado
+
+
 def actualizar_usuario(id_usuario, nombres, apellidos, correo, usuario, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado):
+    """
+    Actualiza los datos de un usuario.
+
+    No actualizamos la contrasena aqui.
+    La contrasena se debe cambiar en otro metodo aparte.
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
@@ -69,7 +191,19 @@ def actualizar_usuario(id_usuario, nombres, apellidos, correo, usuario, numero_d
     WHERE id_usuario = %s
     """
 
-    datos = (nombres, apellidos, correo, usuario, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado, id_usuario)
+    datos = (
+        nombres,
+        apellidos,
+        correo,
+        usuario,
+        numero_documento,
+        celular,
+        foto_perfil,
+        id_tipo_documento,
+        id_rol,
+        id_estado,
+        id_usuario
+    )
 
     cursor.execute(sql, datos)
     conexion.commit()
@@ -79,6 +213,16 @@ def actualizar_usuario(id_usuario, nombres, apellidos, correo, usuario, numero_d
 
 
 def inhabilitar_usuario(id_usuario):
+    """
+    Inhabilita un usuario.
+
+    No lo borra de la base de datos.
+    Solo cambia id_estado a 2.
+
+    id_estado = 1 activo
+    id_estado = 2 inactivo
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
@@ -89,17 +233,3 @@ def inhabilitar_usuario(id_usuario):
 
     cursor.close()
     conexion.close()
-
-def buscar_usuario_por_usuario(usuario):
-    conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
-
-    sql = "SELECT * FROM usuarios WHERE usuario = %s"
-
-    cursor.execute(sql, (usuario,))
-    usuario_encontrado = cursor.fetchone()
-
-    cursor.close()
-    conexion.close()
-
-    return usuario_encontrado

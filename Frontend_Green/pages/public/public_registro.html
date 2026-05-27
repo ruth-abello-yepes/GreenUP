@@ -1,96 +1,378 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <!-- Permite usar tildes y caracteres especiales -->
-    <meta charset="UTF-8" />
 
-    <!-- Titulo que aparece en la pestana del navegador -->
-    <title>Registro - GreenUp</title>
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>GreenUp | Crear Cuenta</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
 
-    <!-- Archivo de estilos general -->
-    <link rel="stylesheet" href="../../css/general.css" />
-  </head>
-  <body>
-    <h1>Registrarse</h1>
+  <style>
+    :root {
+      --bs-body-font-family: 'Inter', sans-serif;
+      --color-primary: #003d6c;
+      --color-primary-container: #065591;
+      --color-secondary: #296c1f;
+      --color-secondary-container: #a9f295;
+      --color-bg-surface: #f8f9ff;
+      --color-on-surface-variant: #414750;
+    }
 
-    <!--
-        El formulario llama a registrarUsuario(event)
-        cuando se presiona el boton Registrarme.
+    body {
+      background-color: var(--color-bg-surface);
+      font-family: var(--bs-body-font-family);
+    }
 
-        Esa funcion esta en:
-        ../../js/usuarios.js
-    -->
-    <form onsubmit="registrarUsuario(event)">
-      <!-- Campo nombres -->
-      <label for="nombres">Nombres</label>
-      <input type="text" id="nombres" required />
+    /* Panel lateral personalizado */
+    .aside-panel {
+      background-color: var(--color-primary-container);
+      min-height: 100vh;
+    }
 
-      <!-- Campo apellidos -->
-      <label for="apellidos">Apellidos</label>
-      <input type="text" id="apellidos" required />
+    .aside-bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      mix-blend-mode: overlay;
+      opacity: 0.3;
+      z-index: 0;
+    }
 
-      <!-- Campo correo -->
-      <label for="correo">Correo</label>
-      <input type="email" id="correo" required />
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-      <!-- Campo usuario -->
-      <label for="usuario">Usuario</label>
-      <input type="text" id="usuario" required />
+    /* Estilos de inputs y diseño */
+    .form-control,
+    .form-select {
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border-color: #c1c7d1;
+      background-color: #ffffff;
+    }
 
-      <!-- Campo contrasena -->
-      <label for="contrasena">Contrasena</label>
-      <input type="password" id="contrasena" required />
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.25);
+    }
 
-      <!-- Campo numero de documento -->
-      <label for="numero_documento">Numero de documento</label>
-      <input type="text" id="numero_documento" required />
+    .btn-primary-custom {
+      background-color: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
 
-      <!-- Campo celular -->
-      <label for="celular">Celular</label>
-      <input type="text" id="celular" />
+    .btn-primary-custom:hover {
+      background-color: var(--color-primary-container);
+      color: white;
+    }
 
-      <!--
-            Tipo de documento.
-            Estos valores deben existir en la tabla tipo_documento.
-        -->
-      <label for="id_tipo_documento">Tipo de documento</label>
-      <select id="id_tipo_documento" required>
-        <option value="1">Cedula de ciudadania</option>
-        <option value="2">Tarjeta de identidad</option>
-        <option value="3">Cedula de extranjeria</option>
-      </select>
+    .btn-secondary-custom {
+      background-color: var(--color-secondary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
 
-      <!--
-            Tipo de usuario.
-            2 = Dueno de recicladora
-            3 = Ciudadano
+    .btn-secondary-custom:hover {
+      opacity: 0.9;
+      color: white;
+    }
 
-            No dejamos registrar administrador desde aqui
-            por seguridad.
-        -->
-      <label for="id_rol">Tipo de usuario</label>
-      <select id="id_rol" required>
-        <option value="3">Ciudadano</option>
-        <option value="2">Dueno de recicladora</option>
-      </select>
+    .step-bar {
+      height: 4px;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+    }
 
-      <button type="submit">Registrarme</button>
-    </form>
+    .bg-surface-highest {
+      background-color: #d9e3f6;
+    }
 
-    <!-- Enlace para ir al login -->
-    <p>
-      ¿Ya tienes cuenta?
-      <a href="public_login.html">Inicia sesion</a>
-    </p>
+    .bg-primary-custom {
+      background-color: var(--color-primary);
+    }
 
-    <!--
-        Primero cargamos api.js porque tiene la URL del backend.
-    -->
-    <script src="../../js/api.js"></script>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
 
-    <!--
-        Luego cargamos usuarios.js porque usa API_URL.
-    -->
-    <script src="../../js/usuarios.js"></script>
-  </body>
+    .alert-custom {
+      background-color: rgba(169, 242, 149, 0.2);
+      border: 1px solid rgba(41, 108, 31, 0.3);
+      color: #0c5307;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container-fluid p-0">
+    <div class="row g-0 min-vh-screen flex-column flex-md-row">
+
+      <aside
+        class="col-md-5 col-lg-4 d-none d-md-flex flex-column justify-content-between p-5 position-relative overflow-hidden aside-panel text-white">
+        <img alt="Bosque verde vibrante" class="aside-bg-img"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3O4vmhii08ilzPCK82ctkOqTV02aWxggNQmITFK857EGiqMQjP4HlC0zRa0R22WX8ePoo_uA7Om1_F_w1EfcChWVmqzYBxW9h08OAB4Qvog41VoXa6wfLgKBpjO4n3p797QOxNCawIMvWK5m7380Sr4dfb3N71KuuEKPMGoaBGSFuQOmfDFGx68glKLgRvo7bOPUB2XqsbD0R9Vm6oIRrqSInYsCVLfw-RJdIdOlKBJ3ba0wDLHtM9L08UDyKypmm807jodTuvhM">
+
+        <div class="position-relative z-1">
+          <h1 class="h2 fw-bold mb-4">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4kPfsegv_24I8c16UPdDhFP9K6orbrVryyHUlNTUIik020FqXS7gN7ueZfvEGwtTGpNgwxuIDYcpA5z_dJpnk4TRFeWIa5sPylvF9dnVjCfBUMpDTFC2JZU909s-4FPRRvMk0byTVVvPLh8C5D7kP3RAH8xR8ylC8QhqM4k06J8ZT8mQbYu9tzGVDAU155d8jbFJLwGdam1Qmpp-8dUwzMm-7smtiXTaN9P5I0mMEShBnjh_otcyq1_ii6J5Vk7II9Vp1Hv_8uog"
+              alt="GreenUp Logo" class="d-inline-block align-middle me-2" style="width: 32px; height: 32px;">
+            <span style="color: #ffffff;">Green</span><span style="color: #acf597;">Up</span>
+          </h1>
+          <p class="lead opacity-90" style="max-w: 350px;">
+            Únete a la mayor red de impacto ambiental impulsada por inteligencia artificial.
+          </p>
+        </div>
+
+        <div class="position-relative z-1">
+          <div class="glass-card p-4 rounded-3">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-success text-white p-2 rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 45px; height: 45px;">
+                <span class="material-symbols-outlined">eco</span>
+              </div>
+              <div>
+                <p class="small fw-bold mb-0 text-white">Impacto Real</p>
+                <p class="small mb-0 text-success-light" style="color: #acf597; font-size: 0.8rem;">Más de 2M de
+                  toneladas de CO2 reducidas.</p>
+              </div>
+            </div>
+            <div class="progress" style="height: 8px; background-color: rgba(255,255,255,0.2);">
+              <div class="progress-bar" role="progressbar" style="width: 75%; background-color: #acf597;"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="col-md-7 col-lg-8 d-flex flex-column align-items-center justify-content-center p-4 p-md-5">
+        <div class="w-100" style="max-width: 640px;">
+
+          <div class="d-flex justify-content-start mb-4">
+            <button
+              class="btn d-flex align-items-center gap-1 p-2 text-decoration-none fw-semibold shadow-none border-0"
+              style="color: var(--color-primary);" type="button">
+              <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
+              Volver
+            </button>
+          </div>
+
+          <div class="text-center text-md-start mb-4">
+            <h2 class="fw-bold text-primary-custom" style="color: var(--color-primary);">Comienza tu viaje</h2>
+            <p class="text-muted">Crea tu cuenta de eco-líder en menos de un minuto.</p>
+          </div>
+
+          <form id="registration-form">
+            <div class="d-flex gap-2 mb-4" id="step-indicators">
+              <div class="step-bar flex-grow-1 bg-primary-custom"></div>
+              <div class="step-bar flex-grow-1 bg-surface-highest"></div>
+              <div class="step-bar flex-grow-1 bg-surface-highest"></div>
+            </div>
+
+            <div class="form-section row g-3 mb-4" id="section-1">
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">person</span> Nombres
+                </label>
+                <input class="form-control" placeholder="Ej. Ana" type="text">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">person</span> Apellidos
+                </label>
+                <input class="form-control" placeholder="Ej. García" type="text">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">mail</span> Correo electrónico
+                </label>
+                <input class="form-control" placeholder="ana@greenup.com" type="type">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">call</span> Teléfono
+                </label>
+                <input class="form-control" placeholder="+57 300 000 0000" type="tel">
+              </div>
+              <div class="col-12">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">group</span> Tipo de usuario
+                </label>
+                <select class="form-select text-dark">
+                  <option value="ciudadano">Ciudadano</option>
+                  <option value="dueno_recicladora">Dueño de la recicladora</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-section row g-3 mb-4 d-none" id="section-2">
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">badge</span> Tipo de documento
+                </label>
+                <select class="form-select text-dark">
+                  <option disabled="" selected="" value="">Selecciona tipo</option>
+                  <option value="CC">C.C. (Cédula de Ciudadanía)</option>
+                  <option value="CE">C.E. (Cédula de Extranjería)</option>
+                  <option value="PAS">Pasaporte</option>
+                  <option value="TI">T.I. (Tarjeta de Identidad)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">numbers</span> Número de documento
+                </label>
+                <input class="form-control" placeholder="1234567890" type="text">
+              </div>
+              <div class="col-12">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">alternate_email</span> Nombre de
+                  usuario
+                </label>
+                <input class="form-control" placeholder="anagarcia_eco" type="text">
+              </div>
+            </div>
+
+            <div class="form-section row g-3 mb-4 d-none" id="section-3">
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">lock</span> Contraseña
+                </label>
+                <input class="form-control" placeholder="••••••••" type="password">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">verified_user</span> Confirmar
+                  contraseña
+                </label>
+                <input class="form-control" placeholder="••••••••" type="password">
+              </div>
+              <div class="col-12 mt-4">
+                <div class="p-4 rounded-3 alert-custom">
+                  <p class="fw-bold mb-2 small">Último paso</p>
+                  <div class="form-check d-flex gap-2 align-items-start ps-0">
+                    <input class="form-check-input ms-0 mt-1" style="cursor: pointer;" id="terms" type="checkbox">
+                    <label class="form-check-label text-muted small lh-sm" style="cursor: pointer;" for="terms">
+                      Acepto los <span class="fw-bold" style="color: var(--color-primary);">términos y
+                        condiciones</span> y la política de privacidad de GreenUp.
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-3 pt-2">
+              <button
+                class="btn btn-primary-custom w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                id="btn-next" type="button">
+                Continuar <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+              <button class="btn btn-light w-100 py-3 fw-semibold text-muted border d-none" id="btn-back" type="button">
+                Volver atrás
+              </button>
+            </div>
+
+            <p class="text-center text-muted mt-4 small">
+              ¿Ya tienes cuenta? <a class="fw-bold text-decoration-none" style="color: var(--color-secondary);"
+                href="#">Inicia sesión</a>
+            </p>
+          </form>
+        </div>
+
+        <footer class="w-100 mt-5 pt-4 border-t border-light" style="max-width: 640px;">
+          <div class="d-flex justify-content-between align-items-center px-2">
+            <p class="small text-muted mb-0">© 2024 <span
+                style="color: var(--color-primary-container);">Green</span><span
+                style="color: var(--color-secondary);">Up</span> Tech</p>
+            <div class="d-flex gap-3 text-muted">
+              <span class="material-symbols-outlined style-pointer" style="cursor: pointer;">language</span>
+              <span class="material-symbols-outlined style-pointer" style="cursor: pointer;">help_outline</span>
+            </div>
+          </div>
+        </footer>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    const btnNext = document.getElementById('btn-next');
+    const btnBack = document.getElementById('btn-back');
+    const indicators = document.querySelectorAll('.step-bar');
+
+    btnNext.addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        document.getElementById(`section-${currentStep}`).classList.add('d-none');
+        currentStep++;
+        document.getElementById(`section-${currentStep}`).classList.remove('d-none');
+        updateUI();
+      } else {
+        btnNext.innerHTML = '<span class="material-symbols-outlined spinner-border spinner-border-sm me-2" role="status"></span> Procesando...';
+        setTimeout(() => {
+          alert('¡Cuenta creada con éxito! Bienvenido a GreenUp.');
+          location.reload();
+        }, 2000);
+      }
+    });
+
+    btnBack.addEventListener('click', () => {
+      if (currentStep > 1) {
+        document.getElementById(`section-${currentStep}`).classList.add('d-none');
+        currentStep--;
+        document.getElementById(`section-${currentStep}`).classList.remove('d-none');
+        updateUI();
+      }
+    });
+
+    function updateUI() {
+      if (currentStep === 1) {
+        btnBack.classList.add('d-none');
+      } else {
+        btnBack.classList.remove('d-none');
+      }
+
+      if (currentStep === totalSteps) {
+        btnNext.innerHTML = 'Crear mi cuenta <span class="material-symbols-outlined">verified</span>';
+        btnNext.classList.replace('btn-primary-custom', 'btn-secondary-custom');
+      } else {
+        btnNext.innerHTML = 'Continuar <span class="material-symbols-outlined">arrow_forward</span>';
+        btnNext.classList.replace('btn-secondary-custom', 'btn-primary-custom');
+      }
+
+      indicators.forEach((bar, idx) => {
+        if (idx < currentStep) {
+          bar.classList.replace('bg-surface-highest', 'bg-primary-custom');
+        } else {
+          bar.classList.replace('bg-primary-custom', 'bg-surface-highest');
+        }
+      });
+    }
+  </script>
+</body>
+
 </html>

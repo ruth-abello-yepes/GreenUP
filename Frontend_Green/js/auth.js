@@ -9,8 +9,12 @@ async function iniciarSesion(evento) {
   evento.preventDefault();
 
   // Tomamos los datos escritos en el formulario.
-  const usuario = document.getElementById("usuario").value;
-  const contrasena = document.getElementById("contrasena").value;
+  const campoUsuario = document.getElementById("usuario") || document.getElementById("email");
+  const campoContrasena =
+    document.getElementById("contrasena") || document.getElementById("password");
+
+  const usuario = campoUsuario.value;
+  const contrasena = campoContrasena.value;
 
   // Enviamos los datos al backend.
   const respuesta = await fetch(API_URL + "/api/login", {

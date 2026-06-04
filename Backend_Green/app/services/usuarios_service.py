@@ -11,7 +11,7 @@ from app.models.usuarios_model import (
     inhabilitar_usuario
 )
 
-from app.common.security import cifrar_contrasena
+from app.common.security import cifrar_contrasena, validar_contrasena_segura
 
 
 def servicio_registrar_usuario(datos):
@@ -62,11 +62,10 @@ def servicio_registrar_usuario(datos):
     if len(usuario) < 5:
         return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
 
-    if not contrasena:
-        return {"mensaje": "La contrasena es obligatoria"}, 400
+    contrasena_segura, mensaje_contrasena = validar_contrasena_segura(contrasena)
 
-    if len(contrasena) < 8:
-        return {"mensaje": "La contrasena debe tener minimo 8 caracteres"}, 400
+    if not contrasena_segura:
+        return {"mensaje": mensaje_contrasena}, 400
 
     if not numero_documento:
         return {"mensaje": "El numero de documento es obligatorio"}, 400

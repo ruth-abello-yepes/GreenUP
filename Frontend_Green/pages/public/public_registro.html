@@ -1,584 +1,541 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GreenUp | Crear cuenta</title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GreenUp | Crear cuenta</title>
 
-    <style>
-      :root {
-        --azul: #0b2545;
-        --azul-claro: #123761;
-        --verde: #1f8f5f;
-        --verde-claro: #9df2b8;
-        --fondo: #f4f7fb;
-        --borde: #dbe3ee;
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --azul: #0b2545;
+      --azul-claro: #123761;
+      --verde: #1f8f5f;
+      --verde-claro: #9df2b8;
+      --fondo: #f4f7fb;
+      --borde: #dbe3ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background-color: var(--fondo);
+      color: #1f2937;
+    }
+
+    .layout-registro {
+      min-height: 100vh;
+    }
+
+    .panel-lateral {
+      min-height: 100vh;
+      padding: 48px;
+      color: white;
+      background:
+        linear-gradient(160deg,
+          rgba(11, 37, 69, 0.95),
+          rgba(31, 143, 95, 0.9)),
+        url("https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-lateral::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background-color: rgba(157, 242, 184, 0.18);
+      right: -80px;
+      top: 80px;
+    }
+
+    .marca {
+      position: relative;
+      z-index: 2;
+    }
+
+    .marca h1 {
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .marca p {
+      max-width: 360px;
+      font-size: 17px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .tarjeta-impacto {
+      position: relative;
+      z-index: 2;
+      background-color: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(14px);
+    }
+
+    .tarjeta-impacto h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .tarjeta-impacto p {
+      margin: 0;
+      color: #eaf8f0;
+      line-height: 1.5;
+    }
+
+    .formulario-contenedor {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+    }
+
+    .formulario-tarjeta {
+      width: 100%;
+      max-width: 760px;
+      background-color: white;
+      border: 1px solid var(--borde);
+      border-radius: 22px;
+      padding: 36px;
+      box-shadow: 0 22px 55px rgba(11, 37, 69, 0.14);
+      position: relative;
+      overflow: hidden;
+      animation: aparecer 0.4s ease;
+    }
+
+    .formulario-tarjeta::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 8px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--azul), var(--verde));
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
       }
 
-      * {
-        box-sizing: border-box;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
 
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        background-color: var(--fondo);
-        color: #1f2937;
-      }
+    .titulo {
+      color: var(--azul);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
 
-      .layout-registro {
-        min-height: 100vh;
-      }
+    .titulo::after {
+      content: "";
+      display: block;
+      width: 70px;
+      height: 4px;
+      background-color: var(--verde);
+      border-radius: 20px;
+      margin-top: 10px;
+    }
 
-      .panel-lateral {
-        min-height: 100vh;
-        padding: 48px;
-        color: white;
-        background:
-          linear-gradient(
-            160deg,
-            rgba(11, 37, 69, 0.95),
-            rgba(31, 143, 95, 0.9)
-          ),
-          url("https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80");
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-        overflow: hidden;
-      }
+    .subtitulo {
+      color: #64748b;
+      margin-bottom: 22px;
+    }
 
-      .panel-lateral::after {
-        content: "";
-        position: absolute;
-        width: 260px;
-        height: 260px;
-        border-radius: 50%;
-        background-color: rgba(157, 242, 184, 0.18);
-        right: -80px;
-        top: 80px;
-      }
+    .paso {
+      height: 8px;
+      border-radius: 999px;
+      background-color: #dbe3ee;
+    }
 
-      .marca {
-        position: relative;
-        z-index: 2;
-      }
+    .paso-activo {
+      background: linear-gradient(90deg, var(--azul), var(--verde));
+    }
 
-      .marca h1 {
-        font-size: 36px;
-        font-weight: 900;
-        margin-bottom: 18px;
-      }
+    .form-label {
+      color: var(--azul);
+      font-size: 14px;
+      font-weight: 800;
+    }
 
-      .marca p {
-        max-width: 360px;
-        font-size: 17px;
-        line-height: 1.6;
-        opacity: 0.95;
-      }
+    .form-control,
+    .form-select {
+      border: 1px solid #d5dde8;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background-color: #fbfdff;
+    }
 
-      .tarjeta-impacto {
-        position: relative;
-        z-index: 2;
-        background-color: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
-        backdrop-filter: blur(14px);
-      }
+    .form-control:hover,
+    .form-select:hover {
+      border-color: var(--verde);
+    }
 
-      .tarjeta-impacto h3 {
-        font-size: 18px;
-        font-weight: 800;
-        margin-bottom: 10px;
-      }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--verde);
+      box-shadow: 0 0 0 4px rgba(31, 143, 95, 0.14);
+    }
 
-      .tarjeta-impacto p {
-        margin: 0;
-        color: #eaf8f0;
-        line-height: 1.5;
-      }
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      vertical-align: middle;
+    }
 
+    .campo-contrasena {
+      position: relative;
+    }
+
+    .campo-contrasena .form-control {
+      padding-right: 48px;
+    }
+
+    .boton-ver-contrasena {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #64748b;
+      line-height: 1;
+      transform: translateY(-50%);
+      box-shadow: none;
+    }
+
+    .boton-ver-contrasena:hover,
+    .boton-ver-contrasena:focus {
+      color: var(--azul);
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .caja-empresa {
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid #b7e8cd;
+      background: linear-gradient(180deg, #f0fbf5, #ffffff);
+      box-shadow: 0 12px 26px rgba(31, 143, 95, 0.08);
+    }
+
+    .caja-empresa h5 {
+      color: var(--azul);
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .caja-empresa p {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      background-color: white;
+    }
+
+    input[type="file"]::file-selector-button {
+      background-color: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 13px;
+      margin-right: 12px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background-color: var(--azul-claro);
+    }
+
+    .boton-principal,
+    .boton-secundario {
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 10px 20px rgba(11, 37, 69, 0.18);
+    }
+
+    .boton-principal {
+      background-color: var(--azul);
+    }
+
+    .boton-principal:hover {
+      background-color: var(--azul-claro);
+      color: white;
+    }
+
+    .boton-secundario {
+      background-color: var(--verde);
+    }
+
+    .boton-secundario:hover {
+      background-color: #18784f;
+      color: white;
+    }
+
+    .login-link {
+      color: var(--verde);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .login-link:hover {
+      color: var(--azul);
+    }
+
+    @media (max-width: 767px) {
       .formulario-contenedor {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 34px;
+        padding: 18px;
       }
 
       .formulario-tarjeta {
-        width: 100%;
-        max-width: 760px;
-        background-color: white;
-        border: 1px solid var(--borde);
-        border-radius: 22px;
-        padding: 36px;
-        box-shadow: 0 22px 55px rgba(11, 37, 69, 0.14);
-        position: relative;
-        overflow: hidden;
-        animation: aparecer 0.4s ease;
+        padding: 26px;
       }
+    }
+  </style>
+</head>
 
-      .formulario-tarjeta::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 8px;
-        width: 100%;
-        background: linear-gradient(90deg, var(--azul), var(--verde));
-      }
+<body>
+  <div class="container-fluid p-0 layout-registro">
+    <div class="row g-0">
+      <aside class="col-md-4 d-none d-md-flex panel-lateral">
+        <div class="marca">
+          <h1>Green<span style="color: var(--verde-claro)">Up</span></h1>
+          <p>
+            Regístrate como ciudadano o como punto ecológico y empieza a
+            participar en la red de reciclaje.
+          </p>
+        </div>
 
-      @keyframes aparecer {
-        from {
-          opacity: 0;
-          transform: translateY(12px);
-        }
+        <div class="tarjeta-impacto">
+          <h3>Registro según tu rol</h3>
+          <p>
+            Si eres ciudadano, pediremos tus datos básicos. Si eres punto
+            ecológico, también agregaremos la información de tu empresa.
+          </p>
+        </div>
+      </aside>
 
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+      <main class="col-md-8 formulario-contenedor">
+        <section class="formulario-tarjeta">
+          <h2 class="titulo">Crear cuenta</h2>
+          <p class="subtitulo">
+            Completa la información para entrar a GreenUp.
+          </p>
 
-      .titulo {
-        color: var(--azul);
-        font-weight: 900;
-        margin-bottom: 8px;
-      }
-
-      .titulo::after {
-        content: "";
-        display: block;
-        width: 70px;
-        height: 4px;
-        background-color: var(--verde);
-        border-radius: 20px;
-        margin-top: 10px;
-      }
-
-      .subtitulo {
-        color: #64748b;
-        margin-bottom: 22px;
-      }
-
-      .paso {
-        height: 8px;
-        border-radius: 999px;
-        background-color: #dbe3ee;
-      }
-
-      .paso-activo {
-        background: linear-gradient(90deg, var(--azul), var(--verde));
-      }
-
-      .form-label {
-        color: var(--azul);
-        font-size: 14px;
-        font-weight: 800;
-      }
-
-      .form-control,
-      .form-select {
-        border: 1px solid #d5dde8;
-        border-radius: 12px;
-        padding: 12px 14px;
-        background-color: #fbfdff;
-      }
-
-      .form-control:hover,
-      .form-select:hover {
-        border-color: var(--verde);
-      }
-
-      .form-control:focus,
-      .form-select:focus {
-        border-color: var(--verde);
-        box-shadow: 0 0 0 4px rgba(31, 143, 95, 0.14);
-      }
-
-      .caja-empresa {
-        margin-top: 24px;
-        padding: 24px;
-        border-radius: 20px;
-        border: 1px solid #b7e8cd;
-        background: linear-gradient(180deg, #f0fbf5, #ffffff);
-        box-shadow: 0 12px 26px rgba(31, 143, 95, 0.08);
-      }
-
-      .caja-empresa h5 {
-        color: var(--azul);
-        font-weight: 900;
-        margin-bottom: 6px;
-      }
-
-      .caja-empresa p {
-        color: #64748b;
-        font-size: 14px;
-        margin-bottom: 18px;
-      }
-
-      input[type="file"] {
-        padding: 10px;
-        background-color: white;
-      }
-
-      input[type="file"]::file-selector-button {
-        background-color: var(--azul);
-        color: white;
-        border: none;
-        border-radius: 9px;
-        padding: 9px 13px;
-        margin-right: 12px;
-        cursor: pointer;
-        font-weight: 800;
-      }
-
-      input[type="file"]::file-selector-button:hover {
-        background-color: var(--azul-claro);
-      }
-
-      .boton-principal,
-      .boton-secundario {
-        border: none;
-        border-radius: 12px;
-        padding: 14px;
-        color: white;
-        font-weight: 900;
-        box-shadow: 0 10px 20px rgba(11, 37, 69, 0.18);
-      }
-
-      .boton-principal {
-        background-color: var(--azul);
-      }
-
-      .boton-principal:hover {
-        background-color: var(--azul-claro);
-        color: white;
-      }
-
-      .boton-secundario {
-        background-color: var(--verde);
-      }
-
-      .boton-secundario:hover {
-        background-color: #18784f;
-        color: white;
-      }
-
-      .login-link {
-        color: var(--verde);
-        font-weight: 900;
-        text-decoration: none;
-      }
-
-      .login-link:hover {
-        color: var(--azul);
-      }
-
-      @media (max-width: 767px) {
-        .formulario-contenedor {
-          padding: 18px;
-        }
-
-        .formulario-tarjeta {
-          padding: 26px;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container-fluid p-0 layout-registro">
-      <div class="row g-0">
-        <aside class="col-md-4 d-none d-md-flex panel-lateral">
-          <div class="marca">
-            <h1>Green<span style="color: var(--verde-claro)">Up</span></h1>
-            <p>
-              Regístrate como ciudadano o como punto ecológico y empieza a
-              participar en la red de reciclaje.
-            </p>
+          <div class="d-flex gap-2 mb-4">
+            <div id="barra-1" class="paso paso-activo flex-fill"></div>
+            <div id="barra-2" class="paso flex-fill"></div>
+            <div id="barra-3" class="paso flex-fill"></div>
           </div>
 
-          <div class="tarjeta-impacto">
-            <h3>Registro según tu rol</h3>
-            <p>
-              Si eres ciudadano, pediremos tus datos básicos. Si eres punto
-              ecológico, también agregaremos la información de tu empresa.
-            </p>
-          </div>
-        </aside>
+          <form id="formulario-registro">
+            <div id="seccion-1">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nombres</label>
+                  <input id="nombres" class="form-control" type="text" placeholder="Ej. Anyeli" required />
+                </div>
 
-        <main class="col-md-8 formulario-contenedor">
-          <section class="formulario-tarjeta">
-            <h2 class="titulo">Crear cuenta</h2>
-            <p class="subtitulo">
-              Completa la información para entrar a GreenUp.
-            </p>
+                <div class="col-md-6">
+                  <label class="form-label">Apellidos</label>
+                  <input id="apellidos" class="form-control" type="text" placeholder="Ej. Chico" required />
+                </div>
 
-            <div class="d-flex gap-2 mb-4">
-              <div id="barra-1" class="paso paso-activo flex-fill"></div>
-              <div id="barra-2" class="paso flex-fill"></div>
-              <div id="barra-3" class="paso flex-fill"></div>
+                <div class="col-md-6">
+                  <label class="form-label">Correo electrónico</label>
+                  <input id="correo" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Celular</label>
+                  <input id="celular" class="form-control" type="tel" placeholder="3001234567" />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Tipo de registro</label>
+                  <select id="tipo_registro" class="form-select" onchange="mostrarCamposEmpresa()" required>
+                    <option value="ciudadano">Ciudadano</option>
+                    <option value="recicladora">
+                      Dueño de punto ecológico
+                    </option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <form id="formulario-registro">
-              <div id="seccion-1">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label">Nombres</label>
-                    <input
-                      id="nombres"
-                      class="form-control"
-                      type="text"
-                      placeholder="Ej. Anyeli"
-                      required
-                    />
-                  </div>
+            <div id="seccion-2" class="d-none">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Tipo de documento personal</label>
+                  <select id="id_tipo_documento" class="form-select" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="1">Cédula de ciudadanía</option>
+                    <option value="2">Tarjeta de identidad</option>
+                    <option value="3">Cédula de extranjería</option>
+                  </select>
+                </div>
 
-                  <div class="col-md-6">
-                    <label class="form-label">Apellidos</label>
-                    <input
-                      id="apellidos"
-                      class="form-control"
-                      type="text"
-                      placeholder="Ej. Chico"
-                      required
-                    />
-                  </div>
+                <div class="col-md-6">
+                  <label class="form-label">Número de documento</label>
+                  <input id="numero_documento" class="form-control" type="text" placeholder="1234567890" required />
+                </div>
 
-                  <div class="col-md-6">
-                    <label class="form-label">Correo electrónico</label>
-                    <input
-                      id="correo"
-                      class="form-control"
-                      type="email"
-                      placeholder="correo@ejemplo.com"
-                      required
-                    />
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Celular</label>
-                    <input
-                      id="celular"
-                      class="form-control"
-                      type="tel"
-                      placeholder="3001234567"
-                    />
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">Tipo de registro</label>
-                    <select
-                      id="tipo_registro"
-                      class="form-select"
-                      onchange="mostrarCamposEmpresa()"
-                      required
-                    >
-                      <option value="ciudadano">Ciudadano</option>
-                      <option value="recicladora">
-                        Dueño de punto ecológico
-                      </option>
-                    </select>
-                  </div>
+                <div class="col-12">
+                  <label class="form-label">Nombre de usuario</label>
+                  <input id="usuario" class="form-control" type="text" placeholder="anyeli123" required />
                 </div>
               </div>
 
-              <div id="seccion-2" class="d-none">
+              <div id="campos-empresa" class="caja-empresa d-none">
+                <h5>Datos del punto ecológico</h5>
+                <p>
+                  Estos datos solo se solicitan cuando el registro es para una
+                  recicladora.
+                </p>
+
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">Tipo de documento personal</label>
-                    <select id="id_tipo_documento" class="form-select" required>
-                      <option value="">Selecciona una opción</option>
-                      <option value="1">Cédula de ciudadanía</option>
-                      <option value="2">Tarjeta de identidad</option>
-                      <option value="3">Cédula de extranjería</option>
+                    <label class="form-label">Tipo de documento empresarial</label>
+                    <select id="tipo_documento_empresa" class="form-select">
+                      <option value="NIT">NIT</option>
+                      <option value="RUT">RUT</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Número de documento</label>
-                    <input
-                      id="numero_documento"
-                      class="form-control"
-                      type="text"
-                      placeholder="1234567890"
-                      required
-                    />
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">Nombre de usuario</label>
-                    <input
-                      id="usuario"
-                      class="form-control"
-                      type="text"
-                      placeholder="anyeli123"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div id="campos-empresa" class="caja-empresa d-none">
-                  <h5>Datos del punto ecológico</h5>
-                  <p>
-                    Estos datos solo se solicitan cuando el registro es para una
-                    recicladora.
-                  </p>
-
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label"
-                        >Tipo de documento empresarial</label
-                      >
-                      <select id="tipo_documento_empresa" class="form-select">
-                        <option value="NIT">NIT</option>
-                        <option value="RUT">RUT</option>
-                      </select>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Número NIT o RUT</label>
-                      <input
-                        id="nit_empresa"
-                        class="form-control"
-                        type="text"
-                        placeholder="900123456-1"
-                      />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Nombre de la empresa</label>
-                      <input
-                        id="nombre_empresa"
-                        class="form-control"
-                        type="text"
-                        placeholder="Punto Verde GreenUp"
-                      />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Teléfono de la empresa</label>
-                      <input
-                        id="telefono_empresa"
-                        class="form-control"
-                        type="text"
-                        placeholder="6051234567"
-                      />
-                    </div>
-
-                    <div class="col-12">
-                      <label class="form-label">Dirección de la empresa</label>
-                      <input
-                        id="direccion_empresa"
-                        class="form-control"
-                        type="text"
-                        placeholder="Calle 10 # 15-20"
-                      />
-                    </div>
-
-                    <div class="col-12">
-                      <label class="form-label">Cámara de comercio</label>
-                      <input
-                        id="camara_comercio"
-                        class="form-control"
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                      />
-                      <small class="text-muted"
-                        >Puedes subir PDF, JPG o PNG. Por ahora se guarda el
-                        nombre del archivo.</small
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div id="seccion-3" class="d-none">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label">Contraseña</label>
-                    <input
-                      id="contrasena"
-                      class="form-control"
-                      type="password"
-                      placeholder="Mínimo 8 caracteres"
-                      required
-                    />
+                    <label class="form-label">Número NIT o RUT</label>
+                    <input id="nit_empresa" class="form-control" type="text" placeholder="900123456-1" />
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Confirmar contraseña</label>
-                    <input
-                      id="confirmar_contrasena"
-                      class="form-control"
-                      type="password"
-                      placeholder="Repite la contraseña"
-                      required
-                    />
+                    <label class="form-label">Nombre de la empresa</label>
+                    <input id="nombre_empresa" class="form-control" type="text" placeholder="Punto Verde GreenUp" />
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Teléfono de la empresa</label>
+                    <input id="telefono_empresa" class="form-control" type="text" placeholder="6051234567" />
                   </div>
 
                   <div class="col-12">
-                    <div class="form-check mt-3">
-                      <input
-                        id="terminos"
-                        class="form-check-input"
-                        type="checkbox"
-                        required
-                      />
-                      <label class="form-check-label" for="terminos">
-                        Acepto los términos y condiciones de GreenUp.
-                      </label>
-                    </div>
+                    <label class="form-label">Dirección de la empresa</label>
+                    <input id="direccion_empresa" class="form-control" type="text" placeholder="Calle 10 # 15-20" />
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Cámara de comercio</label>
+                    <input id="camara_comercio" class="form-control" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                    <small class="text-muted">Puedes subir PDF, JPG o PNG. Por ahora se guarda el
+                      nombre del archivo.</small>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="d-grid gap-2 mt-4">
-                <button
-                  id="btn-siguiente"
-                  class="btn boton-principal"
-                  type="button"
-                  onclick="siguientePaso()"
-                >
-                  Continuar
-                </button>
+            <div id="seccion-3" class="d-none">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Contraseña</label>
+                  <div class="campo-contrasena">
+                    <input id="contrasena" class="form-control" type="password" minlength="8"
+                      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}"
+                      title="Minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial."
+                      autocomplete="new-password" placeholder="Ej. GreenUp2026!" required>
+                    <button class="boton-ver-contrasena" type="button"
+                      onclick="alternarVisibilidadContrasena('contrasena', this)" aria-label="Mostrar contraseña"
+                      aria-pressed="false">
+                      <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                  </div>
 
-                <button
-                  id="btn-atras"
-                  class="btn btn-light border d-none"
-                  type="button"
-                  onclick="pasoAnterior()"
-                >
-                  Volver atrás
-                </button>
+                  <small id="ayuda-contrasena" class="text-muted d-block mt-2">
+                    Minimo 8 caracteres, una mayuscula, una minuscula, un
+                    numero y un caracter especial.
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Confirmar contraseña</label>
+                  <div class="campo-contrasena">
+                    <input id="confirmar_contrasena" class="form-control" type="password" autocomplete="new-password"
+                      placeholder="Repite la contraseña" required />
+                    <button class="boton-ver-contrasena" type="button"
+                      onclick="alternarVisibilidadContrasena('confirmar_contrasena', this)"
+                      aria-label="Mostrar confirmar contraseña" aria-pressed="false">
+                      <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check mt-3">
+                    <input id="terminos" class="form-check-input" type="checkbox" required />
+                    <label class="form-check-label" for="terminos">
+                      Acepto los términos y condiciones de GreenUp.
+                    </label>
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <p class="text-center mt-4 mb-0">
-                ¿Ya tienes cuenta?
-                <a href="public_login.html" class="login-link">Inicia sesión</a>
-              </p>
-            </form>
-          </section>
-        </main>
-      </div>
+            <div class="d-grid gap-2 mt-4">
+              <button id="btn-siguiente" class="btn boton-principal" type="button" onclick="siguientePaso()">
+                Continuar
+              </button>
+
+              <button id="btn-atras" class="btn btn-light border d-none" type="button" onclick="pasoAnterior()">
+                Volver atrás
+              </button>
+            </div>
+
+            <p class="text-center mt-4 mb-0">
+              ¿Ya tienes cuenta?
+              <a href="public_login.html" class="login-link">Inicia sesión</a>
+            </p>
+          </form>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <script src="../../js/api.js"></script>
-    <script src="../../js/registro.js"></script>
-  </body>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/registro.js"></script>
+</body>
+
 </html>

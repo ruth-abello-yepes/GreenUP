@@ -5,6 +5,10 @@
     <title>Login Administrador - GreenUp</title>
 
     <link rel="stylesheet" href="../../css/general.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body class="login-fondo">
@@ -23,20 +27,42 @@
           />
 
           <label for="contrasena">Contraseña</label>
-          <input
-            type="password"
-            id="contrasena"
-            placeholder="Contraseña"
-            required
-          />
+          <div class="campo-password">
+            <input
+              type="password"
+              id="contrasena"
+              placeholder="Contraseña"
+              required
+            />
+            <button
+              class="btn-ver-password"
+              type="button"
+              onclick="alternarPasswordAdmin('contrasena', this)"
+              aria-label="Mostrar contraseña"
+              aria-pressed="false"
+            >
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
 
           <label for="codigo_admin">Código administrador</label>
-          <input
-            type="password"
-            id="codigo_admin"
-            placeholder="Código de acceso"
-            required
-          />
+          <div class="campo-password">
+            <input
+              type="password"
+              id="codigo_admin"
+              placeholder="Código de acceso"
+              required
+            />
+            <button
+              class="btn-ver-password"
+              type="button"
+              onclick="alternarPasswordAdmin('codigo_admin', this)"
+              aria-label="Mostrar código administrador"
+              aria-pressed="false"
+            >
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
 
           <button type="submit">Entrar al panel</button>
         </form>

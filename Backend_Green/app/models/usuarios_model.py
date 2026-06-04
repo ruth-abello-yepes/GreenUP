@@ -146,7 +146,7 @@ def buscar_usuario_por_id(id_usuario):
 
 def buscar_usuario_por_usuario(usuario):
     """
-    Busca un usuario por su nombre de usuario.
+    Busca un usuario por su nombre de usuario o correo.
 
     Esta funcion se usa en el login.
     """
@@ -154,9 +154,9 @@ def buscar_usuario_por_usuario(usuario):
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
-    sql = "SELECT * FROM usuarios WHERE usuario = %s"
+    sql = "SELECT * FROM usuarios WHERE usuario = %s OR correo = %s"
 
-    cursor.execute(sql, (usuario,))
+    cursor.execute(sql, (usuario, usuario))
     usuario_encontrado = cursor.fetchone()
 
     cursor.close()

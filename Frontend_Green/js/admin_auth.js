@@ -1,6 +1,30 @@
 // Archivo: admin_auth.js
 // Este archivo maneja el inicio de sesion del administrador.
 
+function alternarPasswordAdmin(idCampo, boton) {
+  const campo = document.getElementById(idCampo);
+
+  if (!campo) {
+    return;
+  }
+
+  const mostrar = campo.type === "password";
+  campo.type = mostrar ? "text" : "password";
+
+  if (boton) {
+    const icono = boton.querySelector(".material-symbols-outlined");
+    boton.setAttribute("aria-pressed", String(mostrar));
+    boton.setAttribute(
+      "aria-label",
+      mostrar ? "Ocultar contrasena" : "Mostrar contrasena",
+    );
+
+    if (icono) {
+      icono.textContent = mostrar ? "visibility_off" : "visibility";
+    }
+  }
+}
+
 async function iniciarSesionAdmin(evento) {
   evento.preventDefault();
 

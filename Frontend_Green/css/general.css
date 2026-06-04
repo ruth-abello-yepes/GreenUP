@@ -217,6 +217,40 @@ article a {
   box-shadow: 0 0 0 3px rgba(60, 179, 113, 0.18);
 }
 
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+}
+
+.login-tarjeta .campo-password {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.login-tarjeta .campo-password input {
+  padding-right: 46px;
+  margin-bottom: 0;
+}
+
+.login-tarjeta .btn-ver-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.login-tarjeta .btn-ver-password:hover,
+.login-tarjeta .btn-ver-password:focus {
+  background: transparent;
+  color: #0b2545;
+}
+
 .login-tarjeta button {
   width: 100%;
   background-color: #0b2545;
@@ -234,6 +268,11 @@ article a {
 }
 .login-fondo {
   margin: 0;
-  background: linear-gradient(135deg, #0b2545, #3cb371);
+  background:
+    linear-gradient(135deg, rgba(11, 37, 69, 0.86), rgba(60, 179, 113, 0.72)),
+    url("https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1800&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   font-family: Arial, Helvetica, sans-serif;
 }

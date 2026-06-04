@@ -42,7 +42,7 @@ def ruta_login():
               example: ciudadano1
             contrasena:
               type: string
-              example: "12345678"
+              example: "GreenUp2026!"
     responses:
       200:
         description: Inicio de sesion correcto
@@ -86,7 +86,7 @@ def ruta_login_admin():
               example: anyeli
             contrasena:
               type: string
-              example: "12345678"
+              example: "GreenUp2026!"
             codigo_admin:
               type: string
               example: GREENUP-ADMIN-2026

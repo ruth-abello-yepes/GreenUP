@@ -54,7 +54,7 @@ def ruta_registrar_dueno_recicladora():
               example: ruthrecicladora
             contrasena:
               type: string
-              example: "12345678"
+              example: "GreenUp2026!"
             numero_documento:
               type: string
               example: "1234567890"

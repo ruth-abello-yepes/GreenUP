@@ -17,6 +17,20 @@
     POST http://127.0.0.1:5000/api/usuarios/registro
 */
 
+const MENSAJE_CONTRASENA_SEGURA =
+  "La contrasena debe tener minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.";
+
+function validarContrasenaSegura(contrasena) {
+  return (
+    contrasena.length >= 8 &&
+    /[A-Z]/.test(contrasena) &&
+    /[a-z]/.test(contrasena) &&
+    /\d/.test(contrasena) &&
+    /[^A-Za-z0-9\s]/.test(contrasena) &&
+    !/\s/.test(contrasena)
+  );
+}
+
 async function registrarUsuario(evento) {
   /*
         preventDefault evita que el formulario recargue la pagina.
@@ -42,6 +56,11 @@ async function registrarUsuario(evento) {
   const numero_documento = document.getElementById("numero_documento").value;
   const celular = document.getElementById("celular").value;
   const id_tipo_documento = document.getElementById("id_tipo_documento").value;
+
+  if (!validarContrasenaSegura(contrasena)) {
+    alert(MENSAJE_CONTRASENA_SEGURA);
+    return;
+  }
 
   /*
         fetch sirve para conectarnos con el backend.

@@ -1,0 +1,200 @@
+* {
+  box-sizing: border-box;
+}
+
+body.recicladora-fondo {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172033;
+  background:
+    linear-gradient(180deg, rgba(244, 247, 251, 0.92), rgba(244, 247, 251, 0.98)),
+    url("https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1800&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.barra-recicladora {
+  background-color: #0b2545;
+  color: #ffffff;
+  padding: 18px 28px;
+  border-bottom: 5px solid #35b779;
+}
+
+.barra-recicladora__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.barra-recicladora h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.nav-recicladora {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.nav-recicladora a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 7px;
+}
+
+.nav-recicladora a:hover,
+.nav-recicladora a.activo {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.boton-salir-recicladora,
+.boton-recicladora {
+  background-color: #35b779;
+  color: #ffffff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.boton-salir-recicladora {
+  background-color: #ffffff;
+  color: #0b2545;
+}
+
+.boton-salir-recicladora:hover,
+.boton-recicladora:hover {
+  background-color: #e7eef8;
+  color: #0b2545;
+}
+
+.recicladora-contenido {
+  padding: 28px;
+}
+
+.recicladora-hero,
+.seccion-recicladora,
+.tarjeta-recicladora {
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(11, 37, 69, 0.08);
+}
+
+.recicladora-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px;
+  margin-bottom: 22px;
+}
+
+.recicladora-hero h2 {
+  margin: 6px 0;
+  color: #0b2545;
+  font-size: 26px;
+}
+
+.recicladora-hero p,
+.tarjeta-recicladora p,
+.seccion-recicladora p {
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.etiqueta-recicladora {
+  color: #177245;
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.usuario-recicladora {
+  background-color: #ecfdf3;
+  color: #14532d;
+  padding: 12px 14px;
+  border-radius: 999px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.grid-recicladora {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.tarjeta-recicladora {
+  padding: 20px;
+}
+
+.tarjeta-recicladora h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #0b2545;
+}
+
+.seccion-recicladora {
+  padding: 24px;
+}
+
+.acciones-recicladora {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.tabla-recicladora {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background-color: #ffffff;
+}
+
+.tabla-recicladora th {
+  background-color: #0b2545;
+  color: #ffffff;
+  padding: 12px;
+  text-align: left;
+}
+
+.tabla-recicladora td {
+  padding: 12px;
+  border-bottom: 1px solid #dbe3ee;
+}
+
+.estado-recicladora {
+  display: inline-block;
+  background-color: #d9f8e8;
+  color: #177245;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+
+@media (max-width: 760px) {
+  .barra-recicladora__fila,
+  .recicladora-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recicladora-contenido {
+    padding: 18px;
+  }
+
+  .usuario-recicladora {
+    white-space: normal;
+  }
+}

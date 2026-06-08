@@ -1,100 +1,407 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GreenUp | Inicio</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        box-sizing: border-box;
-      }
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Inter", Arial, sans-serif;
-        color: #ffffff;
-        background:
-          linear-gradient(120deg, rgba(0, 61, 108, 0.82), rgba(41, 108, 31, 0.66)),
-          url("https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1800&q=80");
-        background-size: cover;
-        background-position: center;
-      }
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenUp | Sostenibilidad Impulsada por IA</title>
 
-      main {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        padding: 48px;
-      }
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
 
-      .inicio-contenido {
-        max-width: 760px;
-      }
+  <style>
+    /* Variables de Marca GreenUp */
+    :root {
+      --gu-primary: #003d6c;
+      --gu-secondary: #296c1f;
+      --gu-surface: #f8f9ff;
+      --gu-dark: #121c2a;
+      --gu-accent: #a9f295;
+    }
 
-      h1 {
-        margin: 0 0 16px;
-        font-size: clamp(44px, 8vw, 86px);
-        line-height: 0.95;
-        font-weight: 900;
-      }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--gu-surface);
+    }
 
-      p {
-        max-width: 560px;
-        margin: 0 0 28px;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 19px;
-        line-height: 1.6;
-      }
+    /* Utilidades Personalizadas */
+    .text-gu-primary {
+      color: var(--gu-primary);
+    }
 
-      .acciones {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
+    .text-gu-secondary {
+      color: var(--gu-secondary);
+    }
 
-      .acciones a {
-        color: #0b2545;
-        background-color: #ffffff;
-        padding: 13px 18px;
-        border-radius: 9px;
-        font-weight: 800;
-        text-decoration: none;
-      }
+    .bg-gu-primary {
+      background-color: var(--gu-primary);
+    }
 
-      .acciones a.secundario {
-        color: #ffffff;
-        background-color: rgba(255, 255, 255, 0.16);
-        border: 1px solid rgba(255, 255, 255, 0.32);
-      }
+    .bg-gu-secondary {
+      background-color: var(--gu-secondary);
+    }
 
-      @media (max-width: 640px) {
-        main {
-          padding: 28px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <section class="inicio-contenido">
-        <h1>GreenUp</h1>
-        <p>
-          Gestiona reciclaje, puntos ecologicos y comunidad desde una sola
-          plataforma.
-        </p>
-        <div class="acciones">
-          <a href="public_login.html">Iniciar sesion</a>
-          <a href="public_registro.html?tipo=recicladora" class="secundario"
-            >Registrar recicladora</a
-          >
-          <a href="admin_login.html" class="secundario">Acceso admin</a>
+    .bg-gu-dark {
+      background-color: var(--gu-dark);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, var(--gu-primary) 0%, var(--gu-secondary) 100%);
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    /* Estilos de Cards y Botones */
+    .btn-gu-primary {
+      background-color: var(--gu-primary);
+      color: white;
+      border-radius: 50px;
+      padding: 10px 24px;
+      font-weight: 500;
+    }
+
+    .btn-gu-primary:hover {
+      background-color: #002b4d;
+      color: white;
+    }
+
+    .gu-card {
+      border-radius: 16px;
+      border: 1px solid #dee2e6;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .gu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animaciones para el Scroll */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s ease-out;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-light bg-white bg-opacity-90 fixed-top shadow-sm"
+    style="backdrop-filter: blur(10px);">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAZZiUIuHvLs52AB0H69SOJbC5nzZ0evDEATq2Vn-95Ev8Bx_vj8tqLtVOAYpDz-ZpG8I5n0Ksj1OwFacPHJz_BDJ22y37pBpDOJHj33_wHyBdgy14VOrvfRWSoCowFD9oqR2KgNtq2VuDtlDQQnsuB6P7Fcrx_KcU2Y9fpqhjnAaGTneJSPz0BnRNL4CSnWw-v8p5ac1uB9dhxyCa_NOycKKsQrPDzVXAlOj1Ymej7pu2TuVGtXeMAWsi0iG_AuxueAHeR_cNGG8"
+          alt="Logo" width="32" height="32" class="me-2">
+        <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGreenUp">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarGreenUp">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-medium">
+          <li class="nav-item"><a class="nav-link active text-gu-primary border-bottom border-2 border-primary"
+              href="public_inicio.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link text-secondary" href="comunidad.html">Comunidad</a></li>
+          <li class="nav-item"><a class="nav-link text-secondary" href="recursos.html">Recursos</a></li>
+          <li class="nav-item"><a class="nav-link text-secondary" href="sobre_nosotros.html">Sobre nosotros</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="public_login.html" class="text-decoration-none fw-medium text-gu-primary">Iniciar Sesión</a>
+          <a href="public_registro.html" class="btn btn-gu-primary">Unirse</a>
         </div>
-      </section>
-    </main>
-  </body>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top: 80px;">
+
+    <section class="hero-gradient text-white py-5 position-relative overflow-hidden"
+      style="min-height: 85vh; display: flex; align-items: center;">
+      <div class="container position-relative z-3 fade-up">
+        <div class="row align-items-center g-5">
+          <div class="col-md-6">
+            <span
+              class="badge bg-light bg-opacity-25 border border-light text-white rounded-pill px-3 py-2 mb-4 d-inline-flex align-items-center">
+              <span class="material-symbols-outlined fs-6 me-2">auto_awesome</span> Impulsado por IA
+            </span>
+            <h1 class="display-4 fw-bold mb-4">Lidera la <span style="color: var(--gu-accent);">revolución
+                circular</span> con tecnología verde.</h1>
+            <p class="lead mb-5 text-white-50">GreenUp utiliza algoritmos avanzados para optimizar tu huella de carbono,
+              gestionar residuos y conectar comunidades comprometidas con un futuro habitable.</p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="public_registro.html"
+                class="btn btn-light text-gu-primary rounded-4 px-4 py-3 fw-bold">Registrate ahora</a>
+              <a href="#" class="btn btn-outline-light rounded-4 px-4 py-3 fw-bold d-flex align-items-center">
+                Ver impacto <span class="material-symbols-outlined ms-2">play_circle</span>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-6 d-none d-md-block text-center">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJXREBaQ3zDdfK7xLCcwmgXF3NSKM40p4fuuygEkjcgM4NtakAMLAExta2QNxfmnlrvW3lflP4SvsvI4ZAAFs6J36AkRFO574GqV12LmbSjsLTD9aoDdNU93dxhuhGxLW82hlpW7v7y8iyoIFmw0tT-nPMk_OsyZ6tSQxFlpUuc8QSQHy0jvI99saouD1iE6EshtST-nAPQhYhSC1bzmv-n6TPFy8-NGxR7VUh2aeEGr7TIPLCcorX0TIei1iSUf99zKODBe4r_vA"
+              alt="Sostenibilidad moderna" class="img-fluid rounded-4 shadow-lg"
+              style="transform: rotate(3deg); max-height: 500px; object-fit: cover;">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5 mt-4 fade-up">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card h-100 border-0 bg-primary bg-opacity-10 rounded-4 p-5">
+            <div class="card-body">
+              <span class="material-symbols-outlined text-gu-primary display-4 mb-3">groups</span>
+              <h2 class="display-5 fw-bold text-dark">12,500+</h2>
+              <p class="text-secondary mb-0 fs-5">Eco-Líderes activos transformando sus ciudades cada día a través de la
+                red GreenUp.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="card h-100 border-0 rounded-4 p-4" style="background-color: var(--gu-accent);">
+            <div class="card-body">
+              <span class="material-symbols-outlined text-gu-secondary display-4 mb-3">delete_sweep</span>
+              <h3 class="fw-bold text-gu-secondary fs-2">450 Ton</h3>
+              <p class="text-gu-secondary mb-0">Plásticos desviados de océanos este mes.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="card h-100 border-0 bg-gu-primary text-white rounded-4 p-4">
+            <div class="card-body">
+              <span class="material-symbols-outlined text-white display-4 mb-3">co2</span>
+              <h3 class="fw-bold fs-2">-30% CO2</h3>
+              <p class="text-white-50 mb-0">Reducción promedio de huella por usuario.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-5 border-top border-bottom fade-up">
+      <div class="container py-5">
+        <div class="text-center mx-auto mb-5" style="max-width: 800px;">
+          <h2 class="display-6 fw-bold mb-3">Por qué elegir la sostenibilidad inteligente</h2>
+          <p class="lead text-secondary">Convertimos el compromiso ambiental en una experiencia gratificante y
+            cuantificable para empresas y ciudadanos.</p>
+        </div>
+        <div class="row g-5 text-center text-md-start">
+          <div class="col-md-4">
+            <div
+              class="bg-primary bg-opacity-10 text-primary rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+              style="width: 64px; height: 64px;">
+              <span class="material-symbols-outlined fs-2">monitoring</span>
+            </div>
+            <h4 class="fw-bold mb-3">Trazabilidad Total</h4>
+            <p class="text-secondary">Sigue el camino de tus residuos desde el contenedor hasta su transformación final
+              con registros transparentes.</p>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="bg-primary bg-opacity-10 text-primary rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+              style="width: 64px; height: 64px;">
+              <span class="material-symbols-outlined fs-2">celebration</span>
+            </div>
+            <h4 class="fw-bold mb-3">Gamificación Ética</h4>
+            <p class="text-secondary">Gana Eco-Points por cada acción positiva y canjéalos por beneficios en nuestra red
+              de partners sostenibles.</p>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="bg-primary bg-opacity-10 text-primary rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+              style="width: 64px; height: 64px;">
+              <span class="material-symbols-outlined fs-2">hub</span>
+            </div>
+            <h4 class="fw-bold mb-3">Conectividad Local</h4>
+            <p class="text-secondary">Encuentra los puntos de reciclaje y centros de compostaje más cercanos optimizados
+              por tu ubicación actual.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5 my-5 fade-up">
+      <h2 class="fw-bold mb-5">Nuestros Servicios</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 gu-card overflow-hidden">
+            <div class="position-relative" style="height: 220px;">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqko1ANMWq_HFO6PA2hP65rUjg1w0NwGHCPaGkGqGTUg44OaUWDNE1JocH3yvWWS_jJUcDJ6ml-0XVnf0BmIeGOk_iDgTHhjAFmOeJ-ezqubOruJLdZp9ZNQrIquHa-QcKA07jfKx3KGEWHsMXuTygDLqv4GYqmP1i0rBy7UNcbMGXm40mLNZGxFMQBFZ1Qr6xo-kVmpRLVICfAVZ4kKn3Q751FszENKClyqr2DaRZbpz1PFkFVQdaI6AI7MFRj5_RDnYwIxsb1Us"
+                class="w-100 h-100 object-fit-cover" alt="Reciclaje inteligente">
+              <span
+                class="badge bg-gu-primary position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">EMPRESAS</span>
+            </div>
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title fw-bold">Gestión Corporativa</h5>
+              <p class="card-text text-secondary mb-4">Plataforma integral para empresas que buscan certificar su
+                neutralidad de carbono y gestionar excedentes industriales.</p>
+              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+                Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 gu-card overflow-hidden">
+            <div class="position-relative" style="height: 220px;">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVLjFz4VgXrYNqeoRpyuHqIHIGLS-0qxMoyKxQOzl_sswhj35hu8ihTCmdQ7ymHLQzLH_I-OXAfjLD2lo1g2JQj2hnxn6GbMzY0B2BM7_zCbUDNhkokjA5Txc-TNxaM3GP9LXUx5NTbneiCZJDP-xGARAkL6lvFr0iSvxieOcoOduxaH6L1DWeqbI5DqHP-7KJK9OsI0rAt8mlE5l1siOUFsbhoiWDe-BEwR6q4eO17mc75LBIf26us6BNLqauVJPPdPiF7g6OXbY"
+                class="w-100 h-100 object-fit-cover" alt="App Usuario">
+              <span
+                class="badge bg-gu-secondary position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">CIUDADANOS</span>
+            </div>
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title fw-bold">App de Usuario</h5>
+              <p class="card-text text-secondary mb-4">Herramientas diarias para individuos: mapas de reciclaje,
+                consejos de IA y seguimiento de huella personal.</p>
+              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+                Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 gu-card overflow-hidden">
+            <div class="position-relative" style="height: 220px;">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV9eojdg2vZCU_UX1F61dKH3KeSLHdDX3TXuIhEIOqrVQAYAztNsgPA_OGh0SYtshd0cq2TTUclXbERLiX63DvPMAQUCrioTOMixzV2aIb_7Ql5D_mZOQQTyqaaNUJnIiNg8HQtO8w0IKV8KXXXzDZwHoRl337w4b7FohFllQX38DIO6dH2mfb6yAVhO3Zwf9CnNCPWqCd5z22lGVlGe3lR307XxWY2dSOg5tK3iEE78Hwq2Y-KXytCsHeymi1QJNU8i5Gkyla_tI"
+                class="w-100 h-100 object-fit-cover" alt="Consultoría">
+              <span class="badge bg-dark position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">CONSULTORÍA</span>
+            </div>
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title fw-bold">Asesoría Estratégica</h5>
+              <p class="card-text text-secondary mb-4">Analizamos tus procesos actuales para implementar soluciones de
+                economía circular basadas en datos reales.</p>
+              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+                Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container pb-5 mb-5 fade-up">
+      <div class="hero-gradient rounded-4 p-5 text-center shadow-lg position-relative overflow-hidden"
+        style="border-radius: 32px !important;">
+        <div class="position-relative z-3 py-5">
+          <h2 class="display-5 fw-bold text-white mb-4">¿Listo para hacer la diferencia?</h2>
+          <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 700px;">Únete a miles de personas y empresas que
+            ya están construyendo el futuro verde. El momento de actuar es ahora.</p>
+          <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+            <a href="#" class="btn btn-light btn-lg rounded-4 fw-bold px-5 py-3 text-gu-primary">Crear cuenta
+              gratuita</a>
+            <a href="#" class="btn btn-outline-light btn-lg rounded-4 fw-bold px-5 py-3">Hablar con un experto</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-gu-dark text-white pt-5 mt-5" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
+    <div class="container pt-4 pb-5">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-12 pe-lg-4">
+          <div class="d-flex align-items-center mb-4">
+            <img
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqzAt3-2lghqefZJbSRK7Yj1sVC6c_YND09yyjW3vJCvH3cxo3iMHWDekW-we8Yuwmv2NZm3wbxEwvh1Sx5TDxo34vJ1G-XlCuYKCE8wZ96yEgqBYA4Ve3PymaHwEIUaAmwgJHHj2lobMpf8DRSmbabgaUCma78cfa8OXpcIT8a2uSQQsSsxByZAqCNW0tcQO369NbkOWMmlzzDx_I_X5sm34ttK_orOm2nWmOLCPh52a0N1dyoRU4fkLDFJ5w5w9lQRW_770IP-I"
+              alt="Logo" width="40" height="40" class="me-2">
+            <span class="fs-4 fw-bold"><span style="color: #065591;">Green</span><span
+                style="color: #4CAF50;">Up</span></span>
+          </div>
+          <p class="text-white-50 small mb-4">Impulsando la sostenibilidad global a través de la inteligencia artificial
+            y la comunidad.</p>
+          <div class="d-flex gap-2">
+            <a href="#" class="btn btn-outline-light btn-sm rounded-3 border-secondary text-white-50"><span
+                class="material-symbols-outlined fs-6">language</span></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-3 border-secondary text-white-50"><span
+                class="material-symbols-outlined fs-6">hub</span></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-3 border-secondary text-white-50"><span
+                class="material-symbols-outlined fs-6">settings</span></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="text-white fw-bold mb-4 text-uppercase tracking-wide small">Sobre Nosotros</h6>
+          <ul class="list-unstyled d-flex flex-column gap-3 small">
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Nuestra Misión</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Impacto 2026</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Equipo</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Carreras</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="text-white fw-bold mb-4 text-uppercase tracking-wide small">Comunidad</h6>
+          <ul class="list-unstyled d-flex flex-column gap-3 small">
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Eventos</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Eco-Blog</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Foro</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Embajadores</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="text-white fw-bold mb-4 text-uppercase tracking-wide small">Legal & Soporte</h6>
+          <ul class="list-unstyled d-flex flex-column gap-3 small">
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Privacidad</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Términos</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Cookies</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none text-hover-white">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-3 col-12 mt-4 mt-md-0">
+          <h6 class="text-white fw-bold mb-4 text-uppercase tracking-wide small">Suscríbete</h6>
+          <p class="text-white-50 small mb-3">Recibe nuestras actualizaciones eco-tecnológicas.</p>
+          <div class="input-group mb-3">
+            <input type="email" class="form-control bg-transparent border-secondary text-white" placeholder="Tu email"
+              aria-label="Tu email">
+            <button class="btn bg-gu-secondary text-white border-0" type="button"><span
+                class="material-symbols-outlined fs-5">send</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-black bg-opacity-25 py-3 border-top border-secondary border-opacity-25">
+      <div
+        class="container d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
+        <p class="mb-0">© 2026 GreenUp Tech. Sostenibilidad impulsada por IA.</p>
+        <div class="d-flex gap-4 mt-2 mt-md-0">
+          <a href="#" class="text-white-50 text-decoration-none">Privacidad</a>
+          <a href="#" class="text-white-50 text-decoration-none">Cookies</a>
+          <span class="text-white-50">ES / EN</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Animación de entrada al hacer scroll (Reemplaza la lógica previa de Tailwind)
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+
 </html>

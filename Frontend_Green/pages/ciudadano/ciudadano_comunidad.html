@@ -103,7 +103,8 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm" style="height: 70px;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
+        style="height: 70px; z-index: 1050;">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -114,18 +115,27 @@
                 </button>
 
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxyas13b5elSOmw0k6VqfBEX493R9A7kAbeIi7Uswdw8W8UaebcTF21xP2BkrocEItX6l_yf10AmIAKwpcXe7XcVsdA6DzV3dgkIw9SvXDIEtMi2iu_MSHcB3F6_Jx69j5r6aG5upHn8GZ-iDgxD07mD3GNg3ijxGFwBaC902etQT3iV51zqt7qHNhB7uhETs8iEhqhouAIZdwG2Ax9ox41-6P47YUU9gvHnTlqIkNj1iT9-2VncxbQYpH9qOPN0aoVe0h-dukfvA"
                         alt="Logo" width="32" height="32" class="me-2">
                     <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
                 </a>
             </div>
 
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
-                <a class="nav-link text-secondary" href="#">Inicio</a>
-                <a class="nav-link active-custom h-100 d-flex align-items-center" href="#">Comunidad</a>
-                <a class="nav-link text-secondary" href="#">Mapa Eco</a>
-                <a class="nav-link text-secondary" href="#">Huella Carbono</a>
-                <a class="nav-link text-secondary" href="#">Educación</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="inicio.html"><span
+                        class="material-symbols-outlined fs-5">home</span> Inicio</a>
+                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1"
+                    href="ciudadano_comunidad.html"><span class="material-symbols-outlined fs-5">groups</span>
+                    Comunidad</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
+                    href="ciudadano_mapa_puntos.html"><span class="material-symbols-outlined fs-5">map</span> Mapa
+                    Eco</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
+                    href="ciudadano_estadisticas_personales.html"><span
+                        class="material-symbols-outlined fs-5">co2</span> Huella Carbono</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
+                    href="ciudadano_contenido_educativo.html"><span class="material-symbols-outlined fs-5">school</span>
+                    Educación</a>
             </div>
 
             <div class="d-flex align-items-center gap-2">
@@ -160,7 +170,7 @@
         aria-labelledby="mobileMenuSidebarLabel">
         <div class="offcanvas-header border-bottom">
             <div class="d-flex align-items-center">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxyas13b5elSOmw0k6VqfBEX493R9A7kAbeIi7Uswdw8W8UaebcTF21xP2BkrocEItX6l_yf10AmIAKwpcXe7XcVsdA6DzV3dgkIw9SvXDIEtMi2iu_MSHcB3F6_Jx69j5r6aG5upHn8GZ-iDgxD07mD3GNg3ijxGFwBaC902etQT3iV51zqt7qHNhB7uhETs8iEhqhouAIZdwG2Ax9ox41-6P47YUU9gvHnTlqIkNj1iT9-2VncxbQYpH9qOPN0aoVe0h-dukfvA"
                     alt="Logo" width="32" height="32" class="me-2">
                 <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
                         style="color: #4CAF50;">Up</span></span>
@@ -169,7 +179,7 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush rounded-0 mt-2">
-                <a href="#"
+                <a href="inicio.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">home</span> Inicio
                 </a>
@@ -209,13 +219,15 @@
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex gap-2">
                                     <button
-                                        class="btn btn-light text-gu-primary rounded-3 d-flex align-items-center gap-2 border-0 hover-bg-light px-3"><span
-                                            class="material-symbols-outlined">image</span><span
-                                            class="d-none d-sm-inline small fw-medium">Foto</span></button>
+                                        class="btn btn-light text-gu-primary rounded-3 d-flex align-items-center gap-2 border-0 hover-bg-light px-3">
+                                        <span class="material-symbols-outlined">image</span><span
+                                            class="d-none d-sm-inline small fw-medium">Foto</span>
+                                    </button>
                                     <button
-                                        class="btn btn-light text-gu-secondary rounded-3 d-flex align-items-center gap-2 border-0 hover-bg-light px-3"><span
-                                            class="material-symbols-outlined">location_on</span><span
-                                            class="d-none d-sm-inline small fw-medium">Ubicación</span></button>
+                                        class="btn btn-light text-gu-secondary rounded-3 d-flex align-items-center gap-2 border-0 hover-bg-light px-3">
+                                        <span class="material-symbols-outlined">location_on</span><span
+                                            class="d-none d-sm-inline small fw-medium">Ubicación</span>
+                                    </button>
                                 </div>
                                 <button class="btn btn-gu-primary px-4 shadow-sm">Publicar</button>
                             </div>
@@ -252,16 +264,19 @@
                     <div class="p-4">
                         <div class="d-flex gap-4 border-bottom pb-3 mb-3">
                             <button
-                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-2 like-btn"><span
-                                    class="material-symbols-outlined">favorite</span><span
-                                    class="fw-medium">124</span></button>
+                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-2 like-btn">
+                                <span class="material-symbols-outlined">favorite</span><span
+                                    class="fw-medium">124</span>
+                            </button>
                             <button
-                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-2"><span
-                                    class="material-symbols-outlined">chat_bubble</span><span class="fw-medium">18
-                                    Comentarios</span></button>
+                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined">chat_bubble</span><span class="fw-medium">18
+                                    Comentarios</span>
+                            </button>
                             <button
-                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center ms-auto"><span
-                                    class="material-symbols-outlined">share</span></button>
+                                class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center ms-auto">
+                                <span class="material-symbols-outlined">share</span>
+                            </button>
                         </div>
                         <div class="d-flex gap-3 align-items-center">
                             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2wz9VGPF1Qomn3s9uvkxoLgiFAp436k_SKbCmZxnI8adB6RxjHmf8WlGzT37pnhvAKwn6ZNGdIOaNQjBlBHJBVoXDVs7NL6sZB32jLOuiLV991fKWc1J5uk7isJVMOgmF1-AaKhRn588LZQ9nxfB8eJ-MoUknmz_XinGb9R-3mw-W_UlJhMJCKWoaVrUhmDxboKD_JDjfugcYuibEmrprbQyfi0IGwqSGIGdAGrZlptiWW1ecAWIFSlrLgswHlvVlc4MioB90evY"

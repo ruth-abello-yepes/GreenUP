@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenUp | Huella de Carbono</title>
+    <title>GreenUp - Mi Dashboard Eco</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -68,7 +68,7 @@
             background-color: #f1f5f9;
         }
 
-        /* Estilos de Cards */
+        /* Estilos de Cards (Bento Grid) */
         .gu-card {
             border-radius: 16px;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -78,24 +78,23 @@
         }
 
         .gu-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
         }
 
-        /* Hero Banner Gradient */
-        .hero-banner {
-            background: linear-gradient(135deg, rgba(169, 242, 149, 0.3) 0%, rgba(217, 227, 246, 0.6) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--gu-accent);
         }
 
         /* Estilos del Gráfico de Barras */
-        .chart-container {
-            height: 250px;
+        .chart-bar-container {
+            height: 160px;
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
             gap: 8px;
-            padding-top: 20px;
         }
 
         .chart-col {
@@ -105,22 +104,19 @@
             width: 100%;
             height: 100%;
             justify-content: flex-end;
-            position: relative;
         }
 
         .chart-bar {
             width: 100%;
-            max-width: 40px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            transition: background-color 0.3s, transform 0.3s;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            transition: background-color 0.3s;
             position: relative;
-            cursor: pointer;
         }
 
         .chart-bar:hover {
             filter: brightness(0.85);
-            transform: scaleY(1.02);
+            cursor: pointer;
         }
 
         .chart-label {
@@ -131,27 +127,78 @@
             text-align: center;
         }
 
-        /* Tooltip de las barras */
         .chart-tooltip {
             position: absolute;
-            top: -35px;
+            top: -30px;
             left: 50%;
             transform: translateX(-50%);
             background: #121c2a;
             color: white;
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 10px;
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: 4px;
             opacity: 0;
             transition: opacity 0.2s;
             pointer-events: none;
             white-space: nowrap;
-            z-index: 10;
         }
 
         .chart-bar:hover .chart-tooltip {
             opacity: 1;
+        }
+
+        /* Estilos de Acceso Rápido (Imágenes) */
+        .img-preview-card {
+            height: 140px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .img-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .img-preview-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.25rem;
+            color: white;
+        }
+
+        /* Botón de Acción Flotante (FAB) */
+        .fab-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--gu-secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(41, 108, 31, 0.4);
+            z-index: 1050;
+            transition: transform 0.2s;
+        }
+
+        .fab-btn:hover {
+            transform: scale(1.1);
+            color: white;
         }
 
         /* Animaciones */
@@ -182,39 +229,41 @@
                 </button>
 
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxyas13b5elSOmw0k6VqfBEX493R9A7kAbeIi7Uswdw8W8UaebcTF21xP2BkrocEItX6l_yf10AmIAKwpcXe7XcVsdA6DzV3dgkIw9SvXDIEtMi2iu_MSHcB3F6_Jx69j5r6aG5upHn8GZ-iDgxD07mD3GNg3ijxGFwBaC902etQT3iV51zqt7qHNhB7uhETs8iEhqhouAIZdwG2Ax9ox41-6P47YUU9gvHnTlqIkNj1iT9-2VncxbQYpH9qOPN0aoVe0h-dukfvA"
                         alt="Logo" width="32" height="32" class="me-2">
                     <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
                 </a>
             </div>
 
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="inicio.html"><span
+                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1" href="inicio.html"><span
                         class="material-symbols-outlined fs-5">home</span> Inicio</a>
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_comunidad.html"><span
                         class="material-symbols-outlined fs-5">groups</span> Comunidad</a>
                 <a class="nav-link text-secondary d-flex align-items-center gap-1"
                     href="ciudadano_mapa_puntos.html"><span class="material-symbols-outlined fs-5">map</span> Mapa
                     Eco</a>
-
-                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1"
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
                     href="ciudadano_estadisticas_personales.html"><span
                         class="material-symbols-outlined fs-5">co2</span> Huella Carbono</a>
-
                 <a class="nav-link text-secondary d-flex align-items-center gap-1"
                     href="ciudadano_contenido_educativo.html"><span class="material-symbols-outlined fs-5">school</span>
                     Educación</a>
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light">
+                <button
+                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                        style="margin-top: 8px; margin-left: -10px;"></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="d-none d-sm-inline fw-medium text-secondary small">Username</span>
+                        <span class="d-none d-sm-inline fw-medium text-secondary small">username</span>
                         <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
                         <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
                     </button>
@@ -234,11 +283,10 @@
         </div>
     </nav>
 
-    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar"
-        aria-labelledby="mobileMenuSidebarLabel">
+    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
         <div class="offcanvas-header border-bottom">
             <div class="d-flex align-items-center">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxyas13b5elSOmw0k6VqfBEX493R9A7kAbeIi7Uswdw8W8UaebcTF21xP2BkrocEItX6l_yf10AmIAKwpcXe7XcVsdA6DzV3dgkIw9SvXDIEtMi2iu_MSHcB3F6_Jx69j5r6aG5upHn8GZ-iDgxD07mD3GNg3ijxGFwBaC902etQT3iV51zqt7qHNhB7uhETs8iEhqhouAIZdwG2Ax9ox41-6P47YUU9gvHnTlqIkNj1iT9-2VncxbQYpH9qOPN0aoVe0h-dukfvA"
                     alt="Logo" width="32" height="32" class="me-2">
                 <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
                         style="color: #4CAF50;">Up</span></span>
@@ -247,24 +295,24 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush rounded-0 mt-2">
-                <a href="#"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                <a href="inicio.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
+                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
                     <span class="material-symbols-outlined">home</span> Inicio
                 </a>
-                <a href="#"
+                <a href="ciudadano_comunidad.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">groups</span> Comunidad
                 </a>
-                <a href="#"
+                <a href="ciudadano_mapa_puntos.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">map</span> Mapa Eco
                 </a>
-                <a href="#"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                <a href="ciudadano_estadisticas_personales.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">co2</span> Huella Carbono
                 </a>
-                <a href="#"
+                <a href="ciudadano_contenido_educativo.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
@@ -274,174 +322,201 @@
 
     <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1200px;">
 
-        <section class="hero-banner rounded-4 p-4 p-md-5 mb-5 position-relative overflow-hidden fade-up">
-            <div class="row align-items-center position-relative z-3">
-                <div class="col-md-8 text-center text-md-start mb-4 mb-md-0">
-                    <span class="badge rounded-pill text-gu-secondary fw-bold mb-3"
-                        style="background-color: rgba(41, 108, 31, 0.1);">IMPACTO MENSUAL</span>
-                    <h1 class="display-5 fw-bold text-gu-primary mb-3">45.8 kg de CO2 Evitados este mes</h1>
-                    <p class="text-secondary fs-5 mb-0">Gracias a tus registros de reciclaje has mitigado el impacto
-                        ambiental en <span class="fw-bold text-dark">Valledupar</span>. ¡Sigue así, Alex!</p>
-                </div>
-                <div class="col-md-4 d-flex justify-content-center justify-content-md-end">
-                    <div class="rounded-circle bg-white bg-opacity-50 d-flex align-items-center justify-content-center border border-white"
-                        style="width: 150px; height: 150px; backdrop-filter: blur(10px);">
-                        <span class="material-symbols-outlined text-gu-secondary"
-                            style="font-size: 64px;">energy_savings_leaf</span>
-                    </div>
-                </div>
-            </div>
-            <div class="position-absolute rounded-circle"
-                style="width: 300px; height: 300px; background: rgba(41, 108, 31, 0.05); top: -100px; right: -50px;">
-            </div>
-        </section>
+        <header class="mb-5 fade-up">
+            <h1 class="display-6 fw-bold text-gu-primary mb-2">¡Hola, Username! <span
+                    style="color: #065591;">Green</span><span style="color: #4CAF50;">Up</span> 🌱</h1>
+            <p class="text-secondary fs-5" style="max-width: 700px;">Hoy has evitado la emisión de 1.2kg de CO2. Sigue
+                así, estás en el top 5% de tu comunidad local.</p>
+        </header>
 
-        <section class="row g-4 mb-5">
-            <div class="col-md-4 fade-up">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-primary text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(0, 61, 108, 0.1);">
-                        <span class="material-symbols-outlined text-gu-primary fs-3">directions_car</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivalente a <span class="fw-bold text-dark">180 km</span> sin
-                        conducir un vehículo</p>
-                </div>
-            </div>
-            <div class="col-md-4 fade-up" style="transition-delay: 0.1s;">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-success text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(41, 108, 31, 0.1);">
-                        <span class="material-symbols-outlined text-gu-secondary fs-3">bolt</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivalente a <span class="fw-bold text-dark">12 días</span> de
-                        energía eléctrica ahorrada</p>
-                </div>
-            </div>
-            <div class="col-md-4 fade-up" style="transition-delay: 0.2s;">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-info text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(23, 162, 184, 0.1);">
-                        <span class="material-symbols-outlined text-info fs-3">forest</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivale al CO2 absorbido por <span class="fw-bold text-dark">3
-                            árboles</span> plantados</p>
-                </div>
-            </div>
-        </section>
+        <div class="row g-4 mb-4">
 
-        <section class="card gu-card border-0 p-4 p-md-5 mb-5 fade-up">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <div>
-                    <h3 class="fw-bold text-dark mb-1">Evolución de Emisiones Mitigadas 2026</h3>
-                    <p class="text-secondary small mb-0">Histórico de ahorro de CO2 en kg</p>
-                </div>
-                <div class="btn-group shadow-sm" role="group">
-                    <button type="button"
-                        class="btn btn-outline-secondary bg-white text-dark btn-sm px-3">Semanal</button>
-                    <button type="button" class="btn btn-gu-primary btn-sm px-3 border-0">Mensual</button>
+            <div class="col-lg-4 col-md-6 fade-up">
+                <div class="card gu-card h-100 p-4 border-0 border-start border-4 border-success">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <span class="material-symbols-outlined text-gu-secondary display-6">workspace_premium</span>
+                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">+12% este mes</span>
+                    </div>
+                    <h6 class="text-secondary fw-bold mb-1">Puntos Acumulados</h6>
+                    <h2 class="display-5 fw-bold mb-0">12,450 <span class="fs-6 fw-normal text-muted">Pts</span></h2>
+
+                    <div class="mt-4 pt-2">
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 75%;"
+                                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-muted small mt-2 mb-0" style="font-size: 0.75rem;">Próxima recompensa: Cupón
+                            BioMarket (3,000 pts restantes)</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="chart-container border-bottom border-light pb-2">
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 40%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">12.5kg</div>
+            <div class="col-lg-4 col-md-6 fade-up">
+                <div class="card gu-card h-100 p-4 border-0 border-start border-4"
+                    style="border-color: var(--gu-primary) !important;">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <span class="material-symbols-outlined text-gu-primary display-6">eco</span>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">Impacto Global</span>
                     </div>
-                    <div class="chart-label">Ene</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 55%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">18.0kg</div>
+                    <h6 class="text-secondary fw-bold mb-1">CO2 Evitado</h6>
+                    <h2 class="display-5 fw-bold mb-0">45.8 <span class="fs-6 fw-normal text-muted">kg</span></h2>
+
+                    <div class="mt-4 pt-2">
+                        <span class="badge text-gu-primary px-3 py-2 rounded-3"
+                            style="background-color: rgba(6, 85, 145, 0.1);">~12 Árboles plantados</span>
                     </div>
-                    <div class="chart-label">Feb</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 45%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">14.2kg</div>
-                    </div>
-                    <div class="chart-label">Mar</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-secondary shadow-sm" style="height: 70%;">
-                        <div class="chart-tooltip">28.5kg</div>
-                    </div>
-                    <div class="chart-label fw-bold text-gu-secondary">Abr</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 85%;">
-                        <div class="chart-tooltip">34.0kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">May</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 60%;">
-                        <div class="chart-tooltip">22.8kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Jun</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 50%;">
-                        <div class="chart-tooltip">19.5kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Jul</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 75%;">
-                        <div class="chart-tooltip">30.1kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Ago</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 90%;">
-                        <div class="chart-tooltip">38.2kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Sep</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 65%;">
-                        <div class="chart-tooltip">25.4kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Oct</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 55%;">
-                        <div class="chart-tooltip">21.0kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Nov</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 40%;">
-                        <div class="chart-tooltip">16.3kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Dic</div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center gap-4 mt-4">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-gu-primary" style="width: 12px; height: 12px;"></div>
-                    <span class="small text-secondary fw-medium">Meta Promedio</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-gu-secondary" style="width: 12px; height: 12px;"></div>
-                    <span class="small text-secondary fw-medium">Mes Actual</span>
+            <div class="col-lg-4 col-md-12 fade-up">
+                <div class="card glass-card gu-card h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="material-symbols-outlined text-gu-secondary">lightbulb</span>
+                            <h5 class="fw-bold text-gu-secondary mb-0">Tip del Día</h5>
+                        </div>
+                        <p class="text-dark fw-medium mb-4">¿Sabías que lavar con agua fría puede reducir hasta un 90%
+                            el consumo energético de tu lavadora?</p>
+                    </div>
+                    <a href="#"
+                        class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 hover-underline">
+                        Aprender más <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
                 </div>
             </div>
-        </section>
 
-        <section class="text-center fade-up">
-            <a href="#"
-                class="btn btn-gu-primary btn-lg rounded-pill px-5 py-3 shadow-lg d-inline-flex align-items-center gap-2"
-                style="font-size: 1.1rem;">
-                <span class="material-symbols-outlined icon-fill">add_circle</span>
-                Registrar nueva acción de reciclaje
-            </a>
-        </section>
+            <div class="col-lg-8 fade-up">
+                <div class="card gu-card h-100 p-4 border-0">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Actividad Semanal</h5>
+                        <div class="btn-group shadow-sm" role="group">
+                            <button type="button" class="btn btn-sm btn-light active fw-bold border">7 días</button>
+                            <button type="button" class="btn btn-sm btn-white text-muted border">30 días</button>
+                        </div>
+                    </div>
 
+                    <div class="chart-bar-container mt-auto">
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 66%; background-color: rgba(6, 85, 145, 0.2);">
+                                <div class="chart-tooltip">12.5kg</div>
+                            </div>
+                            <div class="chart-label">LUN</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 50%; background-color: rgba(6, 85, 145, 0.2);">
+                                <div class="chart-tooltip">8.2kg</div>
+                            </div>
+                            <div class="chart-label">MAR</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar bg-gu-primary" style="height: 90%;">
+                                <div class="chart-tooltip">24.0kg</div>
+                            </div>
+                            <div class="chart-label text-gu-primary fw-bold">MIE</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 33%; background-color: rgba(6, 85, 145, 0.2);">
+                                <div class="chart-tooltip">4.5kg</div>
+                            </div>
+                            <div class="chart-label">JUE</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar bg-gu-primary" style="height: 75%;">
+                                <div class="chart-tooltip">18.1kg</div>
+                            </div>
+                            <div class="chart-label text-gu-primary fw-bold">VIE</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar" style="height: 50%; background-color: rgba(6, 85, 145, 0.2);">
+                                <div class="chart-tooltip">9.0kg</div>
+                            </div>
+                            <div class="chart-label">SAB</div>
+                        </div>
+                        <div class="chart-col">
+                            <div class="chart-bar bg-gu-primary" style="height: 40%;">
+                                <div class="chart-tooltip">10.2kg</div>
+                            </div>
+                            <div class="chart-label text-gu-primary fw-bold">DOM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 fade-up">
+                <div class="card gu-card h-100 p-4 border-0">
+                    <h5 class="fw-bold mb-4">Actividad Reciente</h5>
+
+                    <div class="d-flex flex-column gap-4 flex-grow-1">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 40px; height: 40px;">
+                                <span class="material-symbols-outlined fs-5">directions_walk</span>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 small">Caminata registrada</h6>
+                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">Hace 2 horas • <span
+                                        class="text-success fw-bold">+15 Pts</span></p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 40px; height: 40px;">
+                                <span class="material-symbols-outlined fs-5">recycling</span>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 small">Reciclaje verificado</h6>
+                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">Ayer • <span
+                                        class="text-success fw-bold">+50 Pts</span></p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle bg-light border text-secondary d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 40px; height: 40px;">
+                                <span class="material-symbols-outlined fs-5">redeem</span>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 small">Recompensa canjeada</h6>
+                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">3 días atrás • <span
+                                        class="text-danger fw-bold">-200 Pts</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline-secondary w-100 mt-4 rounded-3 fw-bold btn-sm py-2">Ver todo el
+                        historial</button>
+                </div>
+            </div>
+
+            <div class="col-md-6 fade-up">
+                <div class="img-preview-card shadow-sm border">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ46Fjd2qWL8Jh_3Bw7zh5M8ZlbaLKQ8e4E8CMW5OlmCPjHkNBC5LpqSO3eMM0VXijwOW_BtwHZuXwRJFWD4eDjX8qjFONoG4k6aK7WbI5EC8x8q-NX1-B1-eRge-Bu2d0yN07ckTa4AYLRgl3WsKwZ3t399Z_IfaN5-RFIGl5gVpfszwnrm4R9W4YjA4qa5HuglP2vsp6LLGmunxSJbemIZRnmZoaTCVi77X5JNH8tZjUaPgzRv4vFtZMelMkMrxvKAAxGTPjIVQ"
+                        alt="Mapa">
+                    <div class="img-overlay">
+                        <h5 class="fw-bold mb-1">Mapa de Puntos Eco</h5>
+                        <p class="small mb-0 opacity-75">3 nuevos puntos cerca de ti</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 fade-up">
+                <div class="img-preview-card shadow-sm border">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCTYQzP0yXssgDC5QmOXPyS-xhgiu4fynOI8vLSk31FQxa8c9vYuCXMShBSUmUvOzekLrEgrE1Vjq2cwaA21UB7V7saqbAgIlCU-DH6CPZgYdPTAwglSFUpW6DKV4Vb19yIrAgUtVVbHg6U4Jr6GP3MfxC8-QiPgdG7Ik6ZMYBW87Xk41lzeo3Vk104YSAxTlCQWNUqYDgQhxAr5Hv3MYK-WfMeJrPY6CVBE0AEztkYsy3qw6ZY-WB5M8YjJ6kcqFAJVMRJE-aPzQ"
+                        alt="Educacion">
+                    <div class="img-overlay">
+                        <h5 class="fw-bold mb-1">Centro de Educación</h5>
+                        <p class="small mb-0 opacity-75">Nuevo curso: Zero Waste en Casa</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </main>
+
+    <a href="#" class="fab-btn text-decoration-none">
+        <span class="material-symbols-outlined fs-2">add</span>
+    </a>
 
     <footer class="bg-gu-dark text-white pt-5 position-relative z-3"
         style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
@@ -535,7 +610,6 @@
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
         });
     </script>
-
 </body>
 
 </html>

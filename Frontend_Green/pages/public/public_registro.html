@@ -255,6 +255,22 @@
       margin-bottom: 6px;
     }
 
+    /* Botón Volver */
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--color-on-surface-variant);
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      text-decoration: none;
+      transition: color 0.2s;
+      margin-bottom: 10px;
+    }
+
     .caja-empresa p {
       color: #64748b;
       font-size: 14px;
@@ -354,10 +370,17 @@
 
       <main class="col-md-8 formulario-contenedor">
         <section class="formulario-tarjeta">
+          <!-- ---- Botón Volver ---- -->
+          <a href="public_inicio.html" class="btn-back">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Volver
+          </a>
+
           <h2 class="titulo">Crear cuenta</h2>
           <p class="subtitulo">
             Completa la información para entrar a GreenUp.
           </p>
+
 
           <div class="d-flex gap-2 mb-4">
             <div id="barra-1" class="paso paso-activo flex-fill"></div>
@@ -523,6 +546,7 @@
                 Volver atrás
               </button>
             </div>
+
 
             <p class="text-center mt-4 mb-0">
               ¿Ya tienes cuenta?

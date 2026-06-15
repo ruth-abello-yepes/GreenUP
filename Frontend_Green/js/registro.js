@@ -1,29 +1,24 @@
-/*
-    Archivo: registro.js
-
-    Para que sirve:
-    Maneja el formulario de registro de GreenUp.
-
-    Este archivo registra dos tipos de usuarios:
-
-    1. Ciudadano
-       Ruta:
-       POST http://127.0.0.1:5000/api/usuarios/registro
-
-    2. Dueno de punto ecologico
-       Ruta:
-       POST http://127.0.0.1:5000/api/recicladoras/registro
-
-    Nota:
-    La camara de comercio por ahora guarda el nombre del archivo.
-    No guarda el archivo real en el servidor todavia.
-*/
+/**
+ * Archivo: registro.js
+ * Maneja el formulario de registro por pasos de GreenUp.
+ * * Este archivo registra dos tipos de usuarios:
+ * 1. Ciudadano (POST /api/usuarios/registro)
+ * 2. Dueño de punto ecológico (POST /api/recicladoras/registro)
+ * * Nota: La cámara de comercio por ahora guarda el nombre del archivo, 
+ * no el archivo real en el servidor.
+ */
 
 let pasoActual = 1;
 const totalPasos = 3;
 const MENSAJE_CONTRASENA_SEGURA =
-  "La contrasena debe tener minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.";
+  "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.";
 
+/**
+ * Valida que una contraseña cumpla con los criterios de seguridad establecidos.
+ * @function validarContrasenaSegura
+ * @param {string} contrasena - La contraseña ingresada por el usuario.
+ * @returns {boolean} Retorna true si cumple todos los requisitos, false en caso contrario.
+ */
 function validarContrasenaSegura(contrasena) {
   const tieneMinimo = contrasena.length >= 8;
   const tieneMayuscula = /[A-Z]/.test(contrasena);
@@ -42,6 +37,11 @@ function validarContrasenaSegura(contrasena) {
   );
 }
 
+/**
+ * Actualiza los mensajes de ayuda visual en la interfaz en tiempo real
+ * mientras el usuario escribe su contraseña.
+ * @function actualizarAyudaContrasena
+ */
 function actualizarAyudaContrasena() {
   const campoContrasena = document.getElementById("contrasena");
   const ayudaContrasena = document.getElementById("ayuda-contrasena");
@@ -60,7 +60,7 @@ function actualizarAyudaContrasena() {
   if (validarContrasenaSegura(campoContrasena.value)) {
     ayudaContrasena.classList.remove("text-muted", "text-danger");
     ayudaContrasena.classList.add("text-success");
-    ayudaContrasena.textContent = "La contrasena cumple los requisitos.";
+    ayudaContrasena.textContent = "La contraseña cumple los requisitos.";
     return;
   }
 
@@ -69,6 +69,12 @@ function actualizarAyudaContrasena() {
   ayudaContrasena.textContent = MENSAJE_CONTRASENA_SEGURA;
 }
 
+/**
+ * Alterna el tipo de input entre 'password' y 'text' para ocultar/mostrar la contraseña.
+ * @function alternarVisibilidadContrasena
+ * @param {string} idCampo - El ID del input de contraseña.
+ * @param {HTMLElement} boton - El botón que disparó el evento para cambiar su ícono.
+ */
 function alternarVisibilidadContrasena(idCampo, boton) {
   const campo = document.getElementById(idCampo);
 
@@ -84,7 +90,7 @@ function alternarVisibilidadContrasena(idCampo, boton) {
     boton.setAttribute("aria-pressed", String(mostrar));
     boton.setAttribute(
       "aria-label",
-      mostrar ? "Ocultar contrasena" : "Mostrar contrasena",
+      mostrar ? "Ocultar contraseña" : "Mostrar contraseña",
     );
 
     if (icono) {
@@ -93,12 +99,12 @@ function alternarVisibilidadContrasena(idCampo, boton) {
   }
 }
 
+/**
+ * Muestra u oculta los campos exclusivos para empresas cuando la persona 
+ * escoge "Dueño de punto ecológico".
+ * @function mostrarCamposEmpresa
+ */
 function mostrarCamposEmpresa() {
-  /*
-        Muestra los campos de empresa cuando la persona
-        escoge "Dueno de punto ecologico".
-    */
-
   const tipoRegistro = document.getElementById("tipo_registro").value;
   const camposEmpresa = document.getElementById("campos-empresa");
 
@@ -109,19 +115,15 @@ function mostrarCamposEmpresa() {
   }
 }
 
+/**
+ * Avanza al siguiente paso en el formulario multistep.
+ * Si se encuentra en el último paso, inicia el proceso de registro.
+ * @function siguientePaso
+ */
 function siguientePaso() {
-  /*
-        Avanza de un paso al siguiente.
-
-        Si ya estamos en el ultimo paso,
-        llama a registrarCuenta().
-    */
-
   if (pasoActual < totalPasos) {
     document.getElementById("seccion-" + pasoActual).classList.add("d-none");
-
     pasoActual = pasoActual + 1;
-
     document.getElementById("seccion-" + pasoActual).classList.remove("d-none");
 
     actualizarVistaPasos();
@@ -131,30 +133,26 @@ function siguientePaso() {
   registrarCuenta();
 }
 
+/**
+ * Retrocede al paso anterior en el formulario multistep.
+ * @function pasoAnterior
+ */
 function pasoAnterior() {
-  /*
-        Regresa al paso anterior.
-    */
-
   if (pasoActual > 1) {
     document.getElementById("seccion-" + pasoActual).classList.add("d-none");
-
     pasoActual = pasoActual - 1;
-
     document.getElementById("seccion-" + pasoActual).classList.remove("d-none");
 
     actualizarVistaPasos();
   }
 }
 
+/**
+ * Actualiza el estado visual del progreso del formulario (barras superiores,
+ * visibilidad del botón de retroceso y texto del botón de continuación).
+ * @function actualizarVistaPasos
+ */
 function actualizarVistaPasos() {
-  /*
-        Actualiza:
-        - Barras superiores
-        - Boton de volver
-        - Texto del boton principal
-    */
-
   for (let numero = 1; numero <= totalPasos; numero++) {
     const barra = document.getElementById("barra-" + numero);
 
@@ -185,11 +183,13 @@ function actualizarVistaPasos() {
   }
 }
 
+/**
+ * Recopila todos los datos del formulario, realiza validaciones finales y 
+ * utiliza peticionSegura para enviar los datos al backend según el tipo de usuario.
+ * @async
+ * @function registrarCuenta
+ */
 async function registrarCuenta() {
-  /*
-        Toma los datos del formulario y los envia al backend.
-    */
-
   const tipoRegistro = document.getElementById("tipo_registro").value;
 
   const nombres = document.getElementById("nombres").value;
@@ -200,26 +200,26 @@ async function registrarCuenta() {
   const numeroDocumento = document.getElementById("numero_documento").value;
   const usuario = document.getElementById("usuario").value;
   const contrasena = document.getElementById("contrasena").value;
-  const confirmarContrasena = document.getElementById(
-    "confirmar_contrasena",
-  ).value;
+  const confirmarContrasena = document.getElementById("confirmar_contrasena").value;
   const terminos = document.getElementById("terminos").checked;
 
+  // Validaciones
   if (!validarContrasenaSegura(contrasena)) {
     alert(MENSAJE_CONTRASENA_SEGURA);
     return;
   }
 
   if (contrasena !== confirmarContrasena) {
-    alert("Las contrasenas no coinciden");
+    alert("Las contraseñas no coinciden");
     return;
   }
 
   if (!terminos) {
-    alert("Debes aceptar los terminos y condiciones");
+    alert("Debes aceptar los términos y condiciones");
     return;
   }
 
+  // Base de datos compartida entre roles
   const datosBase = {
     nombres: nombres,
     apellidos: apellidos,
@@ -244,7 +244,6 @@ async function registrarCuenta() {
     ruta = "/api/recicladoras/registro";
 
     const archivoCamara = document.getElementById("camara_comercio").files[0];
-
     let camaraComercio = "";
 
     if (archivoCamara) {
@@ -261,24 +260,27 @@ async function registrarCuenta() {
     };
   }
 
-  const respuesta = await fetch(API_URL + ruta, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(datosEnviar),
-  });
+  // AQUÍ ES DONDE SE CONECTA NUESTRA NUEVA LÓGICA DE API.JS
+  try {
+    const respuesta = await peticionSegura(ruta, "POST", datosEnviar);
 
-  const datos = await respuesta.json();
-
-  if (respuesta.ok) {
-    alert(datos.mensaje);
-    window.location.href = "public_login.html";
-  } else {
-    alert(datos.mensaje);
+    if (respuesta.ok) {
+      // Si todo sale bien, muestra el mensaje de Flask y redirige al login
+      alert(respuesta.datos.mensaje || "Registro exitoso");
+      window.location.href = "public_login.html";
+    } else {
+      // Si el servidor envía un error (Ej. el correo ya existe)
+      alert(respuesta.datos.mensaje || "Ocurrió un error en el registro");
+    }
+  } catch (error) {
+    console.error("Fallo la conexión al registrar:", error);
+    alert("Ocurrió un error al intentar comunicarse con el servidor. Verifica tu conexión.");
   }
 }
 
+/**
+ * Inicializa los eventos del DOM al cargar la página.
+ */
 document.addEventListener("DOMContentLoaded", function () {
   const campoContrasena = document.getElementById("contrasena");
   const tipoRegistro = document.getElementById("tipo_registro");
@@ -288,6 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
     campoContrasena.addEventListener("input", actualizarAyudaContrasena);
   }
 
+  // Pre-selecciona recicladora si viene desde un enlace específico
   if (tipoRegistro && parametros.get("tipo") === "recicladora") {
     tipoRegistro.value = "recicladora";
     mostrarCamposEmpresa();

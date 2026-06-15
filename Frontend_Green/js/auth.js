@@ -1,59 +1,75 @@
-// Archivo: auth.js
-// Este archivo maneja el login normal.
-// Aqui entran solamente:
-// rol 2 = Dueno de punto ecologico
-// rol 3 = Ciudadano
+/**
+ * Archivo: auth.js
+ * Maneja la autenticación para Dueños de Recicladora (Rol 2) y Ciudadanos (Rol 3).
+ */
 
+/**
+ * Captura el evento del formulario de login, envía las credenciales al backend 
+ * y redirige al usuario a su panel correspondiente según su rol.
+ * * @async
+ * @function iniciarSesion
+ * @param {Event} evento - El evento de envío (submit) del formulario HTML.
+ * @returns {Promise<void>} No retorna ningún valor, redirige la ventana del navegador.
+ */
 async function iniciarSesion(evento) {
-  // Evita que el formulario recargue la pagina.
+  // Evita que la página se recargue al presionar "Ingresar"
   evento.preventDefault();
 
-  // Tomamos los datos escritos en el formulario.
+  // 1. Capturamos los campos (soporta id "usuario" o "email")
   const campoUsuario = document.getElementById("usuario") || document.getElementById("email");
-  const campoContrasena =
-    document.getElementById("contrasena") || document.getElementById("password");
+  const campoContrasena = document.getElementById("contrasena") || document.getElementById("password");
 
-  const usuario = campoUsuario.value;
-  const contrasena = campoContrasena.value;
+  const credenciales = {
+    usuario: campoUsuario.value.trim(),
+    contrasena: campoContrasena.value
+  };
 
-  // Enviamos los datos al backend.
-  const respuesta = await fetch(API_URL + "/api/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      usuario: usuario,
-      contrasena: contrasena,
-    }),
-  });
+  // 2. Usamos nuestra función unificada (asumiendo que api.js está vinculado en el HTML antes que auth.js)
+  try {
+    const respuesta = await peticionSegura("/api/login", "POST", credenciales);
 
-  // Convertimos la respuesta del backend a JavaScript.
-  const datos = await respuesta.json();
+    if (respuesta.ok) {
+      // 3. Guardamos la información en el navegador
+      // Se asume que Flask ahora nos devuelve: { "token": "ey...", "usuario": {...} }
+      localStorage.setItem("usuario", JSON.stringify(respuesta.datos.usuario));
 
-  if (respuesta.ok) {
-    // Guardamos los datos del usuario en el navegador.
-    localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+      // Guardar el Token es vital para proteger futuras rutas
+      if (respuesta.datos.token) {
+        localStorage.setItem("token", respuesta.datos.token);
+      }
 
-    // Convertimos el rol a numero por seguridad.
-    const rol = Number(datos.usuario.id_rol);
+      // 4. Redirección basada en roles
+      const rol = Number(respuesta.datos.usuario.id_rol);
 
-    // Rol 2: dueno de punto ecologico.
-    if (rol === 2) {
-      window.location.href = "../dueno_recicladora/recicladora_panel.html";
-      return;
+      if (rol === 2) {
+        window.location.href = "../dueno_recicladora/recicladora_panel.html";
+        return;
+      }
+
+      if (rol === 3) {
+        // Redirige a la pantalla de inicio del ciudadano
+        window.location.href = "../ciudadano/inicio.html";
+        return;
+      }
+
+      // 5. Bloqueo de seguridad para Administradores
+      alert("Acceso denegado: Este portal es exclusivo para Ciudadanos y Centros de Reciclaje.");
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("token");
+
+    } else {
+      // El backend rechazó las credenciales (Contraseña incorrecta, etc.)
+      alert(`Error de acceso: ${respuesta.datos.mensaje || "Credenciales inválidas"}`);
     }
-
-    // Rol 3: ciudadano.
-    if (rol === 3) {
-      window.location.href = "../ciudadano/ciudadano_panel.html";
-      return;
-    }
-
-    // Si intenta entrar un admin por aqui, no lo dejamos avanzar.
-    alert("Este login es solo para ciudadanos y duenos de recicladora.");
-    localStorage.removeItem("usuario");
-  } else {
-    alert(datos.mensaje);
+  } catch (error) {
+    alert("Ocurrió un error al intentar comunicarse con el servidor. Intente más tarde.");
   }
 }
+
+// Vinculamos la función al formulario de login (Asegúrate de que tu form tenga id="form-login")
+document.addEventListener("DOMContentLoaded", () => {
+  const formLogin = document.getElementById("form-login");
+  if (formLogin) {
+    formLogin.addEventListener("submit", iniciarSesion);
+  }
+});

@@ -29,7 +29,7 @@ def listar_materiales():
     Muestra todos los materiales registrados.
     """
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM tipo_material"
     cursor.execute(sql)
@@ -47,7 +47,7 @@ def buscar_material(id_material):
     Busca un material por su ID.
     """
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM tipo_material WHERE id_tipo_material = %s"
     cursor.execute(sql, (id_material,))

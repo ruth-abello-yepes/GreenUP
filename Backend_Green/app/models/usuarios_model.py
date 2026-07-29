@@ -62,7 +62,7 @@ def listar_usuarios():
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM usuarios"
 
@@ -83,7 +83,7 @@ def listar_ciudadanos():
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = """
     SELECT *
@@ -108,7 +108,7 @@ def listar_duenos_recicladora():
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = """
     SELECT *
@@ -131,7 +131,7 @@ def buscar_usuario_por_id(id_usuario):
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM usuarios WHERE id_usuario = %s"
 
@@ -152,7 +152,7 @@ def buscar_usuario_por_usuario(usuario):
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM usuarios WHERE usuario = %s OR correo = %s"
 

@@ -22,7 +22,7 @@ def crear_contenido(titulo, descripcion, tipo, url_recurso, imagen, id_usuario):
 
 def listar_contenidos():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM contenido_educativo"
 

@@ -22,7 +22,7 @@ def crear_pregunta(pregunta, respuesta, categoria, orden):
 
 def listar_preguntas():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM preguntas_frecuentes")
     datos = cursor.fetchall()

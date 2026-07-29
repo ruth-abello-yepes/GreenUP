@@ -22,7 +22,7 @@ def crear_novedad(titulo, descripcion, imagen, id_usuario):
 
 def listar_novedades():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM novedades")
     datos = cursor.fetchall()
@@ -35,7 +35,7 @@ def listar_novedades():
 
 def buscar_novedad(id_novedad):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM novedades WHERE id_novedad = %s"
     cursor.execute(sql, (id_novedad,))

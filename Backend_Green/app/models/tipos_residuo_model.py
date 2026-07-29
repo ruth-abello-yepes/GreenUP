@@ -26,7 +26,7 @@ def listar_tipos_residuo():
     """Lista todos los tipos de residuo."""
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM tipo_residuo")
     datos = cursor.fetchall()
@@ -41,7 +41,7 @@ def buscar_tipo_residuo(id_tipo_residuo):
     """Busca un tipo de residuo por ID."""
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM tipo_residuo WHERE id_tipo_residuo = %s"
     cursor.execute(sql, (id_tipo_residuo,))

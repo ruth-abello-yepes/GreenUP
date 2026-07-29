@@ -22,7 +22,7 @@ def crear_reciclaje(cantidad, observaciones, id_usuario, id_tipo_material, id_pu
 
 def listar_reciclajes():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM registrar_reciclaje"
 
@@ -37,7 +37,7 @@ def listar_reciclajes():
 
 def buscar_reciclaje(id_registro):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM registrar_reciclaje WHERE id_registro = %s"
 

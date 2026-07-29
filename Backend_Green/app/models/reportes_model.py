@@ -6,7 +6,7 @@ from app.common.database import obtener_conexion
 
 def listar_reporte_reciclaje():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM registrar_reciclaje"
     cursor.execute(sql)

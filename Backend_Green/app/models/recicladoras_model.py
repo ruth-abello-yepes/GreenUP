@@ -55,7 +55,7 @@ def listar_recicladoras():
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = """
     SELECT
@@ -95,7 +95,7 @@ def buscar_recicladora_por_usuario(id_usuario):
     """
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = """
     SELECT *

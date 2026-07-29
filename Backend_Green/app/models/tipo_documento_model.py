@@ -21,7 +21,7 @@ def registrar_tipo_documento(descripcion, id_estado):
 
 def listar_tipos_documento():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM tipo_documento"
 
@@ -36,7 +36,7 @@ def listar_tipos_documento():
 
 def buscar_tipo_documento_por_id(id_tipo_documento):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM tipo_documento WHERE id_tipo_documento = %s"
 

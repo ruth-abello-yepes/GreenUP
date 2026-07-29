@@ -21,7 +21,7 @@ def registrar_rol(nombre, descripcion, id_estado):
 
 def listar_roles():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM roles"
 
@@ -36,7 +36,7 @@ def listar_roles():
 
 def buscar_rol_por_id(id_rol):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     sql = "SELECT * FROM roles WHERE id_rol = %s"
 

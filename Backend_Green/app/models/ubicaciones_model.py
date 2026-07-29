@@ -24,7 +24,7 @@ def crear_ubicacion(nombre, direccion, horario):
 def listar_ubicaciones():
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor()
 
     cursor.execute("SELECT * FROM puntos_reciclaje")
 

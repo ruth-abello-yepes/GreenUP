@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenUp | Huella de Carbono</title>
+    <title>GreenUp | Privacidad y Seguridad</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -58,100 +58,59 @@
         }
 
         /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
         .hover-bg-light:hover {
             background-color: #f1f5f9;
         }
 
-        /* Estilos de Cards */
+        /* Estilos de Cards Base */
         .gu-card {
             border-radius: 16px;
             border: 1px solid rgba(0, 0, 0, 0.08);
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .gu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+        /* Componente Aside Memorizado */
+        .sidebar-item {
+            transition: all 0.2s ease;
+            border: none;
+            text-align: left;
         }
 
-        /* Hero Banner Gradient */
-        .hero-banner {
-            background: linear-gradient(135deg, rgba(169, 242, 149, 0.3) 0%, rgba(217, 227, 246, 0.6) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        .sidebar-item:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: var(--gu-primary);
         }
 
-        /* Estilos del Gráfico de Barras */
-        .chart-container {
-            height: 250px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 8px;
-            padding-top: 20px;
-        }
-
-        .chart-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            justify-content: flex-end;
-            position: relative;
-        }
-
-        .chart-bar {
-            width: 100%;
-            max-width: 40px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            transition: background-color 0.3s, transform 0.3s;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .chart-bar:hover {
-            filter: brightness(0.85);
-            transform: scaleY(1.02);
-        }
-
-        .chart-label {
-            font-size: 0.75rem;
-            color: #727781;
-            font-weight: 500;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        /* Tooltip de las barras */
-        .chart-tooltip {
-            position: absolute;
-            top: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #121c2a;
-            color: white;
-            font-size: 11px;
+        .sidebar-item.active {
+            background-color: var(--gu-accent);
+            color: var(--gu-secondary);
             font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 6px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            white-space: nowrap;
-            z-index: 10;
         }
 
-        .chart-bar:hover .chart-tooltip {
-            opacity: 1;
+        /* Estilos Botones y Toggles */
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--gu-primary);
+            border-color: var(--gu-primary);
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.25);
+            border-color: var(--gu-primary);
         }
 
         /* Animaciones */
@@ -189,21 +148,16 @@
             </div>
 
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="inicio.html"><span
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">home</span> Inicio</a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_comunidad.html"><span
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">groups</span> Comunidad</a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1"
-                    href="ciudadano_mapa_puntos.html"><span class="material-symbols-outlined fs-5">map</span> Mapa
-                    Eco</a>
-
-                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1"
-                    href="ciudadano_estadisticas_personales.html"><span
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
+                        class="material-symbols-outlined fs-5">map</span> Mapa Eco</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">co2</span> Huella Carbono</a>
-
-                <a class="nav-link text-secondary d-flex align-items-center gap-1"
-                    href="ciudadano_contenido_educativo.html"><span class="material-symbols-outlined fs-5">school</span>
-                    Educación</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
+                        class="material-symbols-outlined fs-5">school</span> Educación</a>
             </div>
 
             <div class="d-flex align-items-center gap-2">
@@ -212,16 +166,17 @@
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
-                    <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span
-                            class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Username</span>
+                    <button
+                        class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light shadow-sm"
+                        style="background-color: var(--gu-light-blue);" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span class="d-none d-sm-inline fw-bold text-gu-primary small">Username</span>
                         <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
-                        <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
+                        <span class="material-symbols-outlined text-gu-primary fs-6">expand_more</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2" href="#"><span
-                                    class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 fw-bold text-gu-primary py-2"
+                                href="#"><span class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2" href="#"><span
                                     class="material-symbols-outlined fs-5">help</span> Ayuda</a></li>
                         <li>
@@ -261,8 +216,7 @@
                     <span class="material-symbols-outlined">map</span> Mapa Eco
                 </a>
                 <a href="#"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">co2</span> Huella Carbono
                 </a>
                 <a href="#"
@@ -273,175 +227,120 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1200px;">
+    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
 
-        <section class="hero-banner rounded-4 p-4 p-md-5 mb-5 position-relative overflow-hidden fade-up">
-            <div class="row align-items-center position-relative z-3">
-                <div class="col-md-8 text-center text-md-start mb-4 mb-md-0">
-                    <span class="badge rounded-pill text-gu-secondary fw-bold mb-3"
-                        style="background-color: rgba(41, 108, 31, 0.1);">IMPACTO MENSUAL</span>
-                    <h1 class="display-5 fw-bold text-gu-primary mb-3">45.8 kg de CO2 Evitados este mes</h1>
-                    <p class="text-secondary fs-5 mb-0">Gracias a tus registros de reciclaje has mitigado el impacto
-                        ambiental en <span class="fw-bold text-dark">Valledupar</span>. ¡Sigue así, Alex!</p>
-                </div>
-                <div class="col-md-4 d-flex justify-content-center justify-content-md-end">
-                    <div class="rounded-circle bg-white bg-opacity-50 d-flex align-items-center justify-content-center border border-white"
-                        style="width: 150px; height: 150px; backdrop-filter: blur(10px);">
-                        <span class="material-symbols-outlined text-gu-secondary"
-                            style="font-size: 64px;">energy_savings_leaf</span>
-                    </div>
-                </div>
-            </div>
-            <div class="position-absolute rounded-circle"
-                style="width: 300px; height: 300px; background: rgba(41, 108, 31, 0.05); top: -100px; right: -50px;">
-            </div>
-        </section>
+        <h1 class="display-6 fw-bold text-dark mb-4 fade-up">Ajustes de Cuenta</h1>
 
-        <section class="row g-4 mb-5">
-            <div class="col-md-4 fade-up">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-primary text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(0, 61, 108, 0.1);">
-                        <span class="material-symbols-outlined text-gu-primary fs-3">directions_car</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivalente a <span class="fw-bold text-dark">180 km</span> sin
-                        conducir un vehículo</p>
-                </div>
-            </div>
-            <div class="col-md-4 fade-up" style="transition-delay: 0.1s;">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-success text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(41, 108, 31, 0.1);">
-                        <span class="material-symbols-outlined text-gu-secondary fs-3">bolt</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivalente a <span class="fw-bold text-dark">12 días</span> de
-                        energía eléctrica ahorrada</p>
-                </div>
-            </div>
-            <div class="col-md-4 fade-up" style="transition-delay: 0.2s;">
-                <div
-                    class="card gu-card h-100 p-4 border-0 border-start border-4 border-info text-center align-items-center">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
-                        style="width: 56px; height: 56px; background-color: rgba(23, 162, 184, 0.1);">
-                        <span class="material-symbols-outlined text-info fs-3">forest</span>
-                    </div>
-                    <p class="text-secondary mb-0">Equivale al CO2 absorbido por <span class="fw-bold text-dark">3
-                            árboles</span> plantados</p>
-                </div>
-            </div>
-        </section>
+        <div class="row g-4 items-start fade-up" style="transition-delay: 0.1s;">
 
-        <section class="card gu-card border-0 p-4 p-md-5 mb-5 fade-up">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <div>
-                    <h3 class="fw-bold text-dark mb-1">Evolución de Emisiones Mitigadas 2026</h3>
-                    <p class="text-secondary small mb-0">Histórico de ahorro de CO2 en kg</p>
+            <aside class="col-lg-3 col-md-4">
+                <div class="d-flex flex-column gap-2">
+                    <a href="#"
+                        class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                        <span class="material-symbols-outlined">person</span> Perfil
+                    </a>
+                    <a href="#"
+                        class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                        <span class="material-symbols-outlined">notifications</span> Notificaciones
+                    </a>
+                    <a href="#" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                        <span class="material-symbols-outlined">security</span> Seguridad
+                    </a>
+                    <a href="#"
+                        class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                        <span class="material-symbols-outlined">eco</span> Preferencias Eco
+                    </a>
                 </div>
-                <div class="btn-group shadow-sm" role="group">
-                    <button type="button"
-                        class="btn btn-outline-secondary bg-white text-dark btn-sm px-3">Semanal</button>
-                    <button type="button" class="btn btn-gu-primary btn-sm px-3 border-0">Mensual</button>
+            </aside>
+
+            <div class="col-lg-9 col-md-8">
+                <div class="gu-card p-4 p-md-5">
+
+                    <header class="mb-5 pb-4 border-bottom">
+                        <h3 class="fw-bold mb-2">Privacidad y Seguridad</h3>
+                        <p class="text-secondary mb-0">Gestiona cómo protegemos tu cuenta y quién puede ver tu actividad
+                            en GreenUp.</p>
+                    </header>
+
+                    <div class="d-flex flex-column gap-5">
+
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pb-4 border-bottom">
+                            <div class="mb-3 mb-sm-0">
+                                <h6 class="fw-bold text-dark mb-1">Cambiar Contraseña</h6>
+                                <p class="text-secondary small mb-0">Es recomendable actualizar tu contraseña cada 6
+                                    meses.</p>
+                            </div>
+                            <button class="btn btn-gu-primary rounded-pill px-4">Actualizar</button>
+                        </div>
+
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pb-4 border-bottom">
+                            <div class="mb-3 mb-sm-0">
+                                <h6 class="fw-bold text-dark mb-1">Autenticación de Dos Pasos (2FA)</h6>
+                                <p class="text-secondary small mb-0">Añade una capa extra de seguridad a tu cuenta
+                                    mediante SMS o App.</p>
+                            </div>
+                            <div class="form-check form-switch fs-3 mb-0">
+                                <input class="form-check-input shadow-none" type="checkbox" role="switch" id="2faSwitch"
+                                    checked>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold text-dark mb-3">Sesiones Activas</h6>
+
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3 rounded-3"
+                                    style="background-color: var(--gu-light-blue);">
+                                    <div class="d-flex align-items-center gap-3 mb-2 mb-sm-0">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-white text-gu-primary shadow-sm flex-shrink-0"
+                                            style="width: 45px; height: 45px;">
+                                            <span class="material-symbols-outlined">laptop_mac</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0 small">MacBook Pro - Chrome</h6>
+                                            <p class="text-secondary small mb-0" style="font-size: 0.8rem;">Madrid,
+                                                España • Activa ahora</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="badge text-success bg-white border border-success px-3 py-2 rounded-pill small">TU
+                                        DISPOSITIVO</span>
+                                </div>
+
+                                <div
+                                    class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3 rounded-3 border">
+                                    <div class="d-flex align-items-center gap-3 mb-2 mb-sm-0">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary flex-shrink-0"
+                                            style="width: 45px; height: 45px;">
+                                            <span class="material-symbols-outlined">smartphone</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0 small">iPhone 14 - GreenUp App</h6>
+                                            <p class="text-secondary small mb-0" style="font-size: 0.8rem;">Barcelona,
+                                                España • Hace 2 horas</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="btn btn-link text-danger fw-medium text-decoration-none p-0 small">Cerrar
+                                        sesión</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-top" style="border-color: rgba(220, 53, 69, 0.2) !important;">
+                            <h6 class="fw-bold text-danger mb-2">Zona de Peligro</h6>
+                            <p class="text-secondary small mb-3">Una vez que elimines tu cuenta, perderás todos tus
+                                Eco-Puntos y no hay vuelta atrás. Por favor, asegúrate.</p>
+                            <button class="btn btn-outline-danger rounded-pill px-4 fw-medium btn-sm">Eliminar Cuenta
+                                Permanentemente</button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-
-            <div class="chart-container border-bottom border-light pb-2">
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 40%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">12.5kg</div>
-                    </div>
-                    <div class="chart-label">Ene</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 55%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">18.0kg</div>
-                    </div>
-                    <div class="chart-label">Feb</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar" style="height: 45%; background-color: rgba(0, 61, 108, 0.2);">
-                        <div class="chart-tooltip">14.2kg</div>
-                    </div>
-                    <div class="chart-label">Mar</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-secondary shadow-sm" style="height: 70%;">
-                        <div class="chart-tooltip">28.5kg</div>
-                    </div>
-                    <div class="chart-label fw-bold text-gu-secondary">Abr</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 85%;">
-                        <div class="chart-tooltip">34.0kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">May</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 60%;">
-                        <div class="chart-tooltip">22.8kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Jun</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 50%;">
-                        <div class="chart-tooltip">19.5kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Jul</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 75%;">
-                        <div class="chart-tooltip">30.1kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Ago</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 90%;">
-                        <div class="chart-tooltip">38.2kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Sep</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 65%;">
-                        <div class="chart-tooltip">25.4kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Oct</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 55%;">
-                        <div class="chart-tooltip">21.0kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Nov</div>
-                </div>
-                <div class="chart-col">
-                    <div class="chart-bar bg-gu-primary shadow-sm" style="height: 40%;">
-                        <div class="chart-tooltip">16.3kg</div>
-                    </div>
-                    <div class="chart-label text-gu-primary">Dic</div>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center gap-4 mt-4">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-gu-primary" style="width: 12px; height: 12px;"></div>
-                    <span class="small text-secondary fw-medium">Meta Promedio</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-gu-secondary" style="width: 12px; height: 12px;"></div>
-                    <span class="small text-secondary fw-medium">Mes Actual</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="text-center fade-up">
-            <a href="#"
-                class="btn btn-gu-primary btn-lg rounded-pill px-5 py-3 shadow-lg d-inline-flex align-items-center gap-2"
-                style="font-size: 1.1rem;">
-                <span class="material-symbols-outlined icon-fill">add_circle</span>
-                Registrar nueva acción de reciclaje
-            </a>
-        </section>
-
+        </div>
     </main>
 
     <footer class="bg-gu-dark text-white pt-5 position-relative z-3"
@@ -524,6 +423,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Animaciones de carga (Fade-up)
             const observerOptions = { threshold: 0.1 };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -532,12 +432,19 @@
                     }
                 });
             }, observerOptions);
-
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+            // Simulación de guardado para el switch de 2FA
+            const switch2FA = document.getElementById('2faSwitch');
+            switch2FA.addEventListener('change', function () {
+                if (this.checked) {
+                    alert("Se ha enviado un SMS de verificación a tu número registrado.");
+                } else {
+                    alert("Has desactivado la autenticación de dos pasos. Tu cuenta es menos segura.");
+                }
+            });
         });
     </script>
-    <script src="../../js/cargar_usuario.js"></script>
-
 </body>
 
 </html>

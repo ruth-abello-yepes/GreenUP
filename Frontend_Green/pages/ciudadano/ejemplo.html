@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es" class="h-100">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo - GreenUp Sostenibilidad</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --gu-primary: #003d6c;
+            /* Azul Profundo Corporativo */
+            --gu-secondary: #296c1f;
+            /* Verde Eco */
+            --gu-dark: #0f172a;
+            /* Azul Oscuro para Footer */
+            --gu-surface: #f8fafc;
+            /* Fondo Claro */
+            --gu-accent: #e2f1df;
+            /* Verde Claro Acceso/Activo */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Clases de Marca */
+        .text-gu-primary {
+            color: var(--gu-primary) !important;
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary) !important;
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary) !important;
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary) !important;
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark) !important;
+        }
+
+        .btn-gu-primary {
+            background-color: var(--gu-primary) !important;
+            color: white;
+            border: none;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d !important;
+            color: white;
+        }
+
+        /* Ajustes de Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: 700;
+        }
+
+        .material-symbols-outlined {
+            vertical-align: middle;
+        }
+
+        /* Redondeado del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2">
+        <div class="container-fluid px-4">
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileOffcanvas" aria-controls="mobileOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-decoration-none" href="inicio.html">
+                <img src="https://ui-avatars.com/api/?name=G+U&background=e2f1df&color=296c1f&rounded=true" alt="Logo"
+                    width="32" height="32" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </a>
+
+            <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link active-custom d-flex align-items-center" href="#">
+                            <span class="material-symbols-outlined me-1">home</span> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="#">
+                            <span class="material-symbols-outlined me-1">newspaper</span> Noticias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="#">
+                            <span class="material-symbols-outlined me-1">map</span> Mapa Eco
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="#">
+                            <span class="material-symbols-outlined me-1">bar_chart</span> Estadísticas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="#">
+                            <span class="material-symbols-outlined me-1">school</span> Educación
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="nav-guest-zone" class="d-flex align-items-center gap-2">
+                <a href="#"
+                    class="btn btn-outline-success rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="#" class="btn btn-gu-primary rounded-pill px-3 py-1 fw-semibold d-none d-sm-inline-flex">
+                    Registrarse
+                </a>
+            </div>
+
+            <div id="nav-auth-zone" class="d-none align-items-center gap-3">
+                <button class="btn btn-link text-secondary p-0 text-decoration-none" title="Notificaciones">
+                    <span class="material-symbols-outlined fs-5">notifications</span>
+                </button>
+
+                <div class="dropdown">
+                    <button
+                        class="btn btn-light rounded-pill d-flex align-items-center gap-2 border-0 shadow-none dropdown-toggle px-3 py-1"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="material-symbols-outlined text-secondary">account_circle</span>
+                        <span class="fw-semibold text-dark d-none d-sm-block" id="nav-username">Usuario</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3 p-2">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2" href="#">
+                                <span class="material-symbols-outlined fs-5">settings</span> Ajustes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2" href="#">
+                                <span class="material-symbols-outlined fs-5">help</span> Ayuda
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button
+                                class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 text-danger fw-semibold w-100 border-0 bg-transparent"
+                                onclick="cerrarSesion()">
+                                <span class="material-symbols-outlined fs-5">logout</span> Cerrar Sesión
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileOffcanvas" aria-labelledby="mobileOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="mobileOffcanvasLabel">
+                <img src="https://ui-avatars.com/api/?name=G+U&background=e2f1df&color=296c1f&rounded=true" alt="Logo"
+                    width="28" height="28" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between">
+            <ul class="navbar-nav flex-column gap-2">
+                <li class="nav-item"><a class="nav-link active-custom d-flex align-items-center p-2 rounded"
+                        href="#"><span class="material-symbols-outlined me-2">home</span> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded"
+                        href="#"><span class="material-symbols-outlined me-2">newspaper</span> Noticias</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded"
+                        href="#"><span class="material-symbols-outlined me-2">map</span> Mapa Eco</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded"
+                        href="#"><span class="material-symbols-outlined me-2">bar_chart</span> Estadísticas</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded"
+                        href="#"><span class="material-symbols-outlined me-2">school</span> Educación</a></li>
+            </ul>
+
+            <div id="mobile-guest-buttons" class="mt-4 pt-3 border-top">
+                <a href="#" class="btn btn-outline-success w-100 mb-2 rounded-pill fw-semibold">Iniciar Sesión</a>
+                <a href="#" class="btn btn-gu-primary w-100 rounded-pill fw-semibold">Registrarse</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center" style="margin-top: 75px;">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center bg-white">
+                        <span class="material-symbols-outlined text-gu-secondary mb-3"
+                            style="font-size: 48px;">code_blocks</span>
+                        <h3 class="fw-bold mb-3 text-gu-primary">Entorno de Pruebas <span
+                                class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span></h3>
+                        <p class="text-muted mb-4">Esta plantilla unificada carga la Navbar y el Footer definitivos.
+                            Presiona los botones de abajo para simular si hay un usuario logueado en tu navegador y
+                            observa cómo reacciona la Navbar derecha.</p>
+
+                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                            <button onclick="simularInicioSesion()"
+                                class="btn btn-outline-success rounded-pill fw-semibold px-4 py-2 d-flex align-items-center justify-content-center gap-2">
+                                <span class="material-symbols-outlined">how_to_reg</span> Simular Logueo
+                            </button>
+                            <button onclick="cerrarSesion()"
+                                class="btn btn-outline-danger rounded-pill fw-semibold px-4 py-2 d-flex align-items-center justify-content-center gap-2">
+                                <span class="material-symbols-outlined">person_off</span> Limpiar Sesión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                        <img src="https://ui-avatars.com/api/?name=G+U&background=e2f1df&color=296c1f&rounded=true"
+                            alt="Logo" width="32" height="32" class="me-2">
+                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
+                            style="margin-right: -2px;">Green</span><span
+                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                    </div>
+                    <p class="text-white-50 small pe-lg-3">
+                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
+                        limpios y economía circular en Valledupar.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;"><span
+                                class="material-symbols-outlined fs-6">share</span></a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;"><span
+                                class="material-symbols-outlined fs-6">public</span></a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;"><span
+                                class="material-symbols-outlined fs-6">mail</span></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a>
+                        </li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
+                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ejecutar la actualización apenas carga la página
+            actualizarNavbar();
+        });
+
+        // Función Principal
+        function actualizarNavbar() {
+            const token = localStorage.getItem('token');
+            const usuarioJSON = localStorage.getItem('usuario');
+
+            const guestZone = document.getElementById('nav-guest-zone');
+            const authZone = document.getElementById('nav-auth-zone');
+            const mobileGuestButtons = document.getElementById('mobile-guest-buttons');
+            const usernameLabel = document.getElementById('nav-username');
+
+            if (token && usuarioJSON) {
+                // Hay sesión: Ocultar visitante, mostrar Auth
+                const usuario = JSON.parse(usuarioJSON);
+
+                if (guestZone) guestZone.classList.add('d-none');
+                if (mobileGuestButtons) mobileGuestButtons.classList.add('d-none');
+
+                if (authZone) {
+                    authZone.classList.remove('d-none');
+                    authZone.classList.add('d-flex');
+                }
+                if (usernameLabel) {
+                    usernameLabel.textContent = usuario.nombre || 'Oreste';
+                }
+            } else {
+                // NO hay sesión: Ocultar Auth, Mostrar visitante
+                if (authZone) {
+                    authZone.classList.add('d-none');
+                    authZone.classList.remove('d-flex');
+                }
+                if (guestZone) guestZone.classList.remove('d-none');
+                if (mobileGuestButtons) mobileGuestButtons.classList.remove('d-none');
+            }
+        }
+
+        // ==========================================
+        // FUNCIONES DE PRUEBA EXCLUSIVAS PARA ESTE EJEMPLO
+        // ==========================================
+
+        function simularInicioSesion() {
+            // Guardamos datos ficticios en el navegador
+            localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+            localStorage.setItem('usuario', JSON.stringify({ nombre: 'Oreste' }));
+
+            // Actualizamos la interfaz
+            actualizarNavbar();
+            alert("✅ ¡Éxito! Iniciaste sesión. Mira la Navbar arriba a la derecha.");
+        }
+
+        function cerrarSesion() {
+            // Borramos los datos
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+
+            // Actualizamos la interfaz (En producción esto redirige a login.html)
+            actualizarNavbar();
+        }
+    </script>
+</body>
+
+</html>

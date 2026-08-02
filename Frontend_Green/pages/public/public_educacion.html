@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUp | Educación Ambiental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-primary-container: #065591;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        /* Botones Bootstrap Sobreescritos */
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-filter.active {
+            background-color: var(--gu-primary);
+            color: white;
+            border-color: var(--gu-primary);
+        }
+
+        /* Estilos de Cards (Bento Grid) */
+        .gu-card {
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .gu-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Imágenes en las Tarjetas */
+        .card-img-wrapper {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .gu-card:hover .card-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        /* Tarjeta Destacada (Imagen Completa) */
+        .card-highlight {
+            height: 100%;
+            min-height: 350px;
+            position: relative;
+        }
+
+        .card-highlight img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+            transition: transform 0.7s ease;
+        }
+
+        .gu-card:hover .card-highlight img {
+            transform: scale(1.05);
+        }
+
+        .card-highlight-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border-left: 4px solid var(--gu-secondary);
+        }
+
+        /* Hover Link Text */
+        .hover-primary-text:hover {
+            color: var(--gu-primary) !important;
+            text-decoration: underline;
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2">
+        <div class="container-fluid px-4">
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileOffcanvas" aria-controls="mobileOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-decoration-none" href="public_inicio.html">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="32" height="32" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </a>
+
+            <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_inicio.html">
+                            <span class="material-symbols-outlined me-1">home</span> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_noticias.html">
+                            <span class="material-symbols-outlined me-1">newspaper</span> Noticias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_mapa.html">
+                            <span class="material-symbols-outlined me-1">map</span> Mapa Eco
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_estadisticas.html">
+                            <span class="material-symbols-outlined me-1">bar_chart</span> Estadísticas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active-custom d-flex align-items-center" href="public_educacion.html">
+                            <span class="material-symbols-outlined me-1">school</span> Educación
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="d-none d-md-flex align-items-center gap-2">
+                <a href="public_login.html"
+                    class="btn btn-outline-success rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="public_registro.html" class="btn btn-gu-primary text-white rounded-pill px-3 py-1 fw-semibold">
+                    Registrarse
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileOffcanvas" aria-labelledby="mobileOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="mobileOffcanvasLabel">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="28" height="28" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body d-flex flex-column justify-content-between">
+            <ul class="navbar-nav flex-column gap-2">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_inicio.html">
+                        <span class="material-symbols-outlined me-2">home</span> Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_noticias.html">
+                        <span class="material-symbols-outlined me-2">newspaper</span> Noticias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_mapa.html">
+                        <span class="material-symbols-outlined me-2">map</span> Mapa Eco
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_estadisticas.html">
+                        <span class="material-symbols-outlined me-2">bar_chart</span> Estadísticas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active-custom d-flex align-items-center p-2 rounded" href="public_educacion.html">
+                        <span class="material-symbols-outlined me-2">school</span> Educación
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mt-4 pt-3 border-top">
+                <a href="public_login.html"
+                    class="btn btn-outline-success w-100 mb-2 rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="public_registro.html" class="btn btn-gu-primary text-white w-100 rounded-pill fw-semibold">
+                    Registrarse
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1280px;">
+
+        <header class="position-relative overflow-hidden rounded-4 p-4 p-md-5 mb-5 fade-up shadow-sm"
+            style="background-color: var(--gu-primary-container); color: white;">
+            <div class="row align-items-center position-relative z-10">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold mb-4 leading-tight">Aprende a separar tus residuos, cuida Valledupar y
+                        gana recompensas por tu impacto</h1>
+                    <p class="lead mb-4 text-white-50">Transforma tu conocimiento en acciones concretas por el medio
+                        ambiente. Únete a la red ciudadana más grande del Cesar.</p>
+                    <button class="btn btn-lg rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow"
+                        style="background-color: var(--gu-accent); color: var(--gu-secondary);">
+                        Crea tu cuenta gratis <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+            <div class="position-absolute rounded-circle"
+                style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -100px; right: -50px;">
+            </div>
+            <div class="position-absolute rounded-circle"
+                style="width: 200px; height: 200px; background: rgba(255,255,255,0.05); bottom: -50px; right: 150px;">
+            </div>
+        </header>
+
+        <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4 mb-4">
+                <h2 class="fw-bold text-dark mb-0">Guías de Reciclaje</h2>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden" style="max-width: 400px;">
+                    <span class="input-group-text bg-white border-end-0"><span
+                            class="material-symbols-outlined text-muted">search</span></span>
+                    <input type="text" class="form-control border-start-0 py-2 shadow-none"
+                        placeholder="¿Qué quieres reciclar hoy?">
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-filter active rounded-pill px-4 fw-medium">Todos</button>
+                <button
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Plásticos</button>
+                <button
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Orgánicos</button>
+                <button
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Electrónicos</button>
+                <button
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Peligrosos</button>
+            </div>
+        </section>
+
+        <section class="row g-4 mb-5 fade-up" style="transition-delay: 0.2s;">
+
+            <div class="col-lg-8">
+                <article class="gu-card h-100 card-highlight d-flex flex-column justify-content-end">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlSO5RwafaQ61FjKkemap5K2pvbT-RQHehDicKpsyJLMI8yVomNaxNWtgYYo_fOrbrpMHymMTyGoPHe7tgaD8mJwj4Et0dgN_QHk2FCzgruqFLf0feHY8QHqWFy1ZttWx1TwOgW2kVozAeAKZHRl8hmB-IjjHkLtz4tydnLJRkOYdSw-hDYJAtNsg34y9g6roPPooTaxMMsdhroX5LVW-uIJ2BbubGCNHEW4A9rWY7McIglB3j7vg"
+                        alt="Jardín tropical">
+                    <div class="card-highlight-overlay">
+                        <span class="badge text-white px-3 py-1 text-uppercase tracking-wider mb-3 align-self-start"
+                            style="background-color: var(--gu-secondary);">Destacado</span>
+                        <h2 class="display-6 fw-bold text-white mb-3">El Ciclo del Plástico en el Valle</h2>
+                        <p class="text-white-50 mb-4 lead">Descubre cómo tus botellas PET se transforman en nuevos
+                            recursos locales y cómo evitar que lleguen al Río Guatapurí.</p>
+
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <div class="d-flex align-items-center gap-2 text-white">
+                                <span class="material-symbols-outlined fs-5">timer</span>
+                                <span class="fw-medium small">8 min de lectura</span>
+                            </div>
+                            <button class="btn btn-light text-gu-primary fw-bold rounded-pill px-4">Leer más</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-lg-4">
+                <article class="gu-card glass-card h-100 p-4 d-flex flex-column">
+                    <div class="mb-4 overflow-hidden rounded-3" style="aspect-ratio: 1/1;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTfgzKWPAbp86SwCmPazkc9SJljiupawEnf9otB1SMoEBaAGglu7SENgh8UlsRAgbonJUqXQiGthoaVDzIYA7nMyzNnv7IUmfz7JUnTgbH5U7j2AgERiHdfAjuiVCD8uD_Sd5iib5JWMW_aDWMEF153o5YZqtLhql-ghDqcR2poaYIZCj-HAC5EtGKrGaaIp2QxClbQJQKfhh954ScrfspSGEOWJAFXh_try6j5wnWhrB8AX_O958N"
+                            alt="Botella de vidrio" class="w-100 h-100 object-fit-cover">
+                    </div>
+                    <span class="material-symbols-outlined text-gu-secondary display-6 mb-3">lightbulb</span>
+                    <h4 class="fw-bold mb-3">Tip del Día</h4>
+                    <p class="text-secondary flex-grow-1">Lava y seca tus envases de leche antes de depositarlos. El
+                        residuo orgánico contamina todo el lote de reciclaje.</p>
+                </article>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <article class="gu-card d-flex flex-column h-100">
+                    <div class="card-img-wrapper">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3_6MPmyCB3hzC4IBdtElXY1JSyuOXvjoFWzj4FExNTO0oUObhJKWE8DDGQ0Ogx8S7b516AfIbrvQrNzbnSTFDBwpXlqGP_eTG5g1YglVVBf3sRarIPaJkVjQ8Y40WO294jkvQrJUrZ4iXJ-sZEc7IVL4OFIXhrr7QVZaz9S1W3Ca5q1ZM8Oa2oCMdnc1zi20lP0JyPCNKWWm4nqQlsx6-3bGtur7F1IXh5o01xDzMFscHHAEwj_U2"
+                            alt="Electrónicos">
+                    </div>
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <h5 class="fw-bold mb-2">Residuos Electrónicos</h5>
+                        <p class="text-secondary small mb-4 flex-grow-1">Puntos de recolección para pilas y dispositivos
+                            en centros comerciales de la ciudad.</p>
+                        <a href="#"
+                            class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
+                            más</a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <article class="gu-card d-flex flex-column h-100">
+                    <div class="card-img-wrapper">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZWvd8VctA0u-SoflX4X5fKj9uLTL0dNgNt4gaZmf9yptxfdOK-WfW6_QBs1QmwqkgpnFjVApC1CDKto6CZiAHZLIYMSVehY1gl8muM-mskQAQUu_yeMi-v2Gj48I073TFEa15-QWhh8YHNCDP1osN7aZiH-7kvGUC7mlabMiQSAjnYDhxJcNmjR5VSu_2pNyi-ACc6oXrS2C4_11wkD91YgOiDPJ6U8Ea8ukW21g_Bv3jChzNCioN"
+                            alt="Orgánicos">
+                    </div>
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <h5 class="fw-bold mb-2">Compostaje Casero</h5>
+                        <p class="text-secondary small mb-4 flex-grow-1">Convierte tus restos de comida en abono para
+                            tus plantas de forma sencilla y sin olores.</p>
+                        <a href="#"
+                            class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
+                            más</a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <article class="gu-card d-flex flex-column h-100">
+                    <div class="card-img-wrapper">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUE5ik3-L18LaOsP0WjwCDSLv9flJGwL0xegfjLXFQQNX1oB-1TB4fAgGO91dvR65G1oXkHv-YWT4EnG1p2s97n4JeKG0f8gkHb9b7Dz4a_mb1AHWJjBDdq7U1HcSG9wBYNN0gASu39-_019f8O77qoBa7hX2vDXWIrCOba3CT0S9HeLdOxLhpfJcYdY0cGkiD4neMdKDc_aFOVG7yFCOOCMJ02vZwQ62IriWMunZgXLkBYuXixHzu"
+                            alt="Peligrosos">
+                    </div>
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <h5 class="fw-bold mb-2">Residuos Peligrosos</h5>
+                        <p class="text-secondary small mb-4 flex-grow-1">Manejo correcto de aceites usados, medicamentos
+                            vencidos y químicos domésticos.</p>
+                        <a href="#"
+                            class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
+                            más</a>
+                    </div>
+                </article>
+            </div>
+
+        </section>
+
+        <section
+            class="bg-gu-dark text-white rounded-4 p-4 p-md-5 text-center position-relative overflow-hidden fade-up shadow-lg mb-5"
+            style="border-radius: 40px !important;">
+            <div class="position-absolute top-0 end-0 p-4 opacity-25">
+                <span class="material-symbols-outlined icon-fill"
+                    style="font-size: 120px; color: var(--gu-accent);">eco</span>
+            </div>
+            <div class="position-relative z-10 py-4 mx-auto" style="max-width: 800px;">
+                <h2 class="display-5 fw-bold mb-4">¿Listo para ser un Eco-Líder?</h2>
+                <p class="lead text-white-50 mb-5">Únete a cientos de ciudadanos en Valledupar. Recicla, acumula puntos
+                    y canjéalos por beneficios locales en comercios aliados.</p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                    <a href="public_registro.html" class="btn btn-lg rounded-pill fw-bold px-5 py-3 shadow-sm"
+                        style="background-color: var(--gu-accent); color: var(--gu-secondary);">
+                        Registrarse Ahora
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-5 py-3 border-2">
+                        Saber más
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                            alt="Logo" width="32" height="32" class="me-2">
+                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
+                            style="margin-right: -2px;">Green</span><span
+                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                    </div>
+                    <p class="text-white-50 small pe-lg-3">
+                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
+                        limpios y economía circular en Valledupar.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">share</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">public</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">mail</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="public_noticias.html" class="text-white-50 text-decoration-none hover-white">Boletín
+                                Ambiental</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
+                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Animaciones de carga (Fade-up)
+            const observerOptions = { threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+            // Interactividad de los Chips de Filtro
+            const filterBtns = document.querySelectorAll('.btn-filter');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remover clase activa de todos
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'btn-gu-primary', 'text-white');
+                        b.classList.add('btn-outline-secondary', 'bg-light', 'text-dark');
+                    });
+                    // Añadir clase activa al clickeado
+                    btn.classList.remove('btn-outline-secondary', 'bg-light', 'text-dark');
+                    btn.classList.add('active', 'btn-gu-primary', 'text-white');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

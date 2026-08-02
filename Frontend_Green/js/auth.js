@@ -73,3 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
     formLogin.addEventListener("submit", iniciarSesion);
   }
 });
+
+/**
+ * Ejecuta el cierre de sesión, limpia el almacenamiento y redirige al login.
+ */
+function ejecutarCierreSesion() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("token");
+  // Verifica que esta ruta funcione correctamente según el nivel de carpetas en el que estés
+  window.location.href = "../../pages/public/public_login.html";
+}

@@ -233,3 +233,83 @@ def inhabilitar_usuario(id_usuario):
 
     cursor.close()
     conexion.close()
+
+
+# =========================================================================
+# FUNCIONES NUEVAS PARA LA RECUPERACIÓN DE CONTRASEÑA
+# =========================================================================
+
+def buscar_usuario_por_correo(correo):
+    """
+    Busca un usuario por su dirección de correo electrónico.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = "SELECT * FROM usuarios WHERE correo = %s"
+    cursor.execute(sql, (correo,))
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario
+
+
+def guardar_codigo_recuperacion_db(id_usuario, codigo, expiracion):
+    """
+    Guarda el código de 6 dígitos generado en la tabla codigos_recuperacion.
+    Elimina cualquier código anterior del usuario antes de guardar el nuevo.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    # 1. Eliminar códigos previos
+    cursor.execute("DELETE FROM codigos_recuperacion WHERE id_usuario = %s", (id_usuario,))
+
+    # 2. Insertar nuevo código
+    sql = """
+    INSERT INTO codigos_recuperacion (id_usuario, codigo, expiracion)
+    VALUES (%s, %s, %s)
+    """
+    cursor.execute(sql, (id_usuario, codigo, expiracion))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+
+def obtener_codigo_recuperacion_db(id_usuario, codigo):
+    """
+    Obtiene el registro del código de recuperación para un usuario.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = "SELECT * FROM codigos_recuperacion WHERE id_usuario = %s AND codigo = %s"
+    cursor.execute(sql, (id_usuario, codigo))
+    registro_codigo = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return registro_codigo
+
+
+def actualizar_contrasena_db(id_usuario, nueva_contrasena):
+    """
+    Actualiza la contraseña del usuario y elimina el código usado.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    # 1. Actualizar contraseña
+    sql_update = "UPDATE usuarios SET contrasena = %s WHERE id_usuario = %s"
+    cursor.execute(sql_update, (nueva_contrasena, id_usuario))
+
+    # 2. Borrar código consumido
+    cursor.execute("DELETE FROM codigos_recuperacion WHERE id_usuario = %s", (id_usuario,))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()

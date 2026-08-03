@@ -1,7 +1,7 @@
 """
 Archivo: auth_routes.py
 
-Aqui se crean las rutas de inicio de sesion.
+Aqui se crean las rutas de inicio de sesion y recuperacion de contraseña.
 
 Rutas:
 POST /api/login
@@ -9,11 +9,22 @@ POST /api/login
 
 POST /api/admin/login
     Login exclusivo para administrador del sistema.
+
+POST /api/recuperar-contrasena/solicitar
+    Solicitud de codigo de 6 digitos al correo.
+
+POST /api/recuperar-contrasena/restablecer
+    Verificacion del codigo y cambio de contraseña.
 """
 
 from flask import Blueprint, request, jsonify
 
-from app.services.auth_service import servicio_login, servicio_login_admin
+from app.services.auth_service import (
+    servicio_login, 
+    servicio_login_admin,
+    solicitar_codigo_recuperacion,
+    restablecer_contrasena
+)
 
 
 # No usamos url_prefix="/api/auth" para que las rutas sean mas cortas.
@@ -107,4 +118,74 @@ def ruta_login_admin():
 
     respuesta, estado = servicio_login_admin(datos)
 
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/recuperar-contrasena/solicitar", methods=["POST"])
+def ruta_solicitar_codigo():
+    """
+    Solicitar código de recuperación
+    ---
+    tags:
+      - Recuperar Contraseña
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - correo
+          properties:
+            correo:
+              type: string
+              example: usuario@gmail.com
+    responses:
+      200:
+        description: Código enviado si el correo existe
+      400:
+        description: El correo es obligatorio
+      500:
+        description: Error al enviar el correo
+    """
+    datos = request.get_json()
+    respuesta, estado = solicitar_codigo_recuperacion(datos)
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/recuperar-contrasena/restablecer", methods=["POST"])
+def ruta_restablecer_contrasena():
+    """
+    Restablecer contraseña con código
+    ---
+    tags:
+      - Recuperar Contraseña
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - correo
+            - codigo
+            - nueva_contrasena
+          properties:
+            correo:
+              type: string
+              example: usuario@gmail.com
+            codigo:
+              type: string
+              example: "123456"
+            nueva_contrasena:
+              type: string
+              example: "NuevaClave2026!"
+    responses:
+      200:
+        description: Contraseña actualizada con éxito
+      400:
+        description: Código inválido, expirado o faltan datos
+    """
+    datos = request.get_json()
+    respuesta, estado = restablecer_contrasena(datos)
     return jsonify(respuesta), estado

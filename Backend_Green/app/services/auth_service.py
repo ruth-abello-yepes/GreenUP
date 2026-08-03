@@ -1,10 +1,9 @@
 """
 Archivo: auth_service.py
 
-Aqui va la logica del inicio de sesion.
+Aqui va la logica del inicio de sesion y recuperacion de contraseña.
 
 Tenemos dos tipos de login:
-
 1. servicio_login()
    Para ciudadano y dueno de punto ecologico.
 
@@ -18,9 +17,18 @@ Roles:
 """
 
 import os
+import random
+from datetime import datetime, timedelta
+from flask_mail import Message
 
-from app.models.usuarios_model import buscar_usuario_por_usuario
-from app.common.security import verificar_contrasena
+from app.models.usuarios_model import (
+    buscar_usuario_por_usuario,
+    buscar_usuario_por_correo,
+    guardar_codigo_recuperacion_db,
+    obtener_codigo_recuperacion_db,
+    actualizar_contrasena_db
+)
+from app.common.security import verificar_contrasena, cifrar_contrasena
 
 
 def servicio_login(datos):
@@ -124,3 +132,62 @@ def servicio_login_admin(datos):
             "id_rol": usuario_encontrado["id_rol"]
         }
     }, 200
+
+
+def solicitar_codigo_recuperacion(datos):
+    correo = datos.get("correo")
+
+    if not correo:
+        return {"mensaje": "El correo electronico es obligatorio"}, 400
+
+    usuario = buscar_usuario_por_correo(correo)
+
+    if not usuario:
+        return {"mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion."}, 200
+
+    codigo = str(random.randint(100000, 999999))
+    expiracion = datetime.now() + timedelta(minutes=15)
+
+    guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
+
+    try:
+        from app import mail
+
+        msg = Message(
+            subject="Codigo de Recuperacion de Contrasena - GreenUP",
+            recipients=[correo]
+        )
+        msg.body = f"Hola {usuario['nombres']},\n\nTu codigo de verificacion es: {codigo}\n\nEste codigo expira en 15 minutos."
+        mail.send(msg)
+        return {"mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion."}, 200
+
+    except Exception as e:
+        print(f"Error enviando correo: {e}")
+        return {"mensaje": "Error al enviar el correo electronico. Intente mas tarde."}, 500
+
+
+def restablecer_contrasena(datos):
+    correo = datos.get("correo")
+    codigo = datos.get("codigo")
+    nueva_contrasena = datos.get("nueva_contrasena")
+
+    if not correo or not codigo or not nueva_contrasena:
+        return {"mensaje": "Correo, codigo y nueva contrasena son obligatorios"}, 400
+
+    usuario = buscar_usuario_por_correo(correo)
+
+    if not usuario:
+        return {"mensaje": "Codigo invalido o expirado"}, 400
+
+    registro_codigo = obtener_codigo_recuperacion_db(usuario["id_usuario"], codigo)
+
+    if not registro_codigo:
+        return {"mensaje": "Codigo invalido o incorrecto"}, 400
+
+    if datetime.now() > registro_codigo["expiracion"]:
+        return {"mensaje": "El codigo ha expirado. Solicita uno nuevo."}, 400
+
+    contrasena_hash = cifrar_contrasena(nueva_contrasena)
+    actualizar_contrasena_db(usuario["id_usuario"], contrasena_hash)
+
+    return {"mensaje": "Contrasena actualizada exitosamente. Ya puedes iniciar sesion."}, 200

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenUp | Reportar Novedades</title>
+    <title>GreenUp | Privacidad y Seguridad</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -58,12 +58,6 @@
         }
 
         /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
         .hover-bg-light:hover {
             background-color: #f1f5f9;
         }
@@ -74,14 +68,6 @@
             border: 1px solid rgba(0, 0, 0, 0.08);
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Glass Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(193, 199, 209, 0.3);
         }
 
         /* Componente Aside Memorizado */
@@ -102,7 +88,7 @@
             font-weight: bold;
         }
 
-        /* Botones Bootstrap Sobreescritos */
+        /* Estilos Botones y Toggles */
         .btn-gu-primary {
             background-color: var(--gu-primary);
             color: white;
@@ -117,15 +103,14 @@
             transform: translateY(-2px);
         }
 
-        .btn-gu-primary:active {
-            transform: scale(0.95);
+        .form-check-input:checked {
+            background-color: var(--gu-primary);
+            border-color: var(--gu-primary);
         }
 
-        /* Inputs Personalizados */
-        .form-control:focus,
-        .form-select:focus {
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.25);
             border-color: var(--gu-primary);
-            box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.1);
         }
 
         /* Animaciones */
@@ -165,7 +150,7 @@
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">home</span> Inicio</a>
-                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1" href="#"><span
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">groups</span> Comunidad</a>
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#"><span
                         class="material-symbols-outlined fs-5">map</span> Mapa Eco</a>
@@ -181,17 +166,20 @@
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
-                    <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="d-none d-sm-inline fw-medium text-secondary small">Username</span>
+                    <button
+                        class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light shadow-sm"
+                        style="background-color: var(--gu-light-blue);" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span class="d-none d-sm-inline fw-bold text-gu-primary small">Username</span>
                         <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
-                        <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
+                        <span class="material-symbols-outlined text-gu-primary fs-6">expand_more</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2" href="#"><span
-                                    class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2" href="#"><span
-                                    class="material-symbols-outlined fs-5">help</span> Ayuda</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 fw-bold text-gu-primary py-2"
+                                href="#"><span class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
+                                href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
+                                Ayuda</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -216,24 +204,23 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush rounded-0 mt-2">
-                <a href="#"
+                <a href="ciudadano_inicio.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">home</span> Inicio
                 </a>
-                <a href="#"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                <a href="ciudadano_comunidad.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">groups</span> Comunidad
                 </a>
-                <a href="#"
+                <a href="ciudadano_mapa.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">map</span> Mapa Eco
                 </a>
-                <a href="#"
+                <a href="ciudadano_estadisticas.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">co2</span> Huella Carbono
                 </a>
-                <a href="#"
+                <a href="ciudadano_educacion.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
@@ -243,16 +230,7 @@
 
     <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
 
-        <div class="d-flex align-items-center gap-3 mb-4 fade-up">
-            <a href="#"
-                class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 shadow-sm hover-bg-light">
-                <span class="material-symbols-outlined text-gu-primary">arrow_back</span>
-            </a>
-            <div>
-                <h1 class="display-6 fw-bold text-gu-primary mb-0">Reportar Novedades</h1>
-                <p class="text-secondary mb-0">Ayúdanos a mantener los puntos de reciclaje en óptimas condiciones.</p>
-            </div>
-        </div>
+        <h1 class="display-6 fw-bold text-dark mb-4 fade-up">Ajustes de Cuenta</h1>
 
         <div class="row g-4 items-start fade-up" style="transition-delay: 0.1s;">
 
@@ -260,91 +238,108 @@
                 <div class="d-flex flex-column gap-2">
                     <a href="#"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
-                        <span class="material-symbols-outlined">forum</span> Foro
+                        <span class="material-symbols-outlined">person</span> Perfil
                     </a>
                     <a href="#"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
-                        <span class="material-symbols-outlined">event</span> Eventos Locales
-                    </a>
-                    <a href="#"
-                        class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
-                        <span class="material-symbols-outlined">emoji_events</span> Desafíos
+                        <span class="material-symbols-outlined">notifications</span> Notificaciones
                     </a>
                     <a href="#" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
-                        <span class="material-symbols-outlined icon-fill">campaign</span> Reportar Novedad
+                        <span class="material-symbols-outlined">security</span> Seguridad
+                    </a>
+                    <a href="#"
+                        class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                        <span class="material-symbols-outlined">eco</span> Preferencias Eco
                     </a>
                 </div>
             </aside>
 
             <div class="col-lg-9 col-md-8">
-                <div
-                    class="gu-card border-0 border-start border-4 border-primary shadow-sm position-relative overflow-hidden mb-4">
+                <div class="gu-card p-4 p-md-5">
 
-                    <div class="p-4 p-md-5">
-                        <form id="report-form">
-                            <div id="feedback-container" class="alert d-none align-items-center gap-2 mb-4"
-                                role="alert">
+                    <header class="mb-5 pb-4 border-bottom">
+                        <h3 class="fw-bold mb-2">Privacidad y Seguridad</h3>
+                        <p class="text-secondary mb-0">Gestiona cómo protegemos tu cuenta y quién puede ver tu actividad
+                            en GreenUp.</p>
+                    </header>
+
+                    <div class="d-flex flex-column gap-5">
+
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pb-4 border-bottom">
+                            <div class="mb-3 mb-sm-0">
+                                <h6 class="fw-bold text-dark mb-1">Cambiar Contraseña</h6>
+                                <p class="text-secondary small mb-0">Es recomendable actualizar tu contraseña cada 6
+                                    meses.</p>
                             </div>
+                            <button class="btn btn-gu-primary rounded-pill px-4">Actualizar</button>
+                        </div>
 
-                            <div class="row g-4">
-                                <div class="col-12">
-                                    <label for="punto-reciclaje" class="form-label fw-bold text-dark small ms-1">Punto
-                                        de Reciclaje</label>
-                                    <div class="input-group shadow-sm rounded-3 overflow-hidden">
-                                        <span class="input-group-text bg-light border-end-0 text-muted"><span
-                                                class="material-symbols-outlined">location_on</span></span>
-                                        <input type="text" class="form-control bg-light border-start-0 py-3 ps-0"
-                                            id="punto-reciclaje" name="punto_reciclaje"
-                                            placeholder="Nombre o ID del punto" required>
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pb-4 border-bottom">
+                            <div class="mb-3 mb-sm-0">
+                                <h6 class="fw-bold text-dark mb-1">Autenticación de Dos Pasos (2FA)</h6>
+                                <p class="text-secondary small mb-0">Añade una capa extra de seguridad a tu cuenta
+                                    mediante SMS o App.</p>
+                            </div>
+                            <div class="form-check form-switch fs-3 mb-0">
+                                <input class="form-check-input shadow-none" type="checkbox" role="switch" id="2faSwitch"
+                                    checked>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold text-dark mb-3">Sesiones Activas</h6>
+
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3 rounded-3"
+                                    style="background-color: var(--gu-light-blue);">
+                                    <div class="d-flex align-items-center gap-3 mb-2 mb-sm-0">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-white text-gu-primary shadow-sm flex-shrink-0"
+                                            style="width: 45px; height: 45px;">
+                                            <span class="material-symbols-outlined">laptop_mac</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0 small">MacBook Pro - Chrome</h6>
+                                            <p class="text-secondary small mb-0" style="font-size: 0.8rem;">Madrid,
+                                                España • Activa ahora</p>
+                                        </div>
                                     </div>
+                                    <span
+                                        class="badge text-success bg-white border border-success px-3 py-2 rounded-pill small">TU
+                                        DISPOSITIVO</span>
                                 </div>
 
-                                <div class="col-12">
-                                    <label for="tipo-novedad" class="form-label fw-bold text-dark small ms-1">Tipo de
-                                        Novedad <span class="text-danger">*</span></label>
-                                    <select class="form-select bg-light py-3 shadow-sm" id="tipo-novedad"
-                                        name="tipo_novedad" required>
-                                        <option value="" disabled selected>Selecciona una opción</option>
-                                        <option value="Punto inactivo">Punto inactivo</option>
-                                        <option value="Punto saturado">Punto saturado</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12">
-                                    <label for="observaciones"
-                                        class="form-label fw-bold text-dark small ms-1">Observaciones (Opcional)</label>
-                                    <textarea class="form-control bg-light shadow-sm" id="observaciones"
-                                        name="observaciones" rows="4"
-                                        placeholder="Escribe detalles adicionales sobre el inconveniente..."></textarea>
-                                </div>
-
-                                <div class="col-12 pt-3">
-                                    <button type="submit" id="submit-btn"
-                                        class="btn btn-gu-primary px-5 py-3 w-100 d-flex justify-content-center align-items-center gap-2 shadow-sm">
-                                        <span class="material-symbols-outlined"
-                                            style="font-variation-settings: 'FILL' 1;">send</span>
-                                        Enviar Reporte
-                                    </button>
+                                <div
+                                    class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3 rounded-3 border">
+                                    <div class="d-flex align-items-center gap-3 mb-2 mb-sm-0">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary flex-shrink-0"
+                                            style="width: 45px; height: 45px;">
+                                            <span class="material-symbols-outlined">smartphone</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0 small">iPhone 14 - GreenUp App</h6>
+                                            <p class="text-secondary small mb-0" style="font-size: 0.8rem;">Barcelona,
+                                                España • Hace 2 horas</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="btn btn-link text-danger fw-medium text-decoration-none p-0 small">Cerrar
+                                        sesión</button>
                                 </div>
                             </div>
-                        </form>
+                        </div>
+
+                        <div class="pt-4 border-top" style="border-color: rgba(220, 53, 69, 0.2) !important;">
+                            <h6 class="fw-bold text-danger mb-2">Zona de Peligro</h6>
+                            <p class="text-secondary small mb-3">Una vez que elimines tu cuenta, perderás todos tus
+                                Eco-Puntos y no hay vuelta atrás. Por favor, asegúrate.</p>
+                            <button class="btn btn-outline-danger rounded-pill px-4 fw-medium btn-sm">Eliminar Cuenta
+                                Permanentemente</button>
+                        </div>
+
                     </div>
                 </div>
-
-                <div
-                    class="glass-card rounded-4 p-4 d-flex flex-column flex-md-row align-items-md-center gap-4 shadow-sm">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style="width: 64px; height: 64px; background-color: var(--gu-accent);">
-                        <span class="material-symbols-outlined text-gu-secondary fs-2">volunteer_activism</span>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold text-dark mb-1">¡Gracias por tu colaboración!</h5>
-                        <p class="text-secondary small mb-0">Cada reporte ayuda a la comunidad de GreenUp a gestionar
-                            mejor los residuos. Recibirás <b>50 puntos eco</b> por este reporte validado.</p>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>
@@ -429,7 +424,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Animaciones (Fade-up)
+            // Animaciones de carga (Fade-up)
             const observerOptions = { threshold: 0.1 };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -440,69 +435,15 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // Lógica del Formulario y Alertas Bootstrap
-            const form = document.getElementById('report-form');
-            const feedbackContainer = document.getElementById('feedback-container');
-            const submitBtn = document.getElementById('submit-btn');
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                // 1. Estado de Carga
-                const originalBtnContent = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Enviando...';
-
-                // Limpiar alertas previas
-                feedbackContainer.classList.add('d-none');
-                feedbackContainer.classList.remove('alert-success', 'alert-danger');
-
-                // Recolectar datos
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    // 2. Conexión con Flask (Endpoint ficticio para la demo)
-                    const response = await fetch('/novedades', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer placeholder-JWT-token'
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    // 3. Simulación de Respuesta Exitosa
-                    if (response.ok || true) {
-                        showFeedback('¡Reporte enviado con éxito! Un administrador revisará la novedad a la brevedad.', 'success');
-                        form.reset();
-                    } else {
-                        throw new Error('Server error');
-                    }
-                } catch (error) {
-                    showFeedback('Hubo un problema al enviar el reporte. Por favor, intenta de nuevo.', 'error');
-                } finally {
-                    // Restaurar botón
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
+            // Simulación de guardado para el switch de 2FA
+            const switch2FA = document.getElementById('2faSwitch');
+            switch2FA.addEventListener('change', function () {
+                if (this.checked) {
+                    alert("Se ha enviado un SMS de verificación a tu número registrado.");
+                } else {
+                    alert("Has desactivado la autenticación de dos pasos. Tu cuenta es menos segura.");
                 }
             });
-
-            // Función para renderizar Alertas Bootstrap
-            function showFeedback(message, type) {
-                const isSuccess = type === 'success';
-                const alertClass = isSuccess ? 'alert-success' : 'alert-danger';
-                const icon = isSuccess ? 'check_circle' : 'error';
-
-                feedbackContainer.className = `alert ${alertClass} d-flex align-items-center gap-2 mb-4 fade show`;
-                feedbackContainer.innerHTML = `
-                    <span class="material-symbols-outlined flex-shrink-0 fs-4">${icon}</span>
-                    <div>${message}</div>
-                `;
-
-                // Hacer scroll suave hacia el mensaje
-                feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
         });
     </script>
 </body>

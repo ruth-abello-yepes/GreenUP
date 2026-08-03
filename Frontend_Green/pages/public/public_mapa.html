@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUp | Mapa Eco (Público)</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        /* Estilos de Botones */
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-gu-secondary {
+            background-color: var(--gu-secondary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-secondary:hover {
+            background-color: #1e5215;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(41, 108, 31, 0.4);
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* --- ESTILOS ESPECÍFICOS PARA EL MAPA PÚBLICO --- */
+        .map-section {
+            position: relative;
+            min-height: 85vh;
+            /* Ocupa casi toda la pantalla */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 70px;
+            /* Compensa la navbar fija */
+        }
+
+        /* Contenedor del fondo con Parallax */
+        .parallax-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px) grayscale(0.2);
+            /* Efecto borroso */
+            opacity: 0.5;
+            transform: scale(1.1);
+            /* Evita bordes blancos al moverse */
+            transition: transform 0.1s ease-out;
+            z-index: 0;
+        }
+
+        /* Gradiente radial para enfocar el centro */
+        .map-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(248, 249, 255, 0.7) 100%);
+            z-index: 1;
+        }
+
+        /* Panel Glassmorphism Central */
+        .glass-panel {
+            position: relative;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(193, 199, 209, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 61, 108, 0.1);
+        }
+
+        /* Animaciones */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bounce-slow {
+            animation: bounce 3s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(-5%);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2" style="z-index: 1050;">
+        <div class="container-fluid px-4">
+
+            <button class="navbar-toggler border-0 shadow-none d-md-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileOffcanvas" aria-controls="mobileOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-decoration-none" href="index.html">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="32" height="32" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </a>
+
+            <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_inicio.html">
+                            <span class="material-symbols-outlined me-1">home</span> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_noticias.html">
+                            <span class="material-symbols-outlined me-1">newspaper</span> Noticias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active-custom d-flex align-items-center" href="public_mapa.html">
+                            <span class="material-symbols-outlined me-1">map</span> Mapa Eco
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_estadisticas.html">
+                            <span class="material-symbols-outlined me-1">bar_chart</span> Estadísticas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center text-secondary" href="public_educacion.html">
+                            <span class="material-symbols-outlined me-1">school</span> Educación
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="d-none d-md-flex align-items-center gap-2">
+                <a href="public_login.html"
+                    class="btn btn-outline-success rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="public_registro.html" class="btn btn-gu-primary text-white rounded-pill px-3 py-1 fw-semibold">
+                    Registrarse
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileOffcanvas" aria-labelledby="mobileOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="mobileOffcanvasLabel">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="28" height="28" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body d-flex flex-column justify-content-between">
+            <ul class="navbar-nav flex-column gap-2">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="index.html">
+                        <span class="material-symbols-outlined me-2">home</span> Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="noticias.html">
+                        <span class="material-symbols-outlined me-2">newspaper</span> Noticias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active-custom d-flex align-items-center p-2 rounded"
+                        style="background-color: rgba(41, 108, 31, 0.1);" href="mapa-eco.html">
+                        <span class="material-symbols-outlined me-2">map</span> Mapa Eco
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="estadisticas.html">
+                        <span class="material-symbols-outlined me-2">bar_chart</span> Estadísticas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="educacion.html">
+                        <span class="material-symbols-outlined me-2">school</span> Educación
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mt-4 pt-3 border-top">
+                <a href="public_login.html"
+                    class="btn btn-outline-success w-100 mb-2 rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="public_registro.html" class="btn btn-gu-primary text-white w-100 rounded-pill fw-semibold">
+                    Registrarse
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1">
+
+        <section class="map-section px-3">
+            <div id="map-container" class="parallax-bg"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBFtadPx-08kbMiKGn5KP38pfH0r8I1629mZSSd_gfeskeY5C_DKicUXsaThm_3EsYejc2TU_bLgdLDNHgCWqV3rHeW2e0DT_nhynf1MrXRX-aC9kSor-q5S09SDHxJoC-7Ty5IS-uL0z6yqRpAPw9xaVpYO6tnvmJdJGvqP4QRGaUH9hKr7Lq0jkntHFV0FKHgT-k6B0V6Uugw6Wi2yXIWCueZ2YeUV1WqBk9GfXhW_hbPhjwaImWc');">
+            </div>
+            <div class="map-overlay"></div>
+
+            <div class="glass-panel rounded-4 p-4 p-md-5 text-center fade-up" style="max-width: 800px; width: 100%;">
+
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bounce-slow mb-4"
+                    style="width: 80px; height: 80px; background-color: var(--gu-accent); color: var(--gu-secondary);">
+                    <span class="material-symbols-outlined icon-fill" style="font-size: 40px;">location_on</span>
+                </div>
+
+                <h1 class="display-5 fw-bold text-gu-primary mb-4">¡Descubre dónde reciclar en Valledupar!</h1>
+                <p class="fs-5 text-secondary mb-5" style="max-width: 650px; margin: 0 auto;">
+                    El mapa interactivo es exclusivo para nuestra comunidad. Crea tu cuenta en <span
+                        class="fw-bold text-gu-secondary">GreenUp</span> para encontrar tus puntos ecológicos más
+                    cercanos mediante <span class="fst-italic">hexágonos inteligentes</span>, registrar tus entregas y
+                    ganar recompensas.
+                </p>
+
+                <div class="d-flex flex-column align-items-center gap-3">
+                    <a href="public_registro.html"
+                        class="btn btn-gu-secondary btn-lg px-5 py-3 d-flex align-items-center gap-2 shadow-sm w-100 w-sm-auto"
+                        style="max-width: 350px;">
+                        Crear mi cuenta gratis <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                    <a href="public_login.html" class="text-gu-primary fw-medium text-decoration-none mt-2"
+                        style="text-underline-offset: 4px;">
+                        <u>¿Ya tienes cuenta? Inicia sesión aquí</u>
+                    </a>
+                </div>
+
+                <div class="row mt-5 pt-4 border-top border-secondary border-opacity-25">
+                    <div class="col-4">
+                        <h3 class="fw-bold text-gu-secondary mb-0">150+</h3>
+                        <span class="small text-muted text-uppercase tracking-wider">Puntos</span>
+                    </div>
+                    <div class="col-4 border-start border-end border-secondary border-opacity-25">
+                        <h3 class="fw-bold text-gu-secondary mb-0">2.4k</h3>
+                        <span class="small text-muted text-uppercase tracking-wider">Usuarios</span>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-gu-secondary mb-0">12t</h3>
+                        <span class="small text-muted text-uppercase tracking-wider">Reciclado</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="position-absolute bottom-0 start-0 m-5 opacity-25 d-none d-lg-block" style="z-index: 10;">
+                <span class="material-symbols-outlined icon-fill text-success" style="font-size: 150px;">eco</span>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                            alt="Logo" width="32" height="32" class="me-2">
+                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
+                            style="margin-right: -2px;">Green</span><span
+                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                    </div>
+                    <p class="text-white-50 small pe-lg-3">
+                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
+                        limpios y economía circular en Valledupar.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">share</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">public</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">mail</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="noticias.html" class="text-white-50 text-decoration-none hover-white">Boletín
+                                Ambiental</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
+                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Efecto Parallax en el mapa desenfocado
+            document.addEventListener('mousemove', (e) => {
+                const map = document.getElementById('map-container');
+                if (map) {
+                    const moveX = (e.clientX - window.innerWidth / 2) / 50;
+                    const moveY = (e.clientY - window.innerHeight / 2) / 50;
+                    map.style.transform = `scale(1.1) translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+
+            // Animación de entrada
+            const observerOptions = { threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+
+</html>

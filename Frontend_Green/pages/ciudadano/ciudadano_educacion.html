@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUp | Educación Ambiental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .text-gu-accent {
+            color: var(--gu-accent);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .bg-gu-accent {
+            background-color: var(--gu-accent);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Tarjetas (Bento Grid) */
+        .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Degradado del Hero y Glass Card */
+        .eco-gradient {
+            background: linear-gradient(135deg, var(--gu-primary) 0%, var(--gu-secondary) 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Imágenes de Tarjetas */
+        .img-wrapper {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gu-card:hover .img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        /* Ocultar scrollbar en filtros horizontales */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones Fade-up */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
+        style="height: 70px; z-index: 1050;">
+        <div class="container-fluid px-3 px-md-5">
+
+            <div class="d-flex align-items-center">
+                <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar"
+                    aria-controls="mobileMenuSidebar">
+                    <span class="material-symbols-outlined text-gu-primary">menu</span>
+                </button>
+
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                        alt="Logo" width="32" height="32" class="me-2">
+                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                </a>
+            </div>
+
+            <div class="d-none d-md-flex h-100 align-items-center gap-4">
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_inicio.html">
+                    <span class="material-symbols-outlined fs-5">home</span> Inicio
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_noticias.html">
+                    <span class="material-symbols-outlined fs-5">newspaper</span> Noticias
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_mapa.html">
+                    <span class="material-symbols-outlined fs-5">map</span> Mapa Eco
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_estadisticas.html">
+                    <span class="material-symbols-outlined fs-5">bar_chart</span> Estadísticas
+                </a>
+                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1" href="ciudadano_educacion.html">
+                    <span class="material-symbols-outlined fs-5">school</span> Educación
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button
+                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
+                    <span class="material-symbols-outlined text-gu-primary">notifications</span>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                        style="margin-top: 8px; margin-left: -10px;"></span>
+                </button>
+
+                <div class="dropdown border-start ps-2 ms-1">
+                    <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span
+                            class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Username</span>
+                        <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
+                        <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
+                                href="ajustes_cuenta.html"><span class="material-symbols-outlined fs-5">settings</span>
+                                Ajustes</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
+                                href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
+                                Ayuda</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
+                                onclick="cerrarSesion()"><span class="material-symbols-outlined fs-5">logout</span>
+                                Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
+        <div class="offcanvas-header border-bottom">
+            <div class="d-flex align-items-center">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="32" height="32" class="me-2">
+                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
+                        style="color: #4CAF50;">Up</span></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush rounded-0 mt-2">
+                <a href="ciudadano_inicio.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">home</span> Inicio
+                </a>
+                <a href="ciudadano_noticias.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">newspaper</span> Noticias
+                </a>
+                <a href="ciudadano_mapa.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">map</span> Mapa Eco
+                </a>
+                <a href="ciudadano_estadisticas.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">bar_chart</span> Estadísticas
+                </a>
+                <a href="ciudadano_contenido_educativo.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
+                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    <span class="material-symbols-outlined">school</span> Educación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1280px;">
+
+        <section
+            class="eco-gradient text-white rounded-4 p-4 p-md-5 mb-5 position-relative shadow-sm fade-up overflow-hidden">
+            <div class="row align-items-center position-relative z-10">
+                <div class="col-lg-7 mb-4 mb-lg-0">
+                    <h1 class="display-5 fw-bold mb-3">¡Aprende y suma a tu Billetera Ecológica, Eco-Líder!</h1>
+                    <p class="lead text-white-50 mb-0">Conviértete en un experto del reciclaje y las prácticas
+                        sostenibles. Cada guía o video que completas es un paso más hacia un planeta verde y suma puntos
+                        a tu cuenta.</p>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="glass-card p-4 rounded-4 shadow-lg transition-transform hover-translate-up">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-uppercase tracking-wider small fw-bold text-white-50">Tu Progreso</span>
+                            <span
+                                class="material-symbols-outlined text-gu-accent icon-fill fs-3">account_balance_wallet</span>
+                        </div>
+                        <h2 class="display-4 fw-bold text-white mb-0"><span id="eco-points-display">150</span> <span
+                                class="fs-5 fw-normal text-white-50">pts</span></h2>
+                        <p class="small text-gu-accent mb-3">Eco-Puntos Disponibles</p>
+                        <div class="progress mb-2 bg-white bg-opacity-25" style="height: 8px;">
+                            <div class="progress-bar bg-gu-accent rounded-pill" style="width: 65%"></div>
+                        </div>
+                        <p class="small text-white-50 mb-0 d-flex align-items-center gap-1">
+                            <span class="material-symbols-outlined fs-6 text-gu-accent">auto_awesome</span> ¡Gana +5 pts
+                            por cada guía leída!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="position-absolute bg-white bg-opacity-10 rounded-circle blur-3xl"
+                style="width: 300px; height: 300px; bottom: -100px; right: -50px; filter: blur(40px);"></div>
+        </section>
+
+        <section
+            class="bg-gu-primary text-white rounded-4 p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4 mb-5 shadow-sm fade-up border-start border-5 border-success">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-white bg-opacity-25 p-3 rounded-circle d-flex align-items-center justify-content-center">
+                    <span class="material-symbols-outlined fs-2">groups</span>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Impacto de Hoy</h5>
+                    <p class="small text-white-50 mb-0">Nuestra comunidad está en movimiento.</p>
+                </div>
+            </div>
+            <div class="d-flex gap-5">
+                <div class="text-center">
+                    <h3 class="fw-bold text-gu-accent mb-0">1,240</h3>
+                    <span class="small text-white-50">Guías Leídas</span>
+                </div>
+                <div class="text-center border-start border-white border-opacity-25 ps-5">
+                    <h3 class="fw-bold text-gu-accent mb-0">45kg</h3>
+                    <span class="small text-white-50">CO2 Ahorrado</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="row g-5">
+            <div class="col-lg-8">
+
+                <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold text-gu-primary mb-0">Lección Destacada</h4>
+                        <a href="#" class="text-gu-secondary fw-bold text-decoration-none small hover-underline">Ver
+                            todos los videos</a>
+                    </div>
+
+                    <div class="card gu-card border-0 overflow-hidden group">
+                        <div class="position-relative bg-dark cursor-pointer overflow-hidden"
+                            style="aspect-ratio: 16/9;">
+                            <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
+                                alt="Video cover"
+                                class="w-100 h-100 object-fit-cover opacity-75 transition-transform duration-500 hover:scale-105">
+
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg transition-transform hover:scale-110"
+                                    style="width: 64px; height: 64px; cursor: pointer;">
+                                    <span
+                                        class="material-symbols-outlined text-gu-primary fs-1 icon-fill">play_arrow</span>
+                                </div>
+                            </div>
+                            <span
+                                class="position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-2 py-1 rounded small">08:45</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold text-gu-primary mb-2">Introducción a la Economía Circular 2024</h5>
+                            <p class="text-secondary small mb-0">Un resumen completo de cómo podemos transformar el
+                                modelo de consumo actual en Valledupar para reducir residuos y potenciar la economía
+                                local.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mb-4 fade-up" style="transition-delay: 0.2s;">
+                    <div class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
+                        <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap">Todos</button>
+                        <button
+                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Plásticos</button>
+                        <button
+                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Orgánicos</button>
+                        <button
+                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Electrónicos</button>
+                        <button
+                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Peligrosos</button>
+                    </div>
+                </section>
+
+                <section class="row g-4 fade-up" style="transition-delay: 0.3s;">
+
+                    <div class="col-md-6">
+                        <article class="card gu-card h-100 border-0 d-flex flex-column">
+                            <div class="img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=600&q=80"
+                                    alt="Reciclaje plásticos">
+                                <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                                    <span
+                                        class="badge bg-dark bg-opacity-50 backdrop-blur d-flex align-items-center gap-1 rounded-pill py-2 px-3">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
+                                        3 min
+                                    </span>
+                                    <span class="badge bg-primary rounded-pill py-2 px-3">Plásticos</span>
+                                </div>
+                                <span
+                                    class="badge bg-success position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1 rounded-pill py-2 px-3 shadow">
+                                    <span class="material-symbols-outlined" style="font-size: 14px;">add_circle</span>
+                                    +5 pts
+                                </span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column border-start border-4 border-primary">
+                                <h5 class="fw-bold text-gu-primary mb-2">Secretos del Reciclaje de Plástico</h5>
+                                <p class="text-secondary small mb-4 flex-grow-1">Aprende a diferenciar entre PET, HDPE y
+                                    otros tipos de polímeros para optimizar tu huella de carbono.</p>
+
+                                <button
+                                    class="btn btn-outline-primary w-100 rounded-3 fw-bold d-flex justify-content-center align-items-center gap-2 education-action"
+                                    data-pts="5">
+                                    <span class="material-symbols-outlined">check_circle</span> Marcar como leído
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="col-md-6">
+                        <article class="card gu-card h-100 border-0 d-flex flex-column">
+                            <div class="img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80"
+                                    alt="Compostaje urbano">
+                                <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                                    <span
+                                        class="badge bg-dark bg-opacity-50 backdrop-blur d-flex align-items-center gap-1 rounded-pill py-2 px-3">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
+                                        5 min
+                                    </span>
+                                    <span class="badge bg-warning text-dark rounded-pill py-2 px-3">Orgánicos</span>
+                                </div>
+                                <span
+                                    class="badge bg-success position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1 rounded-pill py-2 px-3 shadow">
+                                    <span class="material-symbols-outlined" style="font-size: 14px;">add_circle</span>
+                                    +5 pts
+                                </span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column border-start border-4 border-warning">
+                                <h5 class="fw-bold text-gu-primary mb-2">Compostaje Urbano 101</h5>
+                                <p class="text-secondary small mb-4 flex-grow-1">Transforma tus residuos de cocina en
+                                    oro negro para tus plantas, incluso si vives en un apartamento pequeño.</p>
+
+                                <button
+                                    class="btn btn-outline-primary w-100 rounded-3 fw-bold d-flex justify-content-center align-items-center gap-2 education-action"
+                                    data-pts="5">
+                                    <span class="material-symbols-outlined">check_circle</span> Marcar como leído
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+
+                </section>
+            </div>
+
+            <aside class="col-lg-4 d-flex flex-column gap-5 fade-up" style="transition-delay: 0.4s;">
+
+                <div class="card gu-card border-0 p-4 shadow-sm bg-light">
+                    <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+                        <span class="material-symbols-outlined text-gu-secondary fs-4 icon-fill">bolt</span>
+                        <h5 class="fw-bold text-gu-primary mb-0">Eco-Desafíos</h5>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+                        <div
+                            class="bg-white p-3 rounded-3 border d-flex gap-3 hover-bg-light cursor-pointer transition-colors group">
+                            <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 48px; height: 48px;">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold text-dark mb-1 small">Cero Bolsas Plásticas</h6>
+                                <p class="text-muted small mb-2" style="font-size: 0.8rem;">No uses bolsas plásticas por
+                                    3 días seguidos.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge text-success bg-success-subtle rounded-1">+20 pts</span>
+                                    <span class="text-gu-primary small fw-bold text-decoration-underline"
+                                        style="cursor: pointer;">Aceptar</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white p-3 rounded-3 border d-flex gap-3 hover-bg-light cursor-pointer transition-colors group">
+                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 48px; height: 48px;">
+                                <span class="material-symbols-outlined">power</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold text-dark mb-1 small">Apagón Selectivo</h6>
+                                <p class="text-muted small mb-2" style="font-size: 0.8rem;">Desconecta 3
+                                    electrodomésticos en la noche.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge text-success bg-success-subtle rounded-1">+15 pts</span>
+                                    <span class="text-gu-primary small fw-bold text-decoration-underline"
+                                        style="cursor: pointer;">Aceptar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary w-100 mt-4 rounded-3 fw-bold btn-sm py-2">Ver más
+                        desafíos</button>
+                </div>
+
+                <div class="card gu-card border-0 p-4 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+                        <span class="material-symbols-outlined text-gu-primary fs-4">menu_book</span>
+                        <h5 class="fw-bold text-gu-primary mb-0">Recursos</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
+                            <span class="material-symbols-outlined text-danger mt-1">picture_as_pdf</span>
+                            <div>
+                                <a href="#"
+                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Guía
+                                    de Separación - Valledupar</a>
+                                <span class="text-muted" style="font-size: 0.75rem;">PDF (2.4 MB)</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
+                            <span class="material-symbols-outlined text-danger mt-1">movie</span>
+                            <div>
+                                <a href="#"
+                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Documental:
+                                    Nuestro Planeta</a>
+                                <span class="text-muted" style="font-size: 0.75rem;">Recomendación Netflix</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
+                            <span class="material-symbols-outlined text-danger mt-1">gavel</span>
+                            <div>
+                                <a href="#"
+                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Leyes
+                                    Ambientales Locales</a>
+                                <span class="text-muted" style="font-size: 0.75rem;">Normativa Vigente</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="pointsToast" class="toast align-items-center text-bg-success border-0 shadow-lg" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2 fw-medium">
+                    <span class="material-symbols-outlined icon-fill">check_circle</span>
+                    <span id="toastMessage">¡Excelente! Has ganado Eco-Puntos.</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top" id="main-footer">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                            alt="Logo" width="32" height="32" class="me-2">
+                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
+                            style="margin-right: -2px;">Green</span><span
+                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                    </div>
+                    <p class="text-white-50 small pe-lg-3">
+                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
+                        limpios y economía circular en Valledupar.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">share</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">public</span>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
+                            style="width: 36px; height: 36px;">
+                            <span class="material-symbols-outlined fs-6">mail</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="ciudadano_noticias.html"
+                                class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
+                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /**
+         * Lógica de Gamificación (Frontend)
+         * Muestra animaciones y lanza Toast de Bootstrap al interactuar.
+         */
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // 1. Inicializar Fade-up Observer
+            const observerOptions = { threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+            // 2. Lógica de Puntos "Billetera Ecológica"
+            let currentPoints = parseInt(localStorage.getItem('eco_puntos')) || 150;
+            const pointsDisplay = document.getElementById('eco-points-display');
+            pointsDisplay.innerText = currentPoints;
+
+            // Inicializar el Toast Nativo de Bootstrap
+            const toastElement = document.getElementById('pointsToast');
+            const toastObj = new bootstrap.Toast(toastElement, { delay: 3000 });
+            const toastMessage = document.getElementById('toastMessage');
+
+            // 3. Listener para "Marcar como Leído"
+            const actionButtons = document.querySelectorAll('.education-action');
+
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    if (this.disabled) return;
+
+                    const pointsToAdd = parseInt(this.dataset.pts);
+                    currentPoints += pointsToAdd;
+
+                    // Guardado ficticio (En un entorno real se haría un Fetch a Flask)
+                    localStorage.setItem('eco_puntos', currentPoints);
+
+                    // Animar el número sumando
+                    animatePoints(pointsDisplay, currentPoints - pointsToAdd, currentPoints);
+
+                    // Cambiar estilo del botón a "Completado"
+                    this.classList.replace('btn-outline-primary', 'btn-success');
+                    this.innerHTML = `<span class="material-symbols-outlined">verified</span> Completado`;
+                    this.disabled = true;
+
+                    // Mostrar Toast de Bootstrap
+                    toastMessage.innerText = `¡Excelente! Has ganado ${pointsToAdd} Eco-Puntos.`;
+                    toastObj.show();
+                });
+            });
+
+            // Función matemática para animar los números
+            function animatePoints(element, start, end) {
+                let current = start;
+                const range = end - start;
+                const duration = 800; // 0.8 Segundos
+                let startTime = null;
+
+                function step(currentTime) {
+                    if (!startTime) startTime = currentTime;
+                    const progress = Math.min((currentTime - startTime) / duration, 1);
+                    element.innerText = Math.floor(progress * range + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                }
+                window.requestAnimationFrame(step);
+            }
+        });
+    </script>
+    <script src="../../js/cargar_usuario.js"></script>
+</body>
+
+</html>

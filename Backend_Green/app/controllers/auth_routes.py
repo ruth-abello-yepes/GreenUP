@@ -23,6 +23,7 @@ from app.services.auth_service import (
     servicio_login, 
     servicio_login_admin,
     solicitar_codigo_recuperacion,
+    verificar_codigo_recuperacion,
     restablecer_contrasena
 )
 
@@ -188,4 +189,38 @@ def ruta_restablecer_contrasena():
     """
     datos = request.get_json()
     respuesta, estado = restablecer_contrasena(datos)
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/recuperar-contrasena/verificar", methods=["POST"])
+def ruta_verificar_codigo():
+    """
+    Verificar codigo de recuperacion
+    ---
+    tags:
+      - Recuperar Contraseña
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - correo
+            - codigo
+          properties:
+            correo:
+              type: string
+              example: usuario@gmail.com
+            codigo:
+              type: string
+              example: "123456"
+    responses:
+      200:
+        description: Codigo correcto
+      400:
+        description: Codigo invalido o expirado
+    """
+    datos = request.get_json()
+    respuesta, estado = verificar_codigo_recuperacion(datos)
     return jsonify(respuesta), estado

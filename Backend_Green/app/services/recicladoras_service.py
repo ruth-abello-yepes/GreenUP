@@ -3,7 +3,12 @@
 # Aqui validamos los datos antes de mandarlos al model.
 
 from app.models.usuarios_model import registrar_usuario
-from app.models.recicladoras_model import registrar_recicladora, listar_recicladoras
+from app.models.recicladoras_model import (
+    buscar_recicladora_por_usuario,
+    listar_recicladoras,
+    obtener_dashboard_recicladora,
+    registrar_recicladora
+)
 from app.models.ubicaciones_model import crear_ubicacion
 from app.common.security import cifrar_contrasena, validar_contrasena_segura
 
@@ -134,3 +139,24 @@ def servicio_listar_duenos_recicladora():
     recicladoras = listar_recicladoras()
 
     return recicladoras, 200
+
+
+def servicio_obtener_perfil_recicladora(id_usuario):
+    """
+    Devuelve los datos personales y empresariales del dueno autenticado.
+    """
+
+    recicladora = buscar_recicladora_por_usuario(id_usuario)
+
+    if not recicladora:
+        return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+
+    return recicladora, 200
+
+
+def servicio_dashboard_recicladora(id_usuario):
+    """
+    Retorna datos reales del tablero para refresco automatico del frontend.
+    """
+
+    return obtener_dashboard_recicladora(id_usuario), 200

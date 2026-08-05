@@ -1,11 +1,13 @@
 # Archivo: recicladoras_routes.py
 # Este archivo crea las rutas para los duenos de punto ecologico.
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from app.services.recicladoras_service import (
     servicio_registrar_dueno_recicladora,
-    servicio_listar_duenos_recicladora
+    servicio_listar_duenos_recicladora,
+    servicio_dashboard_recicladora,
+    servicio_obtener_perfil_recicladora
 )
 
 from app.middlewares.auth_middleware import login_requerido
@@ -115,5 +117,43 @@ def ruta_listar_duenos_recicladora():
     """
 
     respuesta, estado = servicio_listar_duenos_recicladora()
+
+    return jsonify(respuesta), estado
+
+
+@recicladoras_bp.route("/perfil", methods=["GET"])
+@login_requerido
+@rol_requerido([2])
+def ruta_obtener_perfil_recicladora():
+    """
+    Perfil de la recicladora autenticada.
+    ---
+    tags:
+      - Recicladoras
+    responses:
+      200:
+        description: Datos reales del dueno y su recicladora
+      401:
+        description: No ha iniciado sesion
+      403:
+        description: No tiene permisos
+      404:
+        description: No hay recicladora asociada
+    """
+
+    respuesta, estado = servicio_obtener_perfil_recicladora(g.id_usuario)
+
+    return jsonify(respuesta), estado
+
+
+@recicladoras_bp.route("/dashboard", methods=["GET"])
+@login_requerido
+@rol_requerido([2])
+def ruta_dashboard_recicladora():
+    """
+    Dashboard real del dueno de recicladora.
+    """
+
+    respuesta, estado = servicio_dashboard_recicladora(g.id_usuario)
 
     return jsonify(respuesta), estado

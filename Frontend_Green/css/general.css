@@ -266,6 +266,127 @@ article a {
 .login-tarjeta button:hover {
   background-color: #123761;
 }
+
+.login-link-secundario {
+  width: 100%;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0b2545;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.login-link-secundario:hover,
+.login-link-secundario:focus {
+  border-color: #3cb371;
+  background-color: #eefbf3;
+  color: #17452f;
+}
+
+.password-strength {
+  display: grid;
+  gap: 10px;
+  margin: -4px 0 18px;
+  padding: 14px;
+  border: 1px solid #d9e4dc;
+  border-radius: 10px;
+  background-color: #f9fcfa;
+}
+
+.strength-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.strength-header strong {
+  color: #b91c1c;
+}
+
+.strength-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: #e5e7eb;
+}
+
+.strength-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background-color: #dc2626;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.password-rules {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+}
+
+.password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-rules li::before {
+  content: "×";
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.password-rules li.ok {
+  color: #166534;
+}
+
+.password-rules li.ok::before {
+  content: "✓";
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.password-strength.medium .strength-header strong {
+  color: #a16207;
+}
+
+.password-strength.strong .strength-header strong {
+  color: #166534;
+}
+
+.password-strength.medium .strength-track span {
+  background-color: #d97706;
+}
+
+.password-strength.strong .strength-track span {
+  background-color: #16a34a;
+}
 .login-fondo {
   margin: 0;
   background:

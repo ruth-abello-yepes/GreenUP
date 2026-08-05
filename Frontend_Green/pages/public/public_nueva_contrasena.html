@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nueva contraseña | GreenUp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/general.css" />
+  </head>
+  <body class="login-fondo">
+    <main class="login-contenedor">
+      <section class="login-tarjeta">
+        <h1>GreenUp</h1>
+        <h2>Nueva contraseña</h2>
+
+        <form id="formNuevaContrasena">
+          <label for="nuevaContrasena">Nueva contraseña</label>
+          <div class="campo-password">
+            <input
+              type="password"
+              id="nuevaContrasena"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="new-password"
+              required
+            />
+            <button
+              class="btn-ver-password"
+              type="button"
+              data-toggle-password="nuevaContrasena"
+              aria-label="Mostrar contraseña"
+            >
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+
+          <div class="password-strength" id="passwordStrength">
+            <div class="strength-header">
+              <span>Seguridad</span>
+              <strong id="strengthLabel">Muy insegura</strong>
+            </div>
+            <div class="strength-track">
+              <span id="strengthBar"></span>
+            </div>
+            <ul class="password-rules" id="passwordRules">
+              <li data-rule="length">Mínimo 8 caracteres</li>
+              <li data-rule="uppercase">Una letra mayúscula</li>
+              <li data-rule="lowercase">Una letra minúscula</li>
+              <li data-rule="number">Un número</li>
+              <li data-rule="special">Un carácter especial</li>
+              <li data-rule="space">Sin espacios</li>
+            </ul>
+          </div>
+
+          <label for="confirmarContrasena">Confirmar contraseña</label>
+          <div class="campo-password">
+            <input
+              type="password"
+              id="confirmarContrasena"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+              required
+            />
+            <button
+              class="btn-ver-password"
+              type="button"
+              data-toggle-password="confirmarContrasena"
+              aria-label="Mostrar contraseña"
+            >
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+
+          <button type="submit" id="btnRestablecer">
+            Restablecer contraseña
+          </button>
+        </form>
+
+        <a class="login-link-secundario" href="public_login.html">
+          Volver al inicio de sesión
+        </a>
+      </section>
+    </main>
+    <script src="../../js/recuperacion.js"></script>
+  </body>
+</html>

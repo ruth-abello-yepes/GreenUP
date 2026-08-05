@@ -29,7 +29,11 @@ from app.models.usuarios_model import (
     obtener_codigo_recuperacion_db,
     actualizar_contrasena_db
 )
-from app.common.security import verificar_contrasena, cifrar_contrasena
+from app.common.security import (
+    validar_contrasena_segura,
+    verificar_contrasena,
+    cifrar_contrasena
+)
 
 
 # Datos iniciales del Administrador del Sistema.
@@ -207,6 +211,10 @@ def restablecer_contrasena(datos):
     if not correo or not codigo or not nueva_contrasena:
         return {"mensaje": "Correo, codigo y nueva contrasena son obligatorios"}, 400
 
+    contrasena_segura, mensaje_contrasena = validar_contrasena_segura(nueva_contrasena)
+    if not contrasena_segura:
+        return {"mensaje": mensaje_contrasena}, 400
+
     usuario = buscar_usuario_por_correo(correo)
 
     if not usuario:
@@ -224,3 +232,26 @@ def restablecer_contrasena(datos):
     actualizar_contrasena_db(usuario["id_usuario"], contrasena_hash)
 
     return {"mensaje": "Contrasena actualizada exitosamente. Ya puedes iniciar sesion."}, 200
+
+
+def verificar_codigo_recuperacion(datos):
+    correo = datos.get("correo")
+    codigo = datos.get("codigo")
+
+    if not correo or not codigo:
+        return {"mensaje": "Correo y codigo son obligatorios"}, 400
+
+    usuario = buscar_usuario_por_correo(correo)
+
+    if not usuario:
+        return {"mensaje": "Codigo invalido o expirado"}, 400
+
+    registro_codigo = obtener_codigo_recuperacion_db(usuario["id_usuario"], codigo)
+
+    if not registro_codigo:
+        return {"mensaje": "Codigo invalido o incorrecto"}, 400
+
+    if datetime.now() > registro_codigo["expiracion"]:
+        return {"mensaje": "El codigo ha expirado. Solicita uno nuevo."}, 400
+
+    return {"mensaje": "Codigo verificado correctamente"}, 200

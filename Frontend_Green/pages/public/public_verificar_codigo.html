@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Verificar Código | GreenUp</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --color-primary: #003d6c;
+            --color-secondary: #296c1f;
+            --color-surface-bright: #f8f9ff;
+            --color-surface-lowest: #ffffff;
+            --color-on-surface: #121c2a;
+            --color-on-surface-variant: #414750;
+            --color-outline-variant: #c1c7d1;
+            --color-on-primary: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 1120px;
+            height: calc(100vh - 20px);
+            max-height: calc(100vh - 20px);
+            background-color: var(--color-surface-lowest);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px -12px rgba(0, 61, 108, 0.12);
+        }
+
+        .form-col {
+            padding: clamp(16px, 3vh, 32px) clamp(30px, 4vw, 56px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            color: var(--color-on-surface-variant);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos del código OTP */
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            background-color: var(--color-surface-bright);
+            border: 2px solid var(--color-outline-variant);
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .otp-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 61, 108, 0.12);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px 24px;
+            background-color: var(--color-primary);
+            color: var(--color-on-primary);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(0, 61, 108, 0.2);
+        }
+
+        .hero-col {
+            position: relative;
+            height: 100%;
+        }
+
+        .hero-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 61, 108, 0.6) 0%, rgba(41, 108, 31, 0.4) 100%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card d-flex">
+        <div class="form-col flex-grow-1">
+            <a href="public_recuperar_contrasena.html" class="btn-back">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Cambiar correo
+            </a>
+
+            <div class="mb-3">
+                <h1 class="fw-bold mb-2" style="font-size:32px;">Ingresa el código</h1>
+                <p style="font-size:15px;color:var(--color-on-surface-variant);">
+                    Escribe el código de 6 dígitos que enviamos a tu correo electrónico.
+                </p>
+            </div>
+
+            <form id="formVerificarCodigo">
+                <div class="otp-container">
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                    <input type="text" maxlength="1" class="otp-input" pattern="[0-9]" inputmode="numeric" required />
+                </div>
+
+                <button class="btn-login" type="submit">
+                    Validar código
+                    <span class="material-symbols-outlined">verified</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="hero-col d-none d-lg-block" style="width:50%;">
+            <img class="hero-img" alt="Sostenibilidad"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDElT_oscI5c48pbSED-PUmZBwmonaFm-1teBZ_L5UbYlj2tV50xbUlxkp-hunrDqdf4A8h936CTTr-48EjlGCETlpsTTCXQp0Zz0ARYwaYpktH1gM9xtTWVlP8g5r9J8B2GTiKi89y9tlIVqUeckUaD3keYhXnO3bNQme6OwwrA67RbCujLg-1BhUAW38gK7z8zKXTvmj3RUzEPrXaM9uUTyNa-ey1NQlfKprqnG47UW5M7o-QWgOCNGxnMJc43ULUI1cIHQnFTAE" />
+            <div class="hero-overlay"></div>
+        </div>
+    </div>
+
+    <script src="../../js/recuperacion.js"></script>
+</body>
+
+</html>

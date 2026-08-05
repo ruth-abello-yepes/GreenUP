@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 from flask_mail import Message
 
 from app.models.usuarios_model import (
+    registrar_usuario,
     buscar_usuario_por_usuario,
     buscar_usuario_por_correo,
     guardar_codigo_recuperacion_db,
@@ -29,6 +30,15 @@ from app.models.usuarios_model import (
     actualizar_contrasena_db
 )
 from app.common.security import verificar_contrasena, cifrar_contrasena
+
+
+# Datos iniciales del Administrador del Sistema.
+# Si Supabase no tiene el usuario admin, el backend lo crea automaticamente
+# cuando se intenta iniciar sesion con estos datos.
+ADMIN_USUARIO_INICIAL = "admin"
+ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
+ADMIN_CORREO_INICIAL = "admin@greenup.com"
+ADMIN_DOCUMENTO_INICIAL = "1000000000"
 
 
 def servicio_login(datos):
@@ -91,14 +101,42 @@ def servicio_login_admin(datos):
     El codigo_admin se guarda en el archivo .env.
     """
 
-    usuario = datos.get("usuario")
-    contrasena = datos.get("contrasena")
-    codigo_admin = datos.get("codigo_admin")
+    # strip() quita espacios por si el usuario copia y pega los datos.
+    usuario = (datos.get("usuario") or "").strip()
+    contrasena = (datos.get("contrasena") or "").strip()
+    codigo_admin = (datos.get("codigo_admin") or "").strip()
 
     if not usuario or not contrasena or not codigo_admin:
         return {"mensaje": "Usuario, contrasena y codigo admin son obligatorios"}, 400
 
+    codigo_correcto = (os.getenv("ADMIN_ACCESS_CODE") or "").strip()
+
+    if codigo_admin != codigo_correcto:
+        return {"mensaje": "Codigo admin incorrecto"}, 401
+
     usuario_encontrado = buscar_usuario_por_usuario(usuario)
+
+    # Si el administrador inicial no existe en Supabase, lo creamos.
+    # Esto evita el error "Administrador no encontrado" en un clon nuevo.
+    if usuario_encontrado is None and usuario == ADMIN_USUARIO_INICIAL:
+        if contrasena != ADMIN_CONTRASENA_INICIAL:
+            return {"mensaje": "Administrador no encontrado"}, 404
+
+        registrar_usuario(
+            "Administrador",
+            "Sistema",
+            ADMIN_CORREO_INICIAL,
+            ADMIN_USUARIO_INICIAL,
+            cifrar_contrasena(ADMIN_CONTRASENA_INICIAL),
+            ADMIN_DOCUMENTO_INICIAL,
+            "3000000000",
+            "",
+            1,
+            1,
+            1
+        )
+
+        usuario_encontrado = buscar_usuario_por_usuario(usuario)
 
     if usuario_encontrado is None:
         return {"mensaje": "Administrador no encontrado"}, 404
@@ -116,11 +154,6 @@ def servicio_login_admin(datos):
 
     if not contrasena_correcta:
         return {"mensaje": "Contrasena incorrecta"}, 401
-
-    codigo_correcto = os.getenv("ADMIN_ACCESS_CODE")
-
-    if codigo_admin != codigo_correcto:
-        return {"mensaje": "Codigo admin incorrecto"}, 401
 
     return {
         "mensaje": "Inicio de sesion administrador correcto",

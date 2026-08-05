@@ -1,7 +1,8 @@
 Flask # Framework principal para crear el backend/API
 flask-cors # Permite que el frontend o app movil se comunique con el backend
 flasgger # Genera la documentacion Swagger de la API
-mysql-connector-python # Conector para trabajar con MySQL sin usar ORM
+psycopg2-binary # Conector para trabajar con Supabase/PostgreSQL sin usar ORM
+Flask-Mail # Permite enviar correos desde Flask, se usa en recuperacion de contrasena
 python-dotenv # Permite leer variables del archivo .env
 Werkzeug # Sirve para cifrar y verificar contrasenas
 PyJWT # Sirve para crear y validar tokens de inicio de sesion

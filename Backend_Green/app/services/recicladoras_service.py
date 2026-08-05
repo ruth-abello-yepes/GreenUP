@@ -4,6 +4,7 @@
 
 from app.models.usuarios_model import registrar_usuario
 from app.models.recicladoras_model import registrar_recicladora, listar_recicladoras
+from app.models.ubicaciones_model import crear_ubicacion
 from app.common.security import cifrar_contrasena, validar_contrasena_segura
 
 
@@ -104,7 +105,25 @@ def servicio_registrar_dueno_recicladora(datos):
         id_estado
     )
 
-    return {"mensaje": "Dueno de punto ecologico registrado correctamente"}, 201
+    # IMPORTANTE PARA EL ADMINISTRADOR DEL SISTEMA:
+    # Cada vez que se registra una recicladora, tambien se crea un punto
+    # ecologico. Asi el mapa del administrador lo muestra automaticamente.
+    id_punto_creado = crear_ubicacion(
+        nombre_empresa,
+        direccion_empresa,
+        datos.get("horario", "Horario por confirmar"),
+        datos.get("latitud"),
+        datos.get("longitud"),
+        telefono_empresa,
+        f"{nombres} {apellidos}",
+        id_estado
+    )
+
+    return {
+        "mensaje": "Dueno de punto ecologico registrado correctamente",
+        "id_usuario": id_usuario_creado,
+        "id_punto": id_punto_creado
+    }, 201
 
 
 def servicio_listar_duenos_recicladora():

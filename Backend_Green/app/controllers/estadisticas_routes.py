@@ -1,24 +1,35 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 from app.services.estadisticas_service import EstadisticasService
 
-# Asumiendo que tienes un middleware para verificar el token del usuario
-# from app.middlewares.auth_middleware import verificar_token 
 
-estadisticas_bp = Blueprint('estadisticas', __name__)
+estadisticas_bp = Blueprint("estadisticas", __name__)
 
-@estadisticas_bp.route('/api/estadisticas/semana_actual', methods=['GET'])
-# @verificar_token  <-- Descoméntalo cuando tu seguridad JWT esté lista
-def obtener_semana_actual():
+
+@estadisticas_bp.route("/estadisticas", methods=["GET"])
+def obtener_resumen_admin():
+    """
+    Ruta para el administrador del sistema.
+
+    La consume la pagina admin_estadisticas.html para mostrar los numeros
+    generales del sistema sin tocar las pantallas de ciudadano ni recicladora.
+    """
     try:
-        # Aquí obtendrías el ID del usuario desencriptando el Token JWT.
-        # Para hacer pruebas ahora, simularemos que es el usuario con ID = 1
-        usuario_id = 1 
-        
-        # Pedimos al servicio los datos ya formateados
+        return jsonify(EstadisticasService.resumen_admin()), 200
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
+
+
+@estadisticas_bp.route("/api/estadisticas/semana_actual", methods=["GET"])
+def obtener_semana_actual():
+    """
+    Ruta que ya existia para graficas semanales.
+
+    Se conserva para no romper otras partes del proyecto. Si mas adelante usan
+    token, aqui se puede reemplazar el usuario de prueba por el usuario logueado.
+    """
+    try:
+        usuario_id = 1
         datos_grafica = EstadisticasService.formatear_datos_semanales(usuario_id)
-        
-        # Flask lo convierte a JSON y lo envía al Frontend
         return jsonify(datos_grafica), 200
-        
-    except Exception as e:
-        return jsonify({'error': 'Ocurrió un error al procesar las estadísticas'}), 500
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500

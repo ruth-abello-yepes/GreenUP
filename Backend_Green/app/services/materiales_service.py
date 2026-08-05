@@ -14,11 +14,11 @@ def servicio_crear_material(data):
     """
     Valida y crea un material.
     """
-    nombre = datos.get("nombre")
-    descripcion = datos.get("descripcion")
-    unidad = dataos.get("unidad", "kg")
-    puntos_por_kg = datos.get("puntos_por_kg", 0)
-    id_tipo_residuo = datos.get("id_tipo_residuo")
+    nombre = data.get("nombre")
+    descripcion = data.get("descripcion")
+    unidad = data.get("unidad", "kg")
+    puntos_por_kg = data.get("puntos_por_kg", 0)
+    id_tipo_residuo = data.get("id_tipo_residuo")
 
     if not nombre:
         return {"mensaje": "El nombre es obligatorio"}, 400

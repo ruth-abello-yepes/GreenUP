@@ -8,7 +8,8 @@ from app.models.usuarios_model import (
     listar_ciudadanos,
     buscar_usuario_por_id,
     actualizar_usuario,
-    inhabilitar_usuario
+    inhabilitar_usuario,
+    cambiar_estado_usuario
 )
 
 from app.common.security import cifrar_contrasena, validar_contrasena_segura
@@ -180,3 +181,21 @@ def servicio_inhabilitar_usuario(id_usuario):
     inhabilitar_usuario(id_usuario)
 
     return {"mensaje": "Usuario inhabilitado correctamente"}, 200
+
+
+def servicio_cambiar_estado_usuario(id_usuario, datos):
+    """
+    Cambia el estado de un usuario desde el panel del administrador.
+
+    Esta funcion no crea usuarios. Solo permite administrar cuentas ya
+    registradas por ciudadano o por dueno de recicladora.
+    """
+
+    id_estado = datos.get("id_estado")
+
+    if not id_estado:
+        return {"mensaje": "El estado es obligatorio"}, 400
+
+    cambiar_estado_usuario(id_usuario, id_estado)
+
+    return {"mensaje": "Estado del usuario actualizado correctamente"}, 200

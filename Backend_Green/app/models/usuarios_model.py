@@ -27,6 +27,7 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
     INSERT INTO usuarios
     (nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    RETURNING id_usuario
     """
 
     datos = (
@@ -44,11 +45,11 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
     )
 
     cursor.execute(sql, datos)
-    conexion.commit()
 
-    # Este es el ID del usuario que acabamos de crear.
-    # Lo necesitamos para registrar tambien los datos de la recicladora.
-    id_usuario_creado = cursor.lastrowid
+    # En Supabase/PostgreSQL usamos RETURNING para saber el ID creado.
+    # cursor.lastrowid era de MySQL y no funciona con psycopg2.
+    id_usuario_creado = cursor.fetchone()["id_usuario"]
+    conexion.commit()
 
     cursor.close()
     conexion.close()
@@ -229,6 +230,26 @@ def inhabilitar_usuario(id_usuario):
     sql = "UPDATE usuarios SET id_estado = 2 WHERE id_usuario = %s"
 
     cursor.execute(sql, (id_usuario,))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+
+def cambiar_estado_usuario(id_usuario, id_estado):
+    """
+    Activa o inactiva un usuario desde el administrador del sistema.
+
+    id_estado = 1 activo
+    id_estado = 2 inactivo
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = "UPDATE usuarios SET id_estado = %s WHERE id_usuario = %s"
+
+    cursor.execute(sql, (id_estado, id_usuario))
     conexion.commit()
 
     cursor.close()

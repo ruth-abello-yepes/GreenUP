@@ -1,75 +1,368 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login Administrador - GreenUp</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Administrador del sistema - GreenUp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="../../css/general.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+  <style>
+    /*
+      Diseno exclusivo del login del Administrador del Sistema.
+      Esta pantalla no registra usuarios; solo permite entrar al panel admin.
+    */
+    :root {
+      --admin-green: #0f6f2a;
+      --admin-green-dark: #075f1d;
+      --admin-blue: #065591;
+      --admin-blue-dark: #043a63;
+      --admin-mint: #eefbf3;
+      --admin-ink: #172033;
+      --admin-muted: #68717b;
+      --admin-border: #d9e7de;
+      --shadow-soft: 0 24px 70px rgba(3, 29, 49, 0.22);
+    }
 
-  <body class="login-fondo">
-    <main class="login-contenedor">
-      <section class="login-tarjeta">
-        <h1>GreenUp</h1>
-        <h2>Administrador del sistema</h2>
+    * {
+      box-sizing: border-box;
+    }
 
-        <form onsubmit="iniciarSesionAdmin(event)">
-          <label for="usuario">Usuario</label>
-          <input
-            type="text"
-            id="usuario"
-            placeholder="Usuario administrador"
-            required
-          />
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background:
+        linear-gradient(120deg, rgba(3, 29, 49, 0.78), rgba(7, 95, 29, 0.62)),
+        url("https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1800&q=80") center/cover;
+      color: var(--admin-ink);
+      font-family: "Manrope", Arial, Helvetica, sans-serif;
+    }
 
-          <label for="contrasena">Contraseña</label>
-          <div class="campo-password">
-            <input
-              type="password"
-              id="contrasena"
-              placeholder="Contraseña"
-              required
-            />
-            <button
-              class="btn-ver-password"
-              type="button"
-              onclick="alternarPasswordAdmin('contrasena', this)"
-              aria-label="Mostrar contraseña"
-              aria-pressed="false"
-            >
+    .login-shell {
+      width: min(1080px, 100%);
+      min-height: 660px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 420px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .login-visual {
+      position: relative;
+      min-height: 100%;
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(180deg, rgba(6, 85, 145, 0.05), rgba(15, 111, 42, 0.12)),
+        #f8fbf9;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+      background: #ffffff;
+      color: var(--admin-green);
+      box-shadow: 0 14px 28px rgba(15, 111, 42, 0.16);
+    }
+
+    .brand-logo span {
+      font-size: 34px;
+      font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
+    }
+
+    .brand-name {
+      display: block;
+      color: var(--admin-blue);
+      font-size: 1.6rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .brand-name strong {
+      color: #478a3a;
+    }
+
+    .brand-kicker {
+      display: block;
+      margin-top: 6px;
+      color: #87909b;
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .visual-copy {
+      max-width: 540px;
+    }
+
+    .visual-copy span {
+      color: var(--admin-green-dark);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .visual-copy h1 {
+      margin: 12px 0 14px;
+      color: var(--admin-ink);
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .visual-copy h1 strong {
+      color: var(--admin-green);
+    }
+
+    .visual-copy p {
+      max-width: 520px;
+      margin: 0;
+      color: var(--admin-muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .status-card {
+      padding: 16px;
+      border: 1px solid var(--admin-border);
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 14px 28px rgba(6, 85, 145, 0.08);
+    }
+
+    .status-card strong {
+      display: block;
+      color: var(--admin-green-dark);
+      font-size: 1.25rem;
+    }
+
+    .status-card span {
+      color: var(--admin-muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .login-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 42px;
+      background: #ffffff;
+    }
+
+    .login-panel h2 {
+      margin: 0;
+      color: var(--admin-blue-dark);
+      font-size: 1.8rem;
+    }
+
+    .login-panel > p {
+      margin: 8px 0 26px;
+      color: var(--admin-muted);
+      line-height: 1.5;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: #4c5966;
+      font-size: 0.9rem;
+      font-weight: 850;
+    }
+
+    input {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--admin-border);
+      border-radius: 14px;
+      padding: 0 14px;
+      color: var(--admin-ink);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--admin-green);
+      box-shadow: 0 0 0 4px rgba(15, 111, 42, 0.1);
+    }
+
+    .campo-password {
+      position: relative;
+    }
+
+    .campo-password input {
+      padding-right: 52px;
+    }
+
+    .btn-ver-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 12px;
+      background: var(--admin-mint);
+      color: var(--admin-green-dark);
+      cursor: pointer;
+      transform: translateY(-50%);
+    }
+
+    .login-button {
+      min-height: 52px;
+      margin-top: 6px;
+      border: 0;
+      border-radius: 15px;
+      background: var(--admin-green);
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+      box-shadow: 0 18px 30px rgba(15, 111, 42, 0.2);
+    }
+
+    .login-button:hover {
+      background: var(--admin-green-dark);
+    }
+
+    .admin-note {
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid #c9dff8;
+      border-radius: 16px;
+      background: #e9f4ff;
+      color: #0055b8;
+      font-size: 0.86rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-visual {
+        min-height: 360px;
+      }
+
+      .status-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 14px;
+      }
+
+      .login-visual,
+      .login-panel {
+        padding: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="login-shell">
+    <section class="login-visual">
+      <div class="brand-lockup">
+        <span class="brand-logo"><span class="material-symbols-outlined">recycling</span></span>
+        <span>
+          <span class="brand-name">Green<strong>Up</strong></span>
+          <span class="brand-kicker">Admin sistema</span>
+        </span>
+      </div>
+
+      <div class="visual-copy">
+        <span>Control operativo</span>
+        <h1>Panel del <strong>sistema</strong></h1>
+        <p>Acceso exclusivo para supervisar usuarios registrados, puntos ecologicos, reportes, noticias y contenido de GreenUp.</p>
+      </div>
+
+      <div class="status-row">
+        <article class="status-card"><strong>Supabase</strong><span>Datos conectados</span></article>
+        <article class="status-card"><strong>Mapa</strong><span>Tiempo real</span></article>
+        <article class="status-card"><strong>Admin</strong><span>Gestion segura</span></article>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <h2>Entrar al panel</h2>
+      <p>Usa el usuario administrador, la contrasena y el codigo interno del sistema.</p>
+
+      <form onsubmit="iniciarSesionAdmin(event)">
+        <label for="usuario">
+          Usuario
+          <input type="text" id="usuario" placeholder="Usuario administrador" required />
+        </label>
+
+        <label for="contrasena">
+          Contrasena
+          <span class="campo-password">
+            <input type="password" id="contrasena" placeholder="Contrasena" required />
+            <button class="btn-ver-password" type="button" onclick="alternarPasswordAdmin('contrasena', this)" aria-label="Mostrar contrasena" aria-pressed="false">
               <span class="material-symbols-outlined">visibility</span>
             </button>
-          </div>
+          </span>
+        </label>
 
-          <label for="codigo_admin">Código administrador</label>
-          <div class="campo-password">
-            <input
-              type="password"
-              id="codigo_admin"
-              placeholder="Código de acceso"
-              required
-            />
-            <button
-              class="btn-ver-password"
-              type="button"
-              onclick="alternarPasswordAdmin('codigo_admin', this)"
-              aria-label="Mostrar código administrador"
-              aria-pressed="false"
-            >
+        <label for="codigo_admin">
+          Codigo administrador
+          <span class="campo-password">
+            <input type="password" id="codigo_admin" placeholder="Codigo de acceso" required />
+            <button class="btn-ver-password" type="button" onclick="alternarPasswordAdmin('codigo_admin', this)" aria-label="Mostrar codigo administrador" aria-pressed="false">
               <span class="material-symbols-outlined">visibility</span>
             </button>
-          </div>
+          </span>
+        </label>
 
-          <button type="submit">Entrar al panel</button>
-        </form>
-      </section>
-    </main>
+        <button class="login-button" type="submit">Entrar al panel</button>
+      </form>
 
-    <script src="../../js/api.js"></script>
-    <script src="../../js/admin_auth.js"></script>
-  </body>
+      <div class="admin-note">
+        El administrador no registra ciudadanos ni recicladoras desde aqui; solo gestiona lo que ya llega al sistema.
+      </div>
+    </section>
+  </main>
+
+  <script src="../../js/api.js"></script>
+  <script src="../../js/admin_auth.js"></script>
+</body>
 </html>

@@ -14,7 +14,8 @@ from app.services.usuarios_service import (
     servicio_listar_ciudadanos,
     servicio_buscar_usuario,
     servicio_actualizar_usuario,
-    servicio_inhabilitar_usuario
+    servicio_inhabilitar_usuario,
+    servicio_cambiar_estado_usuario
 )
 
 from app.middlewares.auth_middleware import login_requerido
@@ -246,5 +247,24 @@ def ruta_inhabilitar_usuario(id_usuario):
     """
 
     respuesta, estado = servicio_inhabilitar_usuario(id_usuario)
+
+    return jsonify(respuesta), estado
+
+
+@usuarios_bp.route("/estado/<int:id_usuario>", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
+def ruta_cambiar_estado_usuario(id_usuario):
+    """
+    Activar o inactivar usuario
+    ---
+    tags:
+      - Usuarios
+    description: El administrador cambia el estado de una cuenta existente.
+    """
+
+    datos = request.get_json()
+
+    respuesta, estado = servicio_cambiar_estado_usuario(id_usuario, datos)
 
     return jsonify(respuesta), estado

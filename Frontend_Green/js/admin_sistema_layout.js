@@ -25,6 +25,8 @@ let adminHeroTimer = null;
 let adminMap = null;
 let adminMarkers = new Map();
 let adminUserMarker = null;
+let adminUserLocation = null;
+let adminRouteControl = null;
 let adminWatchId = null;
 
 const adminPrimaryNav = [
@@ -154,17 +156,103 @@ const adminHeroImageGroups = {
   configuracion: "configuracion",
 };
 
+const adminHeroImageBank = [
+  "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1523978591478-c753949ff840?auto=format&fit=crop&w=1200&q=80"
+];
+
+function imagenesHeroModulo(modulo) {
+  /*
+    Carrusel automatico del administrador.
+    Usa URLs fijas de imagen para evitar fallas de carga por busquedas dinamicas.
+    Cada apartado arranca desde una posicion diferente, por eso el orden de las
+    15 fotos cambia entre paginas y no se siente repetido.
+  */
+  const modulos = Object.keys(adminHeroImageGroups);
+  const inicio = Math.max(0, modulos.indexOf(modulo));
+  return Array.from({ length: 15 }, (_, index) => ({
+    url: adminHeroImageBank[(inicio + index) % adminHeroImageBank.length],
+    label: `Imagen ${index + 1} de 15`,
+  }));
+}
+
+function iniciarCarruselHero() {
+  /*
+    Activa el paso automatico de imagenes del hero.
+    Si el usuario cambia de pagina, el temporizador anterior se limpia primero.
+  */
+  if (adminHeroTimer) clearInterval(adminHeroTimer);
+
+  const slides = Array.from(document.querySelectorAll(".hero-slide"));
+  const dots = Array.from(document.querySelectorAll(".carousel-dots i"));
+  if (slides.length <= 1) return;
+
+  let activo = 0;
+  adminHeroTimer = setInterval(() => {
+    slides[activo].classList.remove("active");
+    dots[activo]?.classList.remove("active");
+    activo = (activo + 1) % slides.length;
+    slides[activo].classList.add("active");
+    dots[activo]?.classList.add("active");
+  }, 3500);
+}
+
 document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 
 async function iniciarAdminSistema() {
   protegerAdminSistema();
+  aplicarTemaAdminSistema();
   pintarEstructuraBase();
   await cargarModuloAdmin();
   iniciarMonitoreoAdmin();
 }
 
 function moduloActual() {
-  return window.ADMIN_MODULE || "panel";
+  /*
+    DETECCION DEL APARTADO ACTUAL:
+    Algunas paginas antiguas no declaran window.ADMIN_MODULE dentro del HTML.
+    Para que el navbar funcione siempre, tambien detectamos el modulo usando
+    el nombre real del archivo abierto en el navegador.
+  */
+  if (window.ADMIN_MODULE) return window.ADMIN_MODULE;
+
+  const archivo = (window.location.pathname.split("/").pop() || ADMIN_HOME).toLowerCase();
+  const modulosPorArchivo = {
+    "admin_panel.html": "panel",
+    "admin_usuarios.html": "usuarios",
+    "admin_mapa.html": "mapa",
+    "admin_puntos_reciclaje.html": "puntos",
+    "admin_reportes.html": "reportes",
+    "admin_roles.html": "roles",
+    "admin_tipo_documento.html": "documentos",
+    "admin_materiales.html": "materiales",
+    "admin_residuos.html": "residuos",
+    "admin_registros_reciclaje.html": "reciclaje",
+    "admin_novedades.html": "novedades",
+    "admin_contenido_educativo.html": "contenido",
+    "admin_faq.html": "faq",
+    "admin_estadisticas.html": "estadisticas",
+    "admin_perfil.html": "perfil",
+    "admin_configuracion.html": "configuracion",
+  };
+
+  return modulosPorArchivo[archivo] || "panel";
 }
 
 function obtenerAdminActual() {
@@ -173,6 +261,56 @@ function obtenerAdminActual() {
   } catch {
     return {};
   }
+}
+
+function obtenerTemaAdminSistema() {
+  /*
+    TEMA GLOBAL DEL ADMIN:
+    Lee si el administrador quiere ver todo el panel en oscuro o blanco.
+    Tambien acepta la clave antigua del perfil para no perder la preferencia.
+  */
+  const temaGuardado = localStorage.getItem("greenup_admin_tema")
+    || localStorage.getItem("greenup_admin_perfil_modo")
+    || "claro";
+  return temaGuardado === "oscuro" ? "oscuro" : "claro";
+}
+
+function aplicarTemaAdminSistema() {
+  /*
+    APLICA EL TEMA A TODA LA PAGINA:
+    Estas clases cambian navbar, fondo, tarjetas, tablas, formularios y mapa.
+  */
+  const tema = obtenerTemaAdminSistema();
+  document.body.classList.remove("admin-theme-dark", "admin-theme-light");
+  document.body.classList.add(tema === "oscuro" ? "admin-theme-dark" : "admin-theme-light");
+}
+
+function cambiarTemaAdminSistema(modo) {
+  /*
+    CAMBIO MANUAL DE TEMA:
+    Guarda la preferencia y actualiza visualmente todo el panel administrador.
+  */
+  localStorage.setItem("greenup_admin_tema", modo);
+  localStorage.setItem("greenup_admin_perfil_modo", modo === "oscuro" ? "oscuro" : "claro");
+  aplicarTemaAdminSistema();
+  actualizarBotonTemaAdminSistema();
+  if (moduloActual() === "perfil") cargarPerfil();
+  mostrarToast("Tema actualizado", modo === "oscuro" ? "Modo oscuro activado en todo el panel." : "Modo blanco activado en todo el panel.");
+}
+
+function alternarTemaAdminSistema() {
+  const siguienteTema = obtenerTemaAdminSistema() === "oscuro" ? "claro" : "oscuro";
+  cambiarTemaAdminSistema(siguienteTema);
+}
+
+function actualizarBotonTemaAdminSistema() {
+  /*
+    BOTON DEL TOPBAR:
+    Cambia el icono para indicar el siguiente modo disponible.
+  */
+  const botonTema = document.querySelector(".theme-toggle-button .material-symbols-outlined");
+  if (!botonTema) return;
+  botonTema.textContent = obtenerTemaAdminSistema() === "oscuro" ? "light_mode" : "dark_mode";
 }
 
 function protegerAdminSistema() {
@@ -206,7 +344,9 @@ async function apiAdmin(ruta, opciones = {}) {
 function pintarEstructuraBase() {
   const actual = moduloActual();
   const admin = obtenerAdminActual();
+  const temaActual = obtenerTemaAdminSistema();
   document.body.classList.add("admin-app");
+  aplicarTemaAdminSistema();
   document.body.innerHTML = `
     <aside class="app-sidebar">
       ${renderBrand()}
@@ -236,6 +376,9 @@ function pintarEstructuraBase() {
         <button class="icon-button" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
+        <button class="icon-button theme-toggle-button" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
+          <span class="material-symbols-outlined">${temaActual === "oscuro" ? "light_mode" : "dark_mode"}</span>
+        </button>
         <div class="user-menu">
           <span class="user-avatar">${iniciales(admin.nombres || admin.usuario || "A")}</span>
           <span class="user-meta">
@@ -262,6 +405,46 @@ function pintarEstructuraBase() {
   `;
 
   document.getElementById("admin-search").addEventListener("input", filtrarTablaActual);
+  prepararNavbarAdmin();
+}
+
+function prepararNavbarAdmin() {
+  /*
+    NAVBAR ESTABLE:
+    Cuando el administrador entra a un apartado de abajo, el sidebar se vuelve
+    a construir. Guardamos su scroll y centramos el enlace activo para que el
+    menu no se suba de golpe ni pierda la opcion seleccionada.
+  */
+  const sidebar = document.querySelector(".app-sidebar");
+  if (!sidebar) return;
+
+  const guardado = Number(sessionStorage.getItem("greenup_admin_sidebar_scroll") || 0);
+  if (Number.isFinite(guardado) && guardado > 0) {
+    sidebar.scrollTop = guardado;
+  }
+
+  const activo = sidebar.querySelector(".sidebar-link.active");
+  if (activo) {
+    const margen = 90;
+    const arribaActivo = activo.offsetTop;
+    const abajoActivo = arribaActivo + activo.offsetHeight;
+    const arribaVisible = sidebar.scrollTop;
+    const abajoVisible = arribaVisible + sidebar.clientHeight;
+
+    if (arribaActivo < arribaVisible + margen || abajoActivo > abajoVisible - margen) {
+      sidebar.scrollTop = Math.max(0, arribaActivo - (sidebar.clientHeight / 2) + (activo.offsetHeight / 2));
+    }
+  }
+
+  sidebar.addEventListener("scroll", () => {
+    sessionStorage.setItem("greenup_admin_sidebar_scroll", String(sidebar.scrollTop));
+  }, { passive: true });
+
+  sidebar.querySelectorAll("a").forEach((enlace) => {
+    enlace.addEventListener("click", () => {
+      sessionStorage.setItem("greenup_admin_sidebar_scroll", String(sidebar.scrollTop));
+    });
+  });
 }
 
 function renderBrand() {
@@ -293,22 +476,43 @@ function renderNavGroup(titulo, items, actual) {
 function pintarHero(extraStats = []) {
   const pagina = adminPages[moduloActual()] || adminPages.panel;
   const stats = extraStats.slice(0, 2);
+  const imagenes = imagenesHeroModulo(moduloActual());
+
   document.getElementById("admin-hero").innerHTML = `
+    <!-- TITULO DEL MODULO: identifica el apartado actual del administrador. -->
     <article class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow"><span class="material-symbols-outlined">verified_user</span>${pagina.eyebrow}</span>
         <h1>${pagina.title}</h1>
         <p>${pagina.subtitle}</p>
-        ${stats.length ? `<div class="hero-stats">${stats.map((s, index) => `
+        ${stats.length ? `<!-- CARTAS RESUMEN: muestran indicadores rapidos del modulo actual. --><div class="hero-stats">${stats.map((s, index) => `
           <div class="summary-card ${index === 1 ? "blue" : ""}">
             <span class="summary-label">${s[0]}</span>
             <span class="summary-value">${s[1]}</span>
           </div>
         `).join("")}</div>` : ""}
       </div>
-      <div class="hero-visual" aria-hidden="true"></div>
+      <!-- CARRUSEL AUTOMATICO: contiene 15 imagenes distintas por apartado. -->
+      <div class="hero-visual" aria-label="Carrusel visual del administrador">
+        <div class="hero-carousel">
+          ${imagenes.map((imagen, index) => `
+            <div class="hero-slide ${index === 0 ? "active" : ""}" style="background-image: url('${imagen.url}')"></div>
+          `).join("")}
+        </div>
+        <div class="hero-carousel-card">
+          <div>
+            <strong>GreenUp Admin</strong><br>
+            <span>${pagina.eyebrow}</span>
+          </div>
+          <div class="carousel-dots">
+            ${imagenes.map((_, index) => `<i class="${index === 0 ? "active" : ""}"></i>`).join("")}
+          </div>
+        </div>
+      </div>
     </article>
   `;
+
+  iniciarCarruselHero();
 }
 
 async function cargarModuloAdmin() {
@@ -717,20 +921,47 @@ async function cargarMapa() {
     ["Puntos", String(puntos.length)],
     ["Actualizacion", "8s"],
   ]);
+
   document.getElementById("admin-content").innerHTML = `
-    <div class="toolbar">
-      <button class="primary-button" type="button" onclick="actualizarPuntosMapa(true)">
-        <span class="material-symbols-outlined">sync</span> Actualizar mapa
-      </button>
-      <button class="ghost-button" type="button" onclick="centrarUbicacionAdmin()">
-        <span class="material-symbols-outlined">my_location</span> Mi ubicacion
-      </button>
-      <a class="ghost-button" href="admin_puntos_reciclaje.html">
-        <span class="material-symbols-outlined">table</span> Ver tabla
-      </a>
-    </div>
-    <section class="map-shell"><div id="admin-map"></div></section>
+    <!-- MAPA ADMIN: usa Leaflet como el mapa ciudadano, pero con panel fijo para administracion. -->
+    <section class="map-shell">
+      <!-- PANEL FIJO DE PUNTOS: no flota sobre el mapa; permite revisar puntos reales de Supabase. -->
+      <aside id="sidebar-panel">
+        <div class="sidebar-map-header">
+          <h3><span class="material-symbols-outlined">recycling</span>Puntos ecologicos</h3>
+        </div>
+        <div id="recycling-list"></div>
+        <div class="sidebar-map-footer">
+          <button class="primary-button" type="button" onclick="actualizarPuntosMapa(true)">
+            <span class="material-symbols-outlined">sync</span> Actualizar puntos
+          </button>
+        </div>
+      </aside>
+
+      <!-- AREA DEL MAPA: mantiene el mapa independiente del panel y evita que la lista se mueva encima. -->
+      <div class="map-canvas-wrap">
+        <!-- CONTENEDOR DEL MAPA: se llama eco-map para mantener el mismo patron de ciudadano. -->
+        <div id="eco-map"></div>
+
+        <!-- BOTONES FLOTANTES: todos ejecutan acciones reales sobre el mapa. -->
+        <div class="map-floating-controls">
+          <button class="icon-button" type="button" onclick="centerMap()" title="Centrar mi ubicacion">
+            <span class="material-symbols-outlined">my_location</span>
+          </button>
+          <button class="icon-button" type="button" onclick="adminMap.zoomIn()" title="Acercar mapa">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <button class="icon-button" type="button" onclick="adminMap.zoomOut()" title="Alejar mapa">
+            <span class="material-symbols-outlined">remove</span>
+          </button>
+          <a class="icon-button" href="admin_puntos_reciclaje.html" title="Ver tabla de puntos">
+            <span class="material-symbols-outlined">table</span>
+          </a>
+        </div>
+      </div>
+    </section>
   `;
+
   await asegurarLeaflet();
   iniciarMapaLeaflet();
   await pintarPuntosMapa(puntos, true);
@@ -738,14 +969,22 @@ async function cargarMapa() {
 }
 
 function iniciarMapaLeaflet() {
+  /*
+    Mapa igual al de ciudadano: Leaflet, OpenStreetMap, sin zoom nativo
+    porque usamos botones flotantes propios del panel.
+  */
   if (adminMap) {
     adminMap.remove();
     adminMarkers.clear();
   }
-  adminMap = L.map("admin-map", { zoomControl: true }).setView([10.4631, -73.2532], 13);
+  adminRouteControl = null;
+  adminMap = L.map("eco-map", { zoomControl: false, attributionControl: false }).setView([10.4631, -73.2532], 13);
+  window.adminMap = adminMap;
+  window.map = adminMap;
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: "&copy; OpenStreetMap",
+    attribution: "OpenStreetMap contributors",
   }).addTo(adminMap);
 }
 
@@ -758,6 +997,8 @@ async function actualizarPuntosMapa(manual = false) {
 async function pintarPuntosMapa(puntos, ajustarVista = false) {
   if (!adminMap) return;
   const bounds = [];
+  const lista = document.getElementById("recycling-list");
+  if (lista) lista.innerHTML = "";
 
   if (adminLastPointCount !== null && puntos.length > adminLastPointCount) {
     notificarAdmin("Nuevo punto ecologico", "El mapa del administrador ya fue actualizado.");
@@ -769,62 +1010,142 @@ async function pintarPuntosMapa(puntos, ajustarVista = false) {
     if (!coords) continue;
 
     bounds.push([coords.lat, coords.lng]);
-    const html = `
-      <strong>${limpiar(punto.nombre)}</strong><br>
-      ${limpiar(punto.direccion)}<br>
-      ${estadoHtml(punto.id_estado)}
+    const color = Number(punto.id_estado) === 1 ? "#296c1f" : "#68717b";
+    const popupHtml = `
+      <!-- POPUP DEL PUNTO: muestra informacion real de Supabase. -->
+      <div style="min-width:180px">
+        <strong style="color:${color}">${limpiar(punto.nombre)}</strong><br>
+        <span>${limpiar(punto.direccion)}</span><br>
+        <span>${limpiar(punto.horario || "Horario por confirmar")}</span><br>
+        ${estadoHtml(punto.id_estado)}
+        <button class="route-button" onclick="trazarRutaAdmin(${coords.lat}, ${coords.lng})">Como llegar</button>
+      </div>
     `;
 
-    if (adminMarkers.has(punto.id_punto)) {
-      adminMarkers.get(punto.id_punto).setLatLng([coords.lat, coords.lng]).setPopupContent(html);
+    let marker = adminMarkers.get(punto.id_punto);
+    if (marker) {
+      marker.setLatLng([coords.lat, coords.lng]).setPopupContent(popupHtml);
     } else {
-      const marker = L.marker([coords.lat, coords.lng]).addTo(adminMap).bindPopup(html);
+      marker = L.circleMarker([coords.lat, coords.lng], {
+        radius: 10,
+        fillColor: color,
+        color: "#fff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.92,
+      }).addTo(adminMap).bindPopup(popupHtml);
       adminMarkers.set(punto.id_punto, marker);
+    }
+
+    if (lista) lista.appendChild(renderPuntoSidebar(punto, coords, marker));
+  }
+
+  if (lista && !lista.children.length) {
+    lista.innerHTML = `<div class="empty-state"><div><span class="material-symbols-outlined">location_off</span><strong>No hay puntos con ubicacion</strong><p>Cuando existan puntos en Supabase apareceran aqui.</p></div></div>`;
+  }
+
+  if (ajustarVista && bounds.length) adminMap.fitBounds(bounds, { padding: [40, 40] });
+}
+
+
+function renderPuntoSidebar(punto, coords, marker) {
+  /* CARTA DEL MAPA: boton funcional para centrar el punto y abrir su popup. */
+  const item = document.createElement("button");
+  item.type = "button";
+  item.className = "gu-sidebar-item";
+  item.innerHTML = `
+    <span class="point-icon"><span class="material-symbols-outlined">location_on</span></span>
+    <span class="point-info">
+      <strong>${limpiar(punto.nombre)}</strong>
+      <span>${limpiar(punto.direccion)}</span>
+      <span>${Number(punto.id_estado) === 1 ? "Activo" : "Inactivo"}</span>
+    </span>
+  `;
+  item.addEventListener("click", () => {
+    adminMap.setView([coords.lat, coords.lng], 16, { animate: true });
+    setTimeout(() => marker.openPopup(), 250);
+    if (window.innerWidth < 900) document.getElementById("eco-map")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  return item;
+}
+
+function toggleSidebarAdmin() {
+  const sidebar = document.getElementById("sidebar-panel");
+  if (!sidebar) return;
+  sidebar.classList.toggle("collapsed");
+  setTimeout(() => adminMap?.invalidateSize(), 300);
+}
+async function coordenadasPunto(punto) {
+  /*
+    Ubicacion de puntos para el mapa admin.
+    1. Si Supabase trae latitud/longitud validas dentro de Valledupar, se usan.
+    2. Si no, se geocodifica la direccion limitando la busqueda a Valledupar.
+    3. Si el servicio no encuentra nada, se ubica cerca del centro para no mandar
+       el mapa a otro pais o al mar.
+  */
+  const lat = Number(punto.latitud);
+  const lng = Number(punto.longitud);
+  if (coordenadaEnValledupar(lat, lng)) return { lat, lng };
+
+  const clave = "greenup_geo_admin_v2_" + punto.id_punto;
+  const guardado = localStorage.getItem(clave);
+  if (guardado) {
+    const coordsGuardadas = JSON.parse(guardado);
+    if (coordenadaEnValledupar(coordsGuardadas.lat, coordsGuardadas.lng)) return coordsGuardadas;
+  }
+
+  if (punto.direccion) {
+    const consulta = encodeURIComponent(`${punto.direccion}, Valledupar, Cesar, Colombia`);
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&bounded=1&viewbox=-73.36,10.57,-73.16,10.36&q=${consulta}`;
+    const respuesta = await fetch(url);
+    const datos = await respuesta.json();
+    if (datos.length) {
+      const coords = { lat: Number(datos[0].lat), lng: Number(datos[0].lon) };
+      if (coordenadaEnValledupar(coords.lat, coords.lng)) {
+        localStorage.setItem(clave, JSON.stringify(coords));
+        return coords;
+      }
     }
   }
 
-  if (ajustarVista && bounds.length) {
-    adminMap.fitBounds(bounds, { padding: [40, 40] });
-  }
+  const fallback = coordenadaFallbackValledupar(punto.id_punto || 1);
+  localStorage.setItem(clave, JSON.stringify(fallback));
+  return fallback;
 }
 
-async function coordenadasPunto(punto) {
-  const lat = Number(punto.latitud);
-  const lng = Number(punto.longitud);
-  if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+function coordenadaEnValledupar(lat, lng) {
+  /* Rango aproximado de Valledupar para evitar que el mapa se vaya al mar. */
+  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= 10.35 && lat <= 10.58 && lng >= -73.36 && lng <= -73.12;
+}
 
-  const clave = "greenup_geo_" + punto.id_punto;
-  const guardado = localStorage.getItem(clave);
-  if (guardado) return JSON.parse(guardado);
-
-  if (!punto.direccion) return null;
-  const consulta = encodeURIComponent(`${punto.direccion}, Valledupar, Colombia`);
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${consulta}`;
-  const respuesta = await fetch(url);
-  const datos = await respuesta.json();
-  if (!datos.length) return null;
-
-  const coords = { lat: Number(datos[0].lat), lng: Number(datos[0].lon) };
-  localStorage.setItem(clave, JSON.stringify(coords));
-  return coords;
+function coordenadaFallbackValledupar(id) {
+  /* Coordenada segura cuando no hay lat/lng ni geocodificacion confiable. */
+  const centro = { lat: 10.4631, lng: -73.2532 };
+  const paso = Number(id) || 1;
+  return {
+    lat: centro.lat + ((paso % 7) - 3) * 0.006,
+    lng: centro.lng + ((paso % 5) - 2) * 0.006,
+  };
 }
 
 function iniciarGeolocalizacionAdmin() {
+  /* GEOLOCALIZACION EN TIEMPO REAL: actualiza la ubicacion del administrador. */
   if (!navigator.geolocation || !adminMap) return;
   if (adminWatchId) navigator.geolocation.clearWatch(adminWatchId);
 
   adminWatchId = navigator.geolocation.watchPosition(
     (posicion) => {
-      const coords = [posicion.coords.latitude, posicion.coords.longitude];
+      adminUserLocation = [posicion.coords.latitude, posicion.coords.longitude];
       if (!adminUserMarker) {
-        adminUserMarker = L.circleMarker(coords, {
-          radius: 9,
-          color: "#065591",
-          fillColor: "#0f6f2a",
-          fillOpacity: 0.9,
-        }).addTo(adminMap).bindPopup("Tu ubicacion actual");
+        const userIcon = L.divIcon({
+          className: "custom-user-icon",
+          html: `<div style="background-color:#007bff;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,.45);"></div>`,
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+        });
+        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu ubicacion actual");
       } else {
-        adminUserMarker.setLatLng(coords);
+        adminUserMarker.setLatLng(adminUserLocation);
       }
     },
     () => mostrarToast("Ubicacion", "No fue posible obtener tu ubicacion actual."),
@@ -832,30 +1153,68 @@ function iniciarGeolocalizacionAdmin() {
   );
 }
 
-function centrarUbicacionAdmin() {
-  if (adminUserMarker && adminMap) {
-    adminMap.setView(adminUserMarker.getLatLng(), 16);
+function centerMap() {
+  if (adminUserLocation && adminMap) {
+    adminMap.setView(adminUserLocation, 15, { animate: true });
+    adminUserMarker?.openPopup();
   } else {
     iniciarGeolocalizacionAdmin();
     mostrarToast("Ubicacion", "Solicitando ubicacion del navegador.");
   }
 }
 
-function asegurarLeaflet() {
+function centrarUbicacionAdmin() {
+  centerMap();
+}
+
+function trazarRutaAdmin(destinoLat, destinoLng) {
+  /* BOTON COMO LLEGAR: usa Leaflet Routing Machine igual que ciudadano. */
+  if (!adminUserLocation) {
+    mostrarToast("Ruta", "Primero permite la ubicacion para calcular la ruta.");
+    return;
+  }
+  if (!window.L || !L.Routing) {
+    mostrarToast("Ruta", "El motor de rutas aun se esta cargando.");
+    return;
+  }
+  if (adminRouteControl) adminMap.removeControl(adminRouteControl);
+
+  adminRouteControl = L.Routing.control({
+    waypoints: [L.latLng(adminUserLocation[0], adminUserLocation[1]), L.latLng(destinoLat, destinoLng)],
+    show: false,
+    addWaypoints: false,
+    routeWhileDragging: false,
+    fitSelectedRoutes: true,
+    lineOptions: { styles: [{ color: "#296c1f", opacity: 0.85, weight: 6 }] },
+  }).addTo(adminMap);
+}
+
+function cargarRecursoCss(href) {
+  if (document.querySelector(`link[href="${href}"]`)) return;
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = href;
+  document.head.appendChild(css);
+}
+
+function cargarScript(src) {
   return new Promise((resolve, reject) => {
-    if (window.L) return resolve();
-
-    const css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(css);
-
+    const existente = document.querySelector(`script[src="${src}"]`);
+    if (existente) return resolve();
     const script = document.createElement("script");
-    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.src = src;
     script.onload = resolve;
-    script.onerror = () => reject(new Error("No se pudo cargar Leaflet."));
+    script.onerror = () => reject(new Error("No se pudo cargar " + src));
     document.head.appendChild(script);
   });
+}
+
+async function asegurarLeaflet() {
+  /* Carga Leaflet y Leaflet Routing Machine, igual que el mapa ciudadano. */
+  cargarRecursoCss("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+  cargarRecursoCss("https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css");
+  if (!window.L) await cargarScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
+  if (!L.Routing) await cargarScript("https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js");
 }
 
 async function cargarReciclaje() {
@@ -1098,23 +1457,83 @@ async function cargarEstadisticas() {
 
 function cargarPerfil() {
   const admin = obtenerAdminActual();
+  const modoPerfil = obtenerTemaAdminSistema();
+  const clasePerfil = modoPerfil === "claro" ? "admin-profile-light" : "admin-profile-dark";
   pintarHero([["Rol", "Admin"], ["ID", String(admin.id_usuario || "")]]);
   document.getElementById("admin-content").innerHTML = `
-    <article class="data-card">
-      <div class="card-title-row">
+    <!-- PERFIL ADMIN: tarjeta principal del administrador con modo oscuro o blanco. -->
+    <section class="${clasePerfil}">
+      <!-- IDENTIDAD DEL ADMIN: muestra usuario, rol y estado de acceso. -->
+      <article class="profile-identity">
         <div>
-          <h2>Sesion administrativa</h2>
-          <p>Datos guardados luego del inicio de sesion.</p>
+          <div class="profile-avatar-dark">${iniciales(admin.nombres || admin.usuario || "A")}</div>
+          <h2>${limpiar(admin.nombres || "Administrador")} ${limpiar(admin.apellidos || "Sistema")}</h2>
+          <p>Cuenta encargada de supervisar usuarios, puntos ecologicos, reportes, noticias y configuracion general de GreenUp.</p>
         </div>
-      </div>
-      ${tablaDatos(["Campo", "Valor"], [
-        ["ID", limpiar(admin.id_usuario)],
-        ["Usuario", limpiar(admin.usuario)],
-        ["Nombre", `${limpiar(admin.nombres)} ${limpiar(admin.apellidos)}`],
-        ["Rol", "Administrador del sistema"],
-      ])}
-    </article>
+        <span class="profile-security-badge">
+          <span class="material-symbols-outlined">verified_user</span>
+          Acceso administrativo activo
+        </span>
+      </article>
+
+      <!-- DETALLES DE SESION: datos guardados despues del login. -->
+      <article class="profile-detail-panel">
+        <div class="card-title-row">
+          <div class="profile-panel-heading">
+            <h2>Sesion administrativa</h2>
+            <p>Informacion local de la cuenta autenticada en este navegador.</p>
+          </div>
+          <!-- CAMBIO DE TEMA: guarda la preferencia del administrador en este navegador. -->
+          <div class="profile-mode-toggle" aria-label="Cambiar tema del perfil">
+            <button type="button" class="${modoPerfil === "oscuro" ? "active" : ""}" onclick="cambiarTemaPerfilAdmin('oscuro')">Oscuro</button>
+            <button type="button" class="${modoPerfil === "claro" ? "active" : ""}" onclick="cambiarTemaPerfilAdmin('claro')">Blanco</button>
+          </div>
+        </div>
+
+        <!-- CARTAS DE PERFIL: cada carta resume un dato importante del administrador. -->
+        <div class="profile-detail-grid">
+          <div class="profile-dark-card">
+            <span>ID de usuario</span>
+            <strong>${limpiar(admin.id_usuario)}</strong>
+          </div>
+          <div class="profile-dark-card">
+            <span>Usuario</span>
+            <strong>${limpiar(admin.usuario || "admin")}</strong>
+          </div>
+          <div class="profile-dark-card">
+            <span>Rol</span>
+            <strong>Administrador del sistema</strong>
+          </div>
+          <div class="profile-dark-card">
+            <span>Permisos</span>
+            <strong>Gestion, monitoreo, reportes y notificaciones</strong>
+          </div>
+        </div>
+
+        <!-- BOTONES DEL PERFIL: acciones reales del administrador. -->
+        <div class="profile-actions-dark">
+          <button class="primary-button" type="button" onclick="cargarModuloAdmin()">
+            <span class="material-symbols-outlined">refresh</span> Actualizar perfil
+          </button>
+          <button class="ghost-button" type="button" onclick="pedirPermisoNotificaciones()">
+            <span class="material-symbols-outlined">notifications</span> Activar notificaciones
+          </button>
+          <button class="ghost-button danger-button" type="button" onclick="cerrarSesionAdminSistema()">
+            <span class="material-symbols-outlined">logout</span> Cerrar sesion
+          </button>
+        </div>
+      </article>
+    </section>
   `;
+}
+
+function cambiarTemaPerfilAdmin(modo) {
+  /*
+    TEMA DEL PERFIL:
+    Usa la misma funcion global para que cambie toda la interfaz,
+    no solamente la tarjeta del perfil.
+  */
+  cambiarTemaAdminSistema(modo);
 }
 
 function cargarConfiguracion() {

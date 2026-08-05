@@ -38,6 +38,36 @@ body.admin-app {
   overflow-x: hidden;
 }
 
+body.admin-theme-dark {
+  /*
+    TEMA OSCURO GLOBAL:
+    Estas variables cambian todo el Administrador del Sistema, no solo el perfil.
+  */
+  --admin-green: #39d874;
+  --admin-green-dark: #8df2aa;
+  --admin-logo-green: #66e58d;
+  --admin-blue: #5eb2ff;
+  --admin-blue-dark: #b8dcff;
+  --admin-blue-soft: #102d48;
+  --admin-mint: #123322;
+  --admin-page: #08111d;
+  --admin-panel: #101b2a;
+  --admin-ink: #eef6ff;
+  --admin-muted: #a8b5c5;
+  --admin-border: #213247;
+  --admin-soft-border: #2c4258;
+  --admin-warning: #3b3216;
+  --admin-danger: #3a171b;
+  --shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(57, 216, 116, 0.14), transparent 30%),
+    linear-gradient(135deg, #07111f 0%, #08111d 50%, #0d1b2d 100%);
+}
+
+body.admin-theme-light {
+  background: var(--admin-page);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -73,6 +103,8 @@ textarea {
   border-right: 1px solid var(--admin-border);
   box-shadow: 12px 0 32px rgba(15, 111, 42, 0.05);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .brand-lockup,
@@ -545,6 +577,7 @@ textarea {
 .data-card,
 .module-card,
 .admin-card {
+  min-width: 0;
   border: 1px solid var(--admin-border);
   border-radius: var(--radius-lg);
   background: var(--admin-panel);
@@ -560,11 +593,17 @@ textarea {
   padding: 16px;
 }
 
+.toolbar > * {
+  max-width: 100%;
+}
+
 .toolbar select,
 .toolbar input,
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
+  width: 100%;
+  min-width: 0;
   min-height: 44px;
   border: 1px solid var(--admin-border);
   border-radius: 13px;
@@ -572,6 +611,13 @@ textarea {
   color: var(--admin-ink);
   outline: none;
   padding: 0 14px;
+}
+
+.toolbar select,
+.toolbar input {
+  width: auto;
+  min-width: 180px;
+  flex: 0 1 240px;
 }
 
 .admin-form textarea {
@@ -641,18 +687,22 @@ textarea {
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.75fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr);
   gap: 20px;
 }
 
 .content-grid.catalog-layout {
-  grid-template-columns: minmax(300px, 0.58fr) minmax(0, 1.42fr);
+  grid-template-columns: minmax(280px, 0.52fr) minmax(0, 1.48fr);
   align-items: start;
 }
 
 .content-grid.content-layout {
-  grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1.3fr);
+  grid-template-columns: minmax(280px, 0.62fr) minmax(0, 1.38fr);
   align-items: start;
+}
+
+.content-grid > * {
+  min-width: 0;
 }
 
 .data-card,
@@ -663,6 +713,7 @@ textarea {
 
 .card-title-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -684,6 +735,7 @@ textarea {
 
 .table-wrap {
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
 }
 
@@ -784,6 +836,7 @@ textarea {
 }
 
 .admin-form label {
+  min-width: 0;
   display: grid;
   gap: 7px;
   color: #4c5966;
@@ -793,6 +846,18 @@ textarea {
 
 .admin-form .full {
   grid-column: 1 / -1;
+}
+
+.content-grid.catalog-layout .admin-form,
+.content-grid.content-layout .admin-form,
+.module-card .admin-form,
+.admin-card .admin-form {
+  /*
+    FORMULARIOS EN TARJETAS ESTRECHAS:
+    Se usa una sola columna para evitar campos cortados en materiales,
+    noticias, contenido, registros, roles y demas catalogos.
+  */
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .news-grid {
@@ -835,7 +900,505 @@ textarea {
   line-height: 1.5;
 }
 
+/* =====================================================================
+   MODO OSCURO COMPLETO
+   Este bloque transforma toda la interfaz administrativa: navbar, topbar,
+   tablas, formularios, tarjetas, mapa, noticias y botones.
+===================================================================== */
+body.admin-theme-dark .app-sidebar {
+  background: rgba(8, 17, 29, 0.98);
+  border-right-color: var(--admin-border);
+  box-shadow: 14px 0 36px rgba(0, 0, 0, 0.34);
+}
+
+body.admin-theme-dark .app-topbar {
+  background: linear-gradient(90deg, rgba(8, 17, 29, 0.96), rgba(12, 32, 48, 0.96));
+  border-bottom-color: var(--admin-border);
+}
+
+body.admin-theme-dark .brand-logo,
+body.admin-theme-dark .icon-button,
+body.admin-theme-dark .user-menu,
+body.admin-theme-dark .search-shell input,
+body.admin-theme-dark .toolbar select,
+body.admin-theme-dark .toolbar input,
+body.admin-theme-dark .admin-form input,
+body.admin-theme-dark .admin-form select,
+body.admin-theme-dark .admin-form textarea,
+body.admin-theme-dark .news-card {
+  border: 1px solid var(--admin-border);
+  background: #101b2a;
+  color: var(--admin-ink);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+body.admin-theme-dark .brand-name,
+body.admin-theme-dark .user-meta strong,
+body.admin-theme-dark .page-hero h1,
+body.admin-theme-dark .metric-card strong,
+body.admin-theme-dark .card-title-row h2,
+body.admin-theme-dark .card-title-row h3,
+body.admin-theme-dark .news-body h3,
+body.admin-theme-dark .point-info strong {
+  color: var(--admin-ink);
+}
+
+body.admin-theme-dark .brand-kicker,
+body.admin-theme-dark .sidebar-section-title,
+body.admin-theme-dark .sidebar-link,
+body.admin-theme-dark .logout-link,
+body.admin-theme-dark .user-meta span,
+body.admin-theme-dark .page-hero p,
+body.admin-theme-dark .summary-label,
+body.admin-theme-dark .metric-card span,
+body.admin-theme-dark .metric-card p,
+body.admin-theme-dark .card-title-row p,
+body.admin-theme-dark .admin-table th,
+body.admin-theme-dark .admin-table td,
+body.admin-theme-dark .admin-form label,
+body.admin-theme-dark .news-body p,
+body.admin-theme-dark .point-info span,
+body.admin-theme-dark .search-shell .material-symbols-outlined {
+  color: var(--admin-muted);
+}
+
+body.admin-theme-dark .sidebar-link:hover,
+body.admin-theme-dark .sidebar-link:focus-visible,
+body.admin-theme-dark .sidebar-link.active {
+  background: rgba(57, 216, 116, 0.12);
+  color: var(--admin-green-dark);
+}
+
+body.admin-theme-dark .sidebar-link.active {
+  box-shadow: inset -4px 0 0 var(--admin-green);
+}
+
+body.admin-theme-dark .primary-button {
+  background: linear-gradient(135deg, #0f8f4a, #19a65c);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(25, 166, 92, 0.22);
+}
+
+body.admin-theme-dark .ghost-button,
+body.admin-theme-dark .small-button {
+  border: 1px solid var(--admin-border);
+  background: #162437;
+  color: var(--admin-ink);
+}
+
+body.admin-theme-dark .ghost-button:hover,
+body.admin-theme-dark .small-button:hover,
+body.admin-theme-dark .icon-button:hover,
+body.admin-theme-dark .theme-toggle-button {
+  background: rgba(57, 216, 116, 0.14);
+  color: var(--admin-green-dark);
+}
+
+body.admin-theme-dark .danger-button {
+  background: rgba(190, 42, 42, 0.2);
+  color: #ffb8b8;
+}
+
+body.admin-theme-dark .page-hero,
+body.admin-theme-dark .toolbar,
+body.admin-theme-dark .data-card,
+body.admin-theme-dark .module-card,
+body.admin-theme-dark .admin-card,
+body.admin-theme-dark .metric-card,
+body.admin-theme-dark .summary-card {
+  border-color: var(--admin-border);
+  background: linear-gradient(145deg, rgba(16, 27, 42, 0.98), rgba(12, 32, 48, 0.98));
+  box-shadow: var(--shadow-soft);
+}
+
+body.admin-theme-dark .summary-card.blue,
+body.admin-theme-dark .metric-card.blue .metric-icon {
+  border-color: #245172;
+  background: #102d48;
+}
+
+body.admin-theme-dark .summary-value,
+body.admin-theme-dark .page-hero h1 strong,
+body.admin-theme-dark .hero-eyebrow,
+body.admin-theme-dark .brand-name strong,
+body.admin-theme-dark .brand-logo span,
+body.admin-theme-dark .sidebar-link.active .material-symbols-outlined {
+  color: var(--admin-green);
+}
+
+body.admin-theme-dark .summary-card.blue .summary-value,
+body.admin-theme-dark .metric-card.blue .metric-icon {
+  color: #85caff;
+}
+
+body.admin-theme-dark .hero-visual {
+  background: #102436;
+}
+
+body.admin-theme-dark .hero-slide::after {
+  background:
+    linear-gradient(180deg, rgba(8, 17, 29, 0.2), rgba(8, 17, 29, 0.52)),
+    linear-gradient(90deg, rgba(57, 216, 116, 0.08), transparent);
+}
+
+body.admin-theme-dark .hero-carousel-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(8, 17, 29, 0.78);
+}
+
+body.admin-theme-dark .hero-carousel-card strong {
+  color: var(--admin-ink);
+}
+
+body.admin-theme-dark .hero-carousel-card span {
+  color: var(--admin-muted);
+}
+
+body.admin-theme-dark .admin-table th {
+  border-bottom-color: var(--admin-border);
+}
+
+body.admin-theme-dark .admin-table td {
+  border-bottom-color: #1b2b3d;
+}
+
+body.admin-theme-dark .admin-table tbody tr:hover td {
+  background: rgba(57, 216, 116, 0.06);
+}
+
+body.admin-theme-dark .empty-state {
+  color: var(--admin-muted);
+  border-color: var(--admin-soft-border);
+  background:
+    linear-gradient(90deg, rgba(57, 216, 116, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(57, 216, 116, 0.07) 1px, transparent 1px),
+    #0f1a28;
+}
+
+body.admin-theme-dark .status-pill.active,
+body.admin-theme-dark .type-pill.green {
+  border-color: rgba(57, 216, 116, 0.32);
+  background: rgba(57, 216, 116, 0.12);
+  color: #9ff4b9;
+}
+
+body.admin-theme-dark .status-pill.inactive,
+body.admin-theme-dark .type-pill.red {
+  border-color: rgba(255, 120, 120, 0.28);
+  background: rgba(190, 42, 42, 0.16);
+  color: #ffb8b8;
+}
+
+body.admin-theme-dark .status-pill.pending,
+body.admin-theme-dark .type-pill.blue {
+  border-color: rgba(133, 202, 255, 0.3);
+  background: rgba(94, 178, 255, 0.13);
+  color: #b8dcff;
+}
+
+body.admin-theme-dark #sidebar-panel,
+body.admin-theme-dark .sidebar-map-footer {
+  border-color: var(--admin-border);
+  background: #101b2a;
+}
+
+body.admin-theme-dark .map-shell {
+  border-color: var(--admin-border);
+  background: #08111d;
+}
+
+body.admin-theme-dark .map-canvas-wrap,
+body.admin-theme-dark #eco-map,
+body.admin-theme-dark #admin-map {
+  background-color: #102436;
+}
+
+body.admin-theme-dark .gu-sidebar-item {
+  border-color: var(--admin-border);
+  background: #162437;
+}
+
+body.admin-theme-dark .gu-sidebar-item:hover {
+  border-color: var(--admin-green);
+  box-shadow: 0 12px 24px rgba(57, 216, 116, 0.12);
+}
+
+body.admin-theme-dark .point-icon,
+body.admin-theme-dark .metric-icon {
+  background: rgba(57, 216, 116, 0.13);
+  color: var(--admin-green);
+}
+
+body.admin-theme-dark .mobile-bottom-nav {
+  border-color: var(--admin-border);
+  background: rgba(8, 17, 29, 0.98);
+}
+
+body.admin-theme-dark .mobile-bottom-nav a {
+  color: var(--admin-muted);
+}
+
+body.admin-theme-dark .mobile-bottom-nav a.active {
+  background: rgba(57, 216, 116, 0.13);
+  color: var(--admin-green-dark);
+}
+
+body.admin-theme-dark .admin-toast {
+  border-color: var(--admin-border);
+  background: #101b2a;
+  color: var(--admin-muted);
+}
+
+/* =====================================================================
+   PERFIL OSCURO DEL ADMINISTRADOR
+   Este bloque solo se usa en admin_perfil.html. Da un tono mas serio,
+   institucional y de control para la cuenta del administrador.
+===================================================================== */
+.admin-profile-dark,
+.admin-profile-light {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+  gap: 0;
+  border-radius: 28px;
+}
+
+.admin-profile-dark {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background:
+    radial-gradient(circle at top left, rgba(15, 111, 42, 0.42), transparent 32%),
+    linear-gradient(135deg, #07111f 0%, #0d1b2d 46%, #102a3d 100%);
+  color: #ffffff;
+  box-shadow: 0 28px 70px rgba(3, 29, 49, 0.32);
+}
+
+.admin-profile-light {
+  border: 1px solid var(--admin-border);
+  background:
+    linear-gradient(135deg, rgba(233, 244, 255, 0.92), rgba(255, 255, 255, 0.98) 48%, rgba(238, 251, 243, 0.94));
+  color: var(--admin-ink);
+  box-shadow: var(--shadow-soft);
+}
+
+.profile-identity {
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-profile-light .profile-identity {
+  border-right: 1px solid var(--admin-border);
+}
+
+.profile-avatar-dark {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  background: linear-gradient(145deg, #0f6f2a, #065591);
+  color: #ffffff;
+  font-size: 2.4rem;
+  font-weight: 900;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+}
+
+.admin-profile-light .profile-avatar-dark {
+  border-color: rgba(6, 85, 145, 0.12);
+  background: linear-gradient(145deg, #ffffff, #e9f4ff);
+  color: var(--admin-blue-dark);
+  box-shadow: 0 18px 36px rgba(6, 85, 145, 0.12);
+}
+
+.profile-identity h2 {
+  margin: 22px 0 8px;
+  color: #ffffff;
+  font-size: 2rem;
+}
+
+.admin-profile-light .profile-identity h2 {
+  color: var(--admin-ink);
+}
+
+.profile-identity p {
+  margin: 0;
+  color: #a8b5c5;
+  line-height: 1.6;
+}
+
+.admin-profile-light .profile-identity p {
+  color: var(--admin-muted);
+}
+
+.profile-security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(169, 242, 149, 0.34);
+  border-radius: 999px;
+  background: rgba(15, 111, 42, 0.22);
+  color: #b8f7c5;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-profile-light .profile-security-badge {
+  border-color: var(--admin-soft-border);
+  background: #ffffff;
+  color: var(--admin-green-dark);
+}
+
+.profile-detail-panel {
+  padding: 30px;
+}
+
+.profile-panel-heading h2 {
+  margin: 0;
+  color: #ffffff;
+}
+
+.profile-panel-heading p {
+  margin: 6px 0 0;
+  color: #a8b5c5;
+}
+
+.admin-profile-light .profile-panel-heading h2 {
+  color: var(--admin-ink);
+}
+
+.admin-profile-light .profile-panel-heading p {
+  color: var(--admin-muted);
+}
+
+.profile-mode-toggle {
+  display: inline-flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-profile-light .profile-mode-toggle {
+  border-color: var(--admin-border);
+  background: #ffffff;
+}
+
+.profile-mode-toggle button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #c8d6e4;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-profile-light .profile-mode-toggle button {
+  color: var(--admin-muted);
+}
+
+.profile-mode-toggle button.active {
+  background: var(--admin-green);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 111, 42, 0.18);
+}
+
+.profile-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-dark-card {
+  min-height: 128px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(14px);
+}
+
+.profile-dark-card span {
+  display: block;
+  color: #8fa3b8;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-dark-card strong {
+  display: block;
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.profile-actions-dark {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.profile-actions-dark .primary-button {
+  background: #1f8f49;
+}
+
+.profile-actions-dark .ghost-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d9e7f2;
+}
+
+.profile-actions-dark .danger-button {
+  background: rgba(189, 30, 30, 0.18);
+  color: #ffc9c9;
+}
+
+.admin-profile-light .profile-dark-card {
+  border-color: var(--admin-border);
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(6, 85, 145, 0.07);
+}
+
+.admin-profile-light .profile-dark-card span {
+  color: var(--admin-muted);
+}
+
+.admin-profile-light .profile-dark-card strong {
+  color: var(--admin-ink);
+}
+
+.admin-profile-light .profile-actions-dark .primary-button {
+  background: var(--admin-blue);
+}
+
+.admin-profile-light .profile-actions-dark .ghost-button {
+  border-color: var(--admin-border);
+  background: #ffffff;
+  color: var(--admin-blue-dark);
+}
+
+.admin-profile-light .profile-actions-dark .danger-button {
+  background: var(--admin-danger);
+  color: #a61d1d;
+}
+
 .map-shell {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
   overflow: hidden;
   min-height: 660px;
   border: 1px solid var(--admin-border);
@@ -844,9 +1407,17 @@ textarea {
   box-shadow: var(--shadow-soft);
 }
 
+.map-canvas-wrap {
+  position: relative;
+  min-width: 0;
+  background: #d8edf3;
+}
+
+#eco-map,
 #admin-map {
   width: 100%;
   height: 660px;
+  background-color: #d8edf3;
 }
 
 .toast-stack {
@@ -890,6 +1461,20 @@ textarea {
 
   .hero-stats {
     max-width: none;
+  }
+
+  .admin-profile-dark,
+  .admin-profile-light {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-identity {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .admin-profile-light .profile-identity {
+    border-bottom-color: var(--admin-border);
   }
 }
 
@@ -979,5 +1564,186 @@ textarea {
 
   .toolbar > * {
     width: 100%;
+  }
+
+  .profile-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================================
+   MAPA DEL ADMINISTRADOR
+   Este bloque replica la experiencia del mapa ciudadano con Leaflet:
+   panel lateral, lista de puntos, controles flotantes y rutas.
+===================================================================== */
+#sidebar-panel {
+  position: relative;
+  z-index: 2;
+  width: auto;
+  min-width: 0;
+  height: 660px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--admin-border);
+  background: #ffffff;
+}
+
+#sidebar-panel.collapsed {
+  transform: none;
+}
+
+.sidebar-map-header,
+.sidebar-map-footer {
+  padding: 18px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.sidebar-map-footer {
+  border-top: 1px solid var(--admin-border);
+  border-bottom: 0;
+  background: #f8fbf9;
+  border-radius: 0;
+}
+
+.sidebar-map-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--admin-blue-dark);
+  font-size: 1rem;
+}
+
+#recycling-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.gu-sidebar-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gu-sidebar-item:hover {
+  border-color: var(--admin-green);
+  transform: translateX(4px);
+  box-shadow: 0 12px 24px rgba(15, 111, 42, 0.12);
+}
+
+.point-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--admin-mint);
+  color: var(--admin-green);
+}
+
+.point-info strong,
+.point-info span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.point-info strong {
+  color: var(--admin-ink);
+  font-size: 0.88rem;
+}
+
+.point-info span {
+  margin-top: 3px;
+  color: var(--admin-muted);
+  font-size: 0.76rem;
+}
+
+#sidebar-collapse-trigger {
+  display: none;
+}
+
+#sidebar-panel.collapsed #sidebar-collapse-trigger .material-symbols-outlined {
+  transform: rotate(180deg);
+}
+
+.map-floating-controls {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  z-index: 500;
+  display: grid;
+  gap: 12px;
+}
+
+.map-floating-controls .icon-button {
+  width: 50px;
+  height: 50px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  font-family: Manrope, Arial, Helvetica, sans-serif;
+}
+
+.route-button {
+  width: 100%;
+  min-height: 34px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--admin-green);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+@media (max-width: 1160px) {
+  .map-shell {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-profile-light {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-profile-light .profile-identity {
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .map-shell {
+    grid-template-columns: 1fr;
+  }
+
+  #sidebar-panel {
+    height: auto;
+    max-height: 330px;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  #recycling-list {
+    max-height: 220px;
+  }
+
+  #eco-map,
+  #admin-map {
+    height: 560px;
   }
 }

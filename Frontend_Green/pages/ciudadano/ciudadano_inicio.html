@@ -350,6 +350,7 @@
 
         <div class="row g-4 mb-4">
 
+            <!-- Tarjeta 1: Puntos Acumulados -->
             <div class="col-lg-4 col-md-6 fade-up">
                 <div class="card gu-card h-100 p-4 border-0 border-start border-4 border-success">
                     <div class="d-flex justify-content-between align-items-start mb-4">
@@ -357,7 +358,12 @@
                         <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">+12% este mes</span>
                     </div>
                     <h6 class="text-secondary fw-bold mb-1">Puntos Acumulados</h6>
-                    <h2 class="display-5 fw-bold mb-0">12,450 <span class="fs-6 fw-normal text-muted">Pts</span></h2>
+
+                    <!-- Preparado para la Base de Datos -->
+                    <h2 class="display-5 fw-bold mb-0">
+                        <span id="puntos-totales-display">Cargando...</span>
+                        <span class="fs-6 fw-normal text-muted">Pts</span>
+                    </h2>
 
                     <div class="mt-4 pt-2">
                         <div class="progress" style="height: 6px;">
@@ -370,6 +376,7 @@
                 </div>
             </div>
 
+            <!-- Tarjeta 2: CO2 Evitado -->
             <div class="col-lg-4 col-md-6 fade-up">
                 <div class="card gu-card h-100 p-4 border-0 border-start border-4"
                     style="border-color: var(--gu-primary) !important;">
@@ -378,7 +385,12 @@
                         <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">Impacto Global</span>
                     </div>
                     <h6 class="text-secondary fw-bold mb-1">CO2 Evitado</h6>
-                    <h2 class="display-5 fw-bold mb-0">45.8 <span class="fs-6 fw-normal text-muted">kg</span></h2>
+
+                    <!-- Preparado para la Base de Datos -->
+                    <h2 class="display-5 fw-bold mb-0">
+                        <span id="co2-total-display">Cargando...</span>
+                        <span class="fs-6 fw-normal text-muted">kg</span>
+                    </h2>
 
                     <div class="mt-4 pt-2">
                         <span class="badge text-gu-primary px-3 py-2 rounded-3"
@@ -414,123 +426,38 @@
                         </div>
                     </div>
 
-                    <div class="chart-bar-container mt-auto">
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 66%; background-color: rgba(6, 85, 145, 0.2);">
-                                <div class="chart-tooltip">12.5kg</div>
-                            </div>
-                            <div class="chart-label">LUN</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 50%; background-color: rgba(6, 85, 145, 0.2);">
-                                <div class="chart-tooltip">8.2kg</div>
-                            </div>
-                            <div class="chart-label">MAR</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar bg-gu-primary" style="height: 90%;">
-                                <div class="chart-tooltip">24.0kg</div>
-                            </div>
-                            <div class="chart-label text-gu-primary fw-bold">MIE</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 33%; background-color: rgba(6, 85, 145, 0.2);">
-                                <div class="chart-tooltip">4.5kg</div>
-                            </div>
-                            <div class="chart-label">JUE</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar bg-gu-primary" style="height: 75%;">
-                                <div class="chart-tooltip">18.1kg</div>
-                            </div>
-                            <div class="chart-label text-gu-primary fw-bold">VIE</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar" style="height: 50%; background-color: rgba(6, 85, 145, 0.2);">
-                                <div class="chart-tooltip">9.0kg</div>
-                            </div>
-                            <div class="chart-label">SAB</div>
-                        </div>
-                        <div class="chart-col">
-                            <div class="chart-bar bg-gu-primary" style="height: 40%;">
-                                <div class="chart-tooltip">10.2kg</div>
-                            </div>
-                            <div class="chart-label text-gu-primary fw-bold">DOM</div>
-                        </div>
+                    <!-- Contenedor dinámico para la Base de Datos -->
+                    <div id="actividad-semanal-chart" class="chart-bar-container mt-auto">
+                        <p class="text-muted small m-auto">Cargando gráfico...</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-4 fade-up">
-                <div class="card gu-card h-100 p-4 border-0">
-                    <h5 class="fw-bold mb-4">Actividad Reciente</h5>
 
-                    <div class="d-flex flex-column gap-4 flex-grow-1">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0"
-                                style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">directions_walk</span>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-1 small">Caminata registrada</h6>
-                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">Hace 2 horas • <span
-                                        class="text-success fw-bold">+15 Pts</span></p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
-                                style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">recycling</span>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-1 small">Reciclaje verificado</h6>
-                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">Ayer • <span
-                                        class="text-success fw-bold">+50 Pts</span></p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="rounded-circle bg-light border text-secondary d-flex align-items-center justify-content-center flex-shrink-0"
-                                style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">redeem</span>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-1 small">Recompensa canjeada</h6>
-                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">3 días atrás • <span
-                                        class="text-danger fw-bold">-200 Pts</span></p>
-                            </div>
+                <div class="col-md-6 fade-up">
+                    <div class="img-preview-card shadow-sm border" onclick="window.location.href='mapa-eco.html'">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ46Fjd2qWL8Jh_3Bw7zh5M8ZlbaLKQ8e4E8CMW5OlmCPjHkNBC5LpqSO3eMM0VXijwOW_BtwHZuXwRJFWD4eDjX8qjFONoG4k6aK7WbI5EC8x8q-NX1-B1-eRge-Bu2d0yN07ckTa4AYLRgl3WsKwZ3t399Z_IfaN5-RFIGl5gVpfszwnrm4R9W4YjA4qa5HuglP2vsp6LLGmunxSJbemIZRnmZoaTCVi77X5JNH8tZjUaPgzRv4vFtZMelMkMrxvKAAxGTPjIVQ"
+                            alt="Mapa">
+                        <div class="img-overlay">
+                            <h5 class="fw-bold mb-1">Mapa de Puntos Eco</h5>
+                            <p class="small mb-0 opacity-75">Nuevos puntos cerca de ti</p>
                         </div>
                     </div>
-
-                    <button class="btn btn-outline-secondary w-100 mt-4 rounded-3 fw-bold btn-sm py-2">Ver todo el
-                        historial</button>
                 </div>
-            </div>
 
-            <div class="col-md-6 fade-up">
-                <div class="img-preview-card shadow-sm border" onclick="window.location.href='mapa-eco.html'">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ46Fjd2qWL8Jh_3Bw7zh5M8ZlbaLKQ8e4E8CMW5OlmCPjHkNBC5LpqSO3eMM0VXijwOW_BtwHZuXwRJFWD4eDjX8qjFONoG4k6aK7WbI5EC8x8q-NX1-B1-eRge-Bu2d0yN07ckTa4AYLRgl3WsKwZ3t399Z_IfaN5-RFIGl5gVpfszwnrm4R9W4YjA4qa5HuglP2vsp6LLGmunxSJbemIZRnmZoaTCVi77X5JNH8tZjUaPgzRv4vFtZMelMkMrxvKAAxGTPjIVQ"
-                        alt="Mapa">
-                    <div class="img-overlay">
-                        <h5 class="fw-bold mb-1">Mapa de Puntos Eco</h5>
-                        <p class="small mb-0 opacity-75">Nuevos puntos cerca de ti</p>
+                <div class="col-md-6 fade-up">
+                    <div class="img-preview-card shadow-sm border" onclick="window.location.href='educacion.html'">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCTYQzP0yXssgDC5QmOXPyS-xhgiu4fynOI8vLSk31FQxa8c9vYuCXMShBSUmUvOzekLrEgrE1Vjq2cwaA21UB7V7saqbAgIlCU-DH6CPZgYdPTAwglSFUpW6DKV4Vb19yIrAgUtVVbHg6U4Jr6GP3MfxC8-QiPgdG7Ik6ZMYBW87Xk41lzeo3Vk104YSAxTlCQWNUqYDgQhxAr5Hv3MYK-WfMeJrPY6CVBE0AEztkYsy3qw6ZY-WB5M8YjJ6kcqFAJVMRJE-aPzQ"
+                            alt="Educacion">
+                        <div class="img-overlay">
+                            <h5 class="fw-bold mb-1">Centro de Educación</h5>
+                            <p class="small mb-0 opacity-75">Nuevo curso: Zero Waste en Casa</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-6 fade-up">
-                <div class="img-preview-card shadow-sm border" onclick="window.location.href='educacion.html'">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCTYQzP0yXssgDC5QmOXPyS-xhgiu4fynOI8vLSk31FQxa8c9vYuCXMShBSUmUvOzekLrEgrE1Vjq2cwaA21UB7V7saqbAgIlCU-DH6CPZgYdPTAwglSFUpW6DKV4Vb19yIrAgUtVVbHg6U4Jr6GP3MfxC8-QiPgdG7Ik6ZMYBW87Xk41lzeo3Vk104YSAxTlCQWNUqYDgQhxAr5Hv3MYK-WfMeJrPY6CVBE0AEztkYsy3qw6ZY-WB5M8YjJ6kcqFAJVMRJE-aPzQ"
-                        alt="Educacion">
-                    <div class="img-overlay">
-                        <h5 class="fw-bold mb-1">Centro de Educación</h5>
-                        <p class="small mb-0 opacity-75">Nuevo curso: Zero Waste en Casa</p>
-                    </div>
-                </div>
             </div>
-
-        </div>
     </main>
 
     <a href="#" class="fab-btn text-decoration-none">
@@ -638,6 +565,7 @@
 
     <script src="../../js/cargar_usuario.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/dashboard_dinamico.js"></script> <!-- AQUÍ CONECTAS LA PRUEBA -->
 </body>
 
 </html>

@@ -11,17 +11,19 @@
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- NUEVO: Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 
     <style>
-        /* Variables de Marca GreenUp */
         :root {
             --gu-primary: #003d6c;
             --gu-secondary: #296c1f;
             --gu-surface: #f8f9ff;
             --gu-dark: #121c2a;
             --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
         }
 
         body {
@@ -30,12 +32,9 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* Fija la altura al 100% de la ventana */
             overflow: hidden;
-            /* Evita el scroll global */
         }
 
-        /* Utilidades Personalizadas */
         .text-gu-primary {
             color: var(--gu-primary);
         }
@@ -57,7 +56,6 @@
             vertical-align: middle;
         }
 
-        /* Ocultar scrollbar en el panel lateral */
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -67,7 +65,6 @@
             scrollbar-width: none;
         }
 
-        /* Ajustes Navbar */
         .nav-link.active-custom {
             color: var(--gu-secondary) !important;
             border-bottom: 2px solid var(--gu-secondary);
@@ -100,7 +97,6 @@
 
         #sidebar-panel.collapsed {
             transform: translateX(calc(-100% - 20px));
-            /* Oculta el panel hacia la izquierda */
         }
 
         #sidebar-collapse-trigger {
@@ -128,7 +124,6 @@
             transform: translateX(4px);
         }
 
-        /* Leaflet Popups */
         .leaflet-popup-content-wrapper {
             border-radius: 12px;
             padding: 4px;
@@ -139,42 +134,36 @@
 
 <body>
 
+    <!-- NAVBAR UNIFICADA (Usuario Registrado) -->
     <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
         style="height: 70px; z-index: 1050;">
         <div class="container-fluid px-3 px-md-5">
-
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar"
-                    aria-controls="mobileMenuSidebar">
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar">
                     <span class="material-symbols-outlined text-gu-primary">menu</span>
                 </button>
-
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
                     <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
                 </a>
             </div>
-
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_inicio.html">
-                    <span class="material-symbols-outlined fs-5">home</span> Inicio
-                </a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_noticias.html">
-                    <span class="material-symbols-outlined fs-5">newspaper</span> Noticias
-                </a>
-                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1" href="ciudadano_mapa.html">
-                    <span class="material-symbols-outlined fs-5">map</span> Mapa Eco
-                </a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_estadisticas.html">
-                    <span class="material-symbols-outlined fs-5">bar_chart</span> Estadísticas
-                </a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_educacion.html">
-                    <span class="material-symbols-outlined fs-5">school</span> Educación
-                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="inicio.html"><span
+                        class="material-symbols-outlined fs-5">home</span> Inicio</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_noticias.html"><span
+                        class="material-symbols-outlined fs-5">newspaper</span> Noticias</a>
+                <a class="nav-link active-custom h-100 d-flex align-items-center gap-1"
+                    href="ciudadano_mapa_puntos.html"><span class="material-symbols-outlined fs-5">map</span> Mapa
+                    Eco</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
+                    href="ciudadano_estadisticas_personales.html"><span
+                        class="material-symbols-outlined fs-5">bar_chart</span> Estadísticas</a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1"
+                    href="ciudadano_contenido_educativo.html"><span class="material-symbols-outlined fs-5">school</span>
+                    Educación</a>
             </div>
-
             <div class="d-flex align-items-center gap-2">
                 <button
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
@@ -183,7 +172,6 @@
                         class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
                         style="margin-top: 8px; margin-left: -10px;"></span>
                 </button>
-
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -197,8 +185,8 @@
                                 href="ajustes_cuenta.html"><span class="material-symbols-outlined fs-5">settings</span>
                                 Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
-                                href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
-                                Ayuda</a></li>
+                                href="ayuda_faq.html"><span class="material-symbols-outlined fs-5">help</span> Ayuda</a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -211,48 +199,12 @@
         </div>
     </nav>
 
-    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
-        <div class="offcanvas-header border-bottom">
-            <div class="d-flex align-items-center">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
-                    alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body p-0">
-            <div class="list-group list-group-flush rounded-0 mt-2">
-                <a href="inicio.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
-                    <span class="material-symbols-outlined">home</span> Inicio
-                </a>
-                <a href="ciudadano_noticias.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
-                    <span class="material-symbols-outlined">newspaper</span> Noticias
-                </a>
-                <a href="ciudadano_mapa_puntos.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
-                    <span class="material-symbols-outlined">map</span> Mapa Eco
-                </a>
-                <a href="ciudadano_estadisticas_personales.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
-                    <span class="material-symbols-outlined">bar_chart</span> Estadísticas
-                </a>
-                <a href="ciudadano_contenido_educativo.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
-                    <span class="material-symbols-outlined">school</span> Educación
-                </a>
-            </div>
-        </div>
-    </div>
-
+    <!-- ÁREA PRINCIPAL DEL MAPA -->
     <main>
 
+        <!-- Panel Lateral Interactivo -->
         <div id="sidebar-panel"
             class="position-absolute start-0 top-0 bottom-0 bg-white shadow-lg m-3 rounded-4 d-flex flex-column border">
-
             <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold text-gu-primary mb-0 d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined text-gu-secondary">recycling</span> Puntos Eco
@@ -260,10 +212,12 @@
             </div>
 
             <div class="flex-grow-1 overflow-y-auto p-3 hide-scrollbar" id="recycling-list">
+                <!-- Los items se agregan dinámicamente aquí por JS -->
             </div>
 
             <div class="p-3 bg-light rounded-bottom-4 border-top">
-                <button
+                <!-- NUEVO: Botón configurado para abrir el Modal -->
+                <button id="btn-abrir-sugerencia"
                     class="btn w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-white shadow-sm"
                     style="background-color: var(--gu-secondary);">
                     <span class="material-symbols-outlined">add_location_alt</span> Sugerir Punto
@@ -277,8 +231,10 @@
             </button>
         </div>
 
+        <!-- Contenedor del Mapa -->
         <div id="eco-map"></div>
 
+        <!-- Controles Flotantes del Mapa -->
         <div class="position-absolute bottom-0 end-0 p-4 d-flex flex-column gap-3"
             style="z-index: 1000; margin-bottom: 20px;">
             <button class="btn btn-light shadow-sm rounded-circle p-3 d-flex align-items-center justify-content-center"
@@ -291,103 +247,73 @@
                 <button class="btn btn-light p-2" onclick="map.zoomOut()"><span
                         class="material-symbols-outlined">remove</span></button>
             </div>
-            <button
-                class="btn btn-success shadow-sm rounded-circle p-3 d-flex align-items-center justify-content-center"
-                style="background-color: var(--gu-secondary); border:none;">
-                <span class="material-symbols-outlined text-white">layers</span>
-            </button>
         </div>
     </main>
 
+    <!-- NUEVO: Modal de Sugerir Punto -->
+    <div class="modal fade" id="modalSugerirPunto" tabindex="-1" aria-labelledby="modalSugerirPuntoLabel"
+        aria-hidden="true" style="z-index: 2000;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-gu-primary d-flex align-items-center gap-2"
+                        id="modalSugerirPuntoLabel">
+                        <span class="material-symbols-outlined text-gu-secondary">add_location_alt</span> Sugerir Nuevo
+                        Punto
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary small mb-4">Ayúdanos a expandir la red de reciclaje. Indícanos dónde hay un
+                        punto de acopio no registrado.</p>
+                    <form id="form-sugerir-punto">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Nombre del lugar / Punto</label>
+                            <input type="text" class="form-control" placeholder="Ej. Chatarrería Don Juan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Dirección aproximada</label>
+                            <input type="text" class="form-control" placeholder="Ej. Calle 44 con Carrera 4" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-dark">¿Qué materiales reciben?</label>
+                            <input type="text" class="form-control" placeholder="Ej. Cartón, Plástico, Aluminio..."
+                                required>
+                        </div>
+                        <button type="button" id="btn-enviar-sugerencia"
+                            class="btn w-100 fw-bold text-white rounded-pill py-2"
+                            style="background-color: var(--gu-primary);">Enviar Sugerencia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: Toast de Éxito -->
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index: 2050;">
+        <div id="successToast" class="toast align-items-center text-bg-success border-0 shadow-lg rounded-pill px-2"
+            role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2 fw-medium">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    ¡Gracias! Tu sugerencia ha sido enviada para revisión.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- NUEVO: Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
-    <script>
-        // Configuración de Leaflet
-        const mapCenter = [10.4631, -73.2532]; // Valledupar, Cesar
-        const map = L.map('eco-map', { zoomControl: false, attributionControl: false }).setView(mapCenter, 14);
-
-        // Capa estándar de OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        function centerMap() { map.setView(mapCenter, 14, { animate: true }); }
-
-        // Datos Ficticios de Puntos de Reciclaje
-        const markersData = [
-            { id: 1, pos: [10.4650, -73.2550], title: "EcoPunto Valledupar Norte", address: "Calle 12 #4-56", type: "Plástico, Papel, Vidrio", color: "#065591", icon: "location_on" },
-            { id: 2, pos: [10.4610, -73.2510], title: "Centro GreenUp El Guatapurí", address: "Av. Militar, Local 204", type: "Metales, Electrónicos", color: "#296c1f", icon: "eco" },
-            { id: 3, pos: [10.4720, -73.2450], title: "Punto Verde Comuna 5", address: "Carrera 23 #18-90", type: "Aceites, Pilas", color: "#a0caff", icon: "battery_charging_full" }
-        ];
-
-        const sidebarList = document.getElementById('recycling-list');
-
-        markersData.forEach(point => {
-            // Generar marcador circular en el mapa
-            const marker = L.circleMarker(point.pos, {
-                radius: 10, fillColor: point.color, color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.9
-            }).addTo(map);
-
-            // Contenido del Popup al hacer clic en el mapa
-            marker.bindPopup(`
-                <div class="p-1 min-w-[150px]">
-                    <h6 class="fw-bold text-dark mb-1" style="color: ${point.color};">${point.title}</h6>
-                    <p class="text-muted small mb-2" style="font-size: 11px;">${point.address}</p>
-                    <div class="mb-3">
-                        <span class="small fw-bold" style="color: var(--gu-secondary);">Acepta:</span><br>
-                        <span class="small fw-medium">${point.type}</span>
-                    </div>
-                    <a href="#" class="btn btn-sm w-100 fw-bold text-white rounded-pill" style="background-color: var(--gu-secondary); font-size: 11px;">Cómo llegar</a>
-                </div>
-            `);
-
-            // Generar tarjeta en la lista del panel lateral (Sidebar)
-            const item = document.createElement('div');
-            item.className = "p-3 bg-white border rounded-4 mb-3 cursor-pointer gu-sidebar-item";
-            item.innerHTML = `
-                <div class="d-flex gap-3 align-items-center">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px; background-color: ${point.color}15">
-                        <span class="material-symbols-outlined" style="color: ${point.color}">${point.icon}</span>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <h6 class="fw-bold text-dark mb-0 text-truncate" style="font-size: 0.9rem;">${point.title}</h6>
-                        <p class="text-muted mb-1 text-truncate" style="font-size: 0.75rem;">${point.address}</p>
-                        <span class="badge bg-light text-secondary border">Reciclaje</span>
-                    </div>
-                </div>
-            `;
-
-            // Interacción: Clic en la tarjeta de la lista -> mover mapa y abrir popup
-            item.onclick = () => {
-                map.setView(point.pos, 16, { animate: true });
-                setTimeout(() => marker.openPopup(), 400);
-                if (window.innerWidth < 768) toggleSidebar(); // Auto-ocultar en móviles
-            };
-            sidebarList.appendChild(item);
-        });
-
-        // Lógica del Panel Lateral (Sidebar)
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar-panel');
-            sidebar.classList.toggle('collapsed');
-
-            // Dar tiempo a la animación CSS antes de reajustar Leaflet
-            setTimeout(() => map.invalidateSize(), 300);
-        }
-
-        // Colapsar panel automáticamente en pantallas pequeñas al iniciar
-        if (window.innerWidth < 768) {
-            document.getElementById('sidebar-panel').classList.add('collapsed');
-        }
-
-        // Reajustar el canvas del mapa si la ventana cambia de tamaño
-        window.addEventListener('resize', () => map.invalidateSize());
-    </script>
-
+    <!-- Scripts Propios -->
     <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/mapa.js"></script> <!-- Aquí se conecta el JS actualizado -->
 
 </body>
 

@@ -48,7 +48,7 @@ async function iniciarSesion(evento) {
 
       if (rol === 3) {
         // Redirige a la pantalla de inicio del ciudadano
-        window.location.href = "../ciudadano/inicio.html";
+        window.location.href = "../ciudadano/ciudadano_inicio.html";
         return;
       }
 

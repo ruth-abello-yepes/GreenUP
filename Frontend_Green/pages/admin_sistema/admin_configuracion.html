@@ -2104,6 +2104,11 @@ function headersAdmin() {
   };
 }
 
+function iniciarCambioContrasenaAdmin() {
+  localStorage.removeItem("codigo_recuperacion");
+  window.location.href = "../public/public_recuperar_contrasena.html";
+}
+
 async function apiAdmin(ruta, opciones = {}) {
   const respuesta = await fetch(ADMIN_API_BASE + ruta, {
     ...opciones,
@@ -3293,6 +3298,9 @@ function cargarPerfil() {
           <button class="ghost-button" type="button" onclick="pedirPermisoNotificaciones()">
             <span class="material-symbols-outlined">notifications</span> Activar notificaciones
           </button>
+          <button class="ghost-button" type="button" onclick="iniciarCambioContrasenaAdmin()">
+            <span class="material-symbols-outlined">lock_reset</span> Cambiar contrasena
+          </button>
           <button class="ghost-button danger-button" type="button" onclick="cerrarSesionAdminSistema()">
             <span class="material-symbols-outlined">logout</span> Cerrar sesion
           </button>
@@ -3316,6 +3324,7 @@ function cargarConfiguracion() {
   document.getElementById("admin-content").innerHTML = `
     <section class="metrics-grid">
       ${settingCard("notifications", "Notificaciones", "Activa permisos para recibir avisos cuando lleguen usuarios o puntos nuevos.", "pedirPermisoNotificaciones()", "Activar")}
+      ${settingCard("lock_reset", "Contrasena", "Cambia tu contrasena usando el mismo flujo seguro de verificacion por correo.", "iniciarCambioContrasenaAdmin()", "Cambiar")}
       ${settingCard("sync", "Actualizacion", "Las tablas principales y el mapa consultan Supabase cada 8 segundos.", "cargarModuloAdmin()", "Actualizar")}
       ${settingCard("download", "Exportacion", "Los reportes y tablas se exportan a CSV desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
       ${settingCard("logout", "Sesion", "Cierra la sesion del administrador en este navegador.", "cerrarSesionAdminSistema()", "Cerrar")}

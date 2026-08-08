@@ -3,7 +3,7 @@ const primaryNav = [
   { href: "recicladora_materiales.html", label: "Materiales", fullLabel: "Gestionar materiales", icon: "inventory_2" },
   { href: "recicladora_residuos.html", label: "Residuos", fullLabel: "Gestionar residuos", icon: "delete_sweep" },
   { href: "recicladora_usuarios.html", label: "Usuarios", fullLabel: "Usuarios recicladores", icon: "groups" },
-  { href: "recicladora_rutas_reciclaje.html", label: "Rutas", fullLabel: "Rutas y puntos", icon: "map" },
+  { href: "recicladora_rutas_reciclaje.html", label: "Mi punto", fullLabel: "Mi punto ecologico", icon: "location_on" },
 ];
 
 const secondaryNav = [
@@ -25,22 +25,22 @@ const mobileBottomNav = primaryNav;
 const pages = {
   "recicladora_panel.html": {
     title: 'Panel de <strong>control</strong>',
-    subtitle: "Supervisa materiales, residuos, rutas, usuarios y reportes desde un solo tablero de la recicladora.",
+    subtitle: "Supervisa materiales, residuos, usuarios y reportes desde un solo tablero de la recicladora.",
     stats: [
       ["Hoy", "0 kg", "muted"],
-      ["En ruta", "0 cargas", "blue"],
+      ["Actividad", "0 cargas", "blue"],
     ],
     filters: {
       search: "Buscar por material, codigo o ubicacion...",
       selects: [
-        ["Tipo de registro", "Materiales", "Residuos", "Rutas"],
+        ["Tipo de registro", "Materiales", "Residuos", "Mi punto"],
         ["Estado", "Activo", "Pendiente", "Finalizado"],
       ],
     },
     type: "panel",
     metrics: [
       ["Material recuperado", "0 kg", "Sin registros", "recycling", ""],
-      ["Cargas activas", "0", "Sin rutas", "local_shipping", "blue"],
+      ["Cargas activas", "0", "Sin actividad", "local_shipping", "blue"],
       ["Recicladores", "0", "Sin actividad", "groups", ""],
       ["Alertas", "0", "Sin alertas", "notifications_active", "blue"],
     ],
@@ -84,14 +84,13 @@ const pages = {
     },
   },
   "recicladora_rutas_reciclaje.html": {
-    title: 'Rutas y <strong>puntos</strong>',
-    subtitle: "Organiza recorridos, puntos de acopio y disponibilidad de equipos para una recoleccion eficiente.",
-    stats: [["Rutas activas", "0", "muted"], ["Puntos", "0", "blue"]],
-    filters: { search: "Buscar ruta, punto o zona...", selects: [["Zona", "Norte", "Centro", "Sur"], ["Estado", "Activa", "Programada", "Finalizada"]], action: "Nueva ruta", icon: "add_location_alt" },
+    title: 'Mi punto <strong>ecologico</strong>',
+    subtitle: "Consulta la ubicacion registrada de tu recicladora. No se muestran recicladoras ni puntos de otros propietarios.",
+    stats: [["Mi punto", "Cargando...", "muted"], ["Estado", "Cargando...", "blue"]],
     type: "map",
     table: {
-      title: "Rutas programadas",
-      columns: ["Ruta", "Conductor", "Puntos", "Horario", "Estado", "Acciones"],
+      title: "Datos de mi recicladora",
+      columns: ["Empresa", "Direccion", "Telefono", "Responsable", "Estado", "Acciones"],
       rows: [],
     },
   },
@@ -107,14 +106,13 @@ const pages = {
     },
   },
   "recicladora_puntos_reciclaje.html": {
-    title: 'Puntos de <strong>reciclaje</strong>',
-    subtitle: "Administra sedes, puntos aliados, horarios y capacidad de recepcion de materiales.",
-    stats: [["Activos", "0 puntos", "muted"], ["Capacidad", "0%", "blue"]],
-    filters: { search: "Buscar punto o direccion...", selects: [["Zona", "Norte", "Centro", "Sur"], ["Estado", "Activo", "Cerrado", "Mantenimiento"]], action: "Nuevo punto", icon: "add_location" },
+    title: 'Mi punto de <strong>reciclaje</strong>',
+    subtitle: "Revisa los datos publicos de tu punto ecologico registrado en GreenUp.",
+    stats: [["Registro", "Cargando...", "muted"], ["Estado", "Cargando...", "blue"]],
     type: "map",
     table: {
-      title: "Puntos disponibles",
-      columns: ["Punto", "Direccion", "Horario", "Responsable", "Estado", "Acciones"],
+      title: "Datos de mi punto",
+      columns: ["Punto", "Direccion", "Telefono", "Responsable", "Estado", "Acciones"],
       rows: [],
     },
   },
@@ -283,6 +281,7 @@ function renderTopbar(current) {
         <button class="icon-button" type="button" aria-label="Notificaciones" title="Notificaciones" onclick="mostrarNotificacionesRecicladora()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
+        ${renderNotificationsMenu()}
         <div class="user-menu">
           <button class="user-avatar" type="button" aria-label="Perfil y configuracion" title="Perfil">
             <span class="material-symbols-outlined filled">person</span>
@@ -298,6 +297,21 @@ function renderTopbar(current) {
         </div>
       </div>
     </header>
+  `;
+}
+
+function renderNotificationsMenu() {
+  return `
+    <section class="notifications-menu" id="notificationsMenu" aria-hidden="true" aria-label="Panel de notificaciones">
+      <div class="notifications-head">
+        <div>
+          <h2>Notificaciones</h2>
+          <p>Actividad reciente de la recicladora</p>
+        </div>
+        <span class="notifications-badge">0</span>
+      </div>
+      ${renderEmptyState("Sin notificaciones", "Cuando haya alertas, solicitudes o cambios importantes apareceran aqui.")}
+    </section>
   `;
 }
 
@@ -419,7 +433,7 @@ function renderTable(table) {
     <article class="table-card span-12">
       <div class="card-title-row" style="padding: 22px 24px 0;">
         <h2>${table.title || "Registros"}</h2>
-        <button class="btn-soft" type="button"><span class="material-symbols-outlined">download</span>Exportar</button>
+        <button class="btn-soft" type="button" ${table.rows.length ? "" : 'disabled title="No hay datos para exportar"'}><span class="material-symbols-outlined">download</span>Exportar</button>
       </div>
       <div class="table-responsive">
         <table class="admin-table">
@@ -515,8 +529,8 @@ function renderMapAndRoutes(page) {
     <section class="content-grid">
       <article class="admin-card span-8 recycling-map-card">
         <div class="card-title-row">
-          <h2>Mapa operativo</h2>
-          <button class="btn-soft" type="button" onclick="centerMap()"><span class="material-symbols-outlined">my_location</span>Centrar</button>
+          <h2>Ubicacion de mi recicladora</h2>
+          <button class="btn-soft" type="button" onclick="centerMap()"><span class="material-symbols-outlined">my_location</span>Centrar mi punto</button>
         </div>
         <div class="dueno-map-shell">
           <div id="eco-map"></div>
@@ -530,15 +544,12 @@ function renderMapAndRoutes(page) {
       <div class="span-4 map-side-stack">
         <article class="admin-card">
           <div class="card-title-row">
-            <h2 class="side-title"><span class="material-symbols-outlined">recycling</span>Puntos Eco</h2>
+            <h2 class="side-title"><span class="material-symbols-outlined">recycling</span>Mi recicladora</h2>
           </div>
           <div id="recycling-list" class="dueno-map-list"></div>
-          <button id="btn-abrir-sugerencia" class="btn-greenup map-side-action" type="button">
-            <span class="material-symbols-outlined">add_location_alt</span>Sugerir punto
-          </button>
         </article>
         <article class="admin-card">
-          <div class="card-title-row"><h2>Capacidad destacada</h2></div>
+          <div class="card-title-row"><h2>Datos del punto</h2></div>
           ${renderProgressList()}
         </article>
       </div>
@@ -548,13 +559,13 @@ function renderMapAndRoutes(page) {
 }
 
 function renderProgressList() {
-  const rows = [["Rutas registradas", 0], ["Puntos con capacidad", 0], ["Capacidad reportada", 0]];
+  const rows = [["Ubicacion", "Cargando..."], ["Contacto", "Cargando..."], ["Estado", "Cargando..."]];
   return `
-    <div class="stack-list">
+    <div class="stack-list" id="own-point-status-list">
       ${rows.map(([name, value]) => `
-        <div>
-          <div style="display:flex; justify-content:space-between; gap:12px; font-weight:900;"><span>${name}</span><span>${value}%</span></div>
-          <div class="progress" style="margin-top:10px;"><div class="progress-bar" style="width:${value}%"></div></div>
+        <div class="stack-item">
+          <span class="type-icon"><span class="material-symbols-outlined">check_circle</span></span>
+          <p><strong>${name}</strong><br><small data-own-point-status="${name}">${value}</small></p>
         </div>
       `).join("")}
     </div>
@@ -565,7 +576,7 @@ function renderStatsPage() {
   return `
     <section class="content-grid">
       <article class="admin-card span-8">
-        <div class="card-title-row"><h2>Toneladas recuperadas</h2><button class="btn-soft" type="button">Exportar</button></div>
+        <div class="card-title-row"><h2>Toneladas recuperadas</h2><button class="btn-soft" type="button" disabled title="No hay datos para exportar">Exportar</button></div>
         ${renderChart()}
       </article>
       <article class="admin-card span-4">
@@ -590,7 +601,9 @@ function renderReportPage(page) {
           <label><span class="form-label">Nombre</span><input class="form-control" value="Reporte mensual de residuos"></label>
           <label><span class="form-label">Formato</span><select class="form-select"><option>PDF</option><option>Excel</option><option>CSV</option></select></label>
           <label class="field-full"><span class="form-label">Notas</span><textarea class="form-textarea" placeholder="Observaciones internas..."></textarea></label>
-          <button class="btn-greenup field-full" type="button"><span class="material-symbols-outlined">save</span>Guardar configuracion</button>
+          <button class="btn-greenup field-full" type="button" disabled title="No hay datos registrados para generar reportes">
+            <span class="material-symbols-outlined">block</span>Sin datos para generar
+          </button>
         </div>
       </article>
       ${renderTable(page.table).replace("span-12", "span-7")}
@@ -617,6 +630,9 @@ function renderProfilePage() {
           <label><span class="form-label">Correo</span><input class="form-control" data-profile-field="correo" value="Cargando..."></label>
           <label><span class="form-label">Usuario</span><input class="form-control" data-profile-field="usuario" value="Cargando..."></label>
           <button class="btn-greenup field-full" type="button"><span class="material-symbols-outlined">save</span>Guardar perfil</button>
+          <button class="btn-soft field-full" type="button" onclick="iniciarCambioContrasenaDesdePerfil()">
+            <span class="material-symbols-outlined">lock_reset</span>Cambiar contrasena
+          </button>
         </div>
       </article>
     </section>
@@ -629,9 +645,10 @@ function renderSettingsPage() {
       <article class="admin-card span-6">
         <div class="card-title-row"><h2>Seguridad</h2></div>
         <div class="form-grid">
-          <label class="field-full"><span class="form-label">Nueva contrasena</span><input class="form-control" type="password" placeholder="Minimo 8 caracteres"></label>
-          <label class="field-full"><span class="form-label">Confirmar contrasena</span><input class="form-control" type="password" placeholder="Repite la contrasena"></label>
-          <button class="btn-greenup field-full" type="button"><span class="material-symbols-outlined">lock_reset</span>Actualizar seguridad</button>
+          <p class="field-full security-copy">Para cambiar tu contrasena usaremos el mismo flujo seguro de recuperacion: correo, codigo de verificacion y nueva contrasena.</p>
+          <button class="btn-greenup field-full" type="button" onclick="iniciarCambioContrasenaDesdePerfil()">
+            <span class="material-symbols-outlined">lock_reset</span>Cambiar contrasena
+          </button>
         </div>
       </article>
       <article class="admin-card span-6">
@@ -673,18 +690,6 @@ function renderBottomNav(current) {
 
 function renderModals() {
   return `
-    <div class="gu-modal-backdrop" id="modalNotificaciones" aria-hidden="true">
-      <section class="gu-modal" role="dialog" aria-modal="true" aria-labelledby="notificacionesTitulo">
-        <div class="card-title-row">
-          <h2 id="notificacionesTitulo">Notificaciones</h2>
-          <button class="btn-icon" type="button" onclick="cerrarModal('modalNotificaciones')" aria-label="Cerrar">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        </div>
-        ${renderEmptyState("Sin notificaciones", "No tienes notificaciones nuevas por ahora.")}
-      </section>
-    </div>
-
     <div class="gu-modal-backdrop" id="modalFaq" aria-hidden="true">
       <section class="gu-modal" role="dialog" aria-modal="true" aria-labelledby="faqTitulo">
         <div class="card-title-row">
@@ -717,7 +722,31 @@ function bindUserMenu() {
 }
 
 function mostrarNotificacionesRecicladora() {
-  abrirModal("modalNotificaciones");
+  const menu = document.getElementById("notificationsMenu");
+  if (!menu) return;
+  const isOpen = menu.classList.toggle("open");
+  menu.setAttribute("aria-hidden", String(!isOpen));
+}
+
+function bindNotificationsMenu() {
+  const menu = document.getElementById("notificationsMenu");
+  if (!menu) return;
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest('[aria-label="Notificaciones"]')) return;
+    if (event.target.closest("#notificationsMenu")) return;
+    menu.classList.remove("open");
+    menu.setAttribute("aria-hidden", "true");
+  });
+}
+
+function iniciarCambioContrasenaDesdePerfil() {
+  const correo = document.querySelector('[data-profile-field="correo"]')?.value?.trim() || getUser().correo || "";
+  if (correo && correo !== "Cargando...") {
+    localStorage.setItem("correo_recuperacion_prellenado", correo);
+  }
+  localStorage.removeItem("codigo_recuperacion");
+  window.location.href = "../public/public_recuperar_contrasena.html";
 }
 
 function abrirModal(id) {
@@ -740,8 +769,11 @@ function abrirModalFaq() {
 
 async function fetchJson(endpoint, options = {}) {
   const response = await fetch(`${getApiBase()}${endpoint}`, {
-    headers: getSessionHeaders(),
     ...options,
+    headers: {
+      ...getSessionHeaders(),
+      ...(options.headers || {}),
+    },
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.mensaje || "No se pudo cargar la informacion");
@@ -791,13 +823,13 @@ function rowsToTable(tableTitle, rows) {
 
 function updateDashboard(data) {
   setText('[data-summary-label="Hoy"]', formatKg(data.material_recuperado_kg));
-  setText('[data-summary-label="En ruta"]', `${Number(data.cargas_activas) || 0} cargas`);
+  setText('[data-summary-label="Actividad"]', `${Number(data.cargas_activas) || 0} cargas`);
   setText('[data-metric-label="Material recuperado"]', formatKg(data.material_recuperado_kg));
   setText('[data-metric-label="Cargas activas"]', Number(data.cargas_activas) || 0);
   setText('[data-metric-label="Recicladores"]', Number(data.recicladores) || 0);
   setText('[data-metric-label="Alertas"]', Number(data.alertas) || 0);
   setText('[data-metric-change="Material recuperado"]', data.material_recuperado_kg ? "Actualizado desde la base de datos" : "Sin registros");
-  setText('[data-metric-change="Cargas activas"]', data.cargas_activas ? "Con actividad registrada" : "Sin rutas");
+  setText('[data-metric-change="Cargas activas"]', data.cargas_activas ? "Con actividad registrada" : "Sin actividad");
   setText('[data-metric-change="Recicladores"]', data.recicladores ? "Con registros confirmados" : "Sin actividad");
   setText('[data-metric-change="Alertas"]', data.alertas ? "Revisar novedades" : "Sin alertas");
 
@@ -815,6 +847,24 @@ function updateDashboard(data) {
     "Activo",
   ]);
   rowsToTable("Operacion reciente", operaciones);
+}
+
+function updateOwnPointPage(profile, current) {
+  const status = Number(profile.id_estado_recicladora) === 1 ? "Activo" : "Inactivo";
+  const responsible = `${profile.nombres || ""} ${profile.apellidos || ""}`.trim() || profile.usuario || "Responsable por confirmar";
+  const phone = profile.telefono_empresa || "Telefono por confirmar";
+  const address = profile.direccion_empresa || "Direccion por confirmar";
+  const name = profile.nombre_empresa || "Mi recicladora";
+  const tableTitle = current === "recicladora_puntos_reciclaje.html" ? "Datos de mi punto" : "Datos de mi recicladora";
+
+  setText('[data-summary-label="Mi punto"]', name);
+  setText('[data-summary-label="Registro"]', name);
+  setText('[data-summary-label="Estado"]', status);
+  setText('[data-own-point-status="Ubicacion"]', address);
+  setText('[data-own-point-status="Contacto"]', phone);
+  setText('[data-own-point-status="Estado"]', status);
+
+  rowsToTable(tableTitle, [[name, address, phone, responsible, status]]);
 }
 
 async function refreshCurrentPage() {
@@ -874,19 +924,8 @@ async function refreshCurrentPage() {
   }
 
   if (current === "recicladora_rutas_reciclaje.html" || current === "recicladora_puntos_reciclaje.html") {
-    const dashboard = await fetchJson("/api/recicladoras/dashboard");
-
-    if (current === "recicladora_rutas_reciclaje.html") {
-      setText('[data-summary-label="Rutas activas"]', 0);
-      setText('[data-summary-label="Puntos"]', Number(dashboard.puntos) || 0);
-      rowsToTable("Rutas programadas", []);
-    }
-
-    if (current === "recicladora_puntos_reciclaje.html") {
-      setText('[data-summary-label="Activos"]', `${Number(dashboard.puntos) || 0} puntos`);
-      setText('[data-summary-label="Capacidad"]', "0%");
-      rowsToTable("Puntos disponibles", []);
-    }
+    const profile = await fetchJson("/api/recicladoras/perfil");
+    updateOwnPointPage(profile, current);
   }
 
   if (current === "recicladora_faq.html") {
@@ -1025,7 +1064,7 @@ async function initRecicladoraMap() {
   await loadScriptOnce("../../js/mapa.js");
 
   if (typeof window.initGreenupMap === "function") {
-    window.initGreenupMap();
+    window.initGreenupMap({ scope: "recicladora" });
   }
 }
 
@@ -1055,6 +1094,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const avatar = document.querySelector(".user-avatar");
   if (avatar) avatar.title = `Perfil: ${name}`;
   bindUserMenu();
+  bindNotificationsMenu();
   bindModalForms();
 
   if (page.type === "profile") {

@@ -1,6 +1,7 @@
 /**
- * Mapa Eco reutilizable para ciudadano y dueno de recicladora.
- * Carga puntos desde /ubicaciones para evitar datos inventados en la interfaz.
+ * Mapa Eco reutilizable.
+ * En ciudadano/publico carga puntos desde /ubicaciones.
+ * En dueno de recicladora muestra solo la recicladora autenticada.
  */
 
 (function () {
@@ -12,6 +13,8 @@
   let userLocation = null;
   let userMarker = null;
   let initialized = false;
+  let ownerMode = false;
+  let ownerPoint = null;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -41,6 +44,10 @@
   }
 
   async function loadPoints() {
+    if (ownerMode) {
+      return loadOwnRecyclingCenter();
+    }
+
     try {
       const response = await fetch(`${API_BASE}/ubicaciones`);
       if (!response.ok) throw new Error("No se pudieron cargar los puntos");
@@ -48,6 +55,46 @@
       return (Array.isArray(data) ? data : []).map(normalizePoint);
     } catch (error) {
       console.warn("No se pudieron cargar puntos reales:", error);
+      return [];
+    }
+  }
+
+  function getSessionHeaders() {
+    try {
+      const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+      return {
+        "Content-Type": "application/json",
+        ...(user.id_usuario ? { id_usuario: user.id_usuario, "id-usuario": user.id_usuario } : {}),
+        ...(user.id_rol ? { id_rol: user.id_rol, "id-rol": user.id_rol } : {}),
+      };
+    } catch {
+      return { "Content-Type": "application/json" };
+    }
+  }
+
+  async function loadOwnRecyclingCenter() {
+    try {
+      const response = await fetch(`${API_BASE}/api/recicladoras/perfil`, {
+        headers: getSessionHeaders(),
+      });
+      if (!response.ok) throw new Error("No se pudo cargar la recicladora autenticada");
+
+      const profile = await response.json();
+      const point = normalizePoint({
+        id: profile.id_recicladora,
+        nombre: profile.nombre_empresa,
+        direccion: profile.direccion_empresa,
+        telefono: profile.telefono_empresa,
+        responsable: `${profile.nombres || ""} ${profile.apellidos || ""}`.trim(),
+        latitud: profile.latitud,
+        longitud: profile.longitud,
+        id_estado: profile.id_estado_recicladora,
+        tipo: "Mi punto ecologico",
+      }, 0);
+      ownerPoint = point;
+      return [point];
+    } catch (error) {
+      console.warn("No se pudo cargar el punto de esta recicladora:", error);
       return [];
     }
   }
@@ -99,9 +146,11 @@
         <p>${escapeHtml(point.address)}</p>
         <p><strong>Horario:</strong> ${escapeHtml(point.schedule)}</p>
         <p><strong>Responsable:</strong> ${escapeHtml(point.owner)}</p>
-        <button onclick="trazarRuta(${point.pos[0]}, ${point.pos[1]})" style="background:${point.color};">
-          Como llegar
-        </button>
+        ${ownerMode ? "" : `
+          <button onclick="trazarRuta(${point.pos[0]}, ${point.pos[1]})" style="background:${point.color};">
+            Como llegar
+          </button>
+        `}
       </div>
     `);
 
@@ -130,6 +179,11 @@
   }
 
   window.centerMap = function () {
+    if (ownerMode && ownerPoint && map) {
+      map.setView(ownerPoint.pos, 16, { animate: true });
+      return;
+    }
+
     if (userLocation && map) {
       map.setView(userLocation, 15, { animate: true });
       if (userMarker) userMarker.openPopup();
@@ -185,11 +239,12 @@
     setTimeout(() => map?.invalidateSize(), 300);
   };
 
-  window.initGreenupMap = async function () {
+  window.initGreenupMap = async function (options = {}) {
     const mapElement = document.getElementById("eco-map");
     if (!mapElement || typeof L === "undefined" || initialized) return;
 
     initialized = true;
+    ownerMode = options.scope === "recicladora" || options.onlyOwnRecyclingCenter === true;
     map = L.map(mapElement, { zoomControl: false, attributionControl: false });
     window.greenupMap = map;
     window.map = map;
@@ -200,7 +255,9 @@
     }).addTo(map);
 
     map.setView(DEFAULT_CENTER, 14);
-    initGeolocation();
+    if (!ownerMode) {
+      initGeolocation();
+    }
 
     const sidebarList = document.getElementById("recycling-list");
     if (sidebarList) sidebarList.innerHTML = "";
@@ -210,13 +267,17 @@
 
     if (points.length) {
       const bounds = L.latLngBounds(points.map((point) => point.pos));
-      map.fitBounds(bounds.pad(0.2));
+      if (ownerMode && points.length === 1) {
+        map.setView(points[0].pos, 16, { animate: true });
+      } else {
+        map.fitBounds(bounds.pad(0.2));
+      }
     } else if (sidebarList) {
       sidebarList.innerHTML = `
         <div class="map-empty-state">
           <span class="material-symbols-outlined">location_off</span>
-          <strong>Sin puntos registrados</strong>
-          <small>Cuando existan puntos en la base de datos apareceran aqui.</small>
+          <strong>${ownerMode ? "Sin recicladora asociada" : "Sin puntos registrados"}</strong>
+          <small>${ownerMode ? "No encontramos datos de la recicladora autenticada." : "Cuando existan puntos en la base de datos apareceran aqui."}</small>
         </div>
       `;
     }
@@ -226,10 +287,6 @@
     }
 
     window.addEventListener("resize", () => map.invalidateSize());
-
-    document.getElementById("btn-abrir-sugerencia")?.addEventListener("click", () => {
-      alert("Para sugerir un nuevo punto, registralo desde la opcion de puntos de reciclaje o contacta al administrador.");
-    });
   };
 
   document.addEventListener("DOMContentLoaded", () => {

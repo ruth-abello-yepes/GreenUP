@@ -269,6 +269,7 @@ textarea {
 }
 
 .topbar-actions {
+  position: relative;
   display: flex;
   flex: 0 0 auto;
   align-items: center;
@@ -770,6 +771,66 @@ textarea {
 .btn-soft:hover {
   background: #dff4e5;
   color: var(--greenup-green-dark);
+}
+
+.notifications-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 95;
+  width: min(390px, calc(100vw - 28px));
+  max-height: min(520px, calc(100vh - 110px));
+  display: none;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--greenup-border);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(6, 85, 145, 0.18);
+}
+
+.notifications-menu.open {
+  display: block;
+}
+
+.notifications-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--greenup-border);
+}
+
+.notifications-head h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 900;
+}
+
+.notifications-head p,
+.security-copy {
+  margin: 0;
+  color: var(--greenup-muted);
+  line-height: 1.45;
+}
+
+.notifications-badge {
+  min-width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--greenup-green);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.btn-greenup:disabled,
+.btn-soft:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .module-grid {

@@ -68,8 +68,8 @@ async function iniciarSesion(evento) {
 
 // Vinculamos la función al formulario de login (Asegúrate de que tu form tenga id="form-login")
 document.addEventListener("DOMContentLoaded", () => {
-  const formLogin = document.getElementById("form-login");
-  if (formLogin) {
+  const formLogin = document.getElementById("form-login") || document.getElementById("loginForm");
+  if (formLogin && !formLogin.getAttribute("onsubmit")) {
     formLogin.addEventListener("submit", iniciarSesion);
   }
 });

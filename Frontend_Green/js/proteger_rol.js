@@ -9,9 +9,19 @@ function protegerRol(rolPermitido) {
     return;
   }
 
-  const usuario = JSON.parse(usuarioGuardado);
+  let usuario = {};
 
-  if (usuario.id_rol !== rolPermitido) {
+  try {
+    usuario = JSON.parse(usuarioGuardado);
+  } catch (error) {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+    alert("La sesion guardada no es valida. Inicia sesion nuevamente");
+    window.location.href = "../public/public_login.html";
+    return;
+  }
+
+  if (Number(usuario.id_rol) !== Number(rolPermitido)) {
     alert("No tienes permiso para entrar a esta pagina");
     window.location.href = "../public/public_login.html";
   }

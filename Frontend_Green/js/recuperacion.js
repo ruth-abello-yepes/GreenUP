@@ -15,6 +15,10 @@ function getCorreoRecuperacion() {
   return localStorage.getItem("correo_recuperacion") || "";
 }
 
+function getCorreoPrellenado() {
+  return localStorage.getItem("correo_recuperacion_prellenado") || "";
+}
+
 function getCodigoRecuperacion() {
   return localStorage.getItem("codigo_recuperacion") || "";
 }
@@ -96,10 +100,15 @@ function configurarSolicitudCodigo() {
   const formSolicitar = document.getElementById("formSolicitarCodigo");
   if (!formSolicitar) return;
 
+  const correoInput = document.getElementById("correoRecuperacion");
+  const correoPrellenado = getCorreoPrellenado();
+  if (correoInput && correoPrellenado) {
+    correoInput.value = correoPrellenado;
+  }
+
   formSolicitar.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const correoInput = document.getElementById("correoRecuperacion");
     const btnEnviar = document.getElementById("btnEnviar");
     const correo = correoInput.value.trim();
 
@@ -116,6 +125,7 @@ function configurarSolicitudCodigo() {
 
       if (respuesta.ok) {
         localStorage.setItem("correo_recuperacion", correo);
+        localStorage.removeItem("correo_recuperacion_prellenado");
         localStorage.removeItem("codigo_recuperacion");
         window.location.href = "public_verificar_codigo.html";
         return;
@@ -255,6 +265,8 @@ function configurarNuevaContrasena() {
       if (respuesta.ok) {
         localStorage.removeItem("correo_recuperacion");
         localStorage.removeItem("codigo_recuperacion");
+        localStorage.removeItem("usuario");
+        localStorage.removeItem("token");
         alert("Contrasena actualizada. Ya puedes iniciar sesion.");
         window.location.href = "public_login.html";
         return;

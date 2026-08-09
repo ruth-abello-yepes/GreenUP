@@ -48,6 +48,7 @@ async function iniciarSesionAdmin(evento) {
 
   if (respuesta.ok) {
     localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+    sessionStorage.setItem("greenup_admin_sesion_activa", "1");
 
     window.location.href = "../admin_sistema/admin_panel.html";
   } else {

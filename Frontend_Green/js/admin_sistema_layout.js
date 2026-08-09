@@ -20,6 +20,7 @@ let adminTableData = [];
 let adminTableColumns = [];
 let adminLastUserCount = null;
 let adminLastPointCount = null;
+let adminLastNewsCount = null;
 let adminMonitor = null;
 let adminHeroTimer = null;
 let adminMap = null;
@@ -216,7 +217,7 @@ function iniciarCarruselHero() {
 document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 
 async function iniciarAdminSistema() {
-  protegerAdminSistema();
+  if (!protegerAdminSistema()) return;
   aplicarTemaAdminSistema();
   pintarEstructuraBase();
   await cargarModuloAdmin();
@@ -314,10 +315,20 @@ function actualizarBotonTemaAdminSistema() {
 }
 
 function protegerAdminSistema() {
+  /*
+    PROTECCION DE ADMIN:
+    Si no existe una sesion con rol 1, no se pinta ninguna pantalla.
+    replace() evita que el usuario vuelva con "atras" al panel protegido.
+  */
   const admin = obtenerAdminActual();
-  if (!admin.id_usuario || Number(admin.id_rol) !== 1) {
-    window.location.href = "../public/admin_login.html";
+  const sesionActiva = sessionStorage.getItem("greenup_admin_sesion_activa") === "1";
+  if (!sesionActiva || !admin.id_usuario || Number(admin.id_rol) !== 1) {
+    document.documentElement.classList.add("admin-auth-blocked");
+    window.location.replace("../public/admin_login.html");
+    return false;
   }
+  document.documentElement.classList.add("admin-auth-ok");
+  return true;
 }
 
 function headersAdmin() {
@@ -363,16 +374,7 @@ function pintarEstructuraBase() {
 
     <header class="app-topbar">
       <div class="mobile-brand">${renderBrand()}</div>
-      <div class="topbar-search">
-        <label class="search-shell" for="admin-search">
-          <span class="material-symbols-outlined">search</span>
-          <input id="admin-search" class="form-control" type="search" placeholder="Buscar en la tabla actual..." />
-        </label>
-      </div>
       <div class="topbar-actions">
-        <button class="icon-button btn btn-light" type="button" title="Actualizar" onclick="cargarModuloAdmin()">
-          <span class="material-symbols-outlined">refresh</span>
-        </button>
         <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
@@ -431,7 +433,8 @@ function pintarEstructuraBase() {
     <div id="toast-stack" class="toast-stack"></div>
   `;
 
-  document.getElementById("admin-search").addEventListener("input", filtrarTablaActual);
+  const buscadorAdmin = document.getElementById("admin-search");
+  if (buscadorAdmin) buscadorAdmin.addEventListener("input", filtrarTablaActual);
   prepararNavbarAdmin();
 }
 
@@ -724,9 +727,35 @@ async function cambiarEstadoUsuario(idUsuario, idEstado) {
   await cargarUsuarios();
 }
 
+const documentosPosiblesAdmin = [
+  /*
+    LISTA DE DOCUMENTOS POSIBLES:
+    Este arreglo alimenta el desplegable del modal de tipos de documento.
+    No reemplaza la tabla de Supabase; solo ayuda a escoger nombres comunes.
+  */
+  ["", "Selecciona un tipo de documento"],
+  ["Cedula de ciudadania", "Cedula de ciudadania"],
+  ["Tarjeta de identidad", "Tarjeta de identidad"],
+  ["Registro civil", "Registro civil"],
+  ["Cedula de extranjeria", "Cedula de extranjeria"],
+  ["Pasaporte", "Pasaporte"],
+  ["NIT", "NIT"],
+  ["Permiso por Proteccion Temporal", "Permiso por Proteccion Temporal"],
+  ["Permiso Especial de Permanencia", "Permiso Especial de Permanencia"],
+  ["Documento Nacional de Identidad", "Documento Nacional de Identidad"],
+  ["Carnet diplomatico", "Carnet diplomatico"],
+  ["Licencia de conduccion", "Licencia de conduccion"],
+  ["Libreta militar", "Libreta militar"],
+  ["Certificado nacido vivo", "Certificado nacido vivo"],
+  ["Otro documento", "Otro documento"],
+];
+
 const crudConfig = {
   roles: {
     titulo: "Roles del sistema",
+    textoNuevo: "Nuevo rol",
+    tituloModal: "Crear nuevo rol",
+    subtituloModal: "Formulario administrativo para guardar un rol del sistema.",
     listar: "/api/roles/listar",
     crear: "/api/roles/registrar",
     buscar: "/api/roles/buscar/",
@@ -743,6 +772,9 @@ const crudConfig = {
   },
   documentos: {
     titulo: "Tipos de documento",
+    textoNuevo: "Nuevo tipo de documento",
+    tituloModal: "Crear nuevo tipo de documento",
+    subtituloModal: "Selecciona un documento sugerido y revisa la descripcion antes de guardar.",
     listar: "/api/tipo-documento/listar",
     crear: "/api/tipo-documento/registrar",
     buscar: "/api/tipo-documento/buscar/",
@@ -751,6 +783,15 @@ const crudConfig = {
     id: "id_tipo_documento",
     columnas: ["ID", "Descripcion", "Estado"],
     campos: [
+      {
+        id: "tipo_documento_sugerido",
+        label: "Tipo de documento",
+        type: "select",
+        options: documentosPosiblesAdmin,
+        omitPayload: true,
+        onChange: "completarTipoDocumentoAdmin(this.value)",
+        full: true,
+      },
       { id: "descripcion", label: "Descripcion", full: true },
       { id: "id_estado", label: "Estado", type: "select", options: [[1, "Activo"], [2, "Inactivo"]] },
     ],
@@ -795,18 +836,19 @@ const crudConfig = {
 async function cargarCrud(nombre) {
   const config = crudConfig[nombre];
   const datos = await apiAdmin(config.listar);
+  const datosVisibles = filtrarCatalogoVisible(nombre, datos);
   pintarHero([
-    ["Registros", String(datos.length)],
-    ["Activos", String(datos.filter((x) => Number(x.id_estado) === 1).length)],
+    ["Registros", String(datosVisibles.length)],
+    ["Activos", String(datosVisibles.filter((x) => Number(x.id_estado) === 1).length)],
   ]);
 
   adminTableColumns = config.columnas;
-  adminTableData = datos.map((item) => ({
+  adminTableData = datosVisibles.map((item) => ({
     raw: item,
     values: config.map(item).map((v) => limpiarHtmlPermitido(v)),
     actions: `
       <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="editarCrud('${nombre}', ${item[config.id]})">Editar</button>
-      <button class="small-button danger-button btn btn-sm btn-outline-danger" type="button" onclick="inhabilitarCrud('${nombre}', ${item[config.id]})">Inactivar</button>
+      ${renderEstadoCrud(nombre, item)}
     `,
   }));
 
@@ -820,7 +862,7 @@ async function cargarCrud(nombre) {
           </div>
           <div class="d-flex flex-wrap gap-2">
             <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-${nombre}">
-              <span class="material-symbols-outlined">add</span> Nuevo registro
+              <span class="material-symbols-outlined">add</span> ${config.textoNuevo || "Nuevo registro"}
             </button>
             <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('${nombre}_greenup.csv')">
               <span class="material-symbols-outlined">download</span> Exportar
@@ -830,7 +872,7 @@ async function cargarCrud(nombre) {
         <div id="tabla-admin"></div>
       </article>
     </section>
-    ${renderFormModal(`modal-${nombre}`, `Crear ${config.titulo}`, "Formulario administrativo para guardar un nuevo registro.", `form-${nombre}`, config.campos, `guardarCrud('${nombre}', event)`, "Guardar")}
+    ${renderFormModal(`modal-${nombre}`, config.tituloModal || `Crear ${config.titulo}`, config.subtituloModal || "Formulario administrativo para guardar un nuevo registro.", `form-${nombre}`, config.campos, `guardarCrud('${nombre}', event)`, "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -848,7 +890,13 @@ async function editarCrud(nombre, id) {
   const config = crudConfig[nombre];
   const actual = await apiAdmin(config.buscar + id);
   const payload = {};
+  const rolProtegido = esRolAdministradorProtegido(nombre, actual);
   for (const campo of config.campos) {
+    if (campo.omitPayload) continue;
+    if (rolProtegido && campo.id === "id_estado") {
+      payload[campo.id] = 1;
+      continue;
+    }
     const nuevo = prompt(campo.label, actual[campo.id] ?? "");
     if (nuevo === null) return;
     payload[campo.id] = normalizarValor(campo, nuevo);
@@ -858,19 +906,76 @@ async function editarCrud(nombre, id) {
   await cargarCrud(nombre);
 }
 
-async function inhabilitarCrud(nombre, id) {
+function renderEstadoCrud(nombre, item) {
+  /*
+    BOTON DE ESTADO PARA CATALOGOS:
+    Si el registro esta activo mostramos Inactivar.
+    Si el registro esta inactivo mostramos Activar.
+    Asi no aparecen botones contrarios al estado real de la fila.
+  */
   const config = crudConfig[nombre];
-  if (!confirm("Deseas inactivar este registro?")) return;
-  if (config.inhabilitar) {
-    await apiAdmin(config.inhabilitar + id, { method: "DELETE" });
-  } else {
+  if (esRolAdministradorProtegido(nombre, item)) {
+    return `<span class="status-pill active">Siempre activo</span>`;
+  }
+  const activo = Number(item.id_estado) === 1;
+  const siguienteEstado = activo ? 2 : 1;
+  const texto = activo ? "Inactivar" : "Activar";
+  const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  return `
+    <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoCrud('${nombre}', ${item[config.id]}, ${siguienteEstado})">
+      ${texto}
+    </button>
+  `;
+}
+
+async function cambiarEstadoCrud(nombre, id, idEstado) {
+  const config = crudConfig[nombre];
+  if (nombre === "roles") {
+    const actual = await apiAdmin(config.buscar + id);
+    if (esRolAdministradorProtegido(nombre, actual)) {
+      mostrarToast("Rol protegido", "El rol Administrador debe permanecer siempre activo.");
+      return;
+    }
+  }
+  const accion = Number(idEstado) === 1 ? "activar" : "inactivar";
+  if (!confirm(`Deseas ${accion} este registro?`)) return;
+
+  if (config.estado) {
     await apiAdmin(config.estado.replace(":id", id), {
       method: "PUT",
-      body: JSON.stringify({ id_estado: 2 }),
+      body: JSON.stringify({ id_estado: idEstado }),
+    });
+  } else {
+    /*
+      ROLES Y DOCUMENTOS:
+      Esos modulos no tienen ruta /estado. Para activar o inactivar
+      usamos la ruta de actualizar conservando los datos actuales.
+    */
+    const actual = await apiAdmin(config.buscar + id);
+    const payload = {};
+    for (const campo of config.campos) {
+      if (campo.omitPayload) continue;
+      payload[campo.id] = campo.id === "id_estado" ? idEstado : actual[campo.id];
+    }
+    await apiAdmin(config.actualizar + id, {
+      method: "PUT",
+      body: JSON.stringify(payload),
     });
   }
-  mostrarToast("Registro inactivado", "El estado fue actualizado.");
+
+  mostrarToast("Estado actualizado", `El registro fue ${Number(idEstado) === 1 ? "activado" : "inactivado"} correctamente.`);
   await cargarCrud(nombre);
+}
+
+function esRolAdministradorProtegido(nombreModulo, item) {
+  /*
+    ROL ADMINISTRADOR PROTEGIDO:
+    El rol principal del sistema no se debe inactivar porque controla
+    el acceso al panel administrativo.
+  */
+  if (nombreModulo !== "roles") return false;
+  const nombreRol = String(item.nombre || "").trim().toLowerCase();
+  return Number(item.id_rol) === 1 || nombreRol === "administrador";
 }
 
 async function cargarPuntos() {
@@ -1251,13 +1356,37 @@ async function cargarReciclaje() {
   adminTableData = datos.map((r) => ({
     raw: r,
     values: [r.id_registro, r.cantidad, r.id_usuario, r.id_tipo_material, r.id_punto, limpiar(r.fecha_hora), estadoHtml(r.id_estado)],
-    actions: `
-      <button class="small-button danger-button btn btn-sm btn-outline-danger" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 2)">Inactivar</button>
-      <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 1)">Activar</button>
-    `,
+    actions: renderEstadoReciclaje(r),
   }));
   document.getElementById("admin-content").innerHTML = renderTableCard("Registros de reciclaje", "Datos reportados en el sistema.", "reciclaje_greenup.csv");
   pintarTablaActual();
+}
+
+function filtrarCatalogoVisible(nombre, datos) {
+  /*
+    FILTRO VISUAL DE CATALOGOS:
+    En la tabla de roles no mostramos el rol Administrador porque es
+    interno del sistema y debe permanecer activo sin modificarse desde aqui.
+  */
+  if (nombre !== "roles") return datos;
+  return datos.filter((item) => !esRolAdministradorProtegido(nombre, item));
+}
+
+function renderEstadoReciclaje(registro) {
+  /*
+    BOTON DE ESTADO PARA REGISTROS:
+    El administrador ve una sola accion: Inactivar si esta activo,
+    o Activar si ya estaba inactivo.
+  */
+  const activo = Number(registro.id_estado) === 1;
+  const siguienteEstado = activo ? 2 : 1;
+  const texto = activo ? "Inactivar" : "Activar";
+  const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  return `
+    <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoReciclaje(${registro.id_registro}, ${siguienteEstado})">
+      ${texto}
+    </button>
+  `;
 }
 
 async function cambiarEstadoReciclaje(idRegistro, idEstado) {
@@ -1269,23 +1398,98 @@ async function cambiarEstadoReciclaje(idRegistro, idEstado) {
   await cargarReciclaje();
 }
 
-async function cargarReportes() {
-  const datos = await apiAdmin("/reportes/reciclaje");
+async function cargarReportes(filtros = {}) {
+  /*
+    REPORTES DEL ADMINISTRADOR:
+    Carga informacion real de reciclaje y aplica filtros desde el backend.
+  */
+  const query = construirQueryReporte(filtros);
+  const [datos, usuarios, materiales, puntos] = await Promise.all([
+    apiAdmin(`/reportes/reciclaje${query}`),
+    apiAdmin("/api/usuarios/listar"),
+    apiAdmin("/materiales"),
+    apiAdmin("/ubicaciones"),
+  ]);
   pintarHero([
     ["Filas", String(datos.length)],
-    ["Formato", "CSV/PDF"],
+    ["Formato", "CSV/Excel/PDF"],
   ]);
-  const columnas = Object.keys(datos[0] || {});
-  adminTableColumns = columnas.length ? columnas : ["Reporte"];
+  adminTableColumns = ["ID", "Fecha", "Usuario", "Material", "Residuo", "Punto", "Cantidad", "Estado"];
   adminTableData = datos.map((fila) => ({
     raw: fila,
-    values: columnas.map((col) => limpiar(fila[col])),
+    values: [
+      fila.id_registro,
+      limpiar(formatearFechaAdmin(fila.fecha_hora)),
+      limpiar(fila.usuario_nombre || fila.usuario || "Sin usuario"),
+      limpiar(fila.material || "Sin material"),
+      limpiar(fila.residuo || "Sin residuo"),
+      limpiar(fila.punto || "Sin punto"),
+      limpiar(fila.cantidad),
+      estadoHtml(fila.id_estado),
+    ],
     actions: "",
   }));
   document.getElementById("admin-content").innerHTML = `
+    <!-- FILTROS DEL REPORTE: reducen la informacion antes de exportarla. -->
+    <form class="toolbar admin-report-filters" onsubmit="aplicarFiltrosReporteAdmin(event)">
+      <!-- Campo fecha inicial: permite buscar reportes desde una fecha concreta. -->
+      <label class="report-filter-field">
+        <span class="form-label">Fecha inicial</span>
+        <input id="reporte-fecha-inicio" class="form-control" type="date" value="${limpiar(filtros.fecha_inicio || "")}">
+      </label>
+      <!-- Campo fecha final: cierra el rango de fechas del reporte. -->
+      <label class="report-filter-field">
+        <span class="form-label">Fecha final</span>
+        <input id="reporte-fecha-fin" class="form-control" type="date" value="${limpiar(filtros.fecha_fin || "")}">
+      </label>
+      <!-- Campo usuario: filtra los reportes por ciudadano registrado. -->
+      <label class="report-filter-field">
+        <span class="form-label">Usuario</span>
+        <select id="reporte-usuario" class="form-select">
+          ${opcionesSelectReporte(usuarios, "id_usuario", (u) => `${u.nombres || ""} ${u.apellidos || ""}`.trim() || u.usuario, filtros.id_usuario)}
+        </select>
+      </label>
+      <!-- Campo material: muestra solo los reportes de un material reciclable. -->
+      <label class="report-filter-field">
+        <span class="form-label">Material</span>
+        <select id="reporte-material" class="form-select">
+          ${opcionesSelectReporte(materiales, "id_tipo_material", (m) => m.nombre, filtros.id_tipo_material)}
+        </select>
+      </label>
+      <!-- Campo punto: permite revisar reportes de un punto ecologico especifico. -->
+      <label class="report-filter-field">
+        <span class="form-label">Punto</span>
+        <select id="reporte-punto" class="form-select">
+          ${opcionesSelectReporte(puntos, "id_punto", (p) => p.nombre, filtros.id_punto)}
+        </select>
+      </label>
+      <!-- Campo estado: separa reportes activos e inactivos. -->
+      <label class="report-filter-field">
+        <span class="form-label">Estado</span>
+        <select id="reporte-estado" class="form-select">
+          <option value="">Todos</option>
+          <option value="1" ${String(filtros.id_estado || "") === "1" ? "selected" : ""}>Activo</option>
+          <option value="2" ${String(filtros.id_estado || "") === "2" ? "selected" : ""}>Inactivo</option>
+        </select>
+      </label>
+      <!-- Botones del filtro: aplican o limpian los datos seleccionados. -->
+      <div class="report-filter-actions">
+        <button class="primary-button btn btn-success" type="submit">
+          <span class="material-symbols-outlined">filter_alt</span> Aplicar filtros
+        </button>
+        <button class="ghost-button btn btn-outline-secondary" type="button" onclick="limpiarFiltrosReporteAdmin()">
+          <span class="material-symbols-outlined">mop</span> Limpiar filtros
+        </button>
+      </div>
+    </form>
+
+    <!-- EXPORTACIONES: usan la tabla filtrada que esta viendo el administrador. -->
     <div class="toolbar d-flex flex-wrap align-items-center">
       <button class="primary-button btn btn-success" type="button" onclick="exportarTablaCSV('reporte_reciclaje_greenup.csv')">
         <span class="material-symbols-outlined">download</span> Exportar CSV
+      </button>
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaExcel('reporte_reciclaje_greenup.xls')">
+        <span class="material-symbols-outlined">grid_on</span> Exportar Excel
       </button>
       <button class="ghost-button btn btn-outline-secondary" type="button" onclick="window.print()">
         <span class="material-symbols-outlined">print</span> Imprimir PDF
@@ -1296,7 +1500,65 @@ async function cargarReportes() {
     </div>
     ${renderTableCard("Reporte de reciclaje", "Informacion real almacenada en Supabase.", "reporte_reciclaje_greenup.csv")}
   `;
-  pintarTablaActual();
+  pintarTablaActual(adminTableData, {
+    icon: "summarize",
+    title: "No hay reportes para mostrar.",
+    text: "Aun no existen reportes de reciclaje con los filtros seleccionados.",
+  });
+}
+
+function construirQueryReporte(filtros) {
+  /*
+    QUERY STRING:
+    Convierte los filtros del formulario en parametros para el backend.
+  */
+  const params = new URLSearchParams();
+  Object.entries(filtros || {}).forEach(([clave, valor]) => {
+    if (valor !== undefined && valor !== null && String(valor).trim() !== "") {
+      params.set(clave, String(valor).trim());
+    }
+  });
+  const texto = params.toString();
+  return texto ? `?${texto}` : "";
+}
+
+function opcionesSelectReporte(datos, idCampo, textoCampo, seleccionado) {
+  /*
+    OPCIONES DE FILTRO:
+    Crea los option de usuarios, materiales y puntos para el reporte.
+  */
+  const actual = String(seleccionado || "");
+  const opciones = datos.map((item) => {
+    const valor = String(item[idCampo] || "");
+    const texto = limpiar(textoCampo(item) || valor);
+    const selected = valor === actual ? "selected" : "";
+    return `<option value="${limpiar(valor)}" ${selected}>${texto}</option>`;
+  }).join("");
+  return `<option value="">Todos</option>${opciones}`;
+}
+
+function leerFiltrosReporteAdmin() {
+  /*
+    LECTURA DE FILTROS:
+    Toma los valores escritos por el administrador en el formulario.
+  */
+  return {
+    fecha_inicio: document.getElementById("reporte-fecha-inicio")?.value || "",
+    fecha_fin: document.getElementById("reporte-fecha-fin")?.value || "",
+    id_usuario: document.getElementById("reporte-usuario")?.value || "",
+    id_tipo_material: document.getElementById("reporte-material")?.value || "",
+    id_punto: document.getElementById("reporte-punto")?.value || "",
+    id_estado: document.getElementById("reporte-estado")?.value || "",
+  };
+}
+
+async function aplicarFiltrosReporteAdmin(evento) {
+  evento.preventDefault();
+  await cargarReportes(leerFiltrosReporteAdmin());
+}
+
+async function limpiarFiltrosReporteAdmin() {
+  await cargarReportes({});
 }
 
 async function cargarNovedades() {
@@ -1455,27 +1717,71 @@ async function cargarEstadisticas() {
     ["Kg", String(estadisticas.total_cantidad || 0)],
   ]);
   document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid row g-3">
+    <section class="metrics-grid stats-metrics-grid row g-3">
       ${metric("recycling", estadisticas.total_reciclajes || 0, "Registros reciclaje", "Total de movimientos")}
       ${metric("scale", estadisticas.total_cantidad || 0, "Cantidad reciclada", "Suma total reportada", "blue")}
-      ${metric("groups", usuarios.length, "Usuarios", "Cuentas en el sistema")}
-      ${metric("location_on", puntos.length, "Puntos", `${recicladoras.length} recicladoras`, "blue")}
+      ${metric("groups", estadisticas.total_usuarios || usuarios.length, "Usuarios", "Cuentas en el sistema")}
+      ${metric("location_on", estadisticas.total_puntos || puntos.length, "Puntos", `${recicladoras.length} recicladoras`, "blue")}
     </section>
-    <article class="data-card card">
-      <div class="card-title-row">
-        <div>
-          <h2>Resumen administrativo</h2>
-          <p>Indicadores calculados desde Supabase.</p>
+
+    <!-- ESTADISTICAS POR RESIDUO: ayuda a cumplir el requisito RF012. -->
+    <section class="content-grid row g-3">
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Reciclaje por residuo</h2>
+            <p>Total agrupado por tipo de residuo.</p>
+          </div>
         </div>
-      </div>
-      <div class="empty-state">
-        <div>
-          <span class="material-symbols-outlined">monitoring</span>
-          Los indicadores se actualizan desde los registros reales del sistema.
+        ${tablaIndicadoresAdmin(["Residuo", "Cantidad"], estadisticas.reciclaje_por_residuo)}
+      </article>
+
+      <!-- ESTADISTICAS POR MATERIAL: muestra que materiales se reciclan mas. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Reciclaje por material</h2>
+            <p>Materiales con mayor cantidad registrada.</p>
+          </div>
         </div>
-      </div>
-    </article>
+        ${tablaIndicadoresAdmin(["Material", "Cantidad"], estadisticas.reciclaje_por_material)}
+      </article>
+
+      <!-- RANKING DE USUARIOS: identifica usuarios mas activos. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Ranking de usuarios</h2>
+            <p>Usuarios con mas reciclaje acumulado.</p>
+          </div>
+        </div>
+        ${tablaIndicadoresAdmin(["Usuario", "Cantidad"], estadisticas.ranking_usuarios, "nombre")}
+      </article>
+
+      <!-- EVOLUCION MENSUAL: permite analizar cambios por mes. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Evolucion mensual</h2>
+            <p>Cantidad reciclada por mes.</p>
+          </div>
+        </div>
+        ${tablaIndicadoresAdmin(["Mes", "Cantidad"], estadisticas.evolucion_mensual, "mes")}
+      </article>
+    </section>
   `;
+}
+
+function tablaIndicadoresAdmin(columnas, datos, campoNombre = "nombre") {
+  /*
+    TABLA DE INDICADORES:
+    Reutiliza los arreglos enviados por /estadisticas para mostrar RF012.
+  */
+  const filas = (datos || []).map((item) => [
+    limpiar(item[campoNombre] || "Sin dato"),
+    limpiar(item.total || 0),
+  ]);
+  return tablaDatos(columnas, filas);
 }
 
 async function cargarPerfil() {
@@ -1724,7 +2030,7 @@ function cargarConfiguracion() {
     <section class="metrics-grid row g-3">
       ${settingCard("notifications", "Notificaciones", "Activa permisos para recibir avisos cuando lleguen usuarios o puntos nuevos.", "pedirPermisoNotificaciones()", "Activar")}
       ${settingCard("sync", "Actualizacion", "Las tablas principales y el mapa consultan Supabase cada 8 segundos.", "cargarModuloAdmin()", "Actualizar")}
-      ${settingCard("download", "Exportacion", "Los reportes y tablas se exportan a CSV desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
+      ${settingCard("download", "Exportacion", "Los reportes se exportan a CSV, Excel o impresion PDF desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
       ${settingCard("logout", "Sesion", "Cierra la sesion del administrador en este navegador.", "cerrarSesionAdminSistema()", "Cerrar")}
     </section>
   `;
@@ -1758,11 +2064,14 @@ function renderTableCard(title, subtitle, filename) {
   `;
 }
 
-function pintarTablaActual(data = adminTableData) {
+function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
   const contenedor = document.getElementById("tabla-admin");
   if (!contenedor) return;
   if (!data.length) {
-    contenedor.innerHTML = renderEmpty("database", "No hay registros para mostrar.", "Cuando existan datos en Supabase apareceran aqui.");
+    const icono = estadoVacio.icon || "database";
+    const titulo = estadoVacio.title || "No hay registros para mostrar.";
+    const texto = estadoVacio.text || "Cuando existan datos en Supabase apareceran aqui.";
+    contenedor.innerHTML = renderEmpty(icono, titulo, texto);
     return;
   }
 
@@ -1858,13 +2167,14 @@ function renderFormModal(modalId, titulo, subtitulo, formId, campos, accion, tex
 
 function renderField(campo) {
   const clase = campo.full ? "full form-label" : "form-label";
+  const eventoCambio = campo.onChange ? ` onchange="${campo.onChange}"` : "";
   if (campo.type === "textarea") {
     return `<label class="${clase}">${campo.label}<textarea id="${campo.id}" class="form-control"></textarea></label>`;
   }
   if (campo.type === "select") {
     return `
       <label class="${clase}">${campo.label}
-        <select id="${campo.id}" class="form-select">
+        <select id="${campo.id}" class="form-select"${eventoCambio}>
           ${campo.options.map((op) => `<option value="${op[0]}">${op[1]}</option>`).join("")}
         </select>
       </label>
@@ -1876,11 +2186,25 @@ function renderField(campo) {
 function leerFormulario(campos) {
   const data = {};
   campos.forEach((campo) => {
+    if (campo.omitPayload) return;
     const elemento = document.getElementById(campo.id);
     if (!elemento) return;
     data[campo.id] = normalizarValor(campo, elemento.value);
   });
   return data;
+}
+
+function completarTipoDocumentoAdmin(valor) {
+  /*
+    AUTOLLENADO DEL DOCUMENTO:
+    Cuando el administrador escoge un tipo de documento del desplegable,
+    copiamos ese texto en la descripcion porque esa es la columna real
+    que guarda el backend de tipos de documento.
+  */
+  const campoDescripcion = document.getElementById("descripcion");
+  if (!campoDescripcion || !valor) return;
+  campoDescripcion.value = valor;
+  campoDescripcion.focus();
 }
 
 function normalizarValor(campo, valor) {
@@ -1960,6 +2284,17 @@ function nombreRol(idRol) {
   return roles[Number(idRol)] || "Sin rol";
 }
 
+function formatearFechaAdmin(valor) {
+  /*
+    FECHA LEGIBLE:
+    Convierte la fecha de Supabase en texto corto para tablas y reportes.
+  */
+  if (!valor) return "";
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor;
+  return fecha.toLocaleString("es-CO");
+}
+
 function limpiar(valor) {
   return String(valor ?? "")
     .replaceAll("&", "&amp;")
@@ -2017,6 +2352,13 @@ function iniciarMonitoreoAdmin() {
       }
       adminLastUserCount = usuarios.length;
 
+      const novedades = await apiAdmin("/novedades");
+      if (adminLastNewsCount !== null && novedades.length > adminLastNewsCount) {
+        notificarAdmin("Nueva novedad registrada", "El modulo de noticias y novedades se actualizara automaticamente.");
+        if (moduloActual() === "novedades" || moduloActual() === "panel") await cargarModuloAdmin();
+      }
+      adminLastNewsCount = novedades.length;
+
       if (moduloActual() === "mapa") await actualizarPuntosMapa(false);
       if (["puntos", "reportes", "estadisticas"].includes(moduloActual())) await cargarModuloAdmin();
     } catch (error) {
@@ -2043,9 +2385,48 @@ function exportarTablaCSV(nombreArchivo) {
   URL.revokeObjectURL(enlace.href);
 }
 
+function exportarTablaExcel(nombreArchivo) {
+  /*
+    EXPORTAR EXCEL:
+    Crea un archivo .xls con la misma tabla visible del administrador.
+    Excel puede abrir este HTML como hoja de calculo.
+  */
+  const filas = adminTableData;
+  if (!filas.length) {
+    mostrarToast("Exportacion", "No hay datos para exportar.");
+    return;
+  }
+
+  const encabezados = adminTableColumns.map((columna) => `<th>${limpiar(columna)}</th>`).join("");
+  const cuerpo = filas.map((fila) => `
+    <tr>
+      ${fila.values.map((valor) => `<td>${String(valor).replace(/<[^>]+>/g, "")}</td>`).join("")}
+    </tr>
+  `).join("");
+
+  const html = `
+    <html>
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <table border="1">
+          <thead><tr>${encabezados}</tr></thead>
+          <tbody>${cuerpo}</tbody>
+        </table>
+      </body>
+    </html>
+  `;
+
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" }));
+  enlace.download = nombreArchivo;
+  enlace.click();
+  URL.revokeObjectURL(enlace.href);
+}
+
 function cerrarSesionAdminSistema() {
   const confirmarSalida = confirm("Seguro que deseas cerrar la sesion del administrador?");
   if (!confirmarSalida) return;
   localStorage.removeItem("usuario");
+  sessionStorage.removeItem("greenup_admin_sesion_activa");
   window.location.href = "../public/admin_login.html";
 }

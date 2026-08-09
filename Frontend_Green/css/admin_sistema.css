@@ -694,8 +694,73 @@ textarea {
   box-shadow: 0 0 0 4px rgba(15, 111, 42, 0.1);
 }
 
+/* ---------------------------------------------------------------------
+   FILTROS DE REPORTES
+   Esta seccion organiza los campos de la pantalla admin_reportes.html.
+   La idea es que el formulario se acomode solo al ancho de la pantalla.
+--------------------------------------------------------------------- */
+.admin-report-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: end;
+  gap: 14px;
+  padding: 18px;
+}
+
+/* Cada label funciona como una cajita vertical: titulo arriba y campo abajo. */
+.admin-report-filters .report-filter-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+/* El texto del campo queda mas claro para que se lea como formulario admin. */
+.admin-report-filters .form-label {
+  margin: 0;
+  color: var(--admin-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* En reportes los inputs ocupan todo su espacio y no empujan otros campos. */
+.admin-report-filters select,
+.admin-report-filters input {
+  width: 100%;
+  min-width: 0;
+  flex: initial;
+}
+
+/* Los botones quedan en una fila propia para evitar huecos raros en el form. */
+.admin-report-filters .report-filter-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
 .metrics-grid {
   margin-bottom: 20px;
+}
+
+/* ---------------------------------------------------------------------
+   ESTADISTICAS
+   Esta grilla se usa solo en admin_estadisticas.html para separar mejor
+   las cards de indicadores y evitar que se vean apretadas.
+--------------------------------------------------------------------- */
+.stats-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin-bottom: 30px;
+}
+
+/* Las cards ocupan toda su columna y dejan de depender del gutter Bootstrap. */
+.stats-metrics-grid > .metric-card {
+  width: 100%;
+  max-width: 100%;
+  min-height: 168px;
+  padding: 24px;
 }
 
 .metric-card {
@@ -1145,15 +1210,44 @@ body.admin-theme-dark .hero-carousel-card span {
 }
 
 body.admin-theme-dark .admin-table th {
+  background: #0d1826;
+  color: #d7e3ef;
   border-bottom-color: var(--admin-border);
 }
 
+body.admin-theme-dark .admin-table,
+body.admin-theme-dark .admin-table tbody,
+body.admin-theme-dark .admin-table tr {
+  background: #101b2a;
+}
+
+body.admin-theme-dark .admin-table tbody tr:nth-child(even) {
+  background: #0d1826;
+}
+
 body.admin-theme-dark .admin-table td {
+  background: transparent;
+  color: #d7e3ef;
   border-bottom-color: #1b2b3d;
 }
 
 body.admin-theme-dark .admin-table tbody tr:hover td {
-  background: rgba(57, 216, 116, 0.06);
+  background: rgba(57, 216, 116, 0.11);
+  color: #ffffff;
+}
+
+body.admin-theme-dark .table-wrap {
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: #101b2a;
+}
+
+body.admin-theme-dark .admin-table .status-pill.active {
+  color: #75f0a0;
+}
+
+body.admin-theme-dark .admin-table .status-pill.inactive {
+  color: #ffb8b8;
 }
 
 body.admin-theme-dark .empty-state {
@@ -1634,9 +1728,9 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .app-sidebar {
-    display: none;
+    display: none !important;
   }
 
   .app-topbar {
@@ -1651,6 +1745,11 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   .topbar-search,
   .user-menu {
     display: none;
+  }
+
+  .topbar-actions {
+    margin-left: auto;
+    gap: 8px;
   }
 
   .admin-main {
@@ -1701,7 +1800,7 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1201px) {
   .mobile-bottom-nav {
     display: none;
   }

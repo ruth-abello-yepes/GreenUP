@@ -1,3 +1,6 @@
+## Archivo: auth_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 """
 Archivo: auth_service.py
 
@@ -20,6 +23,7 @@ import os
 import random
 from datetime import datetime, timedelta
 from flask_mail import Message
+import jwt
 
 from app.models.usuarios_model import (
     registrar_usuario,
@@ -43,6 +47,40 @@ ADMIN_USUARIO_INICIAL = "admin"
 ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
+JWT_SECRET = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or "greenup-dev-secret"
+JWT_ALGORITHM = "HS256"
+INTENTOS_LOGIN = {}
+
+
+def _crear_token(usuario):
+    payload = {
+        "id_usuario": usuario["id_usuario"],
+        "id_rol": usuario["id_rol"],
+        "usuario": usuario["usuario"],
+        "exp": datetime.utcnow() + timedelta(hours=8),
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
+def _login_bloqueado(usuario):
+    registro = INTENTOS_LOGIN.get(usuario)
+    if not registro:
+        return False
+    if registro["intentos"] < 5:
+        return False
+    return datetime.now() < registro["bloqueado_hasta"]
+
+
+def _registrar_fallo_login(usuario):
+    registro = INTENTOS_LOGIN.get(usuario, {"intentos": 0, "bloqueado_hasta": datetime.now()})
+    registro["intentos"] += 1
+    if registro["intentos"] >= 5:
+        registro["bloqueado_hasta"] = datetime.now() + timedelta(minutes=10)
+    INTENTOS_LOGIN[usuario] = registro
+
+
+def _limpiar_intentos_login(usuario):
+    INTENTOS_LOGIN.pop(usuario, None)
 
 
 def servicio_login(datos):
@@ -62,9 +100,13 @@ def servicio_login(datos):
     if not usuario or not contrasena:
         return {"mensaje": "Usuario y contrasena son obligatorios"}, 400
 
+    if _login_bloqueado(usuario):
+        return {"mensaje": "Demasiados intentos fallidos. Intenta nuevamente en 10 minutos"}, 429
+
     usuario_encontrado = buscar_usuario_por_usuario(usuario)
 
     if usuario_encontrado is None:
+        _registrar_fallo_login(usuario)
         return {"mensaje": "Usuario no encontrado"}, 404
 
     if usuario_encontrado["id_estado"] != 1:
@@ -76,13 +118,18 @@ def servicio_login(datos):
     )
 
     if not contrasena_correcta:
+        _registrar_fallo_login(usuario)
         return {"mensaje": "Contrasena incorrecta"}, 401
 
     if usuario_encontrado["id_rol"] == 1:
         return {"mensaje": "El administrador debe usar el login de administrador"}, 403
 
+    _limpiar_intentos_login(usuario)
+    token = _crear_token(usuario_encontrado)
+
     return {
         "mensaje": "Inicio de sesion correcto",
+        "token": token,
         "usuario": {
             "id_usuario": usuario_encontrado["id_usuario"],
             "nombres": usuario_encontrado["nombres"],
@@ -113,9 +160,13 @@ def servicio_login_admin(datos):
     if not usuario or not contrasena or not codigo_admin:
         return {"mensaje": "Usuario, contrasena y codigo admin son obligatorios"}, 400
 
+    if _login_bloqueado(usuario):
+        return {"mensaje": "Demasiados intentos fallidos. Intenta nuevamente en 10 minutos"}, 429
+
     codigo_correcto = (os.getenv("ADMIN_ACCESS_CODE") or "").strip()
 
     if codigo_admin != codigo_correcto:
+        _registrar_fallo_login(usuario)
         return {"mensaje": "Codigo admin incorrecto"}, 401
 
     usuario_encontrado = buscar_usuario_por_usuario(usuario)
@@ -143,6 +194,7 @@ def servicio_login_admin(datos):
         usuario_encontrado = buscar_usuario_por_usuario(usuario)
 
     if usuario_encontrado is None:
+        _registrar_fallo_login(usuario)
         return {"mensaje": "Administrador no encontrado"}, 404
 
     if usuario_encontrado["id_estado"] != 1:
@@ -157,10 +209,15 @@ def servicio_login_admin(datos):
     )
 
     if not contrasena_correcta:
+        _registrar_fallo_login(usuario)
         return {"mensaje": "Contrasena incorrecta"}, 401
+
+    _limpiar_intentos_login(usuario)
+    token = _crear_token(usuario_encontrado)
 
     return {
         "mensaje": "Inicio de sesion administrador correcto",
+        "token": token,
         "usuario": {
             "id_usuario": usuario_encontrado["id_usuario"],
             "nombres": usuario_encontrado["nombres"],
@@ -255,3 +312,28 @@ def verificar_codigo_recuperacion(datos):
         return {"mensaje": "El codigo ha expirado. Solicita uno nuevo."}, 400
 
     return {"mensaje": "Codigo verificado correctamente"}, 200
+
+
+def cambiar_contrasena_desde_perfil(id_usuario, datos):
+    contrasena_actual = datos.get("contrasena_actual")
+    nueva_contrasena = datos.get("nueva_contrasena")
+
+    if not contrasena_actual or not nueva_contrasena:
+        return {"mensaje": "Contrasena actual y nueva contrasena son obligatorias"}, 400
+
+    usuario = None
+    from app.models.usuarios_model import buscar_usuario_por_id
+    usuario = buscar_usuario_por_id(id_usuario)
+
+    if not usuario:
+        return {"mensaje": "Usuario no encontrado"}, 404
+
+    if not verificar_contrasena(contrasena_actual, usuario["contrasena"]):
+        return {"mensaje": "La contrasena actual no es correcta"}, 401
+
+    contrasena_segura, mensaje_contrasena = validar_contrasena_segura(nueva_contrasena)
+    if not contrasena_segura:
+        return {"mensaje": mensaje_contrasena}, 400
+
+    actualizar_contrasena_db(id_usuario, cifrar_contrasena(nueva_contrasena))
+    return {"mensaje": "Contrasena actualizada correctamente"}, 200

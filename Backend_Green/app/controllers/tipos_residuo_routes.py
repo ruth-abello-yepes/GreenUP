@@ -1,3 +1,6 @@
+## Archivo: tipos_residuo_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de tipos de residuo
 # Aquí se crean las URL del módulo.
 

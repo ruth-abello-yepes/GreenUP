@@ -48,6 +48,9 @@ async function iniciarSesionAdmin(evento) {
 
   if (respuesta.ok) {
     localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+    if (datos.token) {
+      localStorage.setItem("token", datos.token);
+    }
 
     window.location.href = "../admin_sistema/admin_panel.html";
   } else {

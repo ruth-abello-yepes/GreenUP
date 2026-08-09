@@ -1,3 +1,6 @@
+## Archivo: materiales_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de materiales
 # Aquí van las consultas directas a la base de datos, sin ORM.
 

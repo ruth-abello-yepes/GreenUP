@@ -1,19 +1,49 @@
+## Archivo: novedades_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de novedades
 
 from app.common.database import obtener_conexion
 
 
-def crear_novedad(titulo, descripcion, imagen, id_usuario):
+def _tabla_tiene_columna(cursor, tabla, columna):
+    cursor.execute(
+        """
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = %s
+          AND column_name = %s
+        """,
+        (tabla, columna),
+    )
+    return cursor.fetchone() is not None
+
+
+def crear_novedad(titulo, descripcion, imagen, id_usuario, id_punto=None, motivo=None, comentario=None, ubicacion=None):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = """
-        INSERT INTO novedades
-        (titulo, descripcion, imagen, id_usuario, id_estado)
-        VALUES (%s, %s, %s, %s, 1)
-    """
+    columnas = ["titulo", "descripcion", "imagen", "id_usuario", "id_estado"]
+    valores = [titulo, descripcion, imagen, id_usuario, 1]
 
-    cursor.execute(sql, (titulo, descripcion, imagen, id_usuario))
+    extras = {
+        "id_punto": id_punto,
+        "motivo": motivo,
+        "comentario": comentario,
+        "ubicacion": ubicacion,
+    }
+
+    for columna, valor in extras.items():
+        if _tabla_tiene_columna(cursor, "novedades", columna):
+            columnas.append(columna)
+            valores.append(valor)
+
+    placeholders = ", ".join(["%s"] * len(columnas))
+    cursor.execute(
+        f"INSERT INTO novedades ({', '.join(columnas)}) VALUES ({placeholders})",
+        tuple(valores),
+    )
     conexion.commit()
 
     cursor.close()

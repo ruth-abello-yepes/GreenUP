@@ -1,3 +1,6 @@
+## Archivo: roles_middleware.py
+## Middleware: valida autenticacion, permisos o datos antes de llegar a las rutas.
+
 # Archivo: roles_middleware.py
 # Este middleware revisa si el usuario tiene el rol permitido.
 

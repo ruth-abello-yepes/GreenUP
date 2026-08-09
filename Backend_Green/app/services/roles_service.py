@@ -1,3 +1,6 @@
+## Archivo: roles_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 from app.models.roles_model import registrar_rol, listar_roles, buscar_rol_por_id, actualizar_rol, inhabilitar_rol
 
 

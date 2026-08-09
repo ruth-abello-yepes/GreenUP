@@ -1,3 +1,6 @@
+## Archivo: reportes_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de reportes
 # Por ahora solo trae datos simples de reciclaje.
 

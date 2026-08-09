@@ -114,6 +114,16 @@
         }
 
         .gu-sidebar-item {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
             transition: all 0.2s;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
@@ -124,10 +134,158 @@
             transform: translateX(4px);
         }
 
+        .gu-sidebar-item .type-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 14px;
+            background: #f4fff4;
+            color: var(--gu-secondary);
+            border: 1px solid rgba(41, 108, 31, 0.16);
+        }
+
+        .gu-sidebar-item .type-icon.gray {
+            background: #edf0f4;
+            color: #64748b;
+        }
+
+        .point-card-copy {
+            min-width: 0;
+        }
+
+        .point-card-copy strong,
+        .point-card-copy small {
+            display: block;
+        }
+
+        .point-card-copy strong {
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .point-card-copy small {
+            margin-top: 4px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .gu-sidebar-meta {
+            display: grid;
+            gap: 4px;
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 0.74rem;
+            line-height: 1.35;
+        }
+
+        .gu-sidebar-meta b {
+            font-weight: 800;
+        }
+
+        .gu-sidebar-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .gu-sidebar-meta .material-symbols-outlined {
+            color: var(--gu-secondary);
+            font-size: 15px;
+        }
+
         .leaflet-popup-content-wrapper {
             border-radius: 12px;
             padding: 4px;
             font-family: 'Inter', sans-serif;
+        }
+
+        .greenup-map-popup {
+            min-width: 170px;
+            max-width: 205px;
+        }
+
+        .greenup-map-popup h6 {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            font-weight: 900;
+        }
+
+        .point-info-list {
+            display: grid;
+            gap: 6px;
+        }
+
+        .point-info-row {
+            display: grid;
+            grid-template-columns: 17px minmax(0, 1fr);
+            gap: 7px;
+            align-items: center;
+        }
+
+        .point-info-row .material-symbols-outlined {
+            color: var(--gu-secondary);
+            font-size: 16px;
+            line-height: 1.15;
+        }
+
+        .point-info-row p {
+            margin: 0;
+        }
+
+        .point-info-row small {
+            color: #5e6873;
+            font-size: 0.76rem;
+            line-height: 1.25;
+        }
+
+        .greenup-map-popup button {
+            width: 100%;
+            min-height: 34px;
+            margin-top: 8px;
+            border: 0;
+            border-radius: 999px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+        .leaflet-routing-container {
+            display: none;
+        }
+
+        .map-floating-controls {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            z-index: 1000;
+            display: grid;
+            gap: 6px;
+        }
+
+        .map-control-button {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(15, 23, 42, 0.1);
+            border-radius: 12px;
+            background: #ffffff;
+            color: var(--gu-primary);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+            cursor: pointer;
+        }
+
+        .map-control-button:hover,
+        .map-control-button:focus-visible {
+            color: var(--gu-secondary);
+            background: #f0fbf2;
+        }
+
+        .map-control-button .material-symbols-outlined {
+            font-size: 22px;
         }
     </style>
 </head>
@@ -235,18 +393,16 @@
         <div id="eco-map"></div>
 
         <!-- Controles Flotantes del Mapa -->
-        <div class="position-absolute bottom-0 end-0 p-4 d-flex flex-column gap-3"
-            style="z-index: 1000; margin-bottom: 20px;">
-            <button class="btn btn-light shadow-sm rounded-circle p-3 d-flex align-items-center justify-content-center"
-                onclick="centerMap()">
-                <span class="material-symbols-outlined text-gu-primary">my_location</span>
+        <div class="map-floating-controls">
+            <button class="map-control-button" type="button" onclick="centerMap()" aria-label="Centrar mapa">
+                <span class="material-symbols-outlined">my_location</span>
             </button>
-            <div class="btn-group-vertical shadow-sm rounded-4 overflow-hidden">
-                <button class="btn btn-light border-bottom p-2" onclick="map.zoomIn()"><span
-                        class="material-symbols-outlined">add</span></button>
-                <button class="btn btn-light p-2" onclick="map.zoomOut()"><span
-                        class="material-symbols-outlined">remove</span></button>
-            </div>
+            <button class="map-control-button" type="button" onclick="greenupMapZoomIn()" aria-label="Acercar mapa">
+                <span class="material-symbols-outlined">add</span>
+            </button>
+            <button class="map-control-button" type="button" onclick="greenupMapZoomOut()" aria-label="Alejar mapa">
+                <span class="material-symbols-outlined">remove</span>
+            </button>
         </div>
     </main>
 

@@ -1711,6 +1711,10 @@ body.admin-theme-dark .admin-toast {
   font-family: Manrope, Arial, Helvetica, sans-serif;
 }
 
+.leaflet-routing-container {
+  display: none;
+}
+
 .route-button {
   width: 100%;
   min-height: 34px;
@@ -1802,6 +1806,7 @@ let adminMarkers = new Map();
 let adminUserMarker = null;
 let adminUserLocation = null;
 let adminRouteControl = null;
+let adminRouteLayers = [];
 let adminWatchId = null;
 
 const adminPrimaryNav = [
@@ -2758,6 +2763,7 @@ function iniciarMapaLeaflet() {
     adminMarkers.clear();
   }
   adminRouteControl = null;
+  adminRouteLayers = [];
   adminMap = L.map("eco-map", { zoomControl: false, attributionControl: false }).setView([10.4631, -73.2532], 13);
   window.adminMap = adminMap;
   window.map = adminMap;
@@ -2767,7 +2773,19 @@ function iniciarMapaLeaflet() {
     attribution: "OpenStreetMap contributors",
   }).addTo(adminMap);
 }
-
+function crearIconoPuntoAdmin(color, activo = true) {
+  return L.divIcon({
+    className: "greenup-recycling-marker",
+    html: `
+      <div style="width:34px;height:34px;display:grid;place-items:center;border:2px solid ${color};border-radius:999px;background:${activo ? "#f4fff4" : "#f1f3f5"};color:${color};box-shadow:0 8px 18px rgba(15,23,42,.18);">
+        <span class="material-symbols-outlined" style="font-size:20px;line-height:1;">${activo ? "recycling" : "location_off"}</span>
+      </div>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
+    popupAnchor: [0, -17],
+  });
+}
 async function actualizarPuntosMapa(manual = false) {
   const puntos = await apiAdmin("/ubicaciones");
   await pintarPuntosMapa(puntos, false);
@@ -2793,26 +2811,26 @@ async function pintarPuntosMapa(puntos, ajustarVista = false) {
     const color = Number(punto.id_estado) === 1 ? "#296c1f" : "#68717b";
     const popupHtml = `
       <!-- POPUP DEL PUNTO: muestra informacion real de Supabase. -->
-      <div style="min-width:180px">
-        <strong style="color:${color}">${limpiar(punto.nombre)}</strong><br>
-        <span>${limpiar(punto.direccion)}</span><br>
-        <span>${limpiar(punto.horario || "Horario por confirmar")}</span><br>
+      <div style="min-width:185px;max-width:220px">
+        <strong style="color:${color};display:block;margin-bottom:8px">${limpiar(punto.nombre)}</strong>
+        <span><b>Direccion:</b> ${limpiar(punto.direccion)}</span><br>
+        <span><b>Horario:</b> ${limpiar(punto.horario || "Horario por confirmar")}</span><br>
+        <span><b>Materiales:</b> ${limpiar(resumirMaterialesAdmin(punto.materiales_aceptados))}</span><br>
+        <span><b>Contacto:</b> ${limpiar(punto.telefono || "Telefono por confirmar")}</span>
         ${estadoHtml(punto.id_estado)}
         <button class="route-button" onclick="trazarRutaAdmin(${coords.lat}, ${coords.lng})">Como llegar</button>
       </div>
     `;
 
     let marker = adminMarkers.get(punto.id_punto);
+    const iconoPunto = crearIconoPuntoAdmin(color, Number(punto.id_estado) === 1);
+
     if (marker) {
-      marker.setLatLng([coords.lat, coords.lng]).setPopupContent(popupHtml);
+      marker.setLatLng([coords.lat, coords.lng]).setIcon(iconoPunto).setPopupContent(popupHtml);
     } else {
-      marker = L.circleMarker([coords.lat, coords.lng], {
-        radius: 10,
-        fillColor: color,
-        color: "#fff",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.92,
+      marker = L.marker([coords.lat, coords.lng], {
+        icon: iconoPunto,
+        title: limpiar(punto.nombre),
       }).addTo(adminMap).bindPopup(popupHtml);
       adminMarkers.set(punto.id_punto, marker);
     }
@@ -2834,7 +2852,7 @@ function renderPuntoSidebar(punto, coords, marker) {
   item.type = "button";
   item.className = "gu-sidebar-item";
   item.innerHTML = `
-    <span class="point-icon"><span class="material-symbols-outlined">location_on</span></span>
+    <span class="point-icon"><span class="material-symbols-outlined">recycling</span></span>
     <span class="point-info">
       <strong>${limpiar(punto.nombre)}</strong>
       <span>${limpiar(punto.direccion)}</span>
@@ -2923,7 +2941,7 @@ function iniciarGeolocalizacionAdmin() {
           iconSize: [18, 18],
           iconAnchor: [9, 9],
         });
-        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu ubicacion actual");
+        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
       } else {
         adminUserMarker.setLatLng(adminUserLocation);
       }
@@ -2931,6 +2949,35 @@ function iniciarGeolocalizacionAdmin() {
     () => mostrarToast("Ubicacion", "No fue posible obtener tu ubicacion actual."),
     { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 },
   );
+}
+
+function solicitarUbicacionAdminActual() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation || !adminMap) {
+      resolve(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (posicion) => {
+        adminUserLocation = [posicion.coords.latitude, posicion.coords.longitude];
+        if (!adminUserMarker) {
+          const userIcon = L.divIcon({
+            className: "custom-user-icon",
+            html: `<div style="background-color:#007bff;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,.45);"></div>`,
+            iconSize: [18, 18],
+            iconAnchor: [9, 9],
+          });
+          adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
+        } else {
+          adminUserMarker.setLatLng(adminUserLocation);
+        }
+        resolve(true);
+      },
+      () => resolve(false),
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 },
+    );
+  });
 }
 
 function centerMap() {
@@ -2947,17 +2994,44 @@ function centrarUbicacionAdmin() {
   centerMap();
 }
 
-function trazarRutaAdmin(destinoLat, destinoLng) {
-  /* BOTON COMO LLEGAR: usa Leaflet Routing Machine igual que ciudadano. */
+function limpiarRutasAdmin() {
+  adminRouteLayers.forEach((layer) => adminMap?.removeLayer(layer));
+  adminRouteLayers = [];
+}
+
+function pintarRutasAdmin(evento) {
+  limpiarRutasAdmin();
+  const colores = ["#296c1f", "#065591", "#d18b00", "#7c3aed"];
+  const rutas = (evento.routes || []).slice(0, 4);
+
+  rutas.forEach((ruta, indice) => {
+    const coordenadas = ruta.coordinates || [];
+    if (!coordenadas.length) return;
+    const capa = L.polyline(coordenadas, {
+      color: colores[indice % colores.length],
+      weight: indice === 0 ? 7 : 5,
+      opacity: indice === 0 ? 0.9 : 0.7,
+      dashArray: indice === 0 ? null : "10 8",
+    }).addTo(adminMap);
+    adminRouteLayers.push(capa);
+  });
+}
+
+async function trazarRutaAdmin(destinoLat, destinoLng) {
+  /* BOTON COMO LLEGAR: usa la ubicacion actual hacia el punto seleccionado. */
   if (!adminUserLocation) {
-    mostrarToast("Ruta", "Primero permite la ubicacion para calcular la ruta.");
-    return;
+    const ubicado = await solicitarUbicacionAdminActual();
+    if (!ubicado) {
+      mostrarToast("Ruta", "Primero permite la ubicacion para calcular la ruta.");
+      return;
+    }
   }
   if (!window.L || !L.Routing) {
     mostrarToast("Ruta", "El motor de rutas aun se esta cargando.");
     return;
   }
   if (adminRouteControl) adminMap.removeControl(adminRouteControl);
+  limpiarRutasAdmin();
 
   adminRouteControl = L.Routing.control({
     waypoints: [L.latLng(adminUserLocation[0], adminUserLocation[1]), L.latLng(destinoLat, destinoLng)],
@@ -2965,8 +3039,11 @@ function trazarRutaAdmin(destinoLat, destinoLng) {
     addWaypoints: false,
     routeWhileDragging: false,
     fitSelectedRoutes: true,
-    lineOptions: { styles: [{ color: "#296c1f", opacity: 0.85, weight: 6 }] },
+    showAlternatives: true,
+    lineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
+    altLineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
   }).addTo(adminMap);
+  adminRouteControl.on("routesfound", pintarRutasAdmin);
 }
 
 function cargarRecursoCss(href) {
@@ -3524,6 +3601,14 @@ function renderEmpty(icon, title, text) {
       </div>
     </div>
   `;
+}
+
+function resumirMaterialesAdmin(materiales, limite = 3) {
+  const texto = materiales || "Materiales por confirmar";
+  if (texto === "Materiales por confirmar") return texto;
+  const lista = String(texto).split(",").map((item) => item.trim()).filter(Boolean);
+  if (lista.length <= limite) return lista.join(", ");
+  return `${lista.slice(0, limite).join(", ")} y otros`;
 }
 
 function estadoHtml(idEstado) {

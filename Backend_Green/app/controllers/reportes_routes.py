@@ -1,3 +1,6 @@
+## Archivo: reportes_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de reportes
 
 from flask import Blueprint, jsonify

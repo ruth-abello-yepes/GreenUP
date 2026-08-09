@@ -1,3 +1,6 @@
+## Archivo: contenido_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de contenido educativo
 
 from app.models.contenido_model import (

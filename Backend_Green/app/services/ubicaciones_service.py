@@ -1,3 +1,6 @@
+## Archivo: ubicaciones_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de puntos de reciclaje.
 # Aqui se validan los datos antes de guardarlos en Supabase.
 

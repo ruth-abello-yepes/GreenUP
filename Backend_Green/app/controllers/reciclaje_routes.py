@@ -1,3 +1,6 @@
+## Archivo: reciclaje_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de registrar reciclaje
 
 from flask import Blueprint, request, jsonify

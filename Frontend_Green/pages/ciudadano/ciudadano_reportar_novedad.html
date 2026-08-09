@@ -459,25 +459,39 @@
 
                 // Recolectar datos
                 const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
+                const rawData = Object.fromEntries(formData.entries());
+                const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+                const puntoTexto = (rawData.punto_reciclaje || '').trim();
+                const idPunto = Number(puntoTexto);
+                const data = {
+                    id_usuario: usuario.id_usuario,
+                    id_punto: Number.isFinite(idPunto) && idPunto > 0 ? idPunto : null,
+                    titulo: rawData.tipo_novedad,
+                    motivo: rawData.tipo_novedad,
+                    descripcion: rawData.observaciones || rawData.tipo_novedad,
+                    comentario: rawData.observaciones || '',
+                    ubicacion: puntoTexto
+                };
 
                 try {
-                    // 2. Conexión con Flask (Endpoint ficticio para la demo)
-                    const response = await fetch('/novedades', {
+                    // 2. Conexión con Flask
+                    const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : 'http://127.0.0.1:5000') + '/novedades', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer placeholder-JWT-token'
+                            ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}),
+                            ...(usuario.id_usuario ? { 'id_usuario': usuario.id_usuario, 'id_rol': usuario.id_rol } : {})
                         },
                         body: JSON.stringify(data)
                     });
 
-                    // 3. Simulación de Respuesta Exitosa
-                    if (response.ok || true) {
+                    // 3. Respuesta real del backend
+                    if (response.ok) {
                         showFeedback('¡Reporte enviado con éxito! Un administrador revisará la novedad a la brevedad.', 'success');
                         form.reset();
                     } else {
-                        throw new Error('Server error');
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.mensaje || 'Server error');
                     }
                 } catch (error) {
                     showFeedback('Hubo un problema al enviar el reporte. Por favor, intenta de nuevo.', 'error');

@@ -1,3 +1,6 @@
+## Archivo: __init__.py
+## Inicializa la aplicacion Flask, registra blueprints y configura extensiones.
+
 import os
 from dotenv import load_dotenv
 
@@ -48,6 +51,8 @@ def crear_app():
     from app.controllers.materiales_routes import materiales_bp
     from app.controllers.tipos_residuo_routes import tipos_residuo_bp
     from app.controllers.recicladoras_routes import recicladoras_bp
+    from app.controllers.notificaciones_routes import notificaciones_bp
+    from app.controllers.noticias_routes import noticias_bp
 
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(tipo_documento_bp)
@@ -63,6 +68,8 @@ def crear_app():
     app.register_blueprint(materiales_bp)
     app.register_blueprint(tipos_residuo_bp)
     app.register_blueprint(recicladoras_bp)
+    app.register_blueprint(notificaciones_bp)
+    app.register_blueprint(noticias_bp)
     
     @app.route("/")
     def inicio():

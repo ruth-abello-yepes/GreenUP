@@ -1,3 +1,6 @@
+## Archivo: estadisticas_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 from flask import Blueprint, jsonify
 from app.services.estadisticas_service import EstadisticasService
 

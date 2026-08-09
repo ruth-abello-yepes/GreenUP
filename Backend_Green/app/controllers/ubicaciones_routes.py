@@ -1,3 +1,6 @@
+## Archivo: ubicaciones_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de puntos de reciclaje
 
 from flask import Blueprint, request, jsonify

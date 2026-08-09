@@ -1,3 +1,6 @@
+## Archivo: auth_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 """
 Archivo: auth_routes.py
 
@@ -17,15 +20,17 @@ POST /api/recuperar-contrasena/restablecer
     Verificacion del codigo y cambio de contraseña.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from app.services.auth_service import (
+    cambiar_contrasena_desde_perfil,
     servicio_login, 
     servicio_login_admin,
     solicitar_codigo_recuperacion,
     verificar_codigo_recuperacion,
     restablecer_contrasena
 )
+from app.middlewares.auth_middleware import login_requerido
 
 
 # No usamos url_prefix="/api/auth" para que las rutas sean mas cortas.
@@ -223,4 +228,12 @@ def ruta_verificar_codigo():
     """
     datos = request.get_json()
     respuesta, estado = verificar_codigo_recuperacion(datos)
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/perfil/cambiar-contrasena", methods=["PUT"])
+@login_requerido
+def ruta_cambiar_contrasena_desde_perfil():
+    datos = request.get_json() or {}
+    respuesta, estado = cambiar_contrasena_desde_perfil(g.id_usuario, datos)
     return jsonify(respuesta), estado

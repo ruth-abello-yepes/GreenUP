@@ -1,7 +1,24 @@
+## Archivo: ubicaciones_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de puntos de reciclaje.
 # Este archivo habla directamente con Supabase/PostgreSQL.
 
 from app.common.database import obtener_conexion
+
+
+def _tabla_tiene_columna(cursor, tabla, columna):
+    cursor.execute(
+        """
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = %s
+          AND column_name = %s
+        """,
+        (tabla, columna),
+    )
+    return cursor.fetchone() is not None
 
 
 def crear_ubicacion(
@@ -53,16 +70,42 @@ def crear_ubicacion(
 
 def listar_ubicaciones():
     """
-    Lista todos los puntos ecologicos para el mapa del administrador.
+    Lista todos los puntos ecologicos con los datos publicos de su ficha.
     """
 
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("""
-        SELECT *
+    tiene_id_punto = _tabla_tiene_columna(cursor, "recicladoras", "id_punto")
+    recicladora_join = (
+        "LEFT JOIN recicladoras ON recicladoras.id_punto = puntos_reciclaje.id_punto"
+        if tiene_id_punto else
+        """
+        LEFT JOIN recicladoras
+            ON LOWER(TRIM(puntos_reciclaje.nombre)) = LOWER(TRIM(recicladoras.nombre_empresa))
+            OR LOWER(TRIM(puntos_reciclaje.direccion)) = LOWER(TRIM(recicladoras.direccion_empresa))
+        """
+    )
+
+    cursor.execute(f"""
+        SELECT
+            puntos_reciclaje.*,
+            COALESCE(usuarios.correo, '') AS correo,
+            COALESCE(
+                string_agg(DISTINCT tipo_material.nombre, ', ')
+                    FILTER (WHERE tipo_material.nombre IS NOT NULL),
+                ''
+            ) AS materiales_aceptados
         FROM puntos_reciclaje
-        ORDER BY id_punto DESC
+        LEFT JOIN punto_material
+            ON punto_material.id_punto = puntos_reciclaje.id_punto
+        LEFT JOIN tipo_material
+            ON tipo_material.id_tipo_material = punto_material.id_tipo_material
+        {recicladora_join}
+        LEFT JOIN usuarios
+            ON usuarios.id_usuario = recicladoras.id_usuario
+        GROUP BY puntos_reciclaje.id_punto, usuarios.correo
+        ORDER BY puntos_reciclaje.id_punto DESC
     """)
 
     data = cursor.fetchall()

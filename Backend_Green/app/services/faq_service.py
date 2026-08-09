@@ -1,3 +1,6 @@
+## Archivo: faq_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de preguntas frecuentes
 
 from app.models.faq_model import (

@@ -1,20 +1,466 @@
 <!doctype html>
 <html lang="es">
 <head>
+  <!-- Recursos base de la pantalla: metadatos, Bootstrap, fuentes, iconos y CSS del rol. -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <title>Panel Recicladora - GreenUp</title>
+  <title>Panel de control - GreenUp</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../css/dueno_recicladora.css" />
 </head>
-<body>
+<body class="recicladora-app">
+  <!-- Menu lateral de navegacion del dueno de recicladora. -->
+
+    <aside class="app-sidebar" aria-label="Navegacion principal">
+      
+    <a class="brand-lockup" href="recicladora_panel.html" aria-label="Ir al panel GreenUp">
+      <span class="brand-logo"><span class="material-symbols-outlined filled">recycling</span></span>
+      <span>
+        <span class="brand-name">Green<strong>Up</strong></span>
+        <span class="brand-kicker">Admin recicladora</span>
+      </span>
+    </a>
+  
+      <nav class="sidebar-nav">
+      <a class="sidebar-link active" href="recicladora_panel.html">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Panel de control</span>
+      </a>
+    
+      <a class="sidebar-link" href="recicladora_materiales.html">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span>Gestionar materiales</span>
+      </a>
+    
+      <a class="sidebar-link" href="recicladora_residuos.html">
+        <span class="material-symbols-outlined">delete_sweep</span>
+        <span>Gestionar residuos</span>
+      </a>
+    
+      <a class="sidebar-link" href="recicladora_usuarios.html">
+        <span class="material-symbols-outlined">groups</span>
+        <span>Usuarios recicladores</span>
+      </a>
+    
+      <a class="sidebar-link" href="mi_punto_ecologico.html">
+        <span class="material-symbols-outlined">location_on</span>
+        <span>Mi punto ecologico</span>
+      </a>
+    </nav>
+      <div class="sidebar-actions">
+        <button class="logout-link" type="button" onclick="cerrarSesion()">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Cerrar sesion</span>
+        </button>
+      </div>
+    </aside>
+  <!-- Barra superior del rol: marca movil, busqueda, modo oscuro, notificaciones y perfil. -->
+  
+
+    <header class="app-topbar">
+      <div class="mobile-brand">
+    <a class="brand-lockup" href="recicladora_panel.html" aria-label="Ir al panel GreenUp">
+      <span class="brand-logo"><span class="material-symbols-outlined filled">recycling</span></span>
+      <span>
+        <span class="brand-name">Green<strong>Up</strong></span>
+        <span class="brand-kicker">Admin recicladora</span>
+      </span>
+    </a>
+  </div>
+      <form class="topbar-search" role="search">
+        <div class="search-shell">
+          <span class="material-symbols-outlined">search</span>
+          <input class="form-control" type="search" placeholder="Buscar registros..." aria-label="Buscar registros">
+        </div>
+      </form>
+      <div class="topbar-actions">
+              <button class="icon-button theme-toggle" type="button" aria-label="Activar modo oscuro" title="Modo oscuro">
+        <span class="material-symbols-outlined">dark_mode</span>
+      </button>
+      <button class="icon-button" type="button" aria-label="Notificaciones" title="Notificaciones" onclick="mostrarNotificacionesRecicladora()">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        
+    <section class="notifications-menu" id="notificationsMenu" aria-hidden="true" aria-label="Panel de notificaciones">
+      <div class="notifications-head">
+        <div>
+          <h2>Notificaciones</h2>
+          <p>Actividad reciente de la recicladora</p>
+        </div>
+        <span class="notifications-badge">0</span>
+      </div>
+      
+    <div class="inline-empty-state">
+      <span class="material-symbols-outlined">inbox</span>
+      <strong>Sin notificaciones</strong>
+      <small>Cuando haya alertas, solicitudes o cambios importantes apareceran aqui.</small>
+    </div>
+  
+    </section>
+  
+        <div class="user-menu">
+          <button class="user-avatar" type="button" aria-label="Perfil y configuracion" title="Perfil">
+            <span class="material-symbols-outlined filled">person</span>
+            <span class="user-avatar-label">Perfil</span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            
+      <a href="recicladora_registros_reciclaje.html" class="">
+        <span class="material-symbols-outlined">fact_check</span>
+        <span>Registros</span>
+      </a>
+    
+      <a href="recicladora_reportes.html" class="">
+        <span class="material-symbols-outlined">analytics</span>
+        <span>Reportes</span>
+      </a>
+    
+      <a href="recicladora_estadisticas.html" class="">
+        <span class="material-symbols-outlined">monitoring</span>
+        <span>Estadisticas</span>
+      </a>
+    
+      <a href="recicladora_contenido_educativo.html" class="">
+        <span class="material-symbols-outlined">menu_book</span>
+        <span>Contenido</span>
+      </a>
+    
+      <a href="recicladora_novedades.html" class="">
+        <span class="material-symbols-outlined">campaign</span>
+        <span>Novedades</span>
+      </a>
+    
+      <a href="recicladora_faq.html" class="">
+        <span class="material-symbols-outlined">quiz</span>
+        <span>FAQ</span>
+      </a>
+    
+      <a href="recicladora_perfil.html" class="">
+        <span class="material-symbols-outlined">person</span>
+        <span>Perfil</span>
+      </a>
+    
+      <a href="recicladora_configuracion.html" class="">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuracion</span>
+      </a>
+    
+            <button type="button" onclick="cerrarSesion()">
+              <span class="material-symbols-outlined">logout</span>
+              <span>Cerrar sesion</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  <!-- Contenido principal de la pantalla actual. -->
+  
+  <main class="main-content">
+
+    <section class="page-hero">
+      <div>
+        <h1 class="page-title">Panel de <strong>control</strong></h1>
+        <p class="page-subtitle">Supervisa materiales, residuos, usuarios y reportes desde un solo tablero de la recicladora.</p>
+      </div>
+      <div class="hero-stats">
+      <article class="summary-card muted">
+        <span class="summary-label">Hoy</span>
+        <span class="summary-value" data-summary-label="Hoy">0 kg</span>
+      </article>
+    
+      <article class="summary-card blue">
+        <span class="summary-label">Actividad</span>
+        <span class="summary-value" data-summary-label="Actividad">0 cargas</span>
+      </article>
+    </div>
+    </section>
+  
+<section class="filter-bar" aria-label="Filtros">
+      <div class="search-shell search-field">
+        <span class="material-symbols-outlined">search</span>
+        <input class="form-control" type="search" placeholder="Buscar por material, codigo o ubicacion..." aria-label="Buscar">
+      </div>
+    
+      <select class="form-select" aria-label="Tipo de registro">
+        <option selected>Tipo de registro</option><option >Materiales</option><option >Residuos</option><option >Mi punto</option>
+      </select>
+    
+      <select class="form-select" aria-label="Estado">
+        <option selected>Estado</option><option >Activo</option><option >Pendiente</option><option >Finalizado</option>
+      </select>
+    <button class="filter-action" type="button" aria-label="Aplicar filtros"><span class="material-symbols-outlined">filter_list</span></button></section>
+
+    <section class="content-grid">
+      
+    <article class="admin-card metric-card span-3">
+      <div class="metric-top">
+        <span class="metric-label">Material recuperado</span>
+        <span class="metric-icon "><span class="material-symbols-outlined">recycling</span></span>
+      </div>
+      <div>
+        <p class="metric-value" data-metric-label="Material recuperado">0 kg</p>
+        <span class="metric-change" data-metric-change="Material recuperado">Sin registros</span>
+      </div>
+    </article>
+  
+    <article class="admin-card metric-card span-3">
+      <div class="metric-top">
+        <span class="metric-label">Cargas activas</span>
+        <span class="metric-icon blue"><span class="material-symbols-outlined">local_shipping</span></span>
+      </div>
+      <div>
+        <p class="metric-value" data-metric-label="Cargas activas">0</p>
+        <span class="metric-change" data-metric-change="Cargas activas">Sin actividad</span>
+      </div>
+    </article>
+  
+    <article class="admin-card metric-card span-3">
+      <div class="metric-top">
+        <span class="metric-label">Recicladores</span>
+        <span class="metric-icon "><span class="material-symbols-outlined">groups</span></span>
+      </div>
+      <div>
+        <p class="metric-value" data-metric-label="Recicladores">0</p>
+        <span class="metric-change" data-metric-change="Recicladores">Sin actividad</span>
+      </div>
+    </article>
+  
+    <article class="admin-card metric-card span-3">
+      <div class="metric-top">
+        <span class="metric-label">Alertas</span>
+        <span class="metric-icon blue"><span class="material-symbols-outlined">notifications_active</span></span>
+      </div>
+      <div>
+        <p class="metric-value" data-metric-label="Alertas">0</p>
+        <span class="metric-change" data-metric-change="Alertas">Sin alertas</span>
+      </div>
+    </article>
+  
+      <article class="admin-card span-8">
+        <div class="card-title-row">
+          <h2>Actividad semanal</h2>
+          <button class="btn-icon" type="button" aria-label="Mas opciones"><span class="material-symbols-outlined">more_horiz</span></button>
+        </div>
+        
+    <div class="chart-bars" aria-label="Grafico semanal">
+      <div class="chart-bar"><span data-chart-value="Lun" style="height:0%"></span><span>Lun</span></div><div class="chart-bar"><span data-chart-value="Mar" style="height:0%"></span><span>Mar</span></div><div class="chart-bar"><span data-chart-value="Mie" style="height:0%"></span><span>Mie</span></div><div class="chart-bar"><span data-chart-value="Jue" style="height:0%"></span><span>Jue</span></div><div class="chart-bar"><span data-chart-value="Vie" style="height:0%"></span><span>Vie</span></div><div class="chart-bar"><span data-chart-value="Sab" style="height:0%"></span><span>Sab</span></div><div class="chart-bar"><span data-chart-value="Dom" style="height:0%"></span><span>Dom</span></div>
+    </div>
+  
+      </article>
+      <article class="admin-card span-4">
+        <div class="card-title-row"><h2>Alertas recientes</h2><a class="btn-soft" href="recicladora_novedades.html">Ver</a></div>
+        
+    <div class="stack-list" id="alertas-recientes">
+      
+    <div class="inline-empty-state">
+      <span class="material-symbols-outlined">inbox</span>
+      <strong>Sin alertas</strong>
+      <small>Cuando exista una alerta operativa aparecera aqui.</small>
+    </div>
+  
+    </div>
+  
+      </article>
+      
+    <article class="table-card span-12">
+      <div class="card-title-row" style="padding: 22px 24px 0;">
+        <h2>Operacion reciente</h2>
+        <button class="btn-soft" type="button" disabled title="No hay datos para exportar"><span class="material-symbols-outlined">download</span>Exportar</button>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead><tr><th>ID</th><th>Operacion</th><th>Responsable</th><th>Zona</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+    <tr class="empty-row">
+      <td colspan="6" class="empty-table-cell">
+        <span class="material-symbols-outlined">inbox</span>
+        <strong>Sin registros</strong>
+        <small>Cuando haya informacion en la base de datos aparecera aqui automaticamente.</small>
+      </td>
+    </tr>
+  </tbody>
+        </table>
+      </div>
+    </article>
+  
+      <article class="admin-card span-12">
+        <div class="card-title-row"><h2>Todos los modulos</h2></div>
+        <div class="module-grid">
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">inventory_2</span></span>
+            <h3>Materiales</h3>
+            <p>Administra el catalogo de materiales aceptados, categorias, puntos de referencia y disponibilidad operativa.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_materiales.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">delete_sweep</span></span>
+            <h3>Residuos</h3>
+            <p>Controla el flujo de residuos, estados de procesamiento y asignacion de cargas para la economia circular.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_residuos.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">groups</span></span>
+            <h3>Usuarios</h3>
+            <p>Gestiona colaboradores, conductores, clasificadores y ciudadanos asociados a la operacion de la recicladora.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_usuarios.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">location_on</span></span>
+            <h3>Mi punto</h3>
+            <p>Consulta la ubicacion registrada de tu recicladora. No se muestran recicladoras ni puntos de otros propietarios.</p>
+          </div>
+          <a class="btn-soft" href="mi_punto_ecologico.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">fact_check</span></span>
+            <h3>Registros</h3>
+            <p>Consulta entradas de material, entregas registradas y trazabilidad de cada carga recibida.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_registros_reciclaje.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">analytics</span></span>
+            <h3>Reportes</h3>
+            <p>Genera informes operativos y ambientales listos para administracion, aliados o entidades de control.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_reportes.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">monitoring</span></span>
+            <h3>Estadisticas</h3>
+            <p>Analiza recuperacion de materiales, eficiencia de rutas y composicion de residuos para tomar mejores decisiones.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_estadisticas.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">menu_book</span></span>
+            <h3>Contenido</h3>
+            <p>Publica recursos, guias y campanas para mejorar la separacion de residuos en la comunidad.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_contenido_educativo.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">campaign</span></span>
+            <h3>Novedades</h3>
+            <p>Gestiona eventos, alertas operativas y comunicaciones visibles para usuarios de la recicladora.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_novedades.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">quiz</span></span>
+            <h3>FAQ</h3>
+            <p>Administra respuestas rapidas sobre horarios, materiales recibidos, rutas y puntos de atencion.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_faq.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">person</span></span>
+            <h3>Perfil</h3>
+            <p>Consulta y actualiza datos principales de la empresa, responsable, contacto y documentos.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_perfil.html">Abrir</a>
+        </article>
+      
+        <article class="module-card">
+          <div>
+            <span class="type-icon"><span class="material-symbols-outlined">settings</span></span>
+            <h3>Configuracion</h3>
+            <p>Ajusta seguridad, notificaciones, preferencias de operacion y datos administrativos.</p>
+          </div>
+          <a class="btn-soft" href="recicladora_configuracion.html">Abrir</a>
+        </article>
+      </div>
+      </article>
+    </section>
+  
+  </main>
+  <!-- Navegacion inferior movil para accesos rapidos. -->
+
+    <nav class="mobile-bottom-nav" aria-label="Botones principales">
+      
+        <a class="bottom-link active" href="recicladora_panel.html">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Panel</span>
+        </a>
+      
+        <a class="bottom-link" href="recicladora_materiales.html">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Materiales</span>
+        </a>
+      
+        <a class="bottom-link" href="recicladora_residuos.html">
+          <span class="material-symbols-outlined">delete_sweep</span>
+          <span>Residuos</span>
+        </a>
+      
+        <a class="bottom-link" href="recicladora_usuarios.html">
+          <span class="material-symbols-outlined">groups</span>
+          <span>Usuarios</span>
+        </a>
+      
+        <a class="bottom-link" href="mi_punto_ecologico.html">
+          <span class="material-symbols-outlined">location_on</span>
+          <span>Mi punto</span>
+        </a>
+      
+    </nav>
+  <!-- Modales reutilizables para formularios y acciones de esta pantalla. -->
+  
+
+    <div class="gu-modal-backdrop" id="modalFaq" aria-hidden="true">
+      <section class="gu-modal" role="dialog" aria-modal="true" aria-labelledby="faqTitulo">
+        <div class="card-title-row">
+          <h2 id="faqTitulo">Nueva pregunta</h2>
+          <button class="btn-icon" type="button" onclick="cerrarModal('modalFaq')" aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form class="form-grid" id="formFaq">
+          <label class="field-full"><span class="form-label">Pregunta</span><input class="form-control" name="pregunta" required></label>
+          <label class="field-full"><span class="form-label">Respuesta</span><textarea class="form-textarea" name="respuesta" required></textarea></label>
+          <label><span class="form-label">Categoria</span><input class="form-control" name="categoria" placeholder="Reciclaje"></label>
+          <label><span class="form-label">Orden</span><input class="form-control" name="orden" type="number" min="0" value="0"></label>
+          <button class="btn-greenup field-full" type="submit"><span class="material-symbols-outlined">save</span>Guardar pregunta</button>
+        </form>
+      </section>
+    </div>
+  <!-- Scripts externos y scripts propios que activan la pantalla. -->
+  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../js/proteger_rol.js"></script>
   <script src="../../js/logout.js"></script>
   <script src="../../js/recicladora_layout.js"></script>
 </body>
 </html>
+
+
+

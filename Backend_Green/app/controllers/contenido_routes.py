@@ -1,3 +1,6 @@
+## Archivo: contenido_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de contenido educativo
 
 from flask import Blueprint, request, jsonify

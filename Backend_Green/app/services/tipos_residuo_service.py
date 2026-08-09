@@ -1,3 +1,6 @@
+## Archivo: tipos_residuo_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de tipos de residuo
 # Aquí se validan los datos antes de usar el modelo.
 

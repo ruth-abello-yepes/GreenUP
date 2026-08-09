@@ -1,3 +1,6 @@
+## Archivo: tipo_documento_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 from app.models.tipo_documento_model import registrar_tipo_documento, listar_tipos_documento, buscar_tipo_documento_por_id, actualizar_tipo_documento, inhabilitar_tipo_documento
 
 

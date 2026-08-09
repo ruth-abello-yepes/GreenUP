@@ -1,3 +1,6 @@
+## Archivo: usuarios_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Archivo: usuarios_routes.py
 # Este archivo contiene las rutas relacionadas con usuarios.
 #

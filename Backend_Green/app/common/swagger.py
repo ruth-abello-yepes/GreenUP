@@ -1,3 +1,6 @@
+## Archivo: swagger.py
+## Modulo comun del backend: configuracion, conexion, seguridad o Swagger reutilizable.
+
 from flasgger import Swagger
 
 

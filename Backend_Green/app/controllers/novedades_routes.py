@@ -1,3 +1,6 @@
+## Archivo: novedades_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de novedades
 
 from flask import Blueprint, request, jsonify

@@ -1,3 +1,6 @@
+## Archivo: estadisticas_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 from app.models.estadisticas_model import EstadisticasModel
 
 

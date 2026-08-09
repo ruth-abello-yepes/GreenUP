@@ -1,3 +1,6 @@
+## Archivo: faq_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Rutas de preguntas frecuentes
 
 from flask import Blueprint, request, jsonify

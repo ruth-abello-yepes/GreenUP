@@ -1,3 +1,6 @@
+## Archivo: reciclaje_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 from app.common.database import obtener_conexion
 
 

@@ -1,3 +1,6 @@
+## Archivo: tipos_residuo_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de tipos de residuo
 # Aquí van las consultas SQL directas, sin ORM.
 

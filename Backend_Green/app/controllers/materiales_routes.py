@@ -1,3 +1,6 @@
+## Archivo: materiales_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Archivo: materiales_routes.py
 # Rutas del modulo de materiales para el Administrador del Sistema.
 #

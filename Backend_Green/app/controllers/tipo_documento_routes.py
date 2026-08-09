@@ -1,3 +1,6 @@
+## Archivo: tipo_documento_routes.py
+## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
+
 # Archivo: tipo_documento_routes.py
 # Este archivo contiene las rutas del modulo tipo de documento.
 #

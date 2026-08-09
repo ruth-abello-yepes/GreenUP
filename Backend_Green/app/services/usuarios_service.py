@@ -1,3 +1,6 @@
+## Archivo: usuarios_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Archivo: usuarios_service.py
 # Este archivo contiene la logica de usuarios.
 # Aqui validamos datos antes de guardar, consultar o actualizar usuarios.

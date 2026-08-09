@@ -1,3 +1,6 @@
+## Archivo: config.py
+## Modulo comun del backend: configuracion, conexion, seguridad o Swagger reutilizable.
+
 import os
 from dotenv import load_dotenv
 

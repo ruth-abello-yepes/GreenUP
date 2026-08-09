@@ -1,3 +1,6 @@
+## Archivo: faq_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Modelo de preguntas frecuentes
 
 from app.common.database import obtener_conexion

@@ -1,3 +1,6 @@
+## Archivo: usuarios_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 # Archivo: usuarios_model.py
 # Este archivo se encarga de hablar directamente con la tabla usuarios.
 # Aqui van los INSERT, SELECT, UPDATE de usuarios.

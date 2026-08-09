@@ -1,3 +1,6 @@
+## Archivo: reciclaje_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de registrar reciclaje
 
 from app.models.reciclaje_model import (

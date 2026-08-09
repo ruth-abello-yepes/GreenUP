@@ -1,3 +1,6 @@
+## Archivo: security.py
+## Modulo comun del backend: configuracion, conexion, seguridad o Swagger reutilizable.
+
 import re
 
 from werkzeug.security import generate_password_hash, check_password_hash

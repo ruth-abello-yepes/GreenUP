@@ -1,3 +1,6 @@
+## Archivo: novedades_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de novedades
 
 from app.models.novedades_model import (
@@ -9,10 +12,14 @@ from app.models.novedades_model import (
 
 
 def servicio_crear_novedad(data):
-    titulo = data.get("titulo")
-    descripcion = data.get("descripcion")
+    titulo = data.get("titulo") or data.get("motivo")
+    descripcion = data.get("descripcion") or data.get("comentario")
     imagen = data.get("imagen")
     id_usuario = data.get("id_usuario")
+    id_punto = data.get("id_punto")
+    motivo = data.get("motivo") or titulo
+    comentario = data.get("comentario") or descripcion
+    ubicacion = data.get("ubicacion")
 
     if not titulo:
         return {"mensaje": "El título es obligatorio"}, 400
@@ -20,7 +27,7 @@ def servicio_crear_novedad(data):
     if not id_usuario:
         return {"mensaje": "El usuario es obligatorio"}, 400
 
-    crear_novedad(titulo, descripcion, imagen, id_usuario)
+    crear_novedad(titulo, descripcion, imagen, id_usuario, id_punto, motivo, comentario, ubicacion)
 
     return {"mensaje": "Novedad creada correctamente"}, 201
 

@@ -1,3 +1,6 @@
+## Archivo: materiales_service.py
+## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
+
 # Servicio de materiales
 # Aquí se validan los datos antes de llamar al modelo.
 

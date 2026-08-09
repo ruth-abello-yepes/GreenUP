@@ -1,24 +1,21 @@
-# Archivo: recicladoras_model.py
-# Este archivo se encarga de hablar directamente con la tabla recicladoras.
-# Aqui guardamos los datos de la empresa del dueno de punto ecologico.
+## Archivo: recicladoras_model.py
+## Modelo de datos: contiene consultas SQL y operaciones directas con la base de datos.
+
 
 from app.common.database import obtener_conexion
-
-
+def _tabla_tiene_columna(cursor, tabla, columna):
+    cursor.execute(
+        """
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = %s
+          AND column_name = %s
+        """,
+        (tabla, columna),
+    )
+    return cursor.fetchone() is not None
 def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_empresa, telefono_empresa, camara_comercio, id_estado):
-    """
-    Registra los datos de la recicladora o punto ecologico.
-
-    id_usuario:
-    Es el ID del usuario que ya fue creado en la tabla usuarios.
-
-    nit_empresa:
-    Es el identificador legal de la empresa.
-
-    camara_comercio:
-    Puede ser una ruta o nombre del archivo de camara de comercio.
-    """
-
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
@@ -28,36 +25,37 @@ def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_emp
     VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
 
-    datos = (
+    cursor.execute(sql, (
         id_usuario,
         nit_empresa,
         nombre_empresa,
         direccion_empresa,
         telefono_empresa,
         camara_comercio,
-        id_estado
-    )
-
-    cursor.execute(sql, datos)
+        id_estado,
+    ))
     conexion.commit()
 
     cursor.close()
     conexion.close()
-
-
-def listar_recicladoras():
-    """
-    Lista los duenos de recicladora con sus datos personales y datos de empresa.
-
-    Hacemos JOIN porque:
-    - usuarios tiene los datos personales.
-    - recicladoras tiene los datos de la empresa.
-    """
-
+def asociar_punto_a_recicladora(id_usuario, id_punto):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = """
+    if _tabla_tiene_columna(cursor, "recicladoras", "id_punto"):
+        cursor.execute(
+            "UPDATE recicladoras SET id_punto = %s WHERE id_usuario = %s",
+            (id_punto, id_usuario),
+        )
+        conexion.commit()
+
+    cursor.close()
+    conexion.close()
+def listar_recicladoras():
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute("""
     SELECT
         usuarios.id_usuario,
         usuarios.nombres,
@@ -75,29 +73,30 @@ def listar_recicladoras():
         recicladoras.telefono_empresa,
         recicladoras.camara_comercio
     FROM usuarios
-    INNER JOIN recicladoras
-    ON usuarios.id_usuario = recicladoras.id_usuario
+    INNER JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
     WHERE usuarios.id_rol = 2
-    """
-
-    cursor.execute(sql)
+    """)
     recicladoras = cursor.fetchall()
 
     cursor.close()
     conexion.close()
-
     return recicladoras
-
-
 def buscar_recicladora_por_usuario(id_usuario):
-    """
-    Busca la recicladora asociada a un usuario dueno.
-    """
-
     conexion = obtener_conexion()
     cursor = conexion.cursor()
+    tiene_id_punto = _tabla_tiene_columna(cursor, "recicladoras", "id_punto")
+    id_punto_select = "recicladoras.id_punto," if tiene_id_punto else "puntos_reciclaje.id_punto,"
+    id_punto_join = (
+        "LEFT JOIN puntos_reciclaje ON recicladoras.id_punto = puntos_reciclaje.id_punto"
+        if tiene_id_punto else
+        """
+        LEFT JOIN puntos_reciclaje
+            ON LOWER(TRIM(puntos_reciclaje.nombre)) = LOWER(TRIM(recicladoras.nombre_empresa))
+            OR LOWER(TRIM(puntos_reciclaje.direccion)) = LOWER(TRIM(recicladoras.direccion_empresa))
+        """
+    )
 
-    sql = """
+    cursor.execute(f"""
     SELECT
         usuarios.id_usuario,
         usuarios.nombres,
@@ -114,27 +113,422 @@ def buscar_recicladora_por_usuario(id_usuario):
         recicladoras.direccion_empresa,
         recicladoras.telefono_empresa,
         recicladoras.camara_comercio,
-        recicladoras.id_estado AS id_estado_recicladora
+        recicladoras.id_estado AS id_estado_recicladora,
+        {id_punto_select}
+        puntos_reciclaje.nombre AS nombre_punto,
+        puntos_reciclaje.direccion AS direccion_punto,
+        puntos_reciclaje.horario,
+        puntos_reciclaje.latitud,
+        puntos_reciclaje.longitud,
+        puntos_reciclaje.telefono AS telefono_punto,
+        puntos_reciclaje.responsable,
+        puntos_reciclaje.id_estado AS id_estado_punto
     FROM usuarios
-    INNER JOIN recicladoras
-    ON usuarios.id_usuario = recicladoras.id_usuario
+    INNER JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
+    {id_punto_join}
     WHERE usuarios.id_usuario = %s
-    """
-
-    cursor.execute(sql, (id_usuario,))
+    LIMIT 1
+    """, (id_usuario,))
     recicladora = cursor.fetchone()
 
     cursor.close()
     conexion.close()
-
     return recicladora
+def actualizar_perfil_recicladora(id_usuario, datos):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
 
+    cursor.execute(
+        """
+        UPDATE usuarios
+        SET nombres = COALESCE(%s, nombres),
+            apellidos = COALESCE(%s, apellidos),
+            correo = COALESCE(%s, correo),
+            celular = COALESCE(%s, celular),
+            foto_perfil = COALESCE(%s, foto_perfil)
+        WHERE id_usuario = %s
+        """,
+        (
+            datos.get("nombres"),
+            datos.get("apellidos"),
+            datos.get("correo"),
+            datos.get("celular"),
+            datos.get("foto_perfil"),
+            id_usuario,
+        ),
+    )
 
+    cursor.execute(
+        """
+        UPDATE recicladoras
+        SET nit_empresa = COALESCE(%s, nit_empresa),
+            nombre_empresa = COALESCE(%s, nombre_empresa),
+            direccion_empresa = COALESCE(%s, direccion_empresa),
+            telefono_empresa = COALESCE(%s, telefono_empresa),
+            camara_comercio = COALESCE(%s, camara_comercio)
+        WHERE id_usuario = %s
+        """,
+        (
+            datos.get("nit_empresa"),
+            datos.get("nombre_empresa"),
+            datos.get("direccion_empresa"),
+            datos.get("telefono_empresa"),
+            datos.get("camara_comercio"),
+            id_usuario,
+        ),
+    )
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+def actualizar_punto_recicladora(id_usuario, datos):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return False
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    nombre = datos.get("nombre") or datos.get("nombre_empresa")
+    direccion = datos.get("direccion") or datos.get("direccion_empresa")
+    telefono = datos.get("telefono") or datos.get("telefono_empresa")
+
+    cursor.execute(
+        """
+        UPDATE puntos_reciclaje
+        SET nombre = COALESCE(%s, nombre),
+            direccion = COALESCE(%s, direccion),
+            horario = COALESCE(%s, horario),
+            latitud = COALESCE(%s, latitud),
+            longitud = COALESCE(%s, longitud),
+            telefono = COALESCE(%s, telefono),
+            responsable = COALESCE(%s, responsable)
+        WHERE id_punto = %s
+        """,
+        (
+            nombre,
+            direccion,
+            datos.get("horario"),
+            datos.get("latitud"),
+            datos.get("longitud"),
+            telefono,
+            datos.get("responsable"),
+            perfil["id_punto"],
+        ),
+    )
+
+    cursor.execute(
+        """
+        UPDATE recicladoras
+        SET nombre_empresa = COALESCE(%s, nombre_empresa),
+            direccion_empresa = COALESCE(%s, direccion_empresa),
+            telefono_empresa = COALESCE(%s, telefono_empresa)
+        WHERE id_usuario = %s
+        """,
+        (nombre, direccion, telefono, id_usuario),
+    )
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return True
+def cambiar_estado_punto_recicladora(id_usuario, id_estado):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return False
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute(
+        "UPDATE puntos_reciclaje SET id_estado = %s WHERE id_punto = %s",
+        (id_estado, perfil["id_punto"]),
+    )
+    cursor.execute(
+        "UPDATE recicladoras SET id_estado = %s WHERE id_usuario = %s",
+        (id_estado, id_usuario),
+    )
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return True
+def listar_registros_por_recicladora(id_usuario, fecha_inicio=None, fecha_fin=None):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return []
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    filtros = ["registrar_reciclaje.id_punto = %s"]
+    params = [perfil["id_punto"]]
+
+    if fecha_inicio:
+        filtros.append("registrar_reciclaje.fecha_hora::date >= %s")
+        params.append(fecha_inicio)
+    if fecha_fin:
+        filtros.append("registrar_reciclaje.fecha_hora::date <= %s")
+        params.append(fecha_fin)
+
+    cursor.execute(f"""
+        SELECT
+            registrar_reciclaje.id_registro,
+            registrar_reciclaje.cantidad::float AS cantidad,
+            registrar_reciclaje.fecha_hora,
+            registrar_reciclaje.puntos_obtenidos,
+            registrar_reciclaje.observaciones,
+            registrar_reciclaje.id_usuario,
+            registrar_reciclaje.id_tipo_material,
+            registrar_reciclaje.id_punto,
+            registrar_reciclaje.id_estado,
+            COALESCE(tipo_material.nombre, 'Material') AS material,
+            COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
+            COALESCE(estado.descripcion, 'Estado') AS estado
+        FROM registrar_reciclaje
+        LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
+        LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
+        LEFT JOIN estado ON registrar_reciclaje.id_estado = estado.id_estado
+        WHERE {' AND '.join(filtros)}
+        ORDER BY registrar_reciclaje.fecha_hora DESC
+    """, tuple(params))
+    registros = cursor.fetchall()
+
+    cursor.close()
+    conexion.close()
+    return registros
+def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return False
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute(
+        """
+        UPDATE registrar_reciclaje
+        SET id_estado = %s
+        WHERE id_registro = %s
+          AND id_punto = %s
+        """,
+        (id_estado, id_registro, perfil["id_punto"]),
+    )
+    actualizado = cursor.rowcount > 0
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return actualizado
+def listar_materiales_punto_recicladora(id_usuario):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return []
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute(
+        """
+        SELECT
+            tipo_material.*,
+            CASE WHEN punto_material.id_punto_material IS NULL THEN false ELSE true END AS aceptado
+        FROM tipo_material
+        LEFT JOIN punto_material
+            ON tipo_material.id_tipo_material = punto_material.id_tipo_material
+           AND punto_material.id_punto = %s
+        ORDER BY tipo_material.nombre
+        """,
+        (perfil["id_punto"],),
+    )
+    materiales = cursor.fetchall()
+    cursor.close()
+    conexion.close()
+    return materiales
+def reemplazar_materiales_punto_recicladora(id_usuario, ids_materiales):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return False
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM punto_material WHERE id_punto = %s", (perfil["id_punto"],))
+
+    for id_material in ids_materiales:
+        cursor.execute(
+            """
+            INSERT INTO punto_material (id_punto, id_tipo_material)
+            VALUES (%s, %s)
+            ON CONFLICT (id_punto, id_tipo_material) DO NOTHING
+            """,
+            (perfil["id_punto"], id_material),
+        )
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return True
+def listar_novedades_punto_recicladora(id_usuario):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return []
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    tiene_id_punto = _tabla_tiene_columna(cursor, "novedades", "id_punto")
+    tiene_fecha_hora = _tabla_tiene_columna(cursor, "novedades", "fecha_hora")
+    fecha = "novedades.fecha_hora" if tiene_fecha_hora else "novedades.fecha_publicacion"
+    descripcion = "COALESCE(novedades.comentario, novedades.descripcion)" if _tabla_tiene_columna(cursor, "novedades", "comentario") else "novedades.descripcion"
+    titulo = "COALESCE(novedades.motivo, novedades.titulo)" if _tabla_tiene_columna(cursor, "novedades", "motivo") else "novedades.titulo"
+
+    filtro = "WHERE novedades.id_punto = %s" if tiene_id_punto else ""
+    params = (perfil["id_punto"],) if tiene_id_punto else ()
+    cursor.execute(f"""
+        SELECT
+            novedades.id_novedad,
+            {titulo} AS titulo,
+            {descripcion} AS descripcion,
+            {fecha} AS fecha,
+            novedades.id_usuario,
+            novedades.id_estado,
+            COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
+            COALESCE(estado.descripcion, 'Estado') AS estado
+        FROM novedades
+        LEFT JOIN usuarios ON novedades.id_usuario = usuarios.id_usuario
+        LEFT JOIN estado ON novedades.id_estado = estado.id_estado
+        {filtro}
+        ORDER BY {fecha} DESC
+    """, params)
+    novedades = cursor.fetchall()
+    cursor.close()
+    conexion.close()
+    return novedades
+def responder_novedad_punto_recicladora(id_usuario, id_novedad, datos):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return False
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    tiene_id_punto = _tabla_tiene_columna(cursor, "novedades", "id_punto")
+    tiene_respuesta = _tabla_tiene_columna(cursor, "novedades", "respuesta")
+
+    if tiene_respuesta:
+        sql = """
+            UPDATE novedades
+            SET respuesta = COALESCE(%s, respuesta),
+                id_estado = COALESCE(%s, id_estado)
+            WHERE id_novedad = %s
+        """
+        params = [datos.get("respuesta"), datos.get("id_estado"), id_novedad]
+    else:
+        sql = """
+            UPDATE novedades
+            SET id_estado = COALESCE(%s, id_estado)
+            WHERE id_novedad = %s
+        """
+        params = [datos.get("id_estado"), id_novedad]
+
+    if tiene_id_punto:
+        sql += " AND id_punto = %s"
+        params.append(perfil["id_punto"])
+
+    cursor.execute(sql, tuple(params))
+    actualizado = cursor.rowcount > 0
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return actualizado
+def obtener_estadisticas_recicladora(id_usuario, fecha_inicio=None, fecha_fin=None):
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    if not perfil or not perfil.get("id_punto"):
+        return {"total_kg": 0, "registros": 0, "por_material": [], "mensual": [], "ranking_usuarios": []}
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    filtros = ["registrar_reciclaje.id_punto = %s"]
+    params = [perfil["id_punto"]]
+
+    if fecha_inicio:
+        filtros.append("registrar_reciclaje.fecha_hora::date >= %s")
+        params.append(fecha_inicio)
+    if fecha_fin:
+        filtros.append("registrar_reciclaje.fecha_hora::date <= %s")
+        params.append(fecha_fin)
+
+    where = " AND ".join(filtros)
+
+    cursor.execute(
+        f"""
+        SELECT COUNT(*)::int AS registros,
+               COALESCE(SUM(cantidad), 0)::float AS total_kg
+        FROM registrar_reciclaje
+        WHERE {where}
+        """,
+        tuple(params),
+    )
+    resumen = cursor.fetchone() or {}
+
+    cursor.execute(
+        f"""
+        SELECT COALESCE(tipo_material.nombre, 'Material') AS material,
+               COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS cantidad
+        FROM registrar_reciclaje
+        LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
+        WHERE {where}
+        GROUP BY tipo_material.nombre
+        ORDER BY cantidad DESC
+        """,
+        tuple(params),
+    )
+    por_material = cursor.fetchall()
+
+    cursor.execute(
+        f"""
+        SELECT TO_CHAR(DATE_TRUNC('month', registrar_reciclaje.fecha_hora), 'YYYY-MM') AS mes,
+               COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS cantidad
+        FROM registrar_reciclaje
+        WHERE {where}
+        GROUP BY DATE_TRUNC('month', registrar_reciclaje.fecha_hora)
+        ORDER BY mes
+        """,
+        tuple(params),
+    )
+    mensual = cursor.fetchall()
+
+    cursor.execute(
+        f"""
+        SELECT registrar_reciclaje.id_usuario,
+               COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
+               COUNT(*)::int AS registros,
+               COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS cantidad
+        FROM registrar_reciclaje
+        LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
+        WHERE {where}
+        GROUP BY registrar_reciclaje.id_usuario, usuarios.nombres, usuarios.apellidos, usuarios.usuario
+        ORDER BY cantidad DESC
+        LIMIT 10
+        """,
+        tuple(params),
+    )
+    ranking = cursor.fetchall()
+
+    cursor.close()
+    conexion.close()
+    return {
+        "total_kg": resumen.get("total_kg", 0),
+        "registros": resumen.get("registros", 0),
+        "por_material": por_material,
+        "mensual": mensual,
+        "ranking_usuarios": ranking,
+    }
 def obtener_dashboard_recicladora(id_usuario):
-    """
-    Calcula indicadores reales para el panel del dueno de recicladora.
-    Por ahora usa registros confirmados/activos de la tabla registrar_reciclaje.
-    """
+    perfil = buscar_recicladora_por_usuario(id_usuario)
+    id_punto = perfil.get("id_punto") if perfil else None
+
+    if not id_punto:
+        return {
+            "material_recuperado_kg": 0,
+            "cargas_activas": 0,
+            "recicladores": 0,
+            "alertas": 0,
+            "puntos": 0,
+            "actividad_semanal": [],
+            "operaciones_recientes": [],
+        }
 
     conexion = obtener_conexion()
     cursor = conexion.cursor()
@@ -147,7 +541,8 @@ def obtener_dashboard_recicladora(id_usuario):
             0::int AS alertas
         FROM registrar_reciclaje
         WHERE id_estado = 1
-    """)
+          AND id_punto = %s
+    """, (id_punto,))
     resumen = cursor.fetchone()
 
     cursor.execute("""
@@ -170,49 +565,40 @@ def obtener_dashboard_recicladora(id_usuario):
         LEFT JOIN registrar_reciclaje
             ON DATE(registrar_reciclaje.fecha_hora) = dia::date
             AND registrar_reciclaje.id_estado = 1
+            AND registrar_reciclaje.id_punto = %s
         GROUP BY dia
         ORDER BY dia
-    """)
+    """, (id_punto,))
     actividad = cursor.fetchall()
 
     cursor.execute("""
         SELECT
             registrar_reciclaje.id_registro,
-            registrar_reciclaje.cantidad,
+            registrar_reciclaje.cantidad::float AS cantidad,
             registrar_reciclaje.fecha_hora,
             registrar_reciclaje.id_estado,
             COALESCE(tipo_material.nombre, 'Material') AS material,
             COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
             COALESCE(puntos_reciclaje.nombre, 'Punto sin asignar') AS punto
         FROM registrar_reciclaje
-        LEFT JOIN tipo_material
-            ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
-        LEFT JOIN usuarios
-            ON registrar_reciclaje.id_usuario = usuarios.id_usuario
-        LEFT JOIN puntos_reciclaje
-            ON registrar_reciclaje.id_punto = puntos_reciclaje.id_punto
+        LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
+        LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
+        LEFT JOIN puntos_reciclaje ON registrar_reciclaje.id_punto = puntos_reciclaje.id_punto
         WHERE registrar_reciclaje.id_estado = 1
+          AND registrar_reciclaje.id_punto = %s
         ORDER BY registrar_reciclaje.fecha_hora DESC
         LIMIT 5
-    """)
+    """, (id_punto,))
     operaciones = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT COUNT(*)::int AS puntos
-        FROM puntos_reciclaje
-        WHERE id_estado = 1
-    """)
-    puntos = cursor.fetchone()
 
     cursor.close()
     conexion.close()
-
     return {
         "material_recuperado_kg": resumen["material_recuperado_kg"] if resumen else 0,
         "cargas_activas": resumen["cargas_activas"] if resumen else 0,
         "recicladores": resumen["recicladores"] if resumen else 0,
         "alertas": resumen["alertas"] if resumen else 0,
-        "puntos": puntos["puntos"] if puntos else 0,
+        "puntos": 1,
         "actividad_semanal": actividad,
-        "operaciones_recientes": operaciones
+        "operaciones_recientes": operaciones,
     }

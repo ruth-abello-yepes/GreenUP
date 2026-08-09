@@ -1,3 +1,6 @@
+## Archivo: database.py
+## Modulo comun del backend: configuracion, conexion, seguridad o Swagger reutilizable.
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from app.common.config import DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME

@@ -1,3705 +1,451 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
 <head>
+  <!-- Pagina del administrador: Roles y permisos. -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roles - GreenUp Admin</title>
+
+
+  <!-- PROTECCION TEMPRANA: oculta la pantalla si no hay sesion de administrador. -->
+  <style>
+    html:not(.admin-auth-ok) body { visibility: hidden; }
+  </style>
+  <script>
+    (function () {
+      /*
+        GUARDIA DE SESION ADMIN:
+        Se ejecuta antes de pintar la pagina. Si no hay sesion activa de admin en
+        localStorage, redirige al login sin mostrar el contenido protegido.
+      */
+      try {
+        const admin = JSON.parse(localStorage.getItem("usuario") || "{}");
+        const sesionActiva = sessionStorage.getItem("greenup_admin_sesion_activa") === "1";
+        const tieneSesionAdmin = sesionActiva && admin.id_usuario && Number(admin.id_rol) === 1;
+        if (!tieneSesionAdmin) {
+          document.documentElement.classList.add("admin-auth-blocked");
+          window.location.replace("../public/admin_login.html");
+          return;
+        }
+        document.documentElement.classList.add("admin-auth-ok");
+      } catch (error) {
+        document.documentElement.classList.add("admin-auth-blocked");
+        window.location.replace("../public/admin_login.html");
+      }
+    })();
+  </script>
+  <!-- Bootstrap, fuentes e iconos. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <style>
-:root {
-  --admin-green: #0f6f2a;
-  --admin-green-dark: #075f1d;
-  --admin-logo-green: #478a3a;
-  --admin-blue: #065591;
-  --admin-blue-dark: #043a63;
-  --admin-blue-soft: #e9f4ff;
-  --admin-mint: #eefbf3;
-  --admin-page: #f8fbf9;
-  --admin-panel: #ffffff;
-  --admin-ink: #172033;
-  --admin-muted: #68717b;
-  --admin-border: #e3ebe6;
-  --admin-soft-border: #d3e4d9;
-  --admin-warning: #fff4cf;
-  --admin-danger: #fff0f0;
-  --sidebar-width: 316px;
-  --topbar-height: 88px;
-  --radius-lg: 18px;
-  --shadow-soft: 0 14px 34px rgba(6, 85, 145, 0.08);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  min-height: 100%;
-}
-
-body.admin-app {
-  min-height: 100vh;
-  margin: 0;
-  background: var(--admin-page);
-  color: var(--admin-ink);
-  font-family: "Manrope", Arial, Helvetica, sans-serif;
-  letter-spacing: 0;
-  overflow-x: hidden;
-}
-
-body.admin-theme-dark {
-  /*
-    TEMA OSCURO GLOBAL:
-    Estas variables cambian todo el Administrador del Sistema, no solo el perfil.
-  */
-  --admin-green: #39d874;
-  --admin-green-dark: #8df2aa;
-  --admin-logo-green: #66e58d;
-  --admin-blue: #5eb2ff;
-  --admin-blue-dark: #b8dcff;
-  --admin-blue-soft: #102d48;
-  --admin-mint: #123322;
-  --admin-page: #08111d;
-  --admin-panel: #101b2a;
-  --admin-ink: #eef6ff;
-  --admin-muted: #a8b5c5;
-  --admin-border: #213247;
-  --admin-soft-border: #2c4258;
-  --admin-warning: #3b3216;
-  --admin-danger: #3a171b;
-  --shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.32);
-  background:
-    radial-gradient(circle at top right, rgba(57, 216, 116, 0.14), transparent 30%),
-    linear-gradient(135deg, #07111f 0%, #08111d 50%, #0d1b2d 100%);
-}
-
-body.admin-theme-light {
-  background: var(--admin-page);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
-  font-size: 24px;
-  line-height: 1;
-}
-
-.material-symbols-outlined.filled {
-  font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
-}
-
-.app-sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 30;
-  width: var(--sidebar-width);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 30px 24px 24px;
-  background: rgba(255, 255, 255, 0.98);
-  border-right: 1px solid var(--admin-border);
-  box-shadow: 12px 0 32px rgba(15, 111, 42, 0.05);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-}
-
-.brand-lockup,
-.mobile-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.brand-logo {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 15px;
-  background: #ffffff;
-  color: var(--admin-blue);
-  font-weight: 900;
-  box-shadow: 0 12px 24px rgba(15, 111, 42, 0.14);
-}
-
-.brand-logo span {
-  color: var(--admin-green);
-  font-size: 31px;
-}
-
-.brand-name {
-  display: block;
-  color: var(--admin-blue);
-  font-size: 1.55rem;
-  font-weight: 900;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.brand-name strong {
-  color: var(--admin-logo-green);
-  font-weight: inherit;
-}
-
-.brand-kicker {
-  display: block;
-  margin-top: 6px;
-  color: #87909b;
-  font-size: 0.72rem;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.sidebar-section-title {
-  margin: 0 0 8px;
-  color: #9aa2ad;
-  font-size: 0.74rem;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-right: 4px;
-}
-
-.sidebar-link {
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 0 14px;
-  border-radius: 14px;
-  color: #606871;
-  font-size: 0.93rem;
-  font-weight: 750;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
-}
-
-.sidebar-link:hover,
-.sidebar-link:focus-visible,
-.sidebar-link.active {
-  background: #f1f7f3;
-  color: var(--admin-green-dark);
-}
-
-.sidebar-link:hover,
-.sidebar-link:focus-visible {
-  transform: translateX(2px);
-}
-
-.sidebar-link.active {
-  box-shadow: inset -4px 0 0 var(--admin-green);
-}
-
-.sidebar-link.active .material-symbols-outlined {
-  color: var(--admin-green);
-  font-variation-settings: "FILL" 1, "wght" 650, "GRAD" 0, "opsz" 24;
-}
-
-.sidebar-actions {
-  display: grid;
-  gap: 12px;
-  padding-top: 18px;
-  border-top: 1px solid var(--admin-border);
-}
-
-.logout-link,
-.ghost-button,
-.primary-button,
-.small-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 42px;
-  border: 0;
-  border-radius: 13px;
-  cursor: pointer;
-  font-weight: 850;
-  text-align: center;
-}
-
-.logout-link {
-  justify-content: flex-start;
-  background: transparent;
-  color: #74706f;
-}
-
-.logout-link:hover {
-  color: var(--admin-green-dark);
-}
-
-.primary-button {
-  padding: 0 16px;
-  background: var(--admin-green);
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(15, 111, 42, 0.16);
-}
-
-.primary-button:hover {
-  background: var(--admin-green-dark);
-}
-
-.ghost-button,
-.small-button {
-  padding: 0 14px;
-  background: #edf4f0;
-  color: #56616d;
-}
-
-.ghost-button:hover,
-.small-button:hover {
-  background: #dff4e5;
-  color: var(--admin-green-dark);
-}
-
-.danger-button {
-  background: #fff0f0;
-  color: #bd1e1e;
-}
-
-.danger-button:hover {
-  background: #ffe1e1;
-}
-
-.app-topbar {
-  position: fixed;
-  inset: 0 0 auto var(--sidebar-width);
-  z-index: 25;
-  min-height: var(--topbar-height);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 0 40px;
-  background: linear-gradient(90deg, #f6fbf8 0%, #effbf4 100%);
-  border-bottom: 1px solid var(--admin-border);
-}
-
-.mobile-brand {
-  display: none;
-}
-
-.topbar-search {
-  flex: 1 1 280px;
-  min-width: 210px;
-  max-width: 520px;
-}
-
-.search-shell {
-  position: relative;
-}
-
-.search-shell .material-symbols-outlined {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  color: #9aa2ad;
-  transform: translateY(-50%);
-}
-
-.search-shell input {
-  width: 100%;
-  min-height: 48px;
-  padding: 0 18px 0 50px;
-  border: 1px solid var(--admin-border);
-  border-radius: 999px;
-  background: #ffffff;
-  color: var(--admin-ink);
-  outline: none;
-}
-
-.search-shell input:focus {
-  border-color: var(--admin-green);
-  box-shadow: 0 0 0 4px rgba(15, 111, 42, 0.1);
-}
-
-.topbar-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.icon-button {
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 15px;
-  background: #ffffff;
-  color: #6f7680;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(6, 85, 145, 0.07);
-}
-
-.icon-button:hover {
-  color: var(--admin-green-dark);
-  background: var(--admin-mint);
-}
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 6px 14px 6px 6px;
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 10px 22px rgba(6, 85, 145, 0.07);
-}
-
-.user-avatar {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: linear-gradient(145deg, var(--admin-blue), #031d31);
-  color: #ffffff;
-  font-weight: 900;
-}
-
-.user-meta {
-  display: grid;
-  line-height: 1.1;
-}
-
-.user-meta strong {
-  color: var(--admin-ink);
-  font-size: 0.9rem;
-}
-
-.user-meta span {
-  color: var(--admin-muted);
-  font-size: 0.75rem;
-}
-
-.admin-main {
-  min-height: 100vh;
-  margin-left: var(--sidebar-width);
-  padding: calc(var(--topbar-height) + 34px) 40px 44px;
-}
-
-.page-hero {
-  position: relative;
-  overflow: hidden;
-  align-items: stretch;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
-  gap: 28px;
-  margin-bottom: 26px;
-  padding: 34px;
-  border: 1px solid var(--admin-border);
-  border-radius: 28px;
-  background: #ffffff;
-  box-shadow: var(--shadow-soft);
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  color: var(--admin-green-dark);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.page-hero h1 {
-  margin: 0;
-  color: var(--admin-ink);
-  font-size: clamp(2.2rem, 3.2vw, 3.45rem);
-  line-height: 1.04;
-  overflow-wrap: anywhere;
-}
-
-.page-hero h1 strong {
-  color: var(--admin-green);
-}
-
-.page-hero p {
-  max-width: 690px;
-  margin: 16px 0 0;
-  color: #59626d;
-  font-size: 1rem;
-  line-height: 1.65;
-}
-
-.hero-visual {
-  position: relative;
-  overflow: hidden;
-  min-height: 250px;
-  border-radius: 24px;
-  background: #dfeee6;
-}
-
-.hero-carousel,
-.hero-slide,
-.hero-slide::after {
-  position: absolute;
-  inset: 0;
-}
-
-.hero-slide {
-  opacity: 0;
-  background-position: center;
-  background-size: cover;
-  transform: scale(1.04);
-  transition: opacity 900ms ease, transform 7000ms ease;
-}
-
-.hero-slide.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.hero-slide::after {
-  content: "";
-  background:
-    linear-gradient(180deg, rgba(3, 29, 49, 0.08), rgba(7, 95, 29, 0.25)),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent);
-}
-
-.hero-carousel-card {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  z-index: 3;
-  min-height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.84);
-  backdrop-filter: blur(10px);
-}
-
-.hero-carousel-card strong {
-  color: var(--admin-blue-dark);
-  font-size: 0.9rem;
-}
-
-.hero-carousel-card span {
-  color: var(--admin-muted);
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.carousel-dots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.carousel-dots i {
-  width: 6px;
-  height: 6px;
-  display: block;
-  border-radius: 999px;
-  background: #b8c7bc;
-}
-
-.carousel-dots i.active {
-  width: 18px;
-  background: var(--admin-green);
-}
-
-.hero-stats {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(130px, 1fr));
-  gap: 14px;
-  margin-top: 24px;
-  max-width: 420px;
-}
-
-.summary-card {
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--admin-border);
-  border-radius: 18px;
-  background: var(--admin-panel);
-  box-shadow: 0 18px 30px rgba(6, 85, 145, 0.08);
-}
-
-.summary-card.blue {
-  background: var(--admin-blue-soft);
-  border-color: #c9dff8;
-}
-
-.summary-label {
-  display: block;
-  color: #69727c;
-  font-size: 0.75rem;
-  font-weight: 850;
-}
-
-.summary-value {
-  display: block;
-  margin-top: 7px;
-  color: var(--admin-green-dark);
-  font-size: 1.45rem;
-  font-weight: 900;
-}
-
-.summary-card.blue .summary-value {
-  color: #0055b8;
-}
-
-.toolbar,
-.data-card,
-.module-card,
-.admin-card {
-  min-width: 0;
-  border: 1px solid var(--admin-border);
-  border-radius: var(--radius-lg);
-  background: var(--admin-panel);
-  box-shadow: var(--shadow-soft);
-}
-
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 16px;
-}
-
-.toolbar > * {
-  max-width: 100%;
-}
-
-.toolbar select,
-.toolbar input,
-.admin-form input,
-.admin-form select,
-.admin-form textarea {
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  border: 1px solid var(--admin-border);
-  border-radius: 13px;
-  background: #ffffff;
-  color: var(--admin-ink);
-  outline: none;
-  padding: 0 14px;
-}
-
-.toolbar select,
-.toolbar input {
-  width: auto;
-  min-width: 180px;
-  flex: 0 1 240px;
-}
-
-.admin-form textarea {
-  min-height: 112px;
-  padding-top: 12px;
-  resize: vertical;
-}
-
-.toolbar select:focus,
-.toolbar input:focus,
-.admin-form input:focus,
-.admin-form select:focus,
-.admin-form textarea:focus {
-  border-color: var(--admin-green);
-  box-shadow: 0 0 0 4px rgba(15, 111, 42, 0.1);
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.metric-card {
-  display: grid;
-  gap: 12px;
-  min-height: 152px;
-  padding: 20px;
-  border: 1px solid var(--admin-border);
-  border-radius: var(--radius-lg);
-  background: var(--admin-panel);
-  box-shadow: var(--shadow-soft);
-}
-
-.metric-icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: var(--admin-mint);
-  color: var(--admin-green);
-}
-
-.metric-card.blue .metric-icon {
-  background: var(--admin-blue-soft);
-  color: #0055b8;
-}
-
-.metric-card strong {
-  color: var(--admin-ink);
-  font-size: 1.85rem;
-  line-height: 1;
-}
-
-.metric-card span {
-  color: var(--admin-muted);
-  font-weight: 800;
-}
-
-.metric-card p {
-  margin: 0;
-  color: #6a737d;
-  font-size: 0.86rem;
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr);
-  gap: 20px;
-}
-
-.content-grid.catalog-layout {
-  grid-template-columns: minmax(280px, 0.52fr) minmax(0, 1.48fr);
-  align-items: start;
-}
-
-.content-grid.content-layout {
-  grid-template-columns: minmax(280px, 0.62fr) minmax(0, 1.38fr);
-  align-items: start;
-}
-
-.content-grid > * {
-  min-width: 0;
-}
-
-.data-card,
-.module-card,
-.admin-card {
-  padding: 22px;
-}
-
-.card-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.card-title-row h2,
-.card-title-row h3 {
-  margin: 0;
-  color: var(--admin-ink);
-  font-size: 1.1rem;
-}
-
-.card-title-row p {
-  margin: 4px 0 0;
-  color: var(--admin-muted);
-  font-size: 0.88rem;
-}
-
-.table-wrap {
-  width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-}
-
-.admin-table {
-  width: 100%;
-  min-width: 860px;
-  border-collapse: collapse;
-}
-
-.admin-table th {
-  padding: 14px 12px;
-  color: #626c77;
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-align: left;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--admin-border);
-}
-
-.admin-table td {
-  padding: 14px 12px;
-  color: #384250;
-  font-size: 0.9rem;
-  border-bottom: 1px solid #edf2ef;
-  vertical-align: middle;
-}
-
-.admin-table tbody tr:hover td {
-  background: #fbfdfc;
-}
-
-.row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.status-pill,
-.type-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 900;
-}
-
-.status-pill.active,
-.type-pill.green {
-  border: 1px solid #bde2c6;
-  background: #e9f8ee;
-  color: #146c2e;
-}
-
-.status-pill.inactive,
-.type-pill.red {
-  border: 1px solid #ffc9c9;
-  background: #fff0f0;
-  color: #bd1e1e;
-}
-
-.status-pill.pending,
-.type-pill.blue {
-  border: 1px solid #c7defa;
-  background: #edf5ff;
-  color: #0055b8;
-}
-
-.empty-state {
-  display: grid;
-  place-items: center;
-  min-height: 190px;
-  color: var(--admin-muted);
-  text-align: center;
-  border: 1px dashed var(--admin-soft-border);
-  border-radius: 18px;
-  background:
-    linear-gradient(90deg, rgba(15, 111, 42, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(15, 111, 42, 0.05) 1px, transparent 1px),
-    #f8fcfa;
-  background-size: 34px 34px;
-}
-
-.empty-state span {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--admin-green);
-  font-size: 40px;
-}
-
-.admin-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.admin-form label {
-  min-width: 0;
-  display: grid;
-  gap: 7px;
-  color: #4c5966;
-  font-size: 0.84rem;
-  font-weight: 850;
-}
-
-.admin-form .full {
-  grid-column: 1 / -1;
-}
-
-.content-grid.catalog-layout .admin-form,
-.content-grid.content-layout .admin-form,
-.module-card .admin-form,
-.admin-card .admin-form {
-  /*
-    FORMULARIOS EN TARJETAS ESTRECHAS:
-    Se usa una sola columna para evitar campos cortados en materiales,
-    noticias, contenido, registros, roles y demas catalogos.
-  */
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.news-card {
-  overflow: hidden;
-  border: 1px solid var(--admin-border);
-  border-radius: 18px;
-  background: #ffffff;
-}
-
-.news-image {
-  height: 145px;
-  background: linear-gradient(135deg, var(--admin-blue-soft), var(--admin-mint));
-}
-
-.news-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.news-body {
-  padding: 16px;
-}
-
-.news-body h3 {
-  margin: 0 0 8px;
-  color: var(--admin-ink);
-}
-
-.news-body p {
-  margin: 0;
-  color: var(--admin-muted);
-  line-height: 1.5;
-}
-
-/* =====================================================================
-   MODO OSCURO COMPLETO
-   Este bloque transforma toda la interfaz administrativa: navbar, topbar,
-   tablas, formularios, tarjetas, mapa, noticias y botones.
-===================================================================== */
-body.admin-theme-dark .app-sidebar {
-  background: rgba(8, 17, 29, 0.98);
-  border-right-color: var(--admin-border);
-  box-shadow: 14px 0 36px rgba(0, 0, 0, 0.34);
-}
-
-body.admin-theme-dark .app-topbar {
-  background: linear-gradient(90deg, rgba(8, 17, 29, 0.96), rgba(12, 32, 48, 0.96));
-  border-bottom-color: var(--admin-border);
-}
-
-body.admin-theme-dark .brand-logo,
-body.admin-theme-dark .icon-button,
-body.admin-theme-dark .user-menu,
-body.admin-theme-dark .search-shell input,
-body.admin-theme-dark .toolbar select,
-body.admin-theme-dark .toolbar input,
-body.admin-theme-dark .admin-form input,
-body.admin-theme-dark .admin-form select,
-body.admin-theme-dark .admin-form textarea,
-body.admin-theme-dark .news-card {
-  border: 1px solid var(--admin-border);
-  background: #101b2a;
-  color: var(--admin-ink);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
-}
-
-body.admin-theme-dark .brand-name,
-body.admin-theme-dark .user-meta strong,
-body.admin-theme-dark .page-hero h1,
-body.admin-theme-dark .metric-card strong,
-body.admin-theme-dark .card-title-row h2,
-body.admin-theme-dark .card-title-row h3,
-body.admin-theme-dark .news-body h3,
-body.admin-theme-dark .point-info strong {
-  color: var(--admin-ink);
-}
-
-body.admin-theme-dark .brand-kicker,
-body.admin-theme-dark .sidebar-section-title,
-body.admin-theme-dark .sidebar-link,
-body.admin-theme-dark .logout-link,
-body.admin-theme-dark .user-meta span,
-body.admin-theme-dark .page-hero p,
-body.admin-theme-dark .summary-label,
-body.admin-theme-dark .metric-card span,
-body.admin-theme-dark .metric-card p,
-body.admin-theme-dark .card-title-row p,
-body.admin-theme-dark .admin-table th,
-body.admin-theme-dark .admin-table td,
-body.admin-theme-dark .admin-form label,
-body.admin-theme-dark .news-body p,
-body.admin-theme-dark .point-info span,
-body.admin-theme-dark .search-shell .material-symbols-outlined {
-  color: var(--admin-muted);
-}
-
-body.admin-theme-dark .sidebar-link:hover,
-body.admin-theme-dark .sidebar-link:focus-visible,
-body.admin-theme-dark .sidebar-link.active {
-  background: rgba(57, 216, 116, 0.12);
-  color: var(--admin-green-dark);
-}
-
-body.admin-theme-dark .sidebar-link.active {
-  box-shadow: inset -4px 0 0 var(--admin-green);
-}
-
-body.admin-theme-dark .primary-button {
-  background: linear-gradient(135deg, #0f8f4a, #19a65c);
-  color: #ffffff;
-  box-shadow: 0 14px 28px rgba(25, 166, 92, 0.22);
-}
-
-body.admin-theme-dark .ghost-button,
-body.admin-theme-dark .small-button {
-  border: 1px solid var(--admin-border);
-  background: #162437;
-  color: var(--admin-ink);
-}
-
-body.admin-theme-dark .ghost-button:hover,
-body.admin-theme-dark .small-button:hover,
-body.admin-theme-dark .icon-button:hover,
-body.admin-theme-dark .theme-toggle-button {
-  background: rgba(57, 216, 116, 0.14);
-  color: var(--admin-green-dark);
-}
-
-body.admin-theme-dark .danger-button {
-  background: rgba(190, 42, 42, 0.2);
-  color: #ffb8b8;
-}
-
-body.admin-theme-dark .page-hero,
-body.admin-theme-dark .toolbar,
-body.admin-theme-dark .data-card,
-body.admin-theme-dark .module-card,
-body.admin-theme-dark .admin-card,
-body.admin-theme-dark .metric-card,
-body.admin-theme-dark .summary-card {
-  border-color: var(--admin-border);
-  background: linear-gradient(145deg, rgba(16, 27, 42, 0.98), rgba(12, 32, 48, 0.98));
-  box-shadow: var(--shadow-soft);
-}
-
-body.admin-theme-dark .summary-card.blue,
-body.admin-theme-dark .metric-card.blue .metric-icon {
-  border-color: #245172;
-  background: #102d48;
-}
-
-body.admin-theme-dark .summary-value,
-body.admin-theme-dark .page-hero h1 strong,
-body.admin-theme-dark .hero-eyebrow,
-body.admin-theme-dark .brand-name strong,
-body.admin-theme-dark .brand-logo span,
-body.admin-theme-dark .sidebar-link.active .material-symbols-outlined {
-  color: var(--admin-green);
-}
-
-body.admin-theme-dark .summary-card.blue .summary-value,
-body.admin-theme-dark .metric-card.blue .metric-icon {
-  color: #85caff;
-}
-
-body.admin-theme-dark .hero-visual {
-  background: #102436;
-}
-
-body.admin-theme-dark .hero-slide::after {
-  background:
-    linear-gradient(180deg, rgba(8, 17, 29, 0.2), rgba(8, 17, 29, 0.52)),
-    linear-gradient(90deg, rgba(57, 216, 116, 0.08), transparent);
-}
-
-body.admin-theme-dark .hero-carousel-card {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(8, 17, 29, 0.78);
-}
-
-body.admin-theme-dark .hero-carousel-card strong {
-  color: var(--admin-ink);
-}
-
-body.admin-theme-dark .hero-carousel-card span {
-  color: var(--admin-muted);
-}
-
-body.admin-theme-dark .admin-table th {
-  border-bottom-color: var(--admin-border);
-}
-
-body.admin-theme-dark .admin-table td {
-  border-bottom-color: #1b2b3d;
-}
-
-body.admin-theme-dark .admin-table tbody tr:hover td {
-  background: rgba(57, 216, 116, 0.06);
-}
-
-body.admin-theme-dark .empty-state {
-  color: var(--admin-muted);
-  border-color: var(--admin-soft-border);
-  background:
-    linear-gradient(90deg, rgba(57, 216, 116, 0.07) 1px, transparent 1px),
-    linear-gradient(rgba(57, 216, 116, 0.07) 1px, transparent 1px),
-    #0f1a28;
-}
-
-body.admin-theme-dark .status-pill.active,
-body.admin-theme-dark .type-pill.green {
-  border-color: rgba(57, 216, 116, 0.32);
-  background: rgba(57, 216, 116, 0.12);
-  color: #9ff4b9;
-}
-
-body.admin-theme-dark .status-pill.inactive,
-body.admin-theme-dark .type-pill.red {
-  border-color: rgba(255, 120, 120, 0.28);
-  background: rgba(190, 42, 42, 0.16);
-  color: #ffb8b8;
-}
-
-body.admin-theme-dark .status-pill.pending,
-body.admin-theme-dark .type-pill.blue {
-  border-color: rgba(133, 202, 255, 0.3);
-  background: rgba(94, 178, 255, 0.13);
-  color: #b8dcff;
-}
-
-body.admin-theme-dark #sidebar-panel,
-body.admin-theme-dark .sidebar-map-footer {
-  border-color: var(--admin-border);
-  background: #101b2a;
-}
-
-body.admin-theme-dark .map-shell {
-  border-color: var(--admin-border);
-  background: #08111d;
-}
-
-body.admin-theme-dark .map-canvas-wrap,
-body.admin-theme-dark #eco-map,
-body.admin-theme-dark #admin-map {
-  background-color: #102436;
-}
-
-body.admin-theme-dark .gu-sidebar-item {
-  border-color: var(--admin-border);
-  background: #162437;
-}
-
-body.admin-theme-dark .gu-sidebar-item:hover {
-  border-color: var(--admin-green);
-  box-shadow: 0 12px 24px rgba(57, 216, 116, 0.12);
-}
-
-body.admin-theme-dark .point-icon,
-body.admin-theme-dark .metric-icon {
-  background: rgba(57, 216, 116, 0.13);
-  color: var(--admin-green);
-}
-
-body.admin-theme-dark .mobile-bottom-nav {
-  border-color: var(--admin-border);
-  background: rgba(8, 17, 29, 0.98);
-}
-
-body.admin-theme-dark .mobile-bottom-nav a {
-  color: var(--admin-muted);
-}
-
-body.admin-theme-dark .mobile-bottom-nav a.active {
-  background: rgba(57, 216, 116, 0.13);
-  color: var(--admin-green-dark);
-}
-
-body.admin-theme-dark .admin-toast {
-  border-color: var(--admin-border);
-  background: #101b2a;
-  color: var(--admin-muted);
-}
-
-/* =====================================================================
-   PERFIL OSCURO DEL ADMINISTRADOR
-   Este bloque solo se usa en admin_perfil.html. Da un tono mas serio,
-   institucional y de control para la cuenta del administrador.
-===================================================================== */
-.admin-profile-dark,
-.admin-profile-light {
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
-  gap: 0;
-  border-radius: 28px;
-}
-
-.admin-profile-dark {
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background:
-    radial-gradient(circle at top left, rgba(15, 111, 42, 0.42), transparent 32%),
-    linear-gradient(135deg, #07111f 0%, #0d1b2d 46%, #102a3d 100%);
-  color: #ffffff;
-  box-shadow: 0 28px 70px rgba(3, 29, 49, 0.32);
-}
-
-.admin-profile-light {
-  border: 1px solid var(--admin-border);
-  background:
-    linear-gradient(135deg, rgba(233, 244, 255, 0.92), rgba(255, 255, 255, 0.98) 48%, rgba(238, 251, 243, 0.94));
-  color: var(--admin-ink);
-  box-shadow: var(--shadow-soft);
-}
-
-.profile-identity {
-  min-height: 430px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 30px;
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.admin-profile-light .profile-identity {
-  border-right: 1px solid var(--admin-border);
-}
-
-.profile-avatar-dark {
-  width: 96px;
-  height: 96px;
-  display: grid;
-  place-items: center;
-  border: 3px solid rgba(255, 255, 255, 0.18);
-  border-radius: 28px;
-  background: linear-gradient(145deg, #0f6f2a, #065591);
-  color: #ffffff;
-  font-size: 2.4rem;
-  font-weight: 900;
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
-}
-
-.admin-profile-light .profile-avatar-dark {
-  border-color: rgba(6, 85, 145, 0.12);
-  background: linear-gradient(145deg, #ffffff, #e9f4ff);
-  color: var(--admin-blue-dark);
-  box-shadow: 0 18px 36px rgba(6, 85, 145, 0.12);
-}
-
-.profile-identity h2 {
-  margin: 22px 0 8px;
-  color: #ffffff;
-  font-size: 2rem;
-}
-
-.admin-profile-light .profile-identity h2 {
-  color: var(--admin-ink);
-}
-
-.profile-identity p {
-  margin: 0;
-  color: #a8b5c5;
-  line-height: 1.6;
-}
-
-.admin-profile-light .profile-identity p {
-  color: var(--admin-muted);
-}
-
-.profile-security-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid rgba(169, 242, 149, 0.34);
-  border-radius: 999px;
-  background: rgba(15, 111, 42, 0.22);
-  color: #b8f7c5;
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.admin-profile-light .profile-security-badge {
-  border-color: var(--admin-soft-border);
-  background: #ffffff;
-  color: var(--admin-green-dark);
-}
-
-.profile-detail-panel {
-  padding: 30px;
-}
-
-.profile-panel-heading h2 {
-  margin: 0;
-  color: #ffffff;
-}
-
-.profile-panel-heading p {
-  margin: 6px 0 0;
-  color: #a8b5c5;
-}
-
-.admin-profile-light .profile-panel-heading h2 {
-  color: var(--admin-ink);
-}
-
-.admin-profile-light .profile-panel-heading p {
-  color: var(--admin-muted);
-}
-
-.profile-mode-toggle {
-  display: inline-flex;
-  gap: 6px;
-  padding: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.admin-profile-light .profile-mode-toggle {
-  border-color: var(--admin-border);
-  background: #ffffff;
-}
-
-.profile-mode-toggle button {
-  min-height: 34px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #c8d6e4;
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.admin-profile-light .profile-mode-toggle button {
-  color: var(--admin-muted);
-}
-
-.profile-mode-toggle button.active {
-  background: var(--admin-green);
-  color: #ffffff;
-  box-shadow: 0 10px 20px rgba(15, 111, 42, 0.18);
-}
-
-.profile-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.profile-dark-card {
-  min-height: 128px;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-}
-
-.profile-dark-card span {
-  display: block;
-  color: #8fa3b8;
-  font-size: 0.76rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.profile-dark-card strong {
-  display: block;
-  margin-top: 12px;
-  color: #ffffff;
-  font-size: 1.05rem;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-
-.profile-actions-dark {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 22px;
-}
-
-.profile-actions-dark .primary-button {
-  background: #1f8f49;
-}
-
-.profile-actions-dark .ghost-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: #d9e7f2;
-}
-
-.profile-actions-dark .danger-button {
-  background: rgba(189, 30, 30, 0.18);
-  color: #ffc9c9;
-}
-
-.admin-profile-light .profile-dark-card {
-  border-color: var(--admin-border);
-  background: #ffffff;
-  box-shadow: 0 12px 26px rgba(6, 85, 145, 0.07);
-}
-
-.admin-profile-light .profile-dark-card span {
-  color: var(--admin-muted);
-}
-
-.admin-profile-light .profile-dark-card strong {
-  color: var(--admin-ink);
-}
-
-.admin-profile-light .profile-actions-dark .primary-button {
-  background: var(--admin-blue);
-}
-
-.admin-profile-light .profile-actions-dark .ghost-button {
-  border-color: var(--admin-border);
-  background: #ffffff;
-  color: var(--admin-blue-dark);
-}
-
-.admin-profile-light .profile-actions-dark .danger-button {
-  background: var(--admin-danger);
-  color: #a61d1d;
-}
-
-.map-shell {
-  display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
-  overflow: hidden;
-  min-height: 660px;
-  border: 1px solid var(--admin-border);
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: var(--shadow-soft);
-}
-
-.map-canvas-wrap {
-  position: relative;
-  min-width: 0;
-  background: #d8edf3;
-}
-
-#eco-map,
-#admin-map {
-  width: 100%;
-  height: 660px;
-  background-color: #d8edf3;
-}
-
-.toast-stack {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 1000;
-  display: grid;
-  gap: 10px;
-}
-
-.admin-toast {
-  min-width: 280px;
-  max-width: 360px;
-  padding: 14px 16px;
-  border: 1px solid var(--admin-soft-border);
-  border-radius: 16px;
-  background: #ffffff;
-  color: var(--admin-ink);
-  box-shadow: 0 18px 40px rgba(6, 85, 145, 0.16);
-}
-
-.admin-toast strong {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--admin-green-dark);
-}
-
-@media (max-width: 1160px) {
-  :root {
-    --sidebar-width: 290px;
-  }
-
-  .metrics-grid,
-  .content-grid,
-  .content-grid.catalog-layout,
-  .content-grid.content-layout,
-  .page-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-stats {
-    max-width: none;
-  }
-
-  .admin-profile-dark,
-  .admin-profile-light {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-identity {
-    border-right: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .admin-profile-light .profile-identity {
-    border-bottom-color: var(--admin-border);
-  }
-}
-
-@media (max-width: 900px) {
-  .app-sidebar {
-    display: none;
-  }
-
-  .app-topbar {
-    inset: 0 0 auto 0;
-    padding: 0 18px;
-  }
-
-  .mobile-brand {
-    display: flex;
-  }
-
-  .topbar-search,
-  .user-menu {
-    display: none;
-  }
-
-  .admin-main {
-    margin-left: 0;
-    padding: calc(var(--topbar-height) + 22px) 18px 90px;
-  }
-
-  .metrics-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .admin-form {
-    grid-template-columns: 1fr;
-  }
-
-  .mobile-bottom-nav {
-    position: fixed;
-    inset: auto 14px 14px;
-    z-index: 40;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
-    padding: 8px;
-    border: 1px solid var(--admin-border);
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 18px 42px rgba(6, 85, 145, 0.16);
-  }
-
-  .mobile-bottom-nav a {
-    min-height: 54px;
-    display: grid;
-    place-items: center;
-    border-radius: 16px;
-    color: #6d737b;
-  }
-
-  .mobile-bottom-nav a.active {
-    background: var(--admin-mint);
-    color: var(--admin-green-dark);
-  }
-}
-
-@media (min-width: 901px) {
-  .mobile-bottom-nav {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .page-hero {
-    padding: 24px;
-  }
-
-  .hero-stats {
-    flex-direction: column;
-  }
-
-  .toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .toolbar > * {
-    width: 100%;
-  }
-
-  .profile-detail-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =====================================================================
-   MAPA DEL ADMINISTRADOR
-   Este bloque replica la experiencia del mapa ciudadano con Leaflet:
-   panel lateral, lista de puntos, controles flotantes y rutas.
-===================================================================== */
-#sidebar-panel {
-  position: relative;
-  z-index: 2;
-  width: auto;
-  min-width: 0;
-  height: 660px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-right: 1px solid var(--admin-border);
-  background: #ffffff;
-}
-
-#sidebar-panel.collapsed {
-  transform: none;
-}
-
-.sidebar-map-header,
-.sidebar-map-footer {
-  padding: 18px;
-  border-bottom: 1px solid var(--admin-border);
-}
-
-.sidebar-map-footer {
-  border-top: 1px solid var(--admin-border);
-  border-bottom: 0;
-  background: #f8fbf9;
-  border-radius: 0;
-}
-
-.sidebar-map-header h3 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--admin-blue-dark);
-  font-size: 1rem;
-}
-
-#recycling-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 14px;
-}
-
-.gu-sidebar-item {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 12px;
-  border: 1px solid var(--admin-border);
-  border-radius: 18px;
-  background: #ffffff;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.gu-sidebar-item:hover {
-  border-color: var(--admin-green);
-  transform: translateX(4px);
-  box-shadow: 0 12px 24px rgba(15, 111, 42, 0.12);
-}
-
-.point-icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--admin-mint);
-  color: var(--admin-green);
-}
-
-.point-info strong,
-.point-info span {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.point-info strong {
-  color: var(--admin-ink);
-  font-size: 0.88rem;
-}
-
-.point-info span {
-  margin-top: 3px;
-  color: var(--admin-muted);
-  font-size: 0.76rem;
-}
-
-#sidebar-collapse-trigger {
-  display: none;
-}
-
-#sidebar-panel.collapsed #sidebar-collapse-trigger .material-symbols-outlined {
-  transform: rotate(180deg);
-}
-
-.map-floating-controls {
-  position: absolute;
-  right: 22px;
-  bottom: 22px;
-  z-index: 500;
-  display: grid;
-  gap: 12px;
-}
-
-.map-floating-controls .icon-button {
-  width: 50px;
-  height: 50px;
-}
-
-.leaflet-popup-content-wrapper {
-  border-radius: 16px;
-  font-family: Manrope, Arial, Helvetica, sans-serif;
-}
-
-.leaflet-routing-container {
-  display: none;
-}
-
-.route-button {
-  width: 100%;
-  min-height: 34px;
-  margin-top: 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--admin-green);
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: 900;
-}
-
-@media (max-width: 1160px) {
-  .map-shell {
-    grid-template-columns: 320px minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .admin-profile-light {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-profile-light .profile-identity {
-    border-right: 0;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .map-shell {
-    grid-template-columns: 1fr;
-  }
-
-  #sidebar-panel {
-    height: auto;
-    max-height: 330px;
-    border-right: 0;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  #recycling-list {
-    max-height: 220px;
-  }
-
-  #eco-map,
-  #admin-map {
-    height: 560px;
-  }
-}
-
-  </style>
+  <!-- Estilos del administrador. -->
+  <link rel="stylesheet" href="../../css/admin_sistema.css?v=dark-tables-1" />
 </head>
 <body class="admin-app">
   <!--
-    Pantalla del Administrador del Sistema.
-    Todo el codigo visual y funcional esta visible en este HTML.
-    CSS: visible dentro del bloque de estilos.
-    JavaScript: visible dentro del bloque de codigo.
-    El administrador NO registra ciudadanos ni recicladoras; administra registros existentes.
+    Estructura base visible para aprender el orden de la pagina.
+    El archivo ../../js/admin_sistema_layout.js pinta el contenido dinamico de cada modulo.
   -->
-
-  <script src="../../js/api.js"></script>
-  <script>
-/*
-  Archivo: admin_sistema_layout.js
-
-  Para que sirve:
-  Construye todas las pantallas del Administrador del Sistema desde un solo
-  lugar. Cada HTML solo indica el modulo con window.ADMIN_MODULE.
-
-  Importante:
-  - El administrador NO registra ciudadanos ni recicladoras.
-  - Ciudadanos y recicladoras aparecen porque ya se registraron en sus pantallas.
-  - El administrador consulta, filtra, exporta, activa o inactiva registros.
-  - El mapa se actualiza automaticamente leyendo los puntos de Supabase.
-*/
-
-const ADMIN_API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
-const ADMIN_REFRESH_MS = 8000;
-const ADMIN_HOME = "admin_panel.html";
-
-let adminTableData = [];
-let adminTableColumns = [];
-let adminLastUserCount = null;
-let adminLastPointCount = null;
-let adminMonitor = null;
-let adminHeroTimer = null;
-let adminMap = null;
-let adminMarkers = new Map();
-let adminUserMarker = null;
-let adminUserLocation = null;
-let adminRouteControl = null;
-let adminRouteLayers = [];
-let adminWatchId = null;
-
-const adminPrimaryNav = [
-  { href: "admin_panel.html", module: "panel", label: "Panel", icon: "dashboard" },
-  { href: "admin_usuarios.html", module: "usuarios", label: "Usuarios", icon: "groups" },
-  { href: "admin_mapa.html", module: "mapa", label: "Mapa", icon: "map" },
-  { href: "admin_puntos_reciclaje.html", module: "puntos", label: "Puntos", icon: "location_on" },
-  { href: "admin_reportes.html", module: "reportes", label: "Reportes", icon: "analytics" },
-];
-
-const adminSystemNav = [
-  { href: "admin_roles.html", module: "roles", label: "Roles", icon: "admin_panel_settings" },
-  { href: "admin_tipo_documento.html", module: "documentos", label: "Documentos", icon: "badge" },
-  { href: "admin_materiales.html", module: "materiales", label: "Materiales", icon: "inventory_2" },
-  { href: "admin_residuos.html", module: "residuos", label: "Residuos", icon: "delete_sweep" },
-  { href: "admin_registros_reciclaje.html", module: "reciclaje", label: "Registros", icon: "fact_check" },
-];
-
-const adminContentNav = [
-  { href: "admin_novedades.html", module: "novedades", label: "Noticias", icon: "newspaper" },
-  { href: "admin_contenido_educativo.html", module: "contenido", label: "Contenido", icon: "menu_book" },
-  { href: "admin_faq.html", module: "faq", label: "FAQ", icon: "quiz" },
-  { href: "admin_estadisticas.html", module: "estadisticas", label: "Estadisticas", icon: "monitoring" },
-  { href: "admin_perfil.html", module: "perfil", label: "Perfil", icon: "person" },
-  { href: "admin_configuracion.html", module: "configuracion", label: "Config.", icon: "settings" },
-];
-
-const adminPages = {
-  panel: {
-    title: 'Centro de <strong>control</strong>',
-    subtitle: "Supervisa usuarios, recicladoras, puntos ecologicos, noticias y reportes generales del sistema GreenUp.",
-    eyebrow: "Administrador del sistema",
-  },
-  usuarios: {
-    title: 'Usuarios del <strong>sistema</strong>',
-    subtitle: "Consulta ciudadanos y administradores de recicladora registrados. Aqui no se crean cuentas; solo se administran estados.",
-    eyebrow: "Gestion de cuentas",
-  },
-  roles: {
-    title: 'Roles y <strong>permisos</strong>',
-    subtitle: "Administra los roles base que controlan el acceso dentro del sistema.",
-    eyebrow: "Configuracion",
-  },
-  documentos: {
-    title: 'Tipos de <strong>documento</strong>',
-    subtitle: "Mantiene actualizado el catalogo de documentos usados en los registros.",
-    eyebrow: "Catalogos",
-  },
-  materiales: {
-    title: 'Materiales <strong>reciclables</strong>',
-    subtitle: "Gestiona el catalogo de materiales, unidades y puntos por kilogramo.",
-    eyebrow: "Catalogos ambientales",
-  },
-  residuos: {
-    title: 'Tipos de <strong>residuo</strong>',
-    subtitle: "Administra la clasificacion de residuos y colores de contenedor.",
-    eyebrow: "Catalogos ambientales",
-  },
-  puntos: {
-    title: 'Puntos <strong>ecologicos</strong>',
-    subtitle: "Revisa los puntos registrados y controla si estan activos o inactivos.",
-    eyebrow: "Cobertura territorial",
-  },
-  mapa: {
-    title: 'Mapa en <strong>tiempo real</strong>',
-    subtitle: "Visualiza puntos ecologicos registrados y la ubicacion actual del administrador si el navegador lo permite.",
-    eyebrow: "Geolocalizacion",
-  },
-  reciclaje: {
-    title: 'Registros de <strong>reciclaje</strong>',
-    subtitle: "Consulta trazabilidad de reciclaje reportada en el sistema.",
-    eyebrow: "Operacion",
-  },
-  reportes: {
-    title: 'Reportes del <strong>sistema</strong>',
-    subtitle: "Exporta datos reales de reciclaje y genera soportes para analisis administrativo.",
-    eyebrow: "Analitica",
-  },
-  novedades: {
-    title: 'Noticias y <strong>novedades</strong>',
-    subtitle: "Publica y administra comunicaciones visibles para la comunidad GreenUp.",
-    eyebrow: "Comunicaciones",
-  },
-  faq: {
-    title: 'Preguntas <strong>frecuentes</strong>',
-    subtitle: "Administra respuestas utiles para usuarios del sistema.",
-    eyebrow: "Soporte",
-  },
-  estadisticas: {
-    title: 'Estadisticas de <strong>impacto</strong>',
-    subtitle: "Observa indicadores generales de actividad y reciclaje.",
-    eyebrow: "Indicadores",
-  },
-  contenido: {
-    title: 'Contenido <strong>educativo</strong>',
-    subtitle: "Crea recursos educativos que fortalecen la separacion y cultura ambiental.",
-    eyebrow: "Educacion ambiental",
-  },
-  perfil: {
-    title: 'Perfil del <strong>administrador</strong>',
-    subtitle: "Consulta los datos de la sesion administrativa actual.",
-    eyebrow: "Cuenta",
-  },
-  configuracion: {
-    title: 'Configuracion del <strong>panel</strong>',
-    subtitle: "Controla preferencias locales, notificaciones y herramientas de sesion.",
-    eyebrow: "Preferencias",
-  },
-};
-
-const adminHeroImageGroups = {
-  panel: "control",
-  usuarios: "usuarios",
-  roles: "seguridad",
-  documentos: "documentos",
-  materiales: "materiales",
-  residuos: "residuos",
-  puntos: "puntos",
-  mapa: "mapa",
-  reciclaje: "reciclaje",
-  reportes: "reportes",
-  novedades: "noticias",
-  faq: "soporte",
-  estadisticas: "estadisticas",
-  contenido: "educacion",
-  perfil: "perfil",
-  configuracion: "configuracion",
-};
-
-const adminHeroImageBank = [
-  "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1523978591478-c753949ff840?auto=format&fit=crop&w=1200&q=80"
-];
-
-function imagenesHeroModulo(modulo) {
-  /*
-    Carrusel automatico del administrador.
-    Usa URLs fijas de imagen para evitar fallas de carga por busquedas dinamicas.
-    Cada apartado arranca desde una posicion diferente, por eso el orden de las
-    15 fotos cambia entre paginas y no se siente repetido.
-  */
-  const modulos = Object.keys(adminHeroImageGroups);
-  const inicio = Math.max(0, modulos.indexOf(modulo));
-  return Array.from({ length: 15 }, (_, index) => ({
-    url: adminHeroImageBank[(inicio + index) % adminHeroImageBank.length],
-    label: `Imagen ${index + 1} de 15`,
-  }));
-}
-
-function iniciarCarruselHero() {
-  /*
-    Activa el paso automatico de imagenes del hero.
-    Si el usuario cambia de pagina, el temporizador anterior se limpia primero.
-  */
-  if (adminHeroTimer) clearInterval(adminHeroTimer);
-
-  const slides = Array.from(document.querySelectorAll(".hero-slide"));
-  const dots = Array.from(document.querySelectorAll(".carousel-dots i"));
-  if (slides.length <= 1) return;
-
-  let activo = 0;
-  adminHeroTimer = setInterval(() => {
-    slides[activo].classList.remove("active");
-    dots[activo]?.classList.remove("active");
-    activo = (activo + 1) % slides.length;
-    slides[activo].classList.add("active");
-    dots[activo]?.classList.add("active");
-  }, 3500);
-}
-
-document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
-
-async function iniciarAdminSistema() {
-  protegerAdminSistema();
-  aplicarTemaAdminSistema();
-  pintarEstructuraBase();
-  await cargarModuloAdmin();
-  iniciarMonitoreoAdmin();
-}
-
-function moduloActual() {
-  /*
-    DETECCION DEL APARTADO ACTUAL:
-    Algunas paginas antiguas no declaran window.ADMIN_MODULE dentro del HTML.
-    Para que el navbar funcione siempre, tambien detectamos el modulo usando
-    el nombre real del archivo abierto en el navegador.
-  */
-  if (window.ADMIN_MODULE) return window.ADMIN_MODULE;
-
-  const archivo = (window.location.pathname.split("/").pop() || ADMIN_HOME).toLowerCase();
-  const modulosPorArchivo = {
-    "admin_panel.html": "panel",
-    "admin_usuarios.html": "usuarios",
-    "admin_mapa.html": "mapa",
-    "admin_puntos_reciclaje.html": "puntos",
-    "admin_reportes.html": "reportes",
-    "admin_roles.html": "roles",
-    "admin_tipo_documento.html": "documentos",
-    "admin_materiales.html": "materiales",
-    "admin_residuos.html": "residuos",
-    "admin_registros_reciclaje.html": "reciclaje",
-    "admin_novedades.html": "novedades",
-    "admin_contenido_educativo.html": "contenido",
-    "admin_faq.html": "faq",
-    "admin_estadisticas.html": "estadisticas",
-    "admin_perfil.html": "perfil",
-    "admin_configuracion.html": "configuracion",
-  };
-
-  return modulosPorArchivo[archivo] || "panel";
-}
-
-function obtenerAdminActual() {
-  try {
-    return JSON.parse(localStorage.getItem("usuario") || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function obtenerTemaAdminSistema() {
-  /*
-    TEMA GLOBAL DEL ADMIN:
-    Lee si el administrador quiere ver todo el panel en oscuro o blanco.
-    Tambien acepta la clave antigua del perfil para no perder la preferencia.
-  */
-  const temaGuardado = localStorage.getItem("greenup_admin_tema")
-    || localStorage.getItem("greenup_admin_perfil_modo")
-    || "claro";
-  return temaGuardado === "oscuro" ? "oscuro" : "claro";
-}
-
-function aplicarTemaAdminSistema() {
-  /*
-    APLICA EL TEMA A TODA LA PAGINA:
-    Estas clases cambian navbar, fondo, tarjetas, tablas, formularios y mapa.
-  */
-  const tema = obtenerTemaAdminSistema();
-  document.body.classList.remove("admin-theme-dark", "admin-theme-light");
-  document.body.classList.add(tema === "oscuro" ? "admin-theme-dark" : "admin-theme-light");
-}
-
-function cambiarTemaAdminSistema(modo) {
-  /*
-    CAMBIO MANUAL DE TEMA:
-    Guarda la preferencia y actualiza visualmente todo el panel administrador.
-  */
-  localStorage.setItem("greenup_admin_tema", modo);
-  localStorage.setItem("greenup_admin_perfil_modo", modo === "oscuro" ? "oscuro" : "claro");
-  aplicarTemaAdminSistema();
-  actualizarBotonTemaAdminSistema();
-  if (moduloActual() === "perfil") cargarPerfil();
-  mostrarToast("Tema actualizado", modo === "oscuro" ? "Modo oscuro activado en todo el panel." : "Modo blanco activado en todo el panel.");
-}
-
-function alternarTemaAdminSistema() {
-  const siguienteTema = obtenerTemaAdminSistema() === "oscuro" ? "claro" : "oscuro";
-  cambiarTemaAdminSistema(siguienteTema);
-}
-
-function actualizarBotonTemaAdminSistema() {
-  /*
-    BOTON DEL TOPBAR:
-    Cambia el icono para indicar el siguiente modo disponible.
-  */
-  const botonTema = document.querySelector(".theme-toggle-button .material-symbols-outlined");
-  if (!botonTema) return;
-  botonTema.textContent = obtenerTemaAdminSistema() === "oscuro" ? "light_mode" : "dark_mode";
-}
-
-function protegerAdminSistema() {
-  const admin = obtenerAdminActual();
-  if (!admin.id_usuario || Number(admin.id_rol) !== 1) {
-    window.location.href = "../public/admin_login.html";
-  }
-}
-
-function headersAdmin() {
-  const admin = obtenerAdminActual();
-  return {
-    "Content-Type": "application/json",
-    "id-usuario": admin.id_usuario,
-    "id-rol": admin.id_rol,
-  };
-}
-
-async function apiAdmin(ruta, opciones = {}) {
-  const respuesta = await fetch(ADMIN_API_BASE + ruta, {
-    ...opciones,
-    headers: { ...headersAdmin(), ...(opciones.headers || {}) },
-  });
-  const datos = await respuesta.json().catch(() => ({}));
-  if (!respuesta.ok) {
-    throw new Error(datos.mensaje || datos.error || "No se pudo conectar con " + ruta);
-  }
-  return datos;
-}
-
-function pintarEstructuraBase() {
-  const actual = moduloActual();
-  const admin = obtenerAdminActual();
-  const temaActual = obtenerTemaAdminSistema();
-  document.body.classList.add("admin-app");
-  aplicarTemaAdminSistema();
-  document.body.innerHTML = `
-    <aside class="app-sidebar">
-      ${renderBrand()}
-      ${renderNavGroup("Principal", adminPrimaryNav, actual)}
-      ${renderNavGroup("Sistema", adminSystemNav, actual)}
-      ${renderNavGroup("Contenido", adminContentNav, actual)}
-      <div class="sidebar-actions">
-        <button class="logout-link" type="button" onclick="cerrarSesionAdminSistema()">
-          <span class="material-symbols-outlined">logout</span>
-          Cerrar sesion
-        </button>
-      </div>
-    </aside>
-
-    <header class="app-topbar">
-      <div class="mobile-brand">${renderBrand()}</div>
-      <div class="topbar-search">
-        <label class="search-shell" for="admin-search">
-          <span class="material-symbols-outlined">search</span>
-          <input id="admin-search" type="search" placeholder="Buscar en la tabla actual..." />
-        </label>
-      </div>
-      <div class="topbar-actions">
-        <button class="icon-button" type="button" title="Actualizar" onclick="cargarModuloAdmin()">
-          <span class="material-symbols-outlined">refresh</span>
-        </button>
-        <button class="icon-button" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
-        <button class="icon-button theme-toggle-button" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
-          <span class="material-symbols-outlined">${temaActual === "oscuro" ? "light_mode" : "dark_mode"}</span>
-        </button>
-        <div class="user-menu">
-          <span class="user-avatar">${iniciales(admin.nombres || admin.usuario || "A")}</span>
-          <span class="user-meta">
-            <strong>${limpiar(admin.usuario || "admin")}</strong>
-            <span>Administrador</span>
-          </span>
-        </div>
-      </div>
-    </header>
-
-    <main class="admin-main">
-      <section id="admin-hero"></section>
-      <section id="admin-content"></section>
-    </main>
-
-    <nav class="mobile-bottom-nav">
-      ${adminPrimaryNav.map((item) => `
-        <a class="${item.module === actual ? "active" : ""}" href="${item.href}" title="${item.label}">
-          <span class="material-symbols-outlined">${item.icon}</span>
-        </a>
-      `).join("")}
-    </nav>
-    <div id="toast-stack" class="toast-stack"></div>
-  `;
-
-  document.getElementById("admin-search").addEventListener("input", filtrarTablaActual);
-  prepararNavbarAdmin();
-}
-
-function prepararNavbarAdmin() {
-  /*
-    NAVBAR ESTABLE:
-    Cuando el administrador entra a un apartado de abajo, el sidebar se vuelve
-    a construir. Guardamos su scroll y centramos el enlace activo para que el
-    menu no se suba de golpe ni pierda la opcion seleccionada.
-  */
-  const sidebar = document.querySelector(".app-sidebar");
-  if (!sidebar) return;
-
-  const guardado = Number(sessionStorage.getItem("greenup_admin_sidebar_scroll") || 0);
-  if (Number.isFinite(guardado) && guardado > 0) {
-    sidebar.scrollTop = guardado;
-  }
-
-  const activo = sidebar.querySelector(".sidebar-link.active");
-  if (activo) {
-    const margen = 90;
-    const arribaActivo = activo.offsetTop;
-    const abajoActivo = arribaActivo + activo.offsetHeight;
-    const arribaVisible = sidebar.scrollTop;
-    const abajoVisible = arribaVisible + sidebar.clientHeight;
-
-    if (arribaActivo < arribaVisible + margen || abajoActivo > abajoVisible - margen) {
-      sidebar.scrollTop = Math.max(0, arribaActivo - (sidebar.clientHeight / 2) + (activo.offsetHeight / 2));
-    }
-  }
-
-  sidebar.addEventListener("scroll", () => {
-    sessionStorage.setItem("greenup_admin_sidebar_scroll", String(sidebar.scrollTop));
-  }, { passive: true });
-
-  sidebar.querySelectorAll("a").forEach((enlace) => {
-    enlace.addEventListener("click", () => {
-      sessionStorage.setItem("greenup_admin_sidebar_scroll", String(sidebar.scrollTop));
-    });
-  });
-}
-
-function renderBrand() {
-  return `
-    <a class="brand-lockup" href="${ADMIN_HOME}" aria-label="Ir al panel GreenUp">
+  <aside class="app-sidebar d-flex flex-column">
+    <a class="brand-lockup navbar-brand d-inline-flex" href="admin_panel.html" aria-label="Ir al panel GreenUp">
       <span class="brand-logo"><span class="material-symbols-outlined filled">recycling</span></span>
       <span>
         <span class="brand-name">Green<strong>Up</strong></span>
         <span class="brand-kicker">Admin sistema</span>
       </span>
     </a>
-  `;
-}
 
-function renderNavGroup(titulo, items, actual) {
-  return `
-    <nav class="sidebar-nav" aria-label="${titulo}">
-      <p class="sidebar-section-title">${titulo}</p>
-      ${items.map((item) => `
-        <a class="sidebar-link ${item.module === actual ? "active" : ""}" href="${item.href}">
-          <span class="material-symbols-outlined">${item.icon}</span>
-          ${item.label}
-        </a>
-      `).join("")}
-    </nav>
-  `;
-}
-
-function pintarHero(extraStats = []) {
-  const pagina = adminPages[moduloActual()] || adminPages.panel;
-  const stats = extraStats.slice(0, 2);
-  const imagenes = imagenesHeroModulo(moduloActual());
-
-  document.getElementById("admin-hero").innerHTML = `
-    <!-- TITULO DEL MODULO: identifica el apartado actual del administrador. -->
-    <article class="page-hero">
-      <div class="hero-copy">
-        <span class="hero-eyebrow"><span class="material-symbols-outlined">verified_user</span>${pagina.eyebrow}</span>
-        <h1>${pagina.title}</h1>
-        <p>${pagina.subtitle}</p>
-        ${stats.length ? `<!-- CARTAS RESUMEN: muestran indicadores rapidos del modulo actual. --><div class="hero-stats">${stats.map((s, index) => `
-          <div class="summary-card ${index === 1 ? "blue" : ""}">
-            <span class="summary-label">${s[0]}</span>
-            <span class="summary-value">${s[1]}</span>
-          </div>
-        `).join("")}</div>` : ""}
-      </div>
-      <!-- CARRUSEL AUTOMATICO: contiene 15 imagenes distintas por apartado. -->
-      <div class="hero-visual" aria-label="Carrusel visual del administrador">
-        <div class="hero-carousel">
-          ${imagenes.map((imagen, index) => `
-            <div class="hero-slide ${index === 0 ? "active" : ""}" style="background-image: url('${imagen.url}')"></div>
-          `).join("")}
-        </div>
-        <div class="hero-carousel-card">
-          <div>
-            <strong>GreenUp Admin</strong><br>
-            <span>${pagina.eyebrow}</span>
-          </div>
-          <div class="carousel-dots">
-            ${imagenes.map((_, index) => `<i class="${index === 0 ? "active" : ""}"></i>`).join("")}
-          </div>
-        </div>
-      </div>
-    </article>
-  `;
-
-  iniciarCarruselHero();
-}
-
-async function cargarModuloAdmin() {
-  const cargadores = {
-    panel: cargarPanel,
-    usuarios: cargarUsuarios,
-    roles: () => cargarCrud("roles"),
-    documentos: () => cargarCrud("documentos"),
-    materiales: () => cargarCrud("materiales"),
-    residuos: () => cargarCrud("residuos"),
-    puntos: cargarPuntos,
-    mapa: cargarMapa,
-    reciclaje: cargarReciclaje,
-    reportes: cargarReportes,
-    novedades: cargarNovedades,
-    faq: cargarFaq,
-    estadisticas: cargarEstadisticas,
-    contenido: cargarContenido,
-    perfil: cargarPerfil,
-    configuracion: cargarConfiguracion,
-  };
-
-  try {
-    await (cargadores[moduloActual()] || cargadores.panel)();
-  } catch (error) {
-    pintarHero();
-    document.getElementById("admin-content").innerHTML = renderEmpty(
-      "warning",
-      "No se pudo cargar este modulo.",
-      error.message,
-    );
-    mostrarToast("Error", error.message);
-  }
-}
-
-async function cargarPanel() {
-  const [usuarios, ciudadanos, recicladoras, puntos, reciclajes, novedades, estadisticas] =
-    await Promise.all([
-      apiAdmin("/api/usuarios/listar"),
-      apiAdmin("/api/usuarios/ciudadanos"),
-      apiAdmin("/api/recicladoras/listar"),
-      apiAdmin("/ubicaciones"),
-      apiAdmin("/reciclaje"),
-      apiAdmin("/novedades"),
-      apiAdmin("/estadisticas"),
-    ]);
-
-  pintarHero([
-    ["Usuarios", String(usuarios.length)],
-    ["Puntos", String(puntos.length)],
-  ]);
-
-  document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
-      ${metric("groups", usuarios.length, "Usuarios registrados", "Ciudadanos y recicladoras")}
-      ${metric("person", ciudadanos.length, "Ciudadanos", "Cuentas creadas desde ciudadano", "blue")}
-      ${metric("storefront", recicladoras.length, "Recicladoras", "Administradores de recicladora")}
-      ${metric("recycling", estadisticas.total_reciclajes || 0, "Registros reciclaje", `${estadisticas.total_cantidad || 0} kg reportados`, "blue")}
-    </section>
-    <section class="content-grid">
-      <article class="data-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Ultimos usuarios registrados</h2>
-            <p>Datos reales cargados desde Supabase.</p>
-          </div>
-          <a class="ghost-button" href="admin_usuarios.html">Ver usuarios</a>
-        </div>
-        ${tablaDatos(
-          ["ID", "Nombre", "Usuario", "Rol", "Estado"],
-          usuarios.slice(0, 8).map((u) => [
-            u.id_usuario,
-            `${u.nombres || ""} ${u.apellidos || ""}`,
-            u.usuario,
-            nombreRol(u.id_rol),
-            estadoHtml(u.id_estado),
-          ]),
-        )}
-      </article>
-      <article class="module-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Noticias recientes</h2>
-            <p>Comunicaciones publicadas por administracion.</p>
-          </div>
-          <a class="ghost-button" href="admin_novedades.html">Gestionar</a>
-        </div>
-        ${renderNewsList(novedades.slice(0, 3))}
-      </article>
-    </section>
-  `;
-}
-
-async function cargarUsuarios() {
-  const [ciudadanos, recicladoras, todos] = await Promise.all([
-    apiAdmin("/api/usuarios/ciudadanos"),
-    apiAdmin("/api/recicladoras/listar"),
-    apiAdmin("/api/usuarios/listar"),
-  ]);
-
-  pintarHero([
-    ["Ciudadanos", String(ciudadanos.length)],
-    ["Recicladoras", String(recicladoras.length)],
-  ]);
-
-  const filas = [
-    ...ciudadanos.map((u) => ({ ...u, tipo_admin: "Ciudadano" })),
-    ...recicladoras.map((u) => ({ ...u, tipo_admin: "Recicladora" })),
-  ];
-
-  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Estado"];
-  adminTableData = filas.map((u) => ({
-    raw: u,
-    values: [
-      `<span class="type-pill ${u.tipo_admin === "Recicladora" ? "blue" : "green"}">${u.tipo_admin}</span>`,
-      `${limpiar(u.nombres)} ${limpiar(u.apellidos)}`,
-      limpiar(u.usuario),
-      limpiar(u.correo),
-      limpiar(u.numero_documento),
-      estadoHtml(u.id_estado),
-    ],
-    actions: renderEstadoUsuario(u),
-  }));
-
-  document.getElementById("admin-content").innerHTML = `
-    ${toolbarUsuarios(todos.length)}
-    <article class="data-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Tabla de usuarios registrados</h2>
-          <p>El administrador gestiona estados. Los registros nacen en ciudadano o recicladora.</p>
-        </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
-          <span class="material-symbols-outlined">download</span> Exportar
-        </button>
-      </div>
-      <div id="tabla-admin"></div>
-    </article>
-  `;
-  pintarTablaActual();
-}
-
-function toolbarUsuarios(total) {
-  return `
-    <div class="toolbar">
-      <span class="type-pill blue">${total} cuentas en total</span>
-      <select id="filtro-tipo-usuario" onchange="filtrarTablaActual()">
-        <option value="">Todos los tipos</option>
-        <option value="Ciudadano">Ciudadanos</option>
-        <option value="Recicladora">Recicladoras</option>
-      </select>
-      <select id="filtro-estado" onchange="filtrarTablaActual()">
-        <option value="">Todos los estados</option>
-        <option value="Activo">Activos</option>
-        <option value="Inactivo">Inactivos</option>
-      </select>
-      <button class="ghost-button" type="button" onclick="cargarUsuarios()">
-        <span class="material-symbols-outlined">sync</span> Actualizar tabla
-      </button>
-    </div>
-  `;
-}
-
-function renderEstadoUsuario(usuario) {
-  const activo = Number(usuario.id_estado) === 1;
-  const siguiente = activo ? 2 : 1;
-  const texto = activo ? "Inactivar" : "Activar";
-  const clase = activo ? "danger-button" : "";
-  return `
-    <button class="small-button ${clase}" type="button" onclick="cambiarEstadoUsuario(${usuario.id_usuario}, ${siguiente})">
-      ${texto}
-    </button>
-  `;
-}
-
-async function cambiarEstadoUsuario(idUsuario, idEstado) {
-  await apiAdmin(`/api/usuarios/estado/${idUsuario}`, {
-    method: "PUT",
-    body: JSON.stringify({ id_estado: idEstado }),
-  });
-  mostrarToast("Usuario actualizado", "El estado de la cuenta cambio correctamente.");
-  await cargarUsuarios();
-}
-
-const crudConfig = {
-  roles: {
-    titulo: "Roles del sistema",
-    listar: "/api/roles/listar",
-    crear: "/api/roles/registrar",
-    buscar: "/api/roles/buscar/",
-    actualizar: "/api/roles/actualizar/",
-    inhabilitar: "/api/roles/inhabilitar/",
-    id: "id_rol",
-    columnas: ["ID", "Nombre", "Descripcion", "Estado"],
-    campos: [
-      { id: "nombre", label: "Nombre" },
-      { id: "descripcion", label: "Descripcion", full: true },
-      { id: "id_estado", label: "Estado", type: "select", options: [[1, "Activo"], [2, "Inactivo"]] },
-    ],
-    map: (r) => [r.id_rol, r.nombre, r.descripcion, estadoHtml(r.id_estado)],
-  },
-  documentos: {
-    titulo: "Tipos de documento",
-    listar: "/api/tipo-documento/listar",
-    crear: "/api/tipo-documento/registrar",
-    buscar: "/api/tipo-documento/buscar/",
-    actualizar: "/api/tipo-documento/actualizar/",
-    inhabilitar: "/api/tipo-documento/inhabilitar/",
-    id: "id_tipo_documento",
-    columnas: ["ID", "Descripcion", "Estado"],
-    campos: [
-      { id: "descripcion", label: "Descripcion", full: true },
-      { id: "id_estado", label: "Estado", type: "select", options: [[1, "Activo"], [2, "Inactivo"]] },
-    ],
-    map: (r) => [r.id_tipo_documento, r.descripcion, estadoHtml(r.id_estado)],
-  },
-  materiales: {
-    titulo: "Materiales reciclables",
-    listar: "/materiales",
-    crear: "/materiales",
-    buscar: "/materiales/",
-    actualizar: "/materiales/",
-    estado: "/materiales/:id/estado",
-    id: "id_tipo_material",
-    columnas: ["ID", "Nombre", "Unidad", "Puntos/kg", "Residuo", "Estado"],
-    campos: [
-      { id: "nombre", label: "Nombre" },
-      { id: "unidad", label: "Unidad", value: "kg" },
-      { id: "puntos_por_kg", label: "Puntos por kg", type: "number" },
-      { id: "id_tipo_residuo", label: "ID tipo residuo", type: "number" },
-      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-    ],
-    map: (r) => [r.id_tipo_material, r.nombre, r.unidad, r.puntos_por_kg, r.id_tipo_residuo, estadoHtml(r.id_estado)],
-  },
-  residuos: {
-    titulo: "Tipos de residuo",
-    listar: "/tipos-residuo",
-    crear: "/tipos-residuo",
-    buscar: "/tipos-residuo/",
-    actualizar: "/tipos-residuo/",
-    estado: "/tipos-residuo/:id/estado",
-    id: "id_tipo_residuo",
-    columnas: ["ID", "Nombre", "Color", "Descripcion", "Estado"],
-    campos: [
-      { id: "nombre", label: "Nombre" },
-      { id: "color_contenedor", label: "Color contenedor" },
-      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-    ],
-    map: (r) => [r.id_tipo_residuo, r.nombre, r.color_contenedor, r.descripcion, estadoHtml(r.id_estado)],
-  },
-};
-
-async function cargarCrud(nombre) {
-  const config = crudConfig[nombre];
-  const datos = await apiAdmin(config.listar);
-  pintarHero([
-    ["Registros", String(datos.length)],
-    ["Activos", String(datos.filter((x) => Number(x.id_estado) === 1).length)],
-  ]);
-
-  adminTableColumns = config.columnas;
-  adminTableData = datos.map((item) => ({
-    raw: item,
-    values: config.map(item).map((v) => limpiarHtmlPermitido(v)),
-    actions: `
-      <button class="small-button" type="button" onclick="editarCrud('${nombre}', ${item[config.id]})">Editar</button>
-      <button class="small-button danger-button" type="button" onclick="inhabilitarCrud('${nombre}', ${item[config.id]})">Inactivar</button>
-    `,
-  }));
-
-  document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid catalog-layout">
-      <article class="admin-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Crear ${config.titulo}</h2>
-            <p>Catalogo administrado por el sistema.</p>
-          </div>
-        </div>
-        ${renderForm(`form-${nombre}`, config.campos, `guardarCrud('${nombre}', event)`, "Guardar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row">
-          <div>
-            <h2>${config.titulo}</h2>
-            <p>Registros guardados en Supabase.</p>
-          </div>
-          <button class="ghost-button" type="button" onclick="exportarTablaCSV('${nombre}_greenup.csv')">
-            <span class="material-symbols-outlined">download</span> Exportar
-          </button>
-        </div>
-        <div id="tabla-admin"></div>
-      </article>
-    </section>
-  `;
-  pintarTablaActual();
-}
-
-async function guardarCrud(nombre, evento) {
-  evento.preventDefault();
-  const config = crudConfig[nombre];
-  const payload = leerFormulario(config.campos);
-  await apiAdmin(config.crear, { method: "POST", body: JSON.stringify(payload) });
-  mostrarToast("Registro guardado", "El catalogo fue actualizado correctamente.");
-  await cargarCrud(nombre);
-}
-
-async function editarCrud(nombre, id) {
-  const config = crudConfig[nombre];
-  const actual = await apiAdmin(config.buscar + id);
-  const payload = {};
-  for (const campo of config.campos) {
-    const nuevo = prompt(campo.label, actual[campo.id] ?? "");
-    if (nuevo === null) return;
-    payload[campo.id] = normalizarValor(campo, nuevo);
-  }
-  await apiAdmin(config.actualizar + id, { method: "PUT", body: JSON.stringify(payload) });
-  mostrarToast("Registro actualizado", "Los cambios quedaron guardados.");
-  await cargarCrud(nombre);
-}
-
-async function inhabilitarCrud(nombre, id) {
-  const config = crudConfig[nombre];
-  if (!confirm("Deseas inactivar este registro?")) return;
-  if (config.inhabilitar) {
-    await apiAdmin(config.inhabilitar + id, { method: "DELETE" });
-  } else {
-    await apiAdmin(config.estado.replace(":id", id), {
-      method: "PUT",
-      body: JSON.stringify({ id_estado: 2 }),
-    });
-  }
-  mostrarToast("Registro inactivado", "El estado fue actualizado.");
-  await cargarCrud(nombre);
-}
-
-async function cargarPuntos() {
-  const puntos = await apiAdmin("/ubicaciones");
-  pintarHero([
-    ["Puntos", String(puntos.length)],
-    ["Activos", String(puntos.filter((p) => Number(p.id_estado) === 1).length)],
-  ]);
-
-  adminTableColumns = ["ID", "Nombre", "Direccion", "Horario", "Telefono", "Responsable", "Estado"];
-  adminTableData = puntos.map((p) => ({
-    raw: p,
-    values: [
-      p.id_punto,
-      limpiar(p.nombre),
-      limpiar(p.direccion),
-      limpiar(p.horario),
-      limpiar(p.telefono),
-      limpiar(p.responsable),
-      estadoHtml(p.id_estado),
-    ],
-    actions: renderEstadoPunto(p),
-  }));
-
-  document.getElementById("admin-content").innerHTML = `
-    <div class="toolbar">
-      <a class="primary-button" href="admin_mapa.html">
-        <span class="material-symbols-outlined">map</span> Ver mapa
-      </a>
-      <button class="ghost-button" type="button" onclick="cargarPuntos()">
-        <span class="material-symbols-outlined">sync</span> Actualizar puntos
-      </button>
-    </div>
-    <article class="data-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Puntos ecologicos registrados</h2>
-          <p>El administrador controla el estado de los puntos existentes.</p>
-        </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('puntos_greenup.csv')">
-          <span class="material-symbols-outlined">download</span> Exportar
-        </button>
-      </div>
-      <div id="tabla-admin"></div>
-    </article>
-  `;
-  pintarTablaActual();
-}
-
-function renderEstadoPunto(punto) {
-  const activo = Number(punto.id_estado) === 1;
-  const siguiente = activo ? 2 : 1;
-  return `
-    <button class="small-button ${activo ? "danger-button" : ""}" type="button" onclick="cambiarEstadoPunto(${punto.id_punto}, ${siguiente})">
-      ${activo ? "Inactivar" : "Activar"}
-    </button>
-  `;
-}
-
-async function cambiarEstadoPunto(idPunto, idEstado) {
-  await apiAdmin(`/ubicaciones/${idPunto}/estado`, {
-    method: "PUT",
-    body: JSON.stringify({ id_estado: idEstado }),
-  });
-  mostrarToast("Punto actualizado", "El estado del punto cambio correctamente.");
-  await cargarPuntos();
-}
-
-async function cargarMapa() {
-  const puntos = await apiAdmin("/ubicaciones");
-  pintarHero([
-    ["Puntos", String(puntos.length)],
-    ["Actualizacion", "8s"],
-  ]);
-
-  document.getElementById("admin-content").innerHTML = `
-    <!-- MAPA ADMIN: usa Leaflet como el mapa ciudadano, pero con panel fijo para administracion. -->
-    <section class="map-shell">
-      <!-- PANEL FIJO DE PUNTOS: no flota sobre el mapa; permite revisar puntos reales de Supabase. -->
-      <aside id="sidebar-panel">
-        <div class="sidebar-map-header">
-          <h3><span class="material-symbols-outlined">recycling</span>Puntos ecologicos</h3>
-        </div>
-        <div id="recycling-list"></div>
-        <div class="sidebar-map-footer">
-          <button class="primary-button" type="button" onclick="actualizarPuntosMapa(true)">
-            <span class="material-symbols-outlined">sync</span> Actualizar puntos
-          </button>
-        </div>
-      </aside>
-
-      <!-- AREA DEL MAPA: mantiene el mapa independiente del panel y evita que la lista se mueva encima. -->
-      <div class="map-canvas-wrap">
-        <!-- CONTENEDOR DEL MAPA: se llama eco-map para mantener el mismo patron de ciudadano. -->
-        <div id="eco-map"></div>
-
-        <!-- BOTONES FLOTANTES: todos ejecutan acciones reales sobre el mapa. -->
-        <div class="map-floating-controls">
-          <button class="icon-button" type="button" onclick="centerMap()" title="Centrar mi ubicacion">
-            <span class="material-symbols-outlined">my_location</span>
-          </button>
-          <button class="icon-button" type="button" onclick="adminMap.zoomIn()" title="Acercar mapa">
-            <span class="material-symbols-outlined">add</span>
-          </button>
-          <button class="icon-button" type="button" onclick="adminMap.zoomOut()" title="Alejar mapa">
-            <span class="material-symbols-outlined">remove</span>
-          </button>
-          <a class="icon-button" href="admin_puntos_reciclaje.html" title="Ver tabla de puntos">
-            <span class="material-symbols-outlined">table</span>
+        <!-- Grupo del menu: Principal. -->
+        <nav class="sidebar-nav" aria-label="Principal">
+          <p class="sidebar-section-title">Principal</p>
+          <a class="sidebar-link nav-link " href="admin_panel.html">
+            <span class="material-symbols-outlined">dashboard</span>Panel
           </a>
-        </div>
-      </div>
-    </section>
-  `;
+          <a class="sidebar-link nav-link " href="admin_usuarios.html">
+            <span class="material-symbols-outlined">groups</span>Usuarios
+          </a>
+          <a class="sidebar-link nav-link " href="admin_mapa.html">
+            <span class="material-symbols-outlined">map</span>Mapa
+          </a>
+          <a class="sidebar-link nav-link " href="admin_puntos_reciclaje.html">
+            <span class="material-symbols-outlined">location_on</span>Puntos
+          </a>
+          <a class="sidebar-link nav-link " href="admin_reportes.html">
+            <span class="material-symbols-outlined">analytics</span>Reportes
+          </a>
+        </nav>
 
-  await asegurarLeaflet();
-  iniciarMapaLeaflet();
-  await pintarPuntosMapa(puntos, true);
-  iniciarGeolocalizacionAdmin();
-}
+        <!-- Grupo del menu: Sistema. -->
+        <nav class="sidebar-nav" aria-label="Sistema">
+          <p class="sidebar-section-title">Sistema</p>
+          <a class="sidebar-link nav-link active" href="admin_roles.html">
+            <span class="material-symbols-outlined">admin_panel_settings</span>Roles
+          </a>
+          <a class="sidebar-link nav-link " href="admin_tipo_documento.html">
+            <span class="material-symbols-outlined">badge</span>Documentos
+          </a>
+          <a class="sidebar-link nav-link " href="admin_materiales.html">
+            <span class="material-symbols-outlined">inventory_2</span>Materiales
+          </a>
+          <a class="sidebar-link nav-link " href="admin_residuos.html">
+            <span class="material-symbols-outlined">delete_sweep</span>Residuos
+          </a>
+          <a class="sidebar-link nav-link " href="admin_registros_reciclaje.html">
+            <span class="material-symbols-outlined">fact_check</span>Registros
+          </a>
+        </nav>
 
-function iniciarMapaLeaflet() {
-  /*
-    Mapa igual al de ciudadano: Leaflet, OpenStreetMap, sin zoom nativo
-    porque usamos botones flotantes propios del panel.
-  */
-  if (adminMap) {
-    adminMap.remove();
-    adminMarkers.clear();
-  }
-  adminRouteControl = null;
-  adminRouteLayers = [];
-  adminMap = L.map("eco-map", { zoomControl: false, attributionControl: false }).setView([10.4631, -73.2532], 13);
-  window.adminMap = adminMap;
-  window.map = adminMap;
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "OpenStreetMap contributors",
-  }).addTo(adminMap);
-}
-function crearIconoPuntoAdmin(color, activo = true) {
-  return L.divIcon({
-    className: "greenup-recycling-marker",
-    html: `
-      <div style="width:34px;height:34px;display:grid;place-items:center;border:2px solid ${color};border-radius:999px;background:${activo ? "#f4fff4" : "#f1f3f5"};color:${color};box-shadow:0 8px 18px rgba(15,23,42,.18);">
-        <span class="material-symbols-outlined" style="font-size:20px;line-height:1;">${activo ? "recycling" : "location_off"}</span>
-      </div>
-    `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
-    popupAnchor: [0, -17],
-  });
-}
-async function actualizarPuntosMapa(manual = false) {
-  const puntos = await apiAdmin("/ubicaciones");
-  await pintarPuntosMapa(puntos, false);
-  if (manual) mostrarToast("Mapa actualizado", "Los puntos fueron consultados nuevamente.");
-}
-
-async function pintarPuntosMapa(puntos, ajustarVista = false) {
-  if (!adminMap) return;
-  const bounds = [];
-  const lista = document.getElementById("recycling-list");
-  if (lista) lista.innerHTML = "";
-
-  if (adminLastPointCount !== null && puntos.length > adminLastPointCount) {
-    notificarAdmin("Nuevo punto ecologico", "El mapa del administrador ya fue actualizado.");
-  }
-  adminLastPointCount = puntos.length;
-
-  for (const punto of puntos) {
-    const coords = await coordenadasPunto(punto);
-    if (!coords) continue;
-
-    bounds.push([coords.lat, coords.lng]);
-    const color = Number(punto.id_estado) === 1 ? "#296c1f" : "#68717b";
-    const popupHtml = `
-      <!-- POPUP DEL PUNTO: muestra informacion real de Supabase. -->
-      <div style="min-width:185px;max-width:220px">
-        <strong style="color:${color};display:block;margin-bottom:8px">${limpiar(punto.nombre)}</strong>
-        <span><b>Direccion:</b> ${limpiar(punto.direccion)}</span><br>
-        <span><b>Horario:</b> ${limpiar(punto.horario || "Horario por confirmar")}</span><br>
-        <span><b>Materiales:</b> ${limpiar(resumirMaterialesAdmin(punto.materiales_aceptados))}</span><br>
-        <span><b>Contacto:</b> ${limpiar(punto.telefono || "Telefono por confirmar")}</span>
-        ${estadoHtml(punto.id_estado)}
-        <button class="route-button" onclick="trazarRutaAdmin(${coords.lat}, ${coords.lng})">Como llegar</button>
-      </div>
-    `;
-
-    let marker = adminMarkers.get(punto.id_punto);
-    const iconoPunto = crearIconoPuntoAdmin(color, Number(punto.id_estado) === 1);
-
-    if (marker) {
-      marker.setLatLng([coords.lat, coords.lng]).setIcon(iconoPunto).setPopupContent(popupHtml);
-    } else {
-      marker = L.marker([coords.lat, coords.lng], {
-        icon: iconoPunto,
-        title: limpiar(punto.nombre),
-      }).addTo(adminMap).bindPopup(popupHtml);
-      adminMarkers.set(punto.id_punto, marker);
-    }
-
-    if (lista) lista.appendChild(renderPuntoSidebar(punto, coords, marker));
-  }
-
-  if (lista && !lista.children.length) {
-    lista.innerHTML = `<div class="empty-state"><div><span class="material-symbols-outlined">location_off</span><strong>No hay puntos con ubicacion</strong><p>Cuando existan puntos en Supabase apareceran aqui.</p></div></div>`;
-  }
-
-  if (ajustarVista && bounds.length) adminMap.fitBounds(bounds, { padding: [40, 40] });
-}
-
-
-function renderPuntoSidebar(punto, coords, marker) {
-  /* CARTA DEL MAPA: boton funcional para centrar el punto y abrir su popup. */
-  const item = document.createElement("button");
-  item.type = "button";
-  item.className = "gu-sidebar-item";
-  item.innerHTML = `
-    <span class="point-icon"><span class="material-symbols-outlined">recycling</span></span>
-    <span class="point-info">
-      <strong>${limpiar(punto.nombre)}</strong>
-      <span>${limpiar(punto.direccion)}</span>
-      <span>${Number(punto.id_estado) === 1 ? "Activo" : "Inactivo"}</span>
-    </span>
-  `;
-  item.addEventListener("click", () => {
-    adminMap.setView([coords.lat, coords.lng], 16, { animate: true });
-    setTimeout(() => marker.openPopup(), 250);
-    if (window.innerWidth < 900) document.getElementById("eco-map")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
-  return item;
-}
-
-function toggleSidebarAdmin() {
-  const sidebar = document.getElementById("sidebar-panel");
-  if (!sidebar) return;
-  sidebar.classList.toggle("collapsed");
-  setTimeout(() => adminMap?.invalidateSize(), 300);
-}
-async function coordenadasPunto(punto) {
-  /*
-    Ubicacion de puntos para el mapa admin.
-    1. Si Supabase trae latitud/longitud validas dentro de Valledupar, se usan.
-    2. Si no, se geocodifica la direccion limitando la busqueda a Valledupar.
-    3. Si el servicio no encuentra nada, se ubica cerca del centro para no mandar
-       el mapa a otro pais o al mar.
-  */
-  const lat = Number(punto.latitud);
-  const lng = Number(punto.longitud);
-  if (coordenadaEnValledupar(lat, lng)) return { lat, lng };
-
-  const clave = "greenup_geo_admin_v2_" + punto.id_punto;
-  const guardado = localStorage.getItem(clave);
-  if (guardado) {
-    const coordsGuardadas = JSON.parse(guardado);
-    if (coordenadaEnValledupar(coordsGuardadas.lat, coordsGuardadas.lng)) return coordsGuardadas;
-  }
-
-  if (punto.direccion) {
-    const consulta = encodeURIComponent(`${punto.direccion}, Valledupar, Cesar, Colombia`);
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&bounded=1&viewbox=-73.36,10.57,-73.16,10.36&q=${consulta}`;
-    const respuesta = await fetch(url);
-    const datos = await respuesta.json();
-    if (datos.length) {
-      const coords = { lat: Number(datos[0].lat), lng: Number(datos[0].lon) };
-      if (coordenadaEnValledupar(coords.lat, coords.lng)) {
-        localStorage.setItem(clave, JSON.stringify(coords));
-        return coords;
-      }
-    }
-  }
-
-  const fallback = coordenadaFallbackValledupar(punto.id_punto || 1);
-  localStorage.setItem(clave, JSON.stringify(fallback));
-  return fallback;
-}
-
-function coordenadaEnValledupar(lat, lng) {
-  /* Rango aproximado de Valledupar para evitar que el mapa se vaya al mar. */
-  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= 10.35 && lat <= 10.58 && lng >= -73.36 && lng <= -73.12;
-}
-
-function coordenadaFallbackValledupar(id) {
-  /* Coordenada segura cuando no hay lat/lng ni geocodificacion confiable. */
-  const centro = { lat: 10.4631, lng: -73.2532 };
-  const paso = Number(id) || 1;
-  return {
-    lat: centro.lat + ((paso % 7) - 3) * 0.006,
-    lng: centro.lng + ((paso % 5) - 2) * 0.006,
-  };
-}
-
-function iniciarGeolocalizacionAdmin() {
-  /* GEOLOCALIZACION EN TIEMPO REAL: actualiza la ubicacion del administrador. */
-  if (!navigator.geolocation || !adminMap) return;
-  if (adminWatchId) navigator.geolocation.clearWatch(adminWatchId);
-
-  adminWatchId = navigator.geolocation.watchPosition(
-    (posicion) => {
-      adminUserLocation = [posicion.coords.latitude, posicion.coords.longitude];
-      if (!adminUserMarker) {
-        const userIcon = L.divIcon({
-          className: "custom-user-icon",
-          html: `<div style="background-color:#007bff;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,.45);"></div>`,
-          iconSize: [18, 18],
-          iconAnchor: [9, 9],
-        });
-        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
-      } else {
-        adminUserMarker.setLatLng(adminUserLocation);
-      }
-    },
-    () => mostrarToast("Ubicacion", "No fue posible obtener tu ubicacion actual."),
-    { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 },
-  );
-}
-
-function solicitarUbicacionAdminActual() {
-  return new Promise((resolve) => {
-    if (!navigator.geolocation || !adminMap) {
-      resolve(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (posicion) => {
-        adminUserLocation = [posicion.coords.latitude, posicion.coords.longitude];
-        if (!adminUserMarker) {
-          const userIcon = L.divIcon({
-            className: "custom-user-icon",
-            html: `<div style="background-color:#007bff;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,.45);"></div>`,
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
-          });
-          adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
-        } else {
-          adminUserMarker.setLatLng(adminUserLocation);
-        }
-        resolve(true);
-      },
-      () => resolve(false),
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 },
-    );
-  });
-}
-
-function centerMap() {
-  if (adminUserLocation && adminMap) {
-    adminMap.setView(adminUserLocation, 15, { animate: true });
-    adminUserMarker?.openPopup();
-  } else {
-    iniciarGeolocalizacionAdmin();
-    mostrarToast("Ubicacion", "Solicitando ubicacion del navegador.");
-  }
-}
-
-function centrarUbicacionAdmin() {
-  centerMap();
-}
-
-function limpiarRutasAdmin() {
-  adminRouteLayers.forEach((layer) => adminMap?.removeLayer(layer));
-  adminRouteLayers = [];
-}
-
-function pintarRutasAdmin(evento) {
-  limpiarRutasAdmin();
-  const colores = ["#296c1f", "#065591", "#d18b00", "#7c3aed"];
-  const rutas = (evento.routes || []).slice(0, 4);
-
-  rutas.forEach((ruta, indice) => {
-    const coordenadas = ruta.coordinates || [];
-    if (!coordenadas.length) return;
-    const capa = L.polyline(coordenadas, {
-      color: colores[indice % colores.length],
-      weight: indice === 0 ? 7 : 5,
-      opacity: indice === 0 ? 0.9 : 0.7,
-      dashArray: indice === 0 ? null : "10 8",
-    }).addTo(adminMap);
-    adminRouteLayers.push(capa);
-  });
-}
-
-async function trazarRutaAdmin(destinoLat, destinoLng) {
-  /* BOTON COMO LLEGAR: usa la ubicacion actual hacia el punto seleccionado. */
-  if (!adminUserLocation) {
-    const ubicado = await solicitarUbicacionAdminActual();
-    if (!ubicado) {
-      mostrarToast("Ruta", "Primero permite la ubicacion para calcular la ruta.");
-      return;
-    }
-  }
-  if (!window.L || !L.Routing) {
-    mostrarToast("Ruta", "El motor de rutas aun se esta cargando.");
-    return;
-  }
-  if (adminRouteControl) adminMap.removeControl(adminRouteControl);
-  limpiarRutasAdmin();
-
-  adminRouteControl = L.Routing.control({
-    waypoints: [L.latLng(adminUserLocation[0], adminUserLocation[1]), L.latLng(destinoLat, destinoLng)],
-    show: false,
-    addWaypoints: false,
-    routeWhileDragging: false,
-    fitSelectedRoutes: true,
-    showAlternatives: true,
-    lineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
-    altLineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
-  }).addTo(adminMap);
-  adminRouteControl.on("routesfound", pintarRutasAdmin);
-}
-
-function cargarRecursoCss(href) {
-  if (document.querySelector(`link[href="${href}"]`)) return;
-  const css = document.createElement("link");
-  css.rel = "stylesheet";
-  css.href = href;
-  document.head.appendChild(css);
-}
-
-function cargarScript(src) {
-  return new Promise((resolve, reject) => {
-    const existente = document.querySelector(`script[src="${src}"]`);
-    if (existente) return resolve();
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error("No se pudo cargar " + src));
-    document.head.appendChild(script);
-  });
-}
-
-async function asegurarLeaflet() {
-  /* Carga Leaflet y Leaflet Routing Machine, igual que el mapa ciudadano. */
-  cargarRecursoCss("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
-  cargarRecursoCss("https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css");
-  if (!window.L) await cargarScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
-  if (!L.Routing) await cargarScript("https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js");
-}
-
-async function cargarReciclaje() {
-  const datos = await apiAdmin("/reciclaje");
-  pintarHero([
-    ["Registros", String(datos.length)],
-    ["Modulo", "Trazabilidad"],
-  ]);
-  adminTableColumns = ["ID", "Cantidad", "Usuario", "Material", "Punto", "Fecha", "Estado"];
-  adminTableData = datos.map((r) => ({
-    raw: r,
-    values: [r.id_registro, r.cantidad, r.id_usuario, r.id_tipo_material, r.id_punto, limpiar(r.fecha_hora), estadoHtml(r.id_estado)],
-    actions: `
-      <button class="small-button danger-button" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 2)">Inactivar</button>
-      <button class="small-button" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 1)">Activar</button>
-    `,
-  }));
-  document.getElementById("admin-content").innerHTML = renderTableCard("Registros de reciclaje", "Datos reportados en el sistema.", "reciclaje_greenup.csv");
-  pintarTablaActual();
-}
-
-async function cambiarEstadoReciclaje(idRegistro, idEstado) {
-  await apiAdmin(`/reciclaje/${idRegistro}/estado`, {
-    method: "PUT",
-    body: JSON.stringify({ id_estado: idEstado }),
-  });
-  mostrarToast("Registro actualizado", "El estado de reciclaje fue actualizado.");
-  await cargarReciclaje();
-}
-
-async function cargarReportes() {
-  const datos = await apiAdmin("/reportes/reciclaje");
-  pintarHero([
-    ["Filas", String(datos.length)],
-    ["Formato", "CSV/PDF"],
-  ]);
-  const columnas = Object.keys(datos[0] || {});
-  adminTableColumns = columnas.length ? columnas : ["Reporte"];
-  adminTableData = datos.map((fila) => ({
-    raw: fila,
-    values: columnas.map((col) => limpiar(fila[col])),
-    actions: "",
-  }));
-  document.getElementById("admin-content").innerHTML = `
-    <div class="toolbar">
-      <button class="primary-button" type="button" onclick="exportarTablaCSV('reporte_reciclaje_greenup.csv')">
-        <span class="material-symbols-outlined">download</span> Exportar CSV
-      </button>
-      <button class="ghost-button" type="button" onclick="window.print()">
-        <span class="material-symbols-outlined">print</span> Imprimir PDF
-      </button>
-      <button class="ghost-button" type="button" onclick="cargarReportes()">
-        <span class="material-symbols-outlined">sync</span> Actualizar
+        <!-- Grupo del menu: Contenido. -->
+        <nav class="sidebar-nav" aria-label="Contenido">
+          <p class="sidebar-section-title">Contenido</p>
+          <a class="sidebar-link nav-link " href="admin_novedades.html">
+            <span class="material-symbols-outlined">newspaper</span>Noticias
+          </a>
+          <a class="sidebar-link nav-link " href="admin_contenido_educativo.html">
+            <span class="material-symbols-outlined">menu_book</span>Contenido
+          </a>
+          <a class="sidebar-link nav-link " href="admin_faq.html">
+            <span class="material-symbols-outlined">quiz</span>FAQ
+          </a>
+          <a class="sidebar-link nav-link " href="admin_estadisticas.html">
+            <span class="material-symbols-outlined">monitoring</span>Estadisticas
+          </a>
+          <a class="sidebar-link nav-link " href="admin_perfil.html">
+            <span class="material-symbols-outlined">person</span>Perfil
+          </a>
+          <a class="sidebar-link nav-link " href="admin_configuracion.html">
+            <span class="material-symbols-outlined">settings</span>Config.
+          </a>
+        </nav>
+    <div class="sidebar-actions">
+      <button class="logout-link btn" type="button" onclick="cerrarSesionAdminSistema()">
+        <span class="material-symbols-outlined">logout</span>Cerrar sesion
       </button>
     </div>
-    ${renderTableCard("Reporte de reciclaje", "Informacion real almacenada en Supabase.", "reporte_reciclaje_greenup.csv")}
-  `;
-  pintarTablaActual();
-}
+  </aside>
 
-async function cargarNovedades() {
-  const datos = await apiAdmin("/novedades");
-  pintarHero([
-    ["Noticias", String(datos.length)],
-    ["Activas", String(datos.filter((n) => Number(n.id_estado) === 1).length)],
-  ]);
-  document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Publicar noticia</h2>
-            <p>Contenido visible para la comunidad.</p>
-          </div>
-        </div>
-        ${renderForm("form-novedad", [
-          { id: "titulo", label: "Titulo" },
-          { id: "imagen", label: "URL de imagen" },
-          { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-        ], "guardarNovedad(event)", "Publicar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Noticias publicadas</h2>
-            <p>Se muestran solo registros existentes.</p>
-          </div>
-        </div>
-        ${renderNewsGrid(datos)}
-      </article>
-    </section>
-  `;
-}
-
-async function guardarNovedad(evento) {
-  evento.preventDefault();
-  const admin = obtenerAdminActual();
-  const payload = leerFormulario([
-    { id: "titulo" },
-    { id: "imagen" },
-    { id: "descripcion" },
-  ]);
-  payload.id_usuario = admin.id_usuario;
-  await apiAdmin("/novedades", { method: "POST", body: JSON.stringify(payload) });
-  mostrarToast("Noticia publicada", "La novedad quedo guardada correctamente.");
-  await cargarNovedades();
-}
-
-async function cambiarEstadoNovedad(idNovedad, idEstado) {
-  await apiAdmin(`/novedades/${idNovedad}/estado`, {
-    method: "PUT",
-    body: JSON.stringify({ id_estado: idEstado }),
-  });
-  mostrarToast("Noticia actualizada", "El estado de la noticia cambio.");
-  await cargarNovedades();
-}
-
-async function cargarFaq() {
-  const datos = await apiAdmin("/faq");
-  pintarHero([["Preguntas", String(datos.length)], ["Modulo", "Soporte"]]);
-  adminTableColumns = ["ID", "Pregunta", "Categoria", "Orden", "Respuesta"];
-  adminTableData = datos.map((f) => ({
-    raw: f,
-    values: [f.id_pregunta, limpiar(f.pregunta), limpiar(f.categoria), limpiar(f.orden), limpiar(f.respuesta)],
-    actions: "",
-  }));
-  document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row"><div><h2>Nueva pregunta</h2><p>Respuesta visible para usuarios.</p></div></div>
-        ${renderForm("form-faq", [
-          { id: "pregunta", label: "Pregunta", full: true },
-          { id: "categoria", label: "Categoria" },
-          { id: "orden", label: "Orden", type: "number" },
-          { id: "respuesta", label: "Respuesta", type: "textarea", full: true },
-        ], "guardarFaq(event)", "Guardar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row"><div><h2>Preguntas registradas</h2><p>Datos reales desde Supabase.</p></div></div>
-        <div id="tabla-admin"></div>
-      </article>
-    </section>
-  `;
-  pintarTablaActual();
-}
-
-async function guardarFaq(evento) {
-  evento.preventDefault();
-  const payload = leerFormulario([
-    { id: "pregunta" },
-    { id: "categoria" },
-    { id: "orden", type: "number" },
-    { id: "respuesta" },
-  ]);
-  await apiAdmin("/faq", { method: "POST", body: JSON.stringify(payload) });
-  mostrarToast("FAQ guardada", "La pregunta quedo registrada.");
-  await cargarFaq();
-}
-
-async function cargarContenido() {
-  const datos = await apiAdmin("/contenido");
-  pintarHero([["Recursos", String(datos.length)], ["Modulo", "Educacion"]]);
-  adminTableColumns = ["ID", "Titulo", "Tipo", "URL", "Estado"];
-  adminTableData = datos.map((c) => ({
-    raw: c,
-    values: [c.id_contenido, limpiar(c.titulo), limpiar(c.tipo), limpiar(c.url_recurso), estadoHtml(c.id_estado)],
-    actions: "",
-  }));
-  document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row"><div><h2>Nuevo contenido</h2><p>Recurso educativo para GreenUp.</p></div></div>
-        ${renderForm("form-contenido", [
-          { id: "titulo", label: "Titulo" },
-          { id: "tipo", label: "Tipo", type: "select", options: [["articulo", "Articulo"], ["video", "Video"], ["infografia", "Infografia"]] },
-          { id: "url_recurso", label: "URL recurso" },
-          { id: "imagen", label: "URL imagen" },
-          { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-        ], "guardarContenido(event)", "Guardar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row"><div><h2>Contenido registrado</h2><p>Material publicado o en gestion.</p></div></div>
-        <div id="tabla-admin"></div>
-      </article>
-    </section>
-  `;
-  pintarTablaActual();
-}
-
-async function guardarContenido(evento) {
-  evento.preventDefault();
-  const admin = obtenerAdminActual();
-  const payload = leerFormulario([
-    { id: "titulo" },
-    { id: "tipo" },
-    { id: "url_recurso" },
-    { id: "imagen" },
-    { id: "descripcion" },
-  ]);
-  payload.id_usuario = admin.id_usuario;
-  await apiAdmin("/contenido", { method: "POST", body: JSON.stringify(payload) });
-  mostrarToast("Contenido guardado", "El recurso quedo registrado.");
-  await cargarContenido();
-}
-
-async function cargarEstadisticas() {
-  const [estadisticas, usuarios, puntos, recicladoras] = await Promise.all([
-    apiAdmin("/estadisticas"),
-    apiAdmin("/api/usuarios/listar"),
-    apiAdmin("/ubicaciones"),
-    apiAdmin("/api/recicladoras/listar"),
-  ]);
-  pintarHero([
-    ["Reciclajes", String(estadisticas.total_reciclajes || 0)],
-    ["Kg", String(estadisticas.total_cantidad || 0)],
-  ]);
-  document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
-      ${metric("recycling", estadisticas.total_reciclajes || 0, "Registros reciclaje", "Total de movimientos")}
-      ${metric("scale", estadisticas.total_cantidad || 0, "Cantidad reciclada", "Suma total reportada", "blue")}
-      ${metric("groups", usuarios.length, "Usuarios", "Cuentas en el sistema")}
-      ${metric("location_on", puntos.length, "Puntos", `${recicladoras.length} recicladoras`, "blue")}
-    </section>
-    <article class="data-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Resumen administrativo</h2>
-          <p>Indicadores calculados desde Supabase.</p>
-        </div>
-      </div>
-      <div class="empty-state">
-        <div>
-          <span class="material-symbols-outlined">monitoring</span>
-          Los indicadores se actualizan desde los registros reales del sistema.
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-function cargarPerfil() {
-  const admin = obtenerAdminActual();
-  const modoPerfil = obtenerTemaAdminSistema();
-  const clasePerfil = modoPerfil === "claro" ? "admin-profile-light" : "admin-profile-dark";
-  pintarHero([["Rol", "Admin"], ["ID", String(admin.id_usuario || "")]]);
-  document.getElementById("admin-content").innerHTML = `
-    <!-- PERFIL ADMIN: tarjeta principal del administrador con modo oscuro o blanco. -->
-    <section class="${clasePerfil}">
-      <!-- IDENTIDAD DEL ADMIN: muestra usuario, rol y estado de acceso. -->
-      <article class="profile-identity">
-        <div>
-          <div class="profile-avatar-dark">${iniciales(admin.nombres || admin.usuario || "A")}</div>
-          <h2>${limpiar(admin.nombres || "Administrador")} ${limpiar(admin.apellidos || "Sistema")}</h2>
-          <p>Cuenta encargada de supervisar usuarios, puntos ecologicos, reportes, noticias y configuracion general de GreenUp.</p>
-        </div>
-        <span class="profile-security-badge">
-          <span class="material-symbols-outlined">verified_user</span>
-          Acceso administrativo activo
-        </span>
-      </article>
-
-      <!-- DETALLES DE SESION: datos guardados despues del login. -->
-      <article class="profile-detail-panel">
-        <div class="card-title-row">
-          <div class="profile-panel-heading">
-            <h2>Sesion administrativa</h2>
-            <p>Informacion local de la cuenta autenticada en este navegador.</p>
-          </div>
-          <!-- CAMBIO DE TEMA: guarda la preferencia del administrador en este navegador. -->
-          <div class="profile-mode-toggle" aria-label="Cambiar tema del perfil">
-            <button type="button" class="${modoPerfil === "oscuro" ? "active" : ""}" onclick="cambiarTemaPerfilAdmin('oscuro')">Oscuro</button>
-            <button type="button" class="${modoPerfil === "claro" ? "active" : ""}" onclick="cambiarTemaPerfilAdmin('claro')">Blanco</button>
-          </div>
-        </div>
-
-        <!-- CARTAS DE PERFIL: cada carta resume un dato importante del administrador. -->
-        <div class="profile-detail-grid">
-          <div class="profile-dark-card">
-            <span>ID de usuario</span>
-            <strong>${limpiar(admin.id_usuario)}</strong>
-          </div>
-          <div class="profile-dark-card">
-            <span>Usuario</span>
-            <strong>${limpiar(admin.usuario || "admin")}</strong>
-          </div>
-          <div class="profile-dark-card">
-            <span>Rol</span>
-            <strong>Administrador del sistema</strong>
-          </div>
-          <div class="profile-dark-card">
-            <span>Permisos</span>
-            <strong>Gestion, monitoreo, reportes y notificaciones</strong>
-          </div>
-        </div>
-
-        <!-- BOTONES DEL PERFIL: acciones reales del administrador. -->
-        <div class="profile-actions-dark">
-          <button class="primary-button" type="button" onclick="cargarModuloAdmin()">
-            <span class="material-symbols-outlined">refresh</span> Actualizar perfil
-          </button>
-          <button class="ghost-button" type="button" onclick="pedirPermisoNotificaciones()">
-            <span class="material-symbols-outlined">notifications</span> Activar notificaciones
-          </button>
-          <button class="ghost-button danger-button" type="button" onclick="cerrarSesionAdminSistema()">
-            <span class="material-symbols-outlined">logout</span> Cerrar sesion
-          </button>
-        </div>
-      </article>
-    </section>
-  `;
-}
-
-function cambiarTemaPerfilAdmin(modo) {
-  /*
-    TEMA DEL PERFIL:
-    Usa la misma funcion global para que cambie toda la interfaz,
-    no solamente la tarjeta del perfil.
-  */
-  cambiarTemaAdminSistema(modo);
-}
-
-function cargarConfiguracion() {
-  pintarHero([["Notificaciones", Notification.permission || "n/a"], ["Sesion", "Activa"]]);
-  document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
-      ${settingCard("notifications", "Notificaciones", "Activa permisos para recibir avisos cuando lleguen usuarios o puntos nuevos.", "pedirPermisoNotificaciones()", "Activar")}
-      ${settingCard("sync", "Actualizacion", "Las tablas principales y el mapa consultan Supabase cada 8 segundos.", "cargarModuloAdmin()", "Actualizar")}
-      ${settingCard("download", "Exportacion", "Los reportes y tablas se exportan a CSV desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
-      ${settingCard("logout", "Sesion", "Cierra la sesion del administrador en este navegador.", "cerrarSesionAdminSistema()", "Cerrar")}
-    </section>
-  `;
-}
-
-function settingCard(icon, title, text, action, button) {
-  return `
-    <article class="metric-card">
-      <span class="metric-icon"><span class="material-symbols-outlined">${icon}</span></span>
-      <span>${title}</span>
-      <p>${text}</p>
-      <button class="small-button" type="button" onclick="${action}">${button}</button>
-    </article>
-  `;
-}
-
-function renderTableCard(title, subtitle, filename) {
-  return `
-    <article class="data-card">
-      <div class="card-title-row">
-        <div>
-          <h2>${title}</h2>
-          <p>${subtitle}</p>
-        </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('${filename}')">
-          <span class="material-symbols-outlined">download</span> Exportar
+  <!-- BARRA SUPERIOR: notificaciones, tema y menu del administrador. -->
+  <header class="app-topbar">
+    <div class="mobile-brand">
+      <span class="brand-logo"><span class="material-symbols-outlined filled">recycling</span></span>
+      <span class="brand-name">Green<strong>Up</strong></span>
+    </div>
+    <div class="topbar-actions">
+      <!-- BOTON NOTIFICACIONES: solicita permiso para mostrar avisos del sistema. -->
+      <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <!-- BOTON TEMA: cambia todo el panel entre modo claro y modo oscuro. -->
+      <button class="icon-button theme-toggle-button btn btn-light" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
+        <span class="material-symbols-outlined">dark_mode</span>
+      </button>
+      <!-- MENU ADMIN: despliega opciones de cuenta sin ocupar espacio en pantalla. -->
+      <div class="dropdown admin-user-dropdown">
+        <!-- BOTON DEL PERFIL: Bootstrap lo usa para abrir y cerrar el menu. -->
+        <button class="user-menu btn d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="user-avatar">A</span>
+          <span class="user-meta"><strong>admin</strong><span>Administrador</span></span>
+          <span class="material-symbols-outlined menu-indicator">menu</span>
         </button>
+        <!-- OPCIONES DEL MENU: accesos rapidos del administrador del sistema. -->
+        <ul class="dropdown-menu dropdown-menu-end admin-user-menu">
+          <li class="dropdown-header">Cuenta administrador</li>
+          <li><a class="dropdown-item" href="admin_perfil.html"><span class="material-symbols-outlined">person</span> Perfil</a></li>
+          <li><a class="dropdown-item" href="admin_configuracion.html"><span class="material-symbols-outlined">settings</span> Configuracion</a></li>
+          <li><button class="dropdown-item" type="button" onclick="pedirPermisoNotificaciones()"><span class="material-symbols-outlined">notifications</span> Notificaciones</button></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item text-danger" type="button" onclick="cerrarSesionAdminSistema()"><span class="material-symbols-outlined">logout</span> Cerrar sesion</button></li>
+        </ul>
       </div>
-      <div id="tabla-admin"></div>
-    </article>
-  `;
-}
-
-function pintarTablaActual(data = adminTableData) {
-  const contenedor = document.getElementById("tabla-admin");
-  if (!contenedor) return;
-  if (!data.length) {
-    contenedor.innerHTML = renderEmpty("database", "No hay registros para mostrar.", "Cuando existan datos en Supabase apareceran aqui.");
-    return;
-  }
-
-  const tieneAcciones = data.some((row) => row.actions);
-  contenedor.innerHTML = `
-    <div class="table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            ${adminTableColumns.map((col) => `<th>${limpiar(col)}</th>`).join("")}
-            ${tieneAcciones ? "<th>Acciones</th>" : ""}
-          </tr>
-        </thead>
-        <tbody>
-          ${data.map((row) => `
-            <tr>
-              ${row.values.map((value) => `<td>${value}</td>`).join("")}
-              ${tieneAcciones ? `<td><div class="row-actions">${row.actions || ""}</div></td>` : ""}
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
     </div>
-  `;
-}
+  </header>
 
-function filtrarTablaActual() {
-  const search = (document.getElementById("admin-search")?.value || "").toLowerCase();
-  const tipo = document.getElementById("filtro-tipo-usuario")?.value || "";
-  const estado = document.getElementById("filtro-estado")?.value || "";
+  <!-- CONTENIDO: hero y modulo actual. -->
+  <main class="admin-main container-fluid">
+    <!-- HERO: titulo visual del modulo. -->
+    <section id="admin-hero">
+      <article class="page-hero card">
+        <div class="hero-copy">
+          <span class="hero-eyebrow"><span class="material-symbols-outlined">admin_panel_settings</span>Configuracion</span>
+          <h1>Roles y permisos</h1>
+          <p>Este espacio se actualiza con informacion real desde Supabase.</p>
+        </div>
+        <div class="hero-visual" aria-label="Carrusel visual del administrador"></div>
+      </article>
+    </section>
 
-  const filtrada = adminTableData.filter((row) => {
-    const texto = row.values.map((v) => String(v).replace(/<[^>]+>/g, "")).join(" ").toLowerCase();
-    const cumpleBusqueda = !search || texto.includes(search);
-    const cumpleTipo = !tipo || texto.includes(tipo.toLowerCase());
-    const cumpleEstado = !estado || texto.includes(estado.toLowerCase());
-    return cumpleBusqueda && cumpleTipo && cumpleEstado;
-  });
+    <!-- MODULO: aqui el JavaScript carga tablas, mapa, reportes o modales. -->
+    <section id="admin-content">
+      <article class="data-card card col-12">
+        <div class="card-title-row">
+          <div>
+            <h2>Roles y permisos</h2>
+            <p>Cargando datos del administrador...</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
 
-  pintarTablaActual(filtrada);
-}
+  <!-- NAVEGACION MOVIL: visible en pantallas pequenas. -->
+  <nav class="mobile-bottom-nav nav" aria-label="Menu movil administrador"></nav>
+  <div id="toast-stack" class="toast-stack"></div>
 
-function tablaDatos(columnas, filas) {
-  if (!filas.length) return renderEmpty("database", "No hay registros.", "Los datos apareceran cuando existan en Supabase.");
-  return `
-    <div class="table-wrap">
-      <table class="admin-table">
-        <thead><tr>${columnas.map((c) => `<th>${limpiar(c)}</th>`).join("")}</tr></thead>
-        <tbody>
-          ${filas.map((fila) => `<tr>${fila.map((v) => `<td>${limpiarHtmlPermitido(v)}</td>`).join("")}</tr>`).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
 
-function renderForm(id, campos, accion, textoBoton) {
-  return `
-    <form id="${id}" class="admin-form" onsubmit="${accion}">
-      ${campos.map((campo) => renderField(campo)).join("")}
-      <button class="primary-button full" type="submit">
-        <span class="material-symbols-outlined">save</span>${textoBoton}
-      </button>
-    </form>
-  `;
-}
-
-function renderField(campo) {
-  const clase = campo.full ? "full" : "";
-  if (campo.type === "textarea") {
-    return `<label class="${clase}">${campo.label}<textarea id="${campo.id}"></textarea></label>`;
-  }
-  if (campo.type === "select") {
-    return `
-      <label class="${clase}">${campo.label}
-        <select id="${campo.id}">
-          ${campo.options.map((op) => `<option value="${op[0]}">${op[1]}</option>`).join("")}
-        </select>
-      </label>
-    `;
-  }
-  return `<label class="${clase}">${campo.label}<input id="${campo.id}" type="${campo.type || "text"}" value="${campo.value || ""}"></label>`;
-}
-
-function leerFormulario(campos) {
-  const data = {};
-  campos.forEach((campo) => {
-    const elemento = document.getElementById(campo.id);
-    if (!elemento) return;
-    data[campo.id] = normalizarValor(campo, elemento.value);
-  });
-  return data;
-}
-
-function normalizarValor(campo, valor) {
-  if (campo.type === "number") return valor === "" ? null : Number(valor);
-  if (campo.id && campo.id.startsWith("id_")) return valor === "" ? null : Number(valor);
-  return valor;
-}
-
-function metric(icon, value, label, detail, color = "") {
-  return `
-    <article class="metric-card ${color}">
-      <span class="metric-icon"><span class="material-symbols-outlined">${icon}</span></span>
-      <strong>${limpiar(value)}</strong>
-      <span>${limpiar(label)}</span>
-      <p>${limpiar(detail)}</p>
-    </article>
-  `;
-}
-
-function renderNewsList(noticias) {
-  if (!noticias.length) return renderEmpty("newspaper", "No hay noticias registradas.", "Cuando publiques novedades apareceran aqui.");
-  return noticias.map((n) => `
-    <div class="news-body">
-      <h3>${limpiar(n.titulo)}</h3>
-      <p>${limpiar(n.descripcion)}</p>
-    </div>
-  `).join("");
-}
-
-function renderNewsGrid(noticias) {
-  if (!noticias.length) return renderEmpty("newspaper", "No hay noticias registradas.", "Publica la primera novedad desde el formulario.");
-  return `
-    <div class="news-grid">
-      ${noticias.map((n) => {
-        const activo = Number(n.id_estado) === 1;
-        return `
-          <article class="news-card">
-            <div class="news-image">
-              ${n.imagen ? `<img src="${limpiar(n.imagen)}" alt="${limpiar(n.titulo)}">` : ""}
-            </div>
-            <div class="news-body">
-              <h3>${limpiar(n.titulo)}</h3>
-              <p>${limpiar(n.descripcion)}</p>
-              <p>${estadoHtml(n.id_estado)}</p>
-              <div class="row-actions">
-                <button class="small-button ${activo ? "danger-button" : ""}" type="button" onclick="cambiarEstadoNovedad(${n.id_novedad}, ${activo ? 2 : 1})">
-                  ${activo ? "Inactivar" : "Activar"}
-                </button>
-              </div>
+  <!-- =====================================================================
+       GUIA DE CODIGO HTML DEL ADMINISTRADOR
+       Esta guia queda dentro de un template para que NO se muestre en pantalla.
+       Sirve para estudiar como estan armadas las piezas de Bootstrap.
+       El JavaScript real llena los datos desde Supabase en la pagina activa.
+  ====================================================================== -->
+  <template id="guia-codigo-admin">
+    <!-- INICIO CARD: una card es un bloque con informacion. -->
+    <section class="container-fluid">
+      <div class="row g-3">
+        <div class="col-12 col-lg-4">
+          <article class="card admin-card">
+            <div class="card-body">
+              <h2 class="h5 card-title">Titulo de la card</h2>
+              <p class="card-text">Texto corto para explicar el dato mostrado.</p>
+              <button class="btn btn-success" type="button">Accion</button>
             </div>
           </article>
-        `;
-      }).join("")}
-    </div>
-  `;
-}
+        </div>
+      </div>
+    </section>
+    <!-- FIN CARD. -->
 
-function renderEmpty(icon, title, text) {
-  return `
-    <div class="empty-state">
-      <div>
-        <span class="material-symbols-outlined">${icon}</span>
-        <strong>${limpiar(title)}</strong>
-        <p>${limpiar(text)}</p>
+    <!-- INICIO TABLA: se usa para ciudadanos, recicladoras, reportes y registros. -->
+    <section class="container-fluid">
+      <div class="table-responsive">
+        <table class="table align-middle admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Usuario ejemplo</td>
+              <td>Ciudadano</td>
+              <td><span class="badge text-bg-success">Activo</span></td>
+              <td><button class="btn btn-sm btn-outline-primary" type="button">Ver</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!-- FIN TABLA. -->
+
+    <!-- INICIO MODAL: los formularios de registros se abren en ventanas modales. -->
+    <div class="modal fade admin-modal" id="modalEjemplo" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <h2 class="modal-title h5">Formulario de ejemplo</h2>
+              <p class="modal-subtitle mb-0">Aqui se registran datos administrativos.</p>
+            </div>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <form class="admin-form row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="campoNombre">Nombre</label>
+                <input class="form-control" id="campoNombre" type="text" placeholder="Nombre visible" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="campoEstado">Estado</label>
+                <select class="form-select" id="campoEstado">
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="campoDescripcion">Descripcion</label>
+                <textarea class="form-control" id="campoDescripcion" rows="3"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-success" type="button">Guardar</button>
+          </div>
+        </div>
       </div>
     </div>
-  `;
-}
+    <!-- FIN MODAL. -->
 
-function resumirMaterialesAdmin(materiales, limite = 3) {
-  const texto = materiales || "Materiales por confirmar";
-  if (texto === "Materiales por confirmar") return texto;
-  const lista = String(texto).split(",").map((item) => item.trim()).filter(Boolean);
-  if (lista.length <= limite) return lista.join(", ");
-  return `${lista.slice(0, limite).join(", ")} y otros`;
-}
+    <!-- INICIO DROPDOWN: menu pequeno como el del perfil admin. -->
+    <div class="dropdown">
+      <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Menu
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Perfil</a></li>
+        <li><a class="dropdown-item" href="#">Configuracion</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item text-danger" type="button">Cerrar sesion</button></li>
+      </ul>
+    </div>
+    <!-- FIN DROPDOWN. -->
 
-function estadoHtml(idEstado) {
-  const activo = Number(idEstado) === 1;
-  return `<span class="status-pill ${activo ? "active" : "inactive"}">${activo ? "Activo" : "Inactivo"}</span>`;
-}
+    <!-- INICIO ALERTA: se usa para avisos rapidos del sistema. -->
+    <div class="alert alert-success" role="alert">
+      Registro guardado correctamente.
+    </div>
+    <!-- FIN ALERTA. -->
 
-function nombreRol(idRol) {
-  const roles = { 1: "Administrador", 2: "Recicladora", 3: "Ciudadano" };
-  return roles[Number(idRol)] || "Sin rol";
-}
+    <!-- INICIO BADGES: etiquetas pequenas para estados. -->
+    <span class="badge text-bg-success">Activo</span>
+    <span class="badge text-bg-warning">Pendiente</span>
+    <span class="badge text-bg-danger">Inactivo</span>
+    <!-- FIN BADGES. -->
 
-function limpiar(valor) {
-  return String(valor ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+    <!-- INICIO BOTONES: acciones comunes del administrador. -->
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-success" type="button">Crear</button>
+      <button class="btn btn-primary" type="button">Actualizar</button>
+      <button class="btn btn-outline-secondary" type="button">Exportar</button>
+      <button class="btn btn-outline-danger" type="button">Desactivar</button>
+    </div>
+    <!-- FIN BOTONES. -->
 
-function limpiarHtmlPermitido(valor) {
-  const texto = String(valor ?? "");
-  if (texto.includes("status-pill") || texto.includes("type-pill")) return texto;
-  return limpiar(texto);
-}
+    <!-- INICIO BUSCADOR: filtra la tabla actual desde JavaScript. -->
+    <label class="search-shell" for="buscadorEjemplo">
+      <span class="material-symbols-outlined">search</span>
+      <input class="form-control" id="buscadorEjemplo" type="search" placeholder="Buscar..." />
+    </label>
+    <!-- FIN BUSCADOR. -->
 
-function iniciales(nombre) {
-  return String(nombre || "A").trim().slice(0, 1).toUpperCase();
-}
+    <!-- INICIO MAPA: el contenedor real se llena con Leaflet desde JavaScript. -->
+    <section class="map-shell">
+      <aside id="sidebar-panel">
+        <article class="gu-sidebar-item">
+          <span class="material-symbols-outlined">location_on</span>
+          <div>
+            <strong>Punto ecologico</strong>
+            <span>Direccion registrada</span>
+          </div>
+        </article>
+      </aside>
+      <div class="map-canvas-wrap">
+        <div id="admin-map"></div>
+      </div>
+    </section>
+    <!-- FIN MAPA. -->
 
-function pedirPermisoNotificaciones() {
-  if (!("Notification" in window)) {
-    mostrarToast("Notificaciones", "Este navegador no soporta notificaciones.");
-    return;
-  }
-  Notification.requestPermission().then((permiso) => {
-    mostrarToast("Notificaciones", permiso === "granted" ? "Permiso activado." : "Permiso no activado.");
-  });
-}
+    <!-- INICIO CARRUSEL VISUAL: imagenes administrativas del hero. -->
+    <div class="hero-visual" aria-label="Carrusel visual">
+      <div class="hero-carousel-card">
+        <strong>GreenUp Admin</strong>
+        <span>Gestion ambiental</span>
+      </div>
+    </div>
+    <!-- FIN CARRUSEL VISUAL. -->
 
-function notificarAdmin(titulo, cuerpo) {
-  mostrarToast(titulo, cuerpo);
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification(titulo, { body: cuerpo });
-  }
-}
+    <!-- INICIO FORMULARIO CORTO: ejemplo para filtros o configuracion. -->
+    <form class="row g-3 admin-form">
+      <div class="col-12 col-md-4">
+        <label class="form-label" for="filtroTipo">Tipo</label>
+        <select class="form-select" id="filtroTipo">
+          <option>Todos</option>
+          <option>Ciudadanos</option>
+          <option>Recicladoras</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label" for="filtroFecha">Fecha</label>
+        <input class="form-control" id="filtroFecha" type="date" />
+      </div>
+      <div class="col-12 col-md-4 d-flex align-items-end">
+        <button class="btn btn-success w-100" type="button">Aplicar filtros</button>
+      </div>
+    </form>
+    <!-- FIN FORMULARIO CORTO. -->
 
-function mostrarToast(titulo, cuerpo) {
-  const stack = document.getElementById("toast-stack");
-  if (!stack) return;
-  const toast = document.createElement("div");
-  toast.className = "admin-toast";
-  toast.innerHTML = `<strong>${limpiar(titulo)}</strong>${limpiar(cuerpo)}`;
-  stack.appendChild(toast);
-  setTimeout(() => toast.remove(), 4200);
-}
+    <!-- INICIO NOTA: los datos reales no se escriben a mano en cada HTML. -->
+    <p class="text-muted small">
+      Las tablas, notificaciones, reportes, mapa y modales se controlan desde admin_sistema_layout.js.
+    </p>
+    <!-- FIN NOTA. -->
 
-function iniciarMonitoreoAdmin() {
-  if (adminMonitor) clearInterval(adminMonitor);
-  adminMonitor = setInterval(async () => {
-    try {
-      const usuarios = await apiAdmin("/api/usuarios/listar");
-      if (adminLastUserCount !== null && usuarios.length > adminLastUserCount) {
-        notificarAdmin("Nuevo usuario registrado", "La tabla del administrador se actualizara automaticamente.");
-        if (moduloActual() === "usuarios" || moduloActual() === "panel") await cargarModuloAdmin();
-      }
-      adminLastUserCount = usuarios.length;
-
-      if (moduloActual() === "mapa") await actualizarPuntosMapa(false);
-      if (["puntos", "reportes", "estadisticas"].includes(moduloActual())) await cargarModuloAdmin();
-    } catch (error) {
-      console.warn("No se pudo ejecutar el monitoreo admin", error);
-    }
-  }, ADMIN_REFRESH_MS);
-}
-
-function exportarTablaCSV(nombreArchivo) {
-  const filas = adminTableData;
-  if (!filas.length) {
-    mostrarToast("Exportacion", "No hay datos para exportar.");
-    return;
-  }
-  const csv = [
-    adminTableColumns.join(","),
-    ...filas.map((row) => row.values.map((value) => `"${String(value).replace(/<[^>]+>/g, "").replaceAll('"', '""')}"`).join(",")),
-  ].join("\n");
-
-  const enlace = document.createElement("a");
-  enlace.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-  enlace.download = nombreArchivo;
-  enlace.click();
-  URL.revokeObjectURL(enlace.href);
-}
-
-function cerrarSesionAdminSistema() {
-  localStorage.removeItem("usuario");
-  window.location.href = "../public/admin_login.html";
-}
-
+    <!-- INICIO GUIA EXTRA BOOTSTRAP: clases que se repiten en este admin. -->
+    <section id="guia-extra-admin" class="container-fluid">
+      <!-- container-fluid permite que el bloque use el ancho disponible. -->
+      <div class="container-fluid">
+        <!-- row crea una fila flexible. -->
+        <div class="row g-3">
+          <!-- col-12 usa todo el ancho en celular. -->
+          <div class="col-12">
+            <!-- d-flex organiza elementos en una misma linea. -->
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <!-- align-items-center centra verticalmente. -->
+              <h3 class="h6 mb-0">Bloque de ejemplo</h3>
+              <!-- gap-3 separa botones sin usar margenes manuales. -->
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" type="button">Editar</button>
+                <button class="btn btn-sm btn-success" type="button">Guardar</button>
+              </div>
+            </div>
+          </div>
+          <!-- col-md-6 divide la fila en dos columnas desde tablet. -->
+          <div class="col-12 col-md-6">
+            <!-- form-label da estilo al nombre del campo. -->
+            <label class="form-label" for="guiaCampoUno">Campo uno</label>
+            <!-- form-control da estilo Bootstrap al input. -->
+            <input class="form-control" id="guiaCampoUno" type="text" />
+          </div>
+          <!-- Segunda columna del ejemplo. -->
+          <div class="col-12 col-md-6">
+            <!-- form-select se usa para listas desplegables. -->
+            <label class="form-label" for="guiaCampoDos">Campo dos</label>
+            <select class="form-select" id="guiaCampoDos">
+              <option>Opcion uno</option>
+              <option>Opcion dos</option>
+            </select>
+          </div>
+          <!-- Columna completa para texto largo. -->
+          <div class="col-12">
+            <!-- textarea permite escribir descripciones o novedades. -->
+            <label class="form-label" for="guiaTexto">Texto</label>
+            <textarea class="form-control" id="guiaTexto" rows="2"></textarea>
+          </div>
+          <!-- Zona final para acciones. -->
+          <div class="col-12">
+            <!-- justify-content-end manda los botones hacia la derecha. -->
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-outline-secondary" type="button">Cancelar</button>
+              <button class="btn btn-success" type="button">Aceptar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- FIN GUIA EXTRA BOOTSTRAP. -->
+  </template>
+  <!-- Configuracion del modulo actual. -->
+  <script>
+    window.ADMIN_MODULE = "roles";
   </script>
+  <script src="../../js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/admin_sistema_layout.js?v=roles-ocultar-admin-1"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+

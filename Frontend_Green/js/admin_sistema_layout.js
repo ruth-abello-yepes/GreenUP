@@ -20,6 +20,7 @@ let adminTableData = [];
 let adminTableColumns = [];
 let adminLastUserCount = null;
 let adminLastPointCount = null;
+let adminLastNewsCount = null;
 let adminMonitor = null;
 let adminHeroTimer = null;
 let adminMap = null;
@@ -27,6 +28,7 @@ let adminMarkers = new Map();
 let adminUserMarker = null;
 let adminUserLocation = null;
 let adminRouteControl = null;
+let adminRouteLines = [];
 let adminWatchId = null;
 
 const adminPrimaryNav = [
@@ -216,7 +218,7 @@ function iniciarCarruselHero() {
 document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 
 async function iniciarAdminSistema() {
-  protegerAdminSistema();
+  if (!protegerAdminSistema()) return;
   aplicarTemaAdminSistema();
   pintarEstructuraBase();
   await cargarModuloAdmin();
@@ -314,10 +316,20 @@ function actualizarBotonTemaAdminSistema() {
 }
 
 function protegerAdminSistema() {
+  /*
+    PROTECCION DE ADMIN:
+    Si no existe una sesion con rol 1, no se pinta ninguna pantalla.
+    replace() evita que el usuario vuelva con "atras" al panel protegido.
+  */
   const admin = obtenerAdminActual();
-  if (!admin.id_usuario || Number(admin.id_rol) !== 1) {
-    window.location.href = "../public/admin_login.html";
+  const sesionActiva = sessionStorage.getItem("greenup_admin_sesion_activa") === "1";
+  if (!sesionActiva || !admin.id_usuario || Number(admin.id_rol) !== 1) {
+    document.documentElement.classList.add("admin-auth-blocked");
+    window.location.replace("../public/admin_login.html");
+    return false;
   }
+  document.documentElement.classList.add("admin-auth-ok");
+  return true;
 }
 
 function headersAdmin() {
@@ -327,11 +339,6 @@ function headersAdmin() {
     "id-usuario": admin.id_usuario,
     "id-rol": admin.id_rol,
   };
-}
-
-function iniciarCambioContrasenaAdmin() {
-  localStorage.removeItem("codigo_recuperacion");
-  window.location.href = "../public/public_recuperar_contrasena.html";
 }
 
 async function apiAdmin(ruta, opciones = {}) {
@@ -353,13 +360,13 @@ function pintarEstructuraBase() {
   document.body.classList.add("admin-app");
   aplicarTemaAdminSistema();
   document.body.innerHTML = `
-    <aside class="app-sidebar">
+    <aside class="app-sidebar d-flex flex-column">
       ${renderBrand()}
       ${renderNavGroup("Principal", adminPrimaryNav, actual)}
       ${renderNavGroup("Sistema", adminSystemNav, actual)}
       ${renderNavGroup("Contenido", adminContentNav, actual)}
       <div class="sidebar-actions">
-        <button class="logout-link" type="button" onclick="cerrarSesionAdminSistema()">
+        <button class="logout-link btn" type="button" onclick="cerrarSesionAdminSistema()">
           <span class="material-symbols-outlined">logout</span>
           Cerrar sesion
         </button>
@@ -368,38 +375,56 @@ function pintarEstructuraBase() {
 
     <header class="app-topbar">
       <div class="mobile-brand">${renderBrand()}</div>
-      <div class="topbar-search">
-        <label class="search-shell" for="admin-search">
-          <span class="material-symbols-outlined">search</span>
-          <input id="admin-search" type="search" placeholder="Buscar en la tabla actual..." />
-        </label>
-      </div>
       <div class="topbar-actions">
-        <button class="icon-button" type="button" title="Actualizar" onclick="cargarModuloAdmin()">
-          <span class="material-symbols-outlined">refresh</span>
-        </button>
-        <button class="icon-button" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
+        <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
-        <button class="icon-button theme-toggle-button" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
+        <button class="icon-button theme-toggle-button btn btn-light" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
           <span class="material-symbols-outlined">${temaActual === "oscuro" ? "light_mode" : "dark_mode"}</span>
         </button>
-        <div class="user-menu">
-          <span class="user-avatar">${iniciales(admin.nombres || admin.usuario || "A")}</span>
-          <span class="user-meta">
-            <strong>${limpiar(admin.usuario || "admin")}</strong>
-            <span>Administrador</span>
-          </span>
+        <div class="dropdown admin-user-dropdown">
+          <button class="user-menu btn d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="user-avatar">${iniciales(admin.nombres || admin.usuario || "A")}</span>
+            <span class="user-meta">
+              <strong>${limpiar(admin.usuario || "admin")}</strong>
+              <span>Administrador</span>
+            </span>
+            <span class="material-symbols-outlined menu-indicator">menu</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end admin-user-menu">
+            <li class="dropdown-header">Cuenta administrador</li>
+            <li>
+              <a class="dropdown-item" href="admin_perfil.html">
+                <span class="material-symbols-outlined">person</span> Perfil
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="admin_configuracion.html">
+                <span class="material-symbols-outlined">settings</span> Configuracion
+              </a>
+            </li>
+            <li>
+              <button class="dropdown-item" type="button" onclick="pedirPermisoNotificaciones()">
+                <span class="material-symbols-outlined">notifications</span> Notificaciones
+              </button>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <button class="dropdown-item text-danger" type="button" onclick="cerrarSesionAdminSistema()">
+                <span class="material-symbols-outlined">logout</span> Cerrar sesion
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </header>
 
-    <main class="admin-main">
+    <main class="admin-main container-fluid">
       <section id="admin-hero"></section>
       <section id="admin-content"></section>
     </main>
 
-    <nav class="mobile-bottom-nav">
+    <nav class="mobile-bottom-nav nav">
       ${adminPrimaryNav.map((item) => `
         <a class="${item.module === actual ? "active" : ""}" href="${item.href}" title="${item.label}">
           <span class="material-symbols-outlined">${item.icon}</span>
@@ -409,7 +434,8 @@ function pintarEstructuraBase() {
     <div id="toast-stack" class="toast-stack"></div>
   `;
 
-  document.getElementById("admin-search").addEventListener("input", filtrarTablaActual);
+  const buscadorAdmin = document.getElementById("admin-search");
+  if (buscadorAdmin) buscadorAdmin.addEventListener("input", filtrarTablaActual);
   prepararNavbarAdmin();
 }
 
@@ -454,7 +480,7 @@ function prepararNavbarAdmin() {
 
 function renderBrand() {
   return `
-    <a class="brand-lockup" href="${ADMIN_HOME}" aria-label="Ir al panel GreenUp">
+    <a class="brand-lockup navbar-brand d-inline-flex" href="${ADMIN_HOME}" aria-label="Ir al panel GreenUp">
       <span class="brand-logo"><span class="material-symbols-outlined filled">recycling</span></span>
       <span>
         <span class="brand-name">Green<strong>Up</strong></span>
@@ -469,7 +495,7 @@ function renderNavGroup(titulo, items, actual) {
     <nav class="sidebar-nav" aria-label="${titulo}">
       <p class="sidebar-section-title">${titulo}</p>
       ${items.map((item) => `
-        <a class="sidebar-link ${item.module === actual ? "active" : ""}" href="${item.href}">
+        <a class="sidebar-link nav-link ${item.module === actual ? "active" : ""}" href="${item.href}">
           <span class="material-symbols-outlined">${item.icon}</span>
           ${item.label}
         </a>
@@ -485,13 +511,13 @@ function pintarHero(extraStats = []) {
 
   document.getElementById("admin-hero").innerHTML = `
     <!-- TITULO DEL MODULO: identifica el apartado actual del administrador. -->
-    <article class="page-hero">
+    <article class="page-hero card">
       <div class="hero-copy">
         <span class="hero-eyebrow"><span class="material-symbols-outlined">verified_user</span>${pagina.eyebrow}</span>
         <h1>${pagina.title}</h1>
         <p>${pagina.subtitle}</p>
         ${stats.length ? `<!-- CARTAS RESUMEN: muestran indicadores rapidos del modulo actual. --><div class="hero-stats">${stats.map((s, index) => `
-          <div class="summary-card ${index === 1 ? "blue" : ""}">
+          <div class="summary-card card ${index === 1 ? "blue" : ""}">
             <span class="summary-label">${s[0]}</span>
             <span class="summary-value">${s[1]}</span>
           </div>
@@ -571,20 +597,20 @@ async function cargarPanel() {
   ]);
 
   document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
+    <section class="metrics-grid row g-3">
       ${metric("groups", usuarios.length, "Usuarios registrados", "Ciudadanos y recicladoras")}
       ${metric("person", ciudadanos.length, "Ciudadanos", "Cuentas creadas desde ciudadano", "blue")}
       ${metric("storefront", recicladoras.length, "Recicladoras", "Administradores de recicladora")}
       ${metric("recycling", estadisticas.total_reciclajes || 0, "Registros reciclaje", `${estadisticas.total_cantidad || 0} kg reportados`, "blue")}
     </section>
-    <section class="content-grid">
-      <article class="data-card">
+    <section class="content-grid row g-3">
+      <article class="data-card card col-12 col-xl-8">
         <div class="card-title-row">
           <div>
             <h2>Ultimos usuarios registrados</h2>
             <p>Datos reales cargados desde Supabase.</p>
           </div>
-          <a class="ghost-button" href="admin_usuarios.html">Ver usuarios</a>
+          <a class="ghost-button btn btn-outline-secondary" href="admin_usuarios.html">Ver usuarios</a>
         </div>
         ${tablaDatos(
           ["ID", "Nombre", "Usuario", "Rol", "Estado"],
@@ -597,13 +623,13 @@ async function cargarPanel() {
           ]),
         )}
       </article>
-      <article class="module-card">
+      <article class="module-card card col-12 col-xl-4">
         <div class="card-title-row">
           <div>
             <h2>Noticias recientes</h2>
             <p>Comunicaciones publicadas por administracion.</p>
           </div>
-          <a class="ghost-button" href="admin_novedades.html">Gestionar</a>
+          <a class="ghost-button btn btn-outline-secondary" href="admin_novedades.html">Gestionar</a>
         </div>
         ${renderNewsList(novedades.slice(0, 3))}
       </article>
@@ -644,13 +670,13 @@ async function cargarUsuarios() {
 
   document.getElementById("admin-content").innerHTML = `
     ${toolbarUsuarios(todos.length)}
-    <article class="data-card">
+    <article class="data-card card">
       <div class="card-title-row">
         <div>
           <h2>Tabla de usuarios registrados</h2>
           <p>El administrador gestiona estados. Los registros nacen en ciudadano o recicladora.</p>
         </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
+        <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
           <span class="material-symbols-outlined">download</span> Exportar
         </button>
       </div>
@@ -662,19 +688,19 @@ async function cargarUsuarios() {
 
 function toolbarUsuarios(total) {
   return `
-    <div class="toolbar">
+    <div class="toolbar d-flex flex-wrap align-items-center">
       <span class="type-pill blue">${total} cuentas en total</span>
-      <select id="filtro-tipo-usuario" onchange="filtrarTablaActual()">
+      <select id="filtro-tipo-usuario" class="form-select" onchange="filtrarTablaActual()">
         <option value="">Todos los tipos</option>
         <option value="Ciudadano">Ciudadanos</option>
         <option value="Recicladora">Recicladoras</option>
       </select>
-      <select id="filtro-estado" onchange="filtrarTablaActual()">
+      <select id="filtro-estado" class="form-select" onchange="filtrarTablaActual()">
         <option value="">Todos los estados</option>
         <option value="Activo">Activos</option>
         <option value="Inactivo">Inactivos</option>
       </select>
-      <button class="ghost-button" type="button" onclick="cargarUsuarios()">
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="cargarUsuarios()">
         <span class="material-symbols-outlined">sync</span> Actualizar tabla
       </button>
     </div>
@@ -685,9 +711,9 @@ function renderEstadoUsuario(usuario) {
   const activo = Number(usuario.id_estado) === 1;
   const siguiente = activo ? 2 : 1;
   const texto = activo ? "Inactivar" : "Activar";
-  const clase = activo ? "danger-button" : "";
+  const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
   return `
-    <button class="small-button ${clase}" type="button" onclick="cambiarEstadoUsuario(${usuario.id_usuario}, ${siguiente})">
+    <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoUsuario(${usuario.id_usuario}, ${siguiente})">
       ${texto}
     </button>
   `;
@@ -702,9 +728,35 @@ async function cambiarEstadoUsuario(idUsuario, idEstado) {
   await cargarUsuarios();
 }
 
+const documentosPosiblesAdmin = [
+  /*
+    LISTA DE DOCUMENTOS POSIBLES:
+    Este arreglo alimenta el desplegable del modal de tipos de documento.
+    No reemplaza la tabla de Supabase; solo ayuda a escoger nombres comunes.
+  */
+  ["", "Selecciona un tipo de documento"],
+  ["Cedula de ciudadania", "Cedula de ciudadania"],
+  ["Tarjeta de identidad", "Tarjeta de identidad"],
+  ["Registro civil", "Registro civil"],
+  ["Cedula de extranjeria", "Cedula de extranjeria"],
+  ["Pasaporte", "Pasaporte"],
+  ["NIT", "NIT"],
+  ["Permiso por Proteccion Temporal", "Permiso por Proteccion Temporal"],
+  ["Permiso Especial de Permanencia", "Permiso Especial de Permanencia"],
+  ["Documento Nacional de Identidad", "Documento Nacional de Identidad"],
+  ["Carnet diplomatico", "Carnet diplomatico"],
+  ["Licencia de conduccion", "Licencia de conduccion"],
+  ["Libreta militar", "Libreta militar"],
+  ["Certificado nacido vivo", "Certificado nacido vivo"],
+  ["Otro documento", "Otro documento"],
+];
+
 const crudConfig = {
   roles: {
     titulo: "Roles del sistema",
+    textoNuevo: "Nuevo rol",
+    tituloModal: "Crear nuevo rol",
+    subtituloModal: "Formulario administrativo para guardar un rol del sistema.",
     listar: "/api/roles/listar",
     crear: "/api/roles/registrar",
     buscar: "/api/roles/buscar/",
@@ -721,6 +773,9 @@ const crudConfig = {
   },
   documentos: {
     titulo: "Tipos de documento",
+    textoNuevo: "Nuevo tipo de documento",
+    tituloModal: "Crear nuevo tipo de documento",
+    subtituloModal: "Selecciona un documento sugerido y revisa la descripcion antes de guardar.",
     listar: "/api/tipo-documento/listar",
     crear: "/api/tipo-documento/registrar",
     buscar: "/api/tipo-documento/buscar/",
@@ -729,6 +784,15 @@ const crudConfig = {
     id: "id_tipo_documento",
     columnas: ["ID", "Descripcion", "Estado"],
     campos: [
+      {
+        id: "tipo_documento_sugerido",
+        label: "Tipo de documento",
+        type: "select",
+        options: documentosPosiblesAdmin,
+        omitPayload: true,
+        onChange: "completarTipoDocumentoAdmin(this.value)",
+        full: true,
+      },
       { id: "descripcion", label: "Descripcion", full: true },
       { id: "id_estado", label: "Estado", type: "select", options: [[1, "Activo"], [2, "Inactivo"]] },
     ],
@@ -773,45 +837,43 @@ const crudConfig = {
 async function cargarCrud(nombre) {
   const config = crudConfig[nombre];
   const datos = await apiAdmin(config.listar);
+  const datosVisibles = filtrarCatalogoVisible(nombre, datos);
   pintarHero([
-    ["Registros", String(datos.length)],
-    ["Activos", String(datos.filter((x) => Number(x.id_estado) === 1).length)],
+    ["Registros", String(datosVisibles.length)],
+    ["Activos", String(datosVisibles.filter((x) => Number(x.id_estado) === 1).length)],
   ]);
 
   adminTableColumns = config.columnas;
-  adminTableData = datos.map((item) => ({
+  adminTableData = datosVisibles.map((item) => ({
     raw: item,
     values: config.map(item).map((v) => limpiarHtmlPermitido(v)),
     actions: `
-      <button class="small-button" type="button" onclick="editarCrud('${nombre}', ${item[config.id]})">Editar</button>
-      <button class="small-button danger-button" type="button" onclick="inhabilitarCrud('${nombre}', ${item[config.id]})">Inactivar</button>
+      <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="editarCrud('${nombre}', ${item[config.id]})">Editar</button>
+      ${renderEstadoCrud(nombre, item)}
     `,
   }));
 
   document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid catalog-layout">
-      <article class="admin-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Crear ${config.titulo}</h2>
-            <p>Catalogo administrado por el sistema.</p>
-          </div>
-        </div>
-        ${renderForm(`form-${nombre}`, config.campos, `guardarCrud('${nombre}', event)`, "Guardar")}
-      </article>
-      <article class="data-card">
+    <section class="content-grid catalog-layout row g-3">
+      <article class="data-card card col-12">
         <div class="card-title-row">
           <div>
             <h2>${config.titulo}</h2>
             <p>Registros guardados en Supabase.</p>
           </div>
-          <button class="ghost-button" type="button" onclick="exportarTablaCSV('${nombre}_greenup.csv')">
-            <span class="material-symbols-outlined">download</span> Exportar
-          </button>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-${nombre}">
+              <span class="material-symbols-outlined">add</span> ${config.textoNuevo || "Nuevo registro"}
+            </button>
+            <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('${nombre}_greenup.csv')">
+              <span class="material-symbols-outlined">download</span> Exportar
+            </button>
+          </div>
         </div>
         <div id="tabla-admin"></div>
       </article>
     </section>
+    ${renderFormModal(`modal-${nombre}`, config.tituloModal || `Crear ${config.titulo}`, config.subtituloModal || "Formulario administrativo para guardar un nuevo registro.", `form-${nombre}`, config.campos, `guardarCrud('${nombre}', event)`, "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -829,7 +891,13 @@ async function editarCrud(nombre, id) {
   const config = crudConfig[nombre];
   const actual = await apiAdmin(config.buscar + id);
   const payload = {};
+  const rolProtegido = esRolAdministradorProtegido(nombre, actual);
   for (const campo of config.campos) {
+    if (campo.omitPayload) continue;
+    if (rolProtegido && campo.id === "id_estado") {
+      payload[campo.id] = 1;
+      continue;
+    }
     const nuevo = prompt(campo.label, actual[campo.id] ?? "");
     if (nuevo === null) return;
     payload[campo.id] = normalizarValor(campo, nuevo);
@@ -839,19 +907,76 @@ async function editarCrud(nombre, id) {
   await cargarCrud(nombre);
 }
 
-async function inhabilitarCrud(nombre, id) {
+function renderEstadoCrud(nombre, item) {
+  /*
+    BOTON DE ESTADO PARA CATALOGOS:
+    Si el registro esta activo mostramos Inactivar.
+    Si el registro esta inactivo mostramos Activar.
+    Asi no aparecen botones contrarios al estado real de la fila.
+  */
   const config = crudConfig[nombre];
-  if (!confirm("Deseas inactivar este registro?")) return;
-  if (config.inhabilitar) {
-    await apiAdmin(config.inhabilitar + id, { method: "DELETE" });
-  } else {
+  if (esRolAdministradorProtegido(nombre, item)) {
+    return `<span class="status-pill active">Siempre activo</span>`;
+  }
+  const activo = Number(item.id_estado) === 1;
+  const siguienteEstado = activo ? 2 : 1;
+  const texto = activo ? "Inactivar" : "Activar";
+  const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  return `
+    <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoCrud('${nombre}', ${item[config.id]}, ${siguienteEstado})">
+      ${texto}
+    </button>
+  `;
+}
+
+async function cambiarEstadoCrud(nombre, id, idEstado) {
+  const config = crudConfig[nombre];
+  if (nombre === "roles") {
+    const actual = await apiAdmin(config.buscar + id);
+    if (esRolAdministradorProtegido(nombre, actual)) {
+      mostrarToast("Rol protegido", "El rol Administrador debe permanecer siempre activo.");
+      return;
+    }
+  }
+  const accion = Number(idEstado) === 1 ? "activar" : "inactivar";
+  if (!confirm(`Deseas ${accion} este registro?`)) return;
+
+  if (config.estado) {
     await apiAdmin(config.estado.replace(":id", id), {
       method: "PUT",
-      body: JSON.stringify({ id_estado: 2 }),
+      body: JSON.stringify({ id_estado: idEstado }),
+    });
+  } else {
+    /*
+      ROLES Y DOCUMENTOS:
+      Esos modulos no tienen ruta /estado. Para activar o inactivar
+      usamos la ruta de actualizar conservando los datos actuales.
+    */
+    const actual = await apiAdmin(config.buscar + id);
+    const payload = {};
+    for (const campo of config.campos) {
+      if (campo.omitPayload) continue;
+      payload[campo.id] = campo.id === "id_estado" ? idEstado : actual[campo.id];
+    }
+    await apiAdmin(config.actualizar + id, {
+      method: "PUT",
+      body: JSON.stringify(payload),
     });
   }
-  mostrarToast("Registro inactivado", "El estado fue actualizado.");
+
+  mostrarToast("Estado actualizado", `El registro fue ${Number(idEstado) === 1 ? "activado" : "inactivado"} correctamente.`);
   await cargarCrud(nombre);
+}
+
+function esRolAdministradorProtegido(nombreModulo, item) {
+  /*
+    ROL ADMINISTRADOR PROTEGIDO:
+    El rol principal del sistema no se debe inactivar porque controla
+    el acceso al panel administrativo.
+  */
+  if (nombreModulo !== "roles") return false;
+  const nombreRol = String(item.nombre || "").trim().toLowerCase();
+  return Number(item.id_rol) === 1 || nombreRol === "administrador";
 }
 
 async function cargarPuntos() {
@@ -877,21 +1002,21 @@ async function cargarPuntos() {
   }));
 
   document.getElementById("admin-content").innerHTML = `
-    <div class="toolbar">
-      <a class="primary-button" href="admin_mapa.html">
+    <div class="toolbar d-flex flex-wrap align-items-center">
+      <a class="primary-button btn btn-success" href="admin_mapa.html">
         <span class="material-symbols-outlined">map</span> Ver mapa
       </a>
-      <button class="ghost-button" type="button" onclick="cargarPuntos()">
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="cargarPuntos()">
         <span class="material-symbols-outlined">sync</span> Actualizar puntos
       </button>
     </div>
-    <article class="data-card">
+    <article class="data-card card">
       <div class="card-title-row">
         <div>
           <h2>Puntos ecologicos registrados</h2>
           <p>El administrador controla el estado de los puntos existentes.</p>
         </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('puntos_greenup.csv')">
+        <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('puntos_greenup.csv')">
           <span class="material-symbols-outlined">download</span> Exportar
         </button>
       </div>
@@ -905,7 +1030,7 @@ function renderEstadoPunto(punto) {
   const activo = Number(punto.id_estado) === 1;
   const siguiente = activo ? 2 : 1;
   return `
-    <button class="small-button ${activo ? "danger-button" : ""}" type="button" onclick="cambiarEstadoPunto(${punto.id_punto}, ${siguiente})">
+    <button class="small-button btn btn-sm ${activo ? "danger-button btn-outline-danger" : "btn-outline-secondary"}" type="button" onclick="cambiarEstadoPunto(${punto.id_punto}, ${siguiente})">
       ${activo ? "Inactivar" : "Activar"}
     </button>
   `;
@@ -937,7 +1062,7 @@ async function cargarMapa() {
         </div>
         <div id="recycling-list"></div>
         <div class="sidebar-map-footer">
-          <button class="primary-button" type="button" onclick="actualizarPuntosMapa(true)">
+          <button class="primary-button btn btn-success" type="button" onclick="actualizarPuntosMapa(true)">
             <span class="material-symbols-outlined">sync</span> Actualizar puntos
           </button>
         </div>
@@ -983,6 +1108,7 @@ function iniciarMapaLeaflet() {
     adminMarkers.clear();
   }
   adminRouteControl = null;
+  adminRouteLines = [];
   adminMap = L.map("eco-map", { zoomControl: false, attributionControl: false }).setView([10.4631, -73.2532], 13);
   window.adminMap = adminMap;
   window.map = adminMap;
@@ -997,6 +1123,20 @@ async function actualizarPuntosMapa(manual = false) {
   const puntos = await apiAdmin("/ubicaciones");
   await pintarPuntosMapa(puntos, false);
   if (manual) mostrarToast("Mapa actualizado", "Los puntos fueron consultados nuevamente.");
+}
+
+function crearIconoPuntoAdmin(color, activo = true) {
+  return L.divIcon({
+    className: "greenup-recycling-marker",
+    html: `
+      <span class="admin-map-pin ${activo ? "is-active" : "is-inactive"}" style="--pin-color:${color}">
+        <span class="material-symbols-outlined filled">recycling</span>
+      </span>
+    `,
+    iconSize: [36, 44],
+    iconAnchor: [18, 42],
+    popupAnchor: [0, -40],
+  });
 }
 
 async function pintarPuntosMapa(puntos, ajustarVista = false) {
@@ -1028,17 +1168,11 @@ async function pintarPuntosMapa(puntos, ajustarVista = false) {
     `;
 
     let marker = adminMarkers.get(punto.id_punto);
+    const iconoPunto = crearIconoPuntoAdmin(color, Number(punto.id_estado) === 1);
     if (marker) {
-      marker.setLatLng([coords.lat, coords.lng]).setPopupContent(popupHtml);
+      marker.setLatLng([coords.lat, coords.lng]).setIcon(iconoPunto).setPopupContent(popupHtml);
     } else {
-      marker = L.circleMarker([coords.lat, coords.lng], {
-        radius: 10,
-        fillColor: color,
-        color: "#fff",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.92,
-      }).addTo(adminMap).bindPopup(popupHtml);
+      marker = L.marker([coords.lat, coords.lng], { icon: iconoPunto }).addTo(adminMap).bindPopup(popupHtml);
       adminMarkers.set(punto.id_punto, marker);
     }
 
@@ -1148,7 +1282,7 @@ function iniciarGeolocalizacionAdmin() {
           iconSize: [18, 18],
           iconAnchor: [9, 9],
         });
-        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu ubicacion actual");
+        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
       } else {
         adminUserMarker.setLatLng(adminUserLocation);
       }
@@ -1172,6 +1306,38 @@ function centrarUbicacionAdmin() {
   centerMap();
 }
 
+function limpiarRutasAdmin(quitarControl = true) {
+  adminRouteLines.forEach((linea) => {
+    if (adminMap && linea) adminMap.removeLayer(linea);
+  });
+  adminRouteLines = [];
+
+  if (quitarControl && adminRouteControl && adminMap) {
+    adminMap.removeControl(adminRouteControl);
+    adminRouteControl = null;
+  }
+}
+
+function pintarRutasAdmin(evento) {
+  limpiarRutasAdmin(false);
+  const colores = ["#296c1f", "#0d6efd", "#f59e0b", "#dc3545"];
+
+  evento.routes.forEach((ruta, indice) => {
+    const linea = L.polyline(ruta.coordinates, {
+      color: colores[indice % colores.length],
+      weight: indice === 0 ? 7 : 5,
+      opacity: indice === 0 ? 0.9 : 0.72,
+      dashArray: indice === 0 ? null : "10 8",
+    }).addTo(adminMap);
+
+    linea.bindTooltip(
+      `${(ruta.summary.totalDistance / 1000).toFixed(1)} km - ${Math.round(ruta.summary.totalTime / 60)} min`,
+      { sticky: true },
+    );
+    adminRouteLines.push(linea);
+  });
+}
+
 function trazarRutaAdmin(destinoLat, destinoLng) {
   /* BOTON COMO LLEGAR: usa Leaflet Routing Machine igual que ciudadano. */
   if (!adminUserLocation) {
@@ -1182,7 +1348,7 @@ function trazarRutaAdmin(destinoLat, destinoLng) {
     mostrarToast("Ruta", "El motor de rutas aun se esta cargando.");
     return;
   }
-  if (adminRouteControl) adminMap.removeControl(adminRouteControl);
+  limpiarRutasAdmin();
 
   adminRouteControl = L.Routing.control({
     waypoints: [L.latLng(adminUserLocation[0], adminUserLocation[1]), L.latLng(destinoLat, destinoLng)],
@@ -1190,8 +1356,13 @@ function trazarRutaAdmin(destinoLat, destinoLng) {
     addWaypoints: false,
     routeWhileDragging: false,
     fitSelectedRoutes: true,
-    lineOptions: { styles: [{ color: "#296c1f", opacity: 0.85, weight: 6 }] },
+    showAlternatives: true,
+    createMarker: () => null,
+    lineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
+    altLineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
   }).addTo(adminMap);
+
+  adminRouteControl.on("routesfound", pintarRutasAdmin);
 }
 
 function cargarRecursoCss(href) {
@@ -1232,13 +1403,37 @@ async function cargarReciclaje() {
   adminTableData = datos.map((r) => ({
     raw: r,
     values: [r.id_registro, r.cantidad, r.id_usuario, r.id_tipo_material, r.id_punto, limpiar(r.fecha_hora), estadoHtml(r.id_estado)],
-    actions: `
-      <button class="small-button danger-button" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 2)">Inactivar</button>
-      <button class="small-button" type="button" onclick="cambiarEstadoReciclaje(${r.id_registro}, 1)">Activar</button>
-    `,
+    actions: renderEstadoReciclaje(r),
   }));
   document.getElementById("admin-content").innerHTML = renderTableCard("Registros de reciclaje", "Datos reportados en el sistema.", "reciclaje_greenup.csv");
   pintarTablaActual();
+}
+
+function filtrarCatalogoVisible(nombre, datos) {
+  /*
+    FILTRO VISUAL DE CATALOGOS:
+    En la tabla de roles no mostramos el rol Administrador porque es
+    interno del sistema y debe permanecer activo sin modificarse desde aqui.
+  */
+  if (nombre !== "roles") return datos;
+  return datos.filter((item) => !esRolAdministradorProtegido(nombre, item));
+}
+
+function renderEstadoReciclaje(registro) {
+  /*
+    BOTON DE ESTADO PARA REGISTROS:
+    El administrador ve una sola accion: Inactivar si esta activo,
+    o Activar si ya estaba inactivo.
+  */
+  const activo = Number(registro.id_estado) === 1;
+  const siguienteEstado = activo ? 2 : 1;
+  const texto = activo ? "Inactivar" : "Activar";
+  const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  return `
+    <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoReciclaje(${registro.id_registro}, ${siguienteEstado})">
+      ${texto}
+    </button>
+  `;
 }
 
 async function cambiarEstadoReciclaje(idRegistro, idEstado) {
@@ -1250,34 +1445,167 @@ async function cambiarEstadoReciclaje(idRegistro, idEstado) {
   await cargarReciclaje();
 }
 
-async function cargarReportes() {
-  const datos = await apiAdmin("/reportes/reciclaje");
+async function cargarReportes(filtros = {}) {
+  /*
+    REPORTES DEL ADMINISTRADOR:
+    Carga informacion real de reciclaje y aplica filtros desde el backend.
+  */
+  const query = construirQueryReporte(filtros);
+  const [datos, usuarios, materiales, puntos] = await Promise.all([
+    apiAdmin(`/reportes/reciclaje${query}`),
+    apiAdmin("/api/usuarios/listar"),
+    apiAdmin("/materiales"),
+    apiAdmin("/ubicaciones"),
+  ]);
   pintarHero([
     ["Filas", String(datos.length)],
-    ["Formato", "CSV/PDF"],
+    ["Formato", "CSV/Excel/PDF"],
   ]);
-  const columnas = Object.keys(datos[0] || {});
-  adminTableColumns = columnas.length ? columnas : ["Reporte"];
+  adminTableColumns = ["ID", "Fecha", "Usuario", "Material", "Residuo", "Punto", "Cantidad", "Estado"];
   adminTableData = datos.map((fila) => ({
     raw: fila,
-    values: columnas.map((col) => limpiar(fila[col])),
+    values: [
+      fila.id_registro,
+      limpiar(formatearFechaAdmin(fila.fecha_hora)),
+      limpiar(fila.usuario_nombre || fila.usuario || "Sin usuario"),
+      limpiar(fila.material || "Sin material"),
+      limpiar(fila.residuo || "Sin residuo"),
+      limpiar(fila.punto || "Sin punto"),
+      limpiar(fila.cantidad),
+      estadoHtml(fila.id_estado),
+    ],
     actions: "",
   }));
   document.getElementById("admin-content").innerHTML = `
-    <div class="toolbar">
-      <button class="primary-button" type="button" onclick="exportarTablaCSV('reporte_reciclaje_greenup.csv')">
+    <!-- FILTROS DEL REPORTE: reducen la informacion antes de exportarla. -->
+    <form class="toolbar admin-report-filters" onsubmit="aplicarFiltrosReporteAdmin(event)">
+      <!-- Campo fecha inicial: permite buscar reportes desde una fecha concreta. -->
+      <label class="report-filter-field">
+        <span class="form-label">Fecha inicial</span>
+        <input id="reporte-fecha-inicio" class="form-control" type="date" value="${limpiar(filtros.fecha_inicio || "")}">
+      </label>
+      <!-- Campo fecha final: cierra el rango de fechas del reporte. -->
+      <label class="report-filter-field">
+        <span class="form-label">Fecha final</span>
+        <input id="reporte-fecha-fin" class="form-control" type="date" value="${limpiar(filtros.fecha_fin || "")}">
+      </label>
+      <!-- Campo usuario: filtra los reportes por ciudadano registrado. -->
+      <label class="report-filter-field">
+        <span class="form-label">Usuario</span>
+        <select id="reporte-usuario" class="form-select">
+          ${opcionesSelectReporte(usuarios, "id_usuario", (u) => `${u.nombres || ""} ${u.apellidos || ""}`.trim() || u.usuario, filtros.id_usuario)}
+        </select>
+      </label>
+      <!-- Campo material: muestra solo los reportes de un material reciclable. -->
+      <label class="report-filter-field">
+        <span class="form-label">Material</span>
+        <select id="reporte-material" class="form-select">
+          ${opcionesSelectReporte(materiales, "id_tipo_material", (m) => m.nombre, filtros.id_tipo_material)}
+        </select>
+      </label>
+      <!-- Campo punto: permite revisar reportes de un punto ecologico especifico. -->
+      <label class="report-filter-field">
+        <span class="form-label">Punto</span>
+        <select id="reporte-punto" class="form-select">
+          ${opcionesSelectReporte(puntos, "id_punto", (p) => p.nombre, filtros.id_punto)}
+        </select>
+      </label>
+      <!-- Campo estado: separa reportes activos e inactivos. -->
+      <label class="report-filter-field">
+        <span class="form-label">Estado</span>
+        <select id="reporte-estado" class="form-select">
+          <option value="">Todos</option>
+          <option value="1" ${String(filtros.id_estado || "") === "1" ? "selected" : ""}>Activo</option>
+          <option value="2" ${String(filtros.id_estado || "") === "2" ? "selected" : ""}>Inactivo</option>
+        </select>
+      </label>
+      <!-- Botones del filtro: aplican o limpian los datos seleccionados. -->
+      <div class="report-filter-actions">
+        <button class="primary-button btn btn-success" type="submit">
+          <span class="material-symbols-outlined">filter_alt</span> Aplicar filtros
+        </button>
+        <button class="ghost-button btn btn-outline-secondary" type="button" onclick="limpiarFiltrosReporteAdmin()">
+          <span class="material-symbols-outlined">mop</span> Limpiar filtros
+        </button>
+      </div>
+    </form>
+
+    <!-- EXPORTACIONES: usan la tabla filtrada que esta viendo el administrador. -->
+    <div class="toolbar d-flex flex-wrap align-items-center">
+      <button class="primary-button btn btn-success" type="button" onclick="exportarTablaCSV('reporte_reciclaje_greenup.csv')">
         <span class="material-symbols-outlined">download</span> Exportar CSV
       </button>
-      <button class="ghost-button" type="button" onclick="window.print()">
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaExcel('reporte_reciclaje_greenup.xls')">
+        <span class="material-symbols-outlined">grid_on</span> Exportar Excel
+      </button>
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="window.print()">
         <span class="material-symbols-outlined">print</span> Imprimir PDF
       </button>
-      <button class="ghost-button" type="button" onclick="cargarReportes()">
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="cargarReportes()">
         <span class="material-symbols-outlined">sync</span> Actualizar
       </button>
     </div>
     ${renderTableCard("Reporte de reciclaje", "Informacion real almacenada en Supabase.", "reporte_reciclaje_greenup.csv")}
   `;
-  pintarTablaActual();
+  pintarTablaActual(adminTableData, {
+    icon: "summarize",
+    title: "No hay reportes para mostrar.",
+    text: "Aun no existen reportes de reciclaje con los filtros seleccionados.",
+  });
+}
+
+function construirQueryReporte(filtros) {
+  /*
+    QUERY STRING:
+    Convierte los filtros del formulario en parametros para el backend.
+  */
+  const params = new URLSearchParams();
+  Object.entries(filtros || {}).forEach(([clave, valor]) => {
+    if (valor !== undefined && valor !== null && String(valor).trim() !== "") {
+      params.set(clave, String(valor).trim());
+    }
+  });
+  const texto = params.toString();
+  return texto ? `?${texto}` : "";
+}
+
+function opcionesSelectReporte(datos, idCampo, textoCampo, seleccionado) {
+  /*
+    OPCIONES DE FILTRO:
+    Crea los option de usuarios, materiales y puntos para el reporte.
+  */
+  const actual = String(seleccionado || "");
+  const opciones = datos.map((item) => {
+    const valor = String(item[idCampo] || "");
+    const texto = limpiar(textoCampo(item) || valor);
+    const selected = valor === actual ? "selected" : "";
+    return `<option value="${limpiar(valor)}" ${selected}>${texto}</option>`;
+  }).join("");
+  return `<option value="">Todos</option>${opciones}`;
+}
+
+function leerFiltrosReporteAdmin() {
+  /*
+    LECTURA DE FILTROS:
+    Toma los valores escritos por el administrador en el formulario.
+  */
+  return {
+    fecha_inicio: document.getElementById("reporte-fecha-inicio")?.value || "",
+    fecha_fin: document.getElementById("reporte-fecha-fin")?.value || "",
+    id_usuario: document.getElementById("reporte-usuario")?.value || "",
+    id_tipo_material: document.getElementById("reporte-material")?.value || "",
+    id_punto: document.getElementById("reporte-punto")?.value || "",
+    id_estado: document.getElementById("reporte-estado")?.value || "",
+  };
+}
+
+async function aplicarFiltrosReporteAdmin(evento) {
+  evento.preventDefault();
+  await cargarReportes(leerFiltrosReporteAdmin());
+}
+
+async function limpiarFiltrosReporteAdmin() {
+  await cargarReportes({});
 }
 
 async function cargarNovedades() {
@@ -1287,30 +1615,25 @@ async function cargarNovedades() {
     ["Activas", String(datos.filter((n) => Number(n.id_estado) === 1).length)],
   ]);
   document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row">
-          <div>
-            <h2>Publicar noticia</h2>
-            <p>Contenido visible para la comunidad.</p>
-          </div>
-        </div>
-        ${renderForm("form-novedad", [
-          { id: "titulo", label: "Titulo" },
-          { id: "imagen", label: "URL de imagen" },
-          { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-        ], "guardarNovedad(event)", "Publicar")}
-      </article>
-      <article class="data-card">
+    <section class="content-grid content-layout row g-3">
+      <article class="data-card card col-12">
         <div class="card-title-row">
           <div>
             <h2>Noticias publicadas</h2>
             <p>Se muestran solo registros existentes.</p>
           </div>
+          <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-novedad">
+            <span class="material-symbols-outlined">add</span> Nueva noticia
+          </button>
         </div>
         ${renderNewsGrid(datos)}
       </article>
     </section>
+    ${renderFormModal("modal-novedad", "Publicar noticia", "Contenido visible para la comunidad.", "form-novedad", [
+      { id: "titulo", label: "Titulo" },
+      { id: "imagen", label: "URL de imagen" },
+      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
+    ], "guardarNovedad(event)", "Publicar")}
   `;
 }
 
@@ -1347,21 +1670,23 @@ async function cargarFaq() {
     actions: "",
   }));
   document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row"><div><h2>Nueva pregunta</h2><p>Respuesta visible para usuarios.</p></div></div>
-        ${renderForm("form-faq", [
-          { id: "pregunta", label: "Pregunta", full: true },
-          { id: "categoria", label: "Categoria" },
-          { id: "orden", label: "Orden", type: "number" },
-          { id: "respuesta", label: "Respuesta", type: "textarea", full: true },
-        ], "guardarFaq(event)", "Guardar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row"><div><h2>Preguntas registradas</h2><p>Datos reales desde Supabase.</p></div></div>
+    <section class="content-grid content-layout row g-3">
+      <article class="data-card card col-12">
+        <div class="card-title-row">
+          <div><h2>Preguntas registradas</h2><p>Datos reales desde Supabase.</p></div>
+          <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-faq">
+            <span class="material-symbols-outlined">add</span> Nueva pregunta
+          </button>
+        </div>
         <div id="tabla-admin"></div>
       </article>
     </section>
+    ${renderFormModal("modal-faq", "Nueva pregunta", "Respuesta visible para usuarios.", "form-faq", [
+      { id: "pregunta", label: "Pregunta", full: true },
+      { id: "categoria", label: "Categoria" },
+      { id: "orden", label: "Orden", type: "number" },
+      { id: "respuesta", label: "Respuesta", type: "textarea", full: true },
+    ], "guardarFaq(event)", "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -1389,22 +1714,24 @@ async function cargarContenido() {
     actions: "",
   }));
   document.getElementById("admin-content").innerHTML = `
-    <section class="content-grid content-layout">
-      <article class="admin-card">
-        <div class="card-title-row"><div><h2>Nuevo contenido</h2><p>Recurso educativo para GreenUp.</p></div></div>
-        ${renderForm("form-contenido", [
-          { id: "titulo", label: "Titulo" },
-          { id: "tipo", label: "Tipo", type: "select", options: [["articulo", "Articulo"], ["video", "Video"], ["infografia", "Infografia"]] },
-          { id: "url_recurso", label: "URL recurso" },
-          { id: "imagen", label: "URL imagen" },
-          { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-        ], "guardarContenido(event)", "Guardar")}
-      </article>
-      <article class="data-card">
-        <div class="card-title-row"><div><h2>Contenido registrado</h2><p>Material publicado o en gestion.</p></div></div>
+    <section class="content-grid content-layout row g-3">
+      <article class="data-card card col-12">
+        <div class="card-title-row">
+          <div><h2>Contenido registrado</h2><p>Material publicado o en gestion.</p></div>
+          <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-contenido">
+            <span class="material-symbols-outlined">add</span> Nuevo contenido
+          </button>
+        </div>
         <div id="tabla-admin"></div>
       </article>
     </section>
+    ${renderFormModal("modal-contenido", "Nuevo contenido", "Recurso educativo para GreenUp.", "form-contenido", [
+      { id: "titulo", label: "Titulo" },
+      { id: "tipo", label: "Tipo", type: "select", options: [["articulo", "Articulo"], ["video", "Video"], ["infografia", "Infografia"]] },
+      { id: "url_recurso", label: "URL recurso" },
+      { id: "imagen", label: "URL imagen" },
+      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
+    ], "guardarContenido(event)", "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -1437,42 +1764,97 @@ async function cargarEstadisticas() {
     ["Kg", String(estadisticas.total_cantidad || 0)],
   ]);
   document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
+    <section class="metrics-grid stats-metrics-grid row g-3">
       ${metric("recycling", estadisticas.total_reciclajes || 0, "Registros reciclaje", "Total de movimientos")}
       ${metric("scale", estadisticas.total_cantidad || 0, "Cantidad reciclada", "Suma total reportada", "blue")}
-      ${metric("groups", usuarios.length, "Usuarios", "Cuentas en el sistema")}
-      ${metric("location_on", puntos.length, "Puntos", `${recicladoras.length} recicladoras`, "blue")}
+      ${metric("groups", estadisticas.total_usuarios || usuarios.length, "Usuarios", "Cuentas en el sistema")}
+      ${metric("location_on", estadisticas.total_puntos || puntos.length, "Puntos", `${recicladoras.length} recicladoras`, "blue")}
     </section>
-    <article class="data-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Resumen administrativo</h2>
-          <p>Indicadores calculados desde Supabase.</p>
+
+    <!-- ESTADISTICAS POR RESIDUO: ayuda a cumplir el requisito RF012. -->
+    <section class="content-grid row g-3">
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Reciclaje por residuo</h2>
+            <p>Total agrupado por tipo de residuo.</p>
+          </div>
         </div>
-      </div>
-      <div class="empty-state">
-        <div>
-          <span class="material-symbols-outlined">monitoring</span>
-          Los indicadores se actualizan desde los registros reales del sistema.
+        ${tablaIndicadoresAdmin(["Residuo", "Cantidad"], estadisticas.reciclaje_por_residuo)}
+      </article>
+
+      <!-- ESTADISTICAS POR MATERIAL: muestra que materiales se reciclan mas. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Reciclaje por material</h2>
+            <p>Materiales con mayor cantidad registrada.</p>
+          </div>
         </div>
-      </div>
-    </article>
+        ${tablaIndicadoresAdmin(["Material", "Cantidad"], estadisticas.reciclaje_por_material)}
+      </article>
+
+      <!-- RANKING DE USUARIOS: identifica usuarios mas activos. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Ranking de usuarios</h2>
+            <p>Usuarios con mas reciclaje acumulado.</p>
+          </div>
+        </div>
+        ${tablaIndicadoresAdmin(["Usuario", "Cantidad"], estadisticas.ranking_usuarios, "nombre")}
+      </article>
+
+      <!-- EVOLUCION MENSUAL: permite analizar cambios por mes. -->
+      <article class="data-card card col-12 col-xl-6">
+        <div class="card-title-row">
+          <div>
+            <h2>Evolucion mensual</h2>
+            <p>Cantidad reciclada por mes.</p>
+          </div>
+        </div>
+        ${tablaIndicadoresAdmin(["Mes", "Cantidad"], estadisticas.evolucion_mensual, "mes")}
+      </article>
+    </section>
   `;
 }
 
-function cargarPerfil() {
+function tablaIndicadoresAdmin(columnas, datos, campoNombre = "nombre") {
+  /*
+    TABLA DE INDICADORES:
+    Reutiliza los arreglos enviados por /estadisticas para mostrar RF012.
+  */
+  const filas = (datos || []).map((item) => [
+    limpiar(item[campoNombre] || "Sin dato"),
+    limpiar(item.total || 0),
+  ]);
+  return tablaDatos(columnas, filas);
+}
+
+async function cargarPerfil() {
   const admin = obtenerAdminActual();
+  let adminCompleto = { ...admin };
+  try {
+    /*
+      PERFIL COMPLETO:
+      El login solo guarda datos basicos. Aqui pedimos el registro completo
+      para editar nombre, apellido, correo, celular y documento sin borrar datos.
+    */
+    adminCompleto = await apiAdmin(`/api/usuarios/buscar/${admin.id_usuario}`);
+  } catch (error) {
+    console.warn("No se pudo cargar el perfil completo del administrador", error);
+  }
   const modoPerfil = obtenerTemaAdminSistema();
   const clasePerfil = modoPerfil === "claro" ? "admin-profile-light" : "admin-profile-dark";
-  pintarHero([["Rol", "Admin"], ["ID", String(admin.id_usuario || "")]]);
+  pintarHero([["Rol", "Admin"], ["ID", String(adminCompleto.id_usuario || "")]]);
   document.getElementById("admin-content").innerHTML = `
     <!-- PERFIL ADMIN: tarjeta principal del administrador con modo oscuro o blanco. -->
     <section class="${clasePerfil}">
       <!-- IDENTIDAD DEL ADMIN: muestra usuario, rol y estado de acceso. -->
       <article class="profile-identity">
         <div>
-          <div class="profile-avatar-dark">${iniciales(admin.nombres || admin.usuario || "A")}</div>
-          <h2>${limpiar(admin.nombres || "Administrador")} ${limpiar(admin.apellidos || "Sistema")}</h2>
+          <div class="profile-avatar-dark">${iniciales(adminCompleto.nombres || adminCompleto.usuario || "A")}</div>
+          <h2>${limpiar(adminCompleto.nombres || "Administrador")} ${limpiar(adminCompleto.apellidos || "Sistema")}</h2>
           <p>Cuenta encargada de supervisar usuarios, puntos ecologicos, reportes, noticias y configuracion general de GreenUp.</p>
         </div>
         <span class="profile-security-badge">
@@ -1499,11 +1881,11 @@ function cargarPerfil() {
         <div class="profile-detail-grid">
           <div class="profile-dark-card">
             <span>ID de usuario</span>
-            <strong>${limpiar(admin.id_usuario)}</strong>
+            <strong>${limpiar(adminCompleto.id_usuario)}</strong>
           </div>
           <div class="profile-dark-card">
             <span>Usuario</span>
-            <strong>${limpiar(admin.usuario || "admin")}</strong>
+            <strong>${limpiar(adminCompleto.usuario || "admin")}</strong>
           </div>
           <div class="profile-dark-card">
             <span>Rol</span>
@@ -1517,22 +1899,167 @@ function cargarPerfil() {
 
         <!-- BOTONES DEL PERFIL: acciones reales del administrador. -->
         <div class="profile-actions-dark">
-          <button class="primary-button" type="button" onclick="cargarModuloAdmin()">
+          <button class="primary-button btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modal-editar-perfil-admin">
+            <span class="material-symbols-outlined">edit</span> Editar perfil
+          </button>
+          <button class="primary-button btn btn-success" type="button" onclick="cargarModuloAdmin()">
             <span class="material-symbols-outlined">refresh</span> Actualizar perfil
           </button>
-          <button class="ghost-button" type="button" onclick="pedirPermisoNotificaciones()">
+          <button class="ghost-button btn btn-outline-secondary" type="button" onclick="pedirPermisoNotificaciones()">
             <span class="material-symbols-outlined">notifications</span> Activar notificaciones
           </button>
-          <button class="ghost-button" type="button" onclick="iniciarCambioContrasenaAdmin()">
-            <span class="material-symbols-outlined">lock_reset</span> Cambiar contrasena
-          </button>
-          <button class="ghost-button danger-button" type="button" onclick="cerrarSesionAdminSistema()">
+          <button class="ghost-button danger-button btn btn-outline-danger" type="button" onclick="cerrarSesionAdminSistema()">
             <span class="material-symbols-outlined">logout</span> Cerrar sesion
           </button>
         </div>
       </article>
     </section>
+    ${renderModalEditarPerfilAdmin(adminCompleto)}
   `;
+}
+
+function renderModalEditarPerfilAdmin(admin) {
+  /*
+    MODAL EDITAR PERFIL:
+    Este formulario permite cambiar los datos visibles del administrador.
+    No crea usuarios nuevos; solo actualiza la cuenta administrativa actual.
+  */
+  return `
+    <div class="modal fade admin-modal" id="modal-editar-perfil-admin" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <h2 class="modal-title fs-5">Editar perfil administrador</h2>
+              <p class="modal-subtitle">Estos datos se guardan en Supabase y actualizan la sesion local.</p>
+            </div>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <form id="form-editar-perfil-admin" class="admin-form needs-validation" onsubmit="guardarPerfilAdminSistema(event)">
+              <!-- Nombres: nombre visible del administrador en el perfil. -->
+              <label class="form-label">Nombres
+                <input id="perfil-nombres" class="form-control" type="text" value="${limpiar(admin.nombres || "")}" required>
+              </label>
+
+              <!-- Apellidos: complemento del nombre visible. -->
+              <label class="form-label">Apellidos
+                <input id="perfil-apellidos" class="form-control" type="text" value="${limpiar(admin.apellidos || "")}" required>
+              </label>
+
+              <!-- Usuario: nombre usado para iniciar sesion como administrador. -->
+              <label class="form-label">Usuario
+                <input id="perfil-usuario" class="form-control" type="text" value="${limpiar(admin.usuario || "admin")}" required>
+              </label>
+
+              <!-- Correo: contacto principal guardado en la tabla usuarios. -->
+              <label class="form-label">Correo
+                <input id="perfil-correo" class="form-control" type="email" value="${limpiar(admin.correo || "admin@greenup.com")}" required>
+              </label>
+
+              <!-- Celular: telefono administrativo opcional. -->
+              <label class="form-label">Celular
+                <input id="perfil-celular" class="form-control" type="text" value="${limpiar(admin.celular || "")}">
+              </label>
+
+              <!-- Documento: se mantiene porque la ruta de usuarios lo guarda junto al perfil. -->
+              <label class="form-label">Numero de documento
+                <input id="perfil-documento" class="form-control" type="text" value="${limpiar(admin.numero_documento || "")}">
+              </label>
+
+              <!-- Boton guardar: ejecuta la actualizacion en Supabase. -->
+              <button id="btn-guardar-perfil-admin" class="primary-button full btn btn-success" type="submit">
+                <span class="material-symbols-outlined">save</span>Guardar cambios
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function guardarPerfilAdminSistema(event) {
+  /*
+    GUARDAR PERFIL:
+    1. Evita que el formulario recargue la pagina.
+    2. Busca el usuario completo en Supabase.
+    3. Mezcla los campos existentes con lo escrito en el modal.
+    4. Actualiza Supabase y tambien actualiza localStorage.
+  */
+  event.preventDefault();
+
+  const admin = obtenerAdminActual();
+  const boton = document.getElementById("btn-guardar-perfil-admin");
+  if (!admin.id_usuario) {
+    mostrarToast("Perfil", "No se encontro la sesion del administrador.");
+    return;
+  }
+
+  const nombres = document.getElementById("perfil-nombres").value.trim();
+  const apellidos = document.getElementById("perfil-apellidos").value.trim();
+  const usuario = document.getElementById("perfil-usuario").value.trim();
+  const correo = document.getElementById("perfil-correo").value.trim();
+  const celular = document.getElementById("perfil-celular").value.trim();
+  const numeroDocumento = document.getElementById("perfil-documento").value.trim();
+
+  if (!nombres || !apellidos || !usuario || !correo) {
+    mostrarToast("Faltan datos", "Nombres, apellidos, usuario y correo son obligatorios.");
+    return;
+  }
+
+  try {
+    if (boton) {
+      boton.disabled = true;
+      boton.innerHTML = '<span class="material-symbols-outlined">sync</span>Guardando...';
+    }
+
+    const perfilActual = await apiAdmin(`/api/usuarios/buscar/${admin.id_usuario}`);
+    const payload = {
+      nombres,
+      apellidos,
+      correo,
+      usuario,
+      numero_documento: numeroDocumento || perfilActual.numero_documento || "",
+      celular: celular || perfilActual.celular || "",
+      foto_perfil: perfilActual.foto_perfil || "",
+      id_tipo_documento: perfilActual.id_tipo_documento || 1,
+      id_rol: 1,
+      id_estado: perfilActual.id_estado || 1,
+    };
+
+    await apiAdmin(`/api/usuarios/actualizar/${admin.id_usuario}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+
+    const sesionActualizada = {
+      ...admin,
+      id_usuario: admin.id_usuario,
+      nombres: payload.nombres,
+      apellidos: payload.apellidos,
+      usuario: payload.usuario,
+      correo: payload.correo,
+      id_rol: 1,
+    };
+
+    localStorage.setItem("usuario", JSON.stringify(sesionActualizada));
+
+    const modal = document.getElementById("modal-editar-perfil-admin");
+    const instancia = modal && window.bootstrap ? bootstrap.Modal.getInstance(modal) : null;
+    if (instancia) instancia.hide();
+
+    mostrarToast("Perfil actualizado", "Los datos del administrador fueron guardados correctamente.");
+    pintarEstructuraBase();
+    await cargarModuloAdmin();
+  } catch (error) {
+    mostrarToast("No se pudo guardar", error.message || "Revisa que el backend este encendido.");
+  } finally {
+    if (boton) {
+      boton.disabled = false;
+      boton.innerHTML = '<span class="material-symbols-outlined">save</span>Guardar cambios';
+    }
+  }
 }
 
 function cambiarTemaPerfilAdmin(modo) {
@@ -1547,11 +2074,10 @@ function cambiarTemaPerfilAdmin(modo) {
 function cargarConfiguracion() {
   pintarHero([["Notificaciones", Notification.permission || "n/a"], ["Sesion", "Activa"]]);
   document.getElementById("admin-content").innerHTML = `
-    <section class="metrics-grid">
+    <section class="metrics-grid row g-3">
       ${settingCard("notifications", "Notificaciones", "Activa permisos para recibir avisos cuando lleguen usuarios o puntos nuevos.", "pedirPermisoNotificaciones()", "Activar")}
-      ${settingCard("lock_reset", "Contrasena", "Cambia tu contrasena usando el mismo flujo seguro de verificacion por correo.", "iniciarCambioContrasenaAdmin()", "Cambiar")}
       ${settingCard("sync", "Actualizacion", "Las tablas principales y el mapa consultan Supabase cada 8 segundos.", "cargarModuloAdmin()", "Actualizar")}
-      ${settingCard("download", "Exportacion", "Los reportes y tablas se exportan a CSV desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
+      ${settingCard("download", "Exportacion", "Los reportes se exportan a CSV, Excel o impresion PDF desde el navegador.", "exportarTablaCSV('greenup_admin.csv')", "Exportar")}
       ${settingCard("logout", "Sesion", "Cierra la sesion del administrador en este navegador.", "cerrarSesionAdminSistema()", "Cerrar")}
     </section>
   `;
@@ -1559,24 +2085,24 @@ function cargarConfiguracion() {
 
 function settingCard(icon, title, text, action, button) {
   return `
-    <article class="metric-card">
+    <article class="metric-card card col-12 col-sm-6 col-xl-3">
       <span class="metric-icon"><span class="material-symbols-outlined">${icon}</span></span>
       <span>${title}</span>
       <p>${text}</p>
-      <button class="small-button" type="button" onclick="${action}">${button}</button>
+      <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="${action}">${button}</button>
     </article>
   `;
 }
 
 function renderTableCard(title, subtitle, filename) {
   return `
-    <article class="data-card">
+    <article class="data-card card">
       <div class="card-title-row">
         <div>
           <h2>${title}</h2>
           <p>${subtitle}</p>
         </div>
-        <button class="ghost-button" type="button" onclick="exportarTablaCSV('${filename}')">
+        <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('${filename}')">
           <span class="material-symbols-outlined">download</span> Exportar
         </button>
       </div>
@@ -1585,18 +2111,21 @@ function renderTableCard(title, subtitle, filename) {
   `;
 }
 
-function pintarTablaActual(data = adminTableData) {
+function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
   const contenedor = document.getElementById("tabla-admin");
   if (!contenedor) return;
   if (!data.length) {
-    contenedor.innerHTML = renderEmpty("database", "No hay registros para mostrar.", "Cuando existan datos en Supabase apareceran aqui.");
+    const icono = estadoVacio.icon || "database";
+    const titulo = estadoVacio.title || "No hay registros para mostrar.";
+    const texto = estadoVacio.text || "Cuando existan datos en Supabase apareceran aqui.";
+    contenedor.innerHTML = renderEmpty(icono, titulo, texto);
     return;
   }
 
   const tieneAcciones = data.some((row) => row.actions);
   contenedor.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table">
+      <table class="admin-table table table-hover align-middle">
         <thead>
           <tr>
             ${adminTableColumns.map((col) => `<th>${limpiar(col)}</th>`).join("")}
@@ -1636,7 +2165,7 @@ function tablaDatos(columnas, filas) {
   if (!filas.length) return renderEmpty("database", "No hay registros.", "Los datos apareceran cuando existan en Supabase.");
   return `
     <div class="table-wrap">
-      <table class="admin-table">
+      <table class="admin-table table table-hover align-middle">
         <thead><tr>${columnas.map((c) => `<th>${limpiar(c)}</th>`).join("")}</tr></thead>
         <tbody>
           ${filas.map((fila) => `<tr>${fila.map((v) => `<td>${limpiarHtmlPermitido(v)}</td>`).join("")}</tr>`).join("")}
@@ -1648,40 +2177,81 @@ function tablaDatos(columnas, filas) {
 
 function renderForm(id, campos, accion, textoBoton) {
   return `
-    <form id="${id}" class="admin-form" onsubmit="${accion}">
+    <form id="${id}" class="admin-form needs-validation" onsubmit="${accion}">
       ${campos.map((campo) => renderField(campo)).join("")}
-      <button class="primary-button full" type="submit">
+      <button class="primary-button full btn btn-success" type="submit">
         <span class="material-symbols-outlined">save</span>${textoBoton}
       </button>
     </form>
   `;
 }
 
+function renderFormModal(modalId, titulo, subtitulo, formId, campos, accion, textoBoton) {
+  /*
+    MODAL DE REGISTRO:
+    Usa Bootstrap para mostrar formularios de creacion sin ocupar espacio fijo
+    en la pagina. Se reutiliza en catalogos, noticias, FAQ y contenido.
+  */
+  return `
+    <div class="modal fade admin-modal" id="${modalId}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <h2 class="modal-title fs-5">${titulo}</h2>
+              <p class="modal-subtitle">${subtitulo}</p>
+            </div>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            ${renderForm(formId, campos, accion, textoBoton)}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderField(campo) {
-  const clase = campo.full ? "full" : "";
+  const clase = campo.full ? "full form-label" : "form-label";
+  const eventoCambio = campo.onChange ? ` onchange="${campo.onChange}"` : "";
   if (campo.type === "textarea") {
-    return `<label class="${clase}">${campo.label}<textarea id="${campo.id}"></textarea></label>`;
+    return `<label class="${clase}">${campo.label}<textarea id="${campo.id}" class="form-control"></textarea></label>`;
   }
   if (campo.type === "select") {
     return `
       <label class="${clase}">${campo.label}
-        <select id="${campo.id}">
+        <select id="${campo.id}" class="form-select"${eventoCambio}>
           ${campo.options.map((op) => `<option value="${op[0]}">${op[1]}</option>`).join("")}
         </select>
       </label>
     `;
   }
-  return `<label class="${clase}">${campo.label}<input id="${campo.id}" type="${campo.type || "text"}" value="${campo.value || ""}"></label>`;
+  return `<label class="${clase}">${campo.label}<input id="${campo.id}" class="form-control" type="${campo.type || "text"}" value="${campo.value || ""}"></label>`;
 }
 
 function leerFormulario(campos) {
   const data = {};
   campos.forEach((campo) => {
+    if (campo.omitPayload) return;
     const elemento = document.getElementById(campo.id);
     if (!elemento) return;
     data[campo.id] = normalizarValor(campo, elemento.value);
   });
   return data;
+}
+
+function completarTipoDocumentoAdmin(valor) {
+  /*
+    AUTOLLENADO DEL DOCUMENTO:
+    Cuando el administrador escoge un tipo de documento del desplegable,
+    copiamos ese texto en la descripcion porque esa es la columna real
+    que guarda el backend de tipos de documento.
+  */
+  const campoDescripcion = document.getElementById("descripcion");
+  if (!campoDescripcion || !valor) return;
+  campoDescripcion.value = valor;
+  campoDescripcion.focus();
 }
 
 function normalizarValor(campo, valor) {
@@ -1692,7 +2262,7 @@ function normalizarValor(campo, valor) {
 
 function metric(icon, value, label, detail, color = "") {
   return `
-    <article class="metric-card ${color}">
+    <article class="metric-card card col-12 col-sm-6 col-xl-3 ${color}">
       <span class="metric-icon"><span class="material-symbols-outlined">${icon}</span></span>
       <strong>${limpiar(value)}</strong>
       <span>${limpiar(label)}</span>
@@ -1718,7 +2288,7 @@ function renderNewsGrid(noticias) {
       ${noticias.map((n) => {
         const activo = Number(n.id_estado) === 1;
         return `
-          <article class="news-card">
+          <article class="news-card card">
             <div class="news-image">
               ${n.imagen ? `<img src="${limpiar(n.imagen)}" alt="${limpiar(n.titulo)}">` : ""}
             </div>
@@ -1727,7 +2297,7 @@ function renderNewsGrid(noticias) {
               <p>${limpiar(n.descripcion)}</p>
               <p>${estadoHtml(n.id_estado)}</p>
               <div class="row-actions">
-                <button class="small-button ${activo ? "danger-button" : ""}" type="button" onclick="cambiarEstadoNovedad(${n.id_novedad}, ${activo ? 2 : 1})">
+                <button class="small-button btn btn-sm ${activo ? "danger-button btn-outline-danger" : "btn-outline-secondary"}" type="button" onclick="cambiarEstadoNovedad(${n.id_novedad}, ${activo ? 2 : 1})">
                   ${activo ? "Inactivar" : "Activar"}
                 </button>
               </div>
@@ -1759,6 +2329,17 @@ function estadoHtml(idEstado) {
 function nombreRol(idRol) {
   const roles = { 1: "Administrador", 2: "Recicladora", 3: "Ciudadano" };
   return roles[Number(idRol)] || "Sin rol";
+}
+
+function formatearFechaAdmin(valor) {
+  /*
+    FECHA LEGIBLE:
+    Convierte la fecha de Supabase en texto corto para tablas y reportes.
+  */
+  if (!valor) return "";
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return valor;
+  return fecha.toLocaleString("es-CO");
 }
 
 function limpiar(valor) {
@@ -1818,6 +2399,13 @@ function iniciarMonitoreoAdmin() {
       }
       adminLastUserCount = usuarios.length;
 
+      const novedades = await apiAdmin("/novedades");
+      if (adminLastNewsCount !== null && novedades.length > adminLastNewsCount) {
+        notificarAdmin("Nueva novedad registrada", "El modulo de noticias y novedades se actualizara automaticamente.");
+        if (moduloActual() === "novedades" || moduloActual() === "panel") await cargarModuloAdmin();
+      }
+      adminLastNewsCount = novedades.length;
+
       if (moduloActual() === "mapa") await actualizarPuntosMapa(false);
       if (["puntos", "reportes", "estadisticas"].includes(moduloActual())) await cargarModuloAdmin();
     } catch (error) {
@@ -1844,7 +2432,48 @@ function exportarTablaCSV(nombreArchivo) {
   URL.revokeObjectURL(enlace.href);
 }
 
+function exportarTablaExcel(nombreArchivo) {
+  /*
+    EXPORTAR EXCEL:
+    Crea un archivo .xls con la misma tabla visible del administrador.
+    Excel puede abrir este HTML como hoja de calculo.
+  */
+  const filas = adminTableData;
+  if (!filas.length) {
+    mostrarToast("Exportacion", "No hay datos para exportar.");
+    return;
+  }
+
+  const encabezados = adminTableColumns.map((columna) => `<th>${limpiar(columna)}</th>`).join("");
+  const cuerpo = filas.map((fila) => `
+    <tr>
+      ${fila.values.map((valor) => `<td>${String(valor).replace(/<[^>]+>/g, "")}</td>`).join("")}
+    </tr>
+  `).join("");
+
+  const html = `
+    <html>
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <table border="1">
+          <thead><tr>${encabezados}</tr></thead>
+          <tbody>${cuerpo}</tbody>
+        </table>
+      </body>
+    </html>
+  `;
+
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" }));
+  enlace.download = nombreArchivo;
+  enlace.click();
+  URL.revokeObjectURL(enlace.href);
+}
+
 function cerrarSesionAdminSistema() {
+  const confirmarSalida = confirm("Seguro que deseas cerrar la sesion del administrador?");
+  if (!confirmarSalida) return;
   localStorage.removeItem("usuario");
+  sessionStorage.removeItem("greenup_admin_sesion_activa");
   window.location.href = "../public/admin_login.html";
 }

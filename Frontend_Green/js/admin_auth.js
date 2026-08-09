@@ -51,6 +51,7 @@ async function iniciarSesionAdmin(evento) {
     if (datos.token) {
       localStorage.setItem("token", datos.token);
     }
+    sessionStorage.setItem("greenup_admin_sesion_activa", "1");
 
     window.location.href = "../admin_sistema/admin_panel.html";
   } else {

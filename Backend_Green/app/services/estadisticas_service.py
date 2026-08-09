@@ -50,6 +50,12 @@ class EstadisticasService:
         """
         resumen = EstadisticasModel.obtener_resumen_admin()
         return {
-            "total_reciclajes": resumen["total_reciclajes"] if resumen else 0,
-            "total_cantidad": resumen["total_cantidad"] if resumen else 0,
+            "total_reciclajes": resumen.get("total_reciclajes", 0) if resumen else 0,
+            "total_cantidad": resumen.get("total_cantidad", 0) if resumen else 0,
+            "total_usuarios": resumen.get("total_usuarios", 0) if resumen else 0,
+            "total_puntos": resumen.get("total_puntos", 0) if resumen else 0,
+            "reciclaje_por_residuo": resumen.get("reciclaje_por_residuo", []) if resumen else [],
+            "reciclaje_por_material": resumen.get("reciclaje_por_material", []) if resumen else [],
+            "ranking_usuarios": resumen.get("ranking_usuarios", []) if resumen else [],
+            "evolucion_mensual": resumen.get("evolucion_mensual", []) if resumen else [],
         }

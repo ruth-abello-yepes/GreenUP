@@ -10,3 +10,4 @@ googlemaps # Libreria para trabajar con Google Maps desde Python
 pandas # Sirve para manejar datos y preparar reportes
 openpyxl # Sirve para exportar reportes en Excel
 reportlab # Sirve para exportar reportes en PDF
+requests # Consume servicios HTTP externos como World News API

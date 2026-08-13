@@ -158,6 +158,34 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .btn-gu-primary {
+            color: #fff;
+            background-color: var(--gu-primary);
+            border-color: var(--gu-primary);
+        }
+
+        .btn-gu-primary:hover,
+        .btn-gu-primary:focus {
+            color: #fff;
+            background-color: #002f54;
+            border-color: #002f54;
+        }
+
+        .education-skeleton {
+            min-height: 210px;
+            background: linear-gradient(90deg, #eef1f5 25%, #f8f9fa 50%, #eef1f5 75%);
+            background-size: 200% 100%;
+            animation: education-loading 1.2s infinite;
+        }
+
+        .material-info {
+            border-left: 4px solid var(--gu-secondary);
+        }
+
+        @keyframes education-loading {
+            to { background-position: -200% 0; }
+        }
     </style>
 </head>
 
@@ -263,7 +291,7 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">bar_chart</span> Estadísticas
                 </a>
-                <a href="ciudadano_contenido_educativo.html"
+                <a href="ciudadano_educacion.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
                     style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
                     <span class="material-symbols-outlined">school</span> Educación
@@ -278,28 +306,27 @@
             class="eco-gradient text-white rounded-4 p-4 p-md-5 mb-5 position-relative shadow-sm fade-up overflow-hidden">
             <div class="row align-items-center position-relative z-10">
                 <div class="col-lg-7 mb-4 mb-lg-0">
-                    <h1 class="display-5 fw-bold mb-3">¡Aprende y suma a tu Billetera Ecológica, Eco-Líder!</h1>
+                    <h1 class="display-5 fw-bold mb-3">Aprende, actúa y registra tu progreso ambiental</h1>
                     <p class="lead text-white-50 mb-0">Conviértete en un experto del reciclaje y las prácticas
-                        sostenibles. Cada guía o video que completas es un paso más hacia un planeta verde y suma puntos
-                        a tu cuenta.</p>
+                        sostenibles. Guarda lo que has visto y lleva un seguimiento personal de tus hábitos.</p>
                 </div>
 
                 <div class="col-lg-5">
                     <div class="glass-card p-4 rounded-4 shadow-lg transition-transform hover-translate-up">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-uppercase tracking-wider small fw-bold text-white-50">Tu Progreso</span>
+                            <span class="text-uppercase tracking-wider small fw-bold text-white-50">Tu aprendizaje</span>
                             <span
-                                class="material-symbols-outlined text-gu-accent icon-fill fs-3">account_balance_wallet</span>
+                                class="material-symbols-outlined text-gu-accent icon-fill fs-3">task_alt</span>
                         </div>
-                        <h2 class="display-4 fw-bold text-white mb-0"><span id="eco-points-display">150</span> <span
-                                class="fs-5 fw-normal text-white-50">pts</span></h2>
-                        <p class="small text-gu-accent mb-3">Eco-Puntos Disponibles</p>
+                        <h2 class="display-4 fw-bold text-white mb-0"><span id="lessons-completed-display">0</span> <span
+                                class="fs-5 fw-normal text-white-50">lecciones</span></h2>
+                        <p class="small text-gu-accent mb-3">Completadas por ti</p>
                         <div class="progress mb-2 bg-white bg-opacity-25" style="height: 8px;">
-                            <div class="progress-bar bg-gu-accent rounded-pill" style="width: 65%"></div>
+                            <div id="education-progress-bar" class="progress-bar bg-gu-accent rounded-pill" style="width: 0%"></div>
                         </div>
                         <p class="small text-white-50 mb-0 d-flex align-items-center gap-1">
-                            <span class="material-symbols-outlined fs-6 text-gu-accent">auto_awesome</span> ¡Gana +5 pts
-                            por cada guía leída!
+                            <span class="material-symbols-outlined fs-6 text-gu-accent">verified_user</span>
+                            El progreso es personal y no equivale a una certificación.
                         </p>
                     </div>
                 </div>
@@ -307,6 +334,17 @@
             <div class="position-absolute bg-white bg-opacity-10 rounded-circle blur-3xl"
                 style="width: 300px; height: 300px; bottom: -100px; right: -50px; filter: blur(40px);"></div>
         </section>
+
+        <div id="education-status" class="alert d-none mb-4" role="alert"></div>
+
+        <div class="alert alert-warning border-warning-subtle d-flex align-items-start gap-3 mb-4 fade-up" role="note">
+            <span class="material-symbols-outlined mt-1">info</span>
+            <div>
+                <strong>Seguimiento personal.</strong>
+                Los desafíos son compromisos voluntarios y GreenUp no verifica todavía su cumplimiento.
+                Los registros no equivalen a una certificación.
+            </div>
+        </div>
 
         <section
             class="bg-gu-primary text-white rounded-4 p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4 mb-5 shadow-sm fade-up border-start border-5 border-success">
@@ -321,12 +359,12 @@
             </div>
             <div class="d-flex gap-5">
                 <div class="text-center">
-                    <h3 class="fw-bold text-gu-accent mb-0">1,240</h3>
+                    <h3 id="community-reads" class="fw-bold text-gu-accent mb-0">0</h3>
                     <span class="small text-white-50">Guías Leídas</span>
                 </div>
                 <div class="text-center border-start border-white border-opacity-25 ps-5">
-                    <h3 class="fw-bold text-gu-accent mb-0">45kg</h3>
-                    <span class="small text-white-50">CO2 Ahorrado</span>
+                    <h3 id="community-challenges" class="fw-bold text-gu-accent mb-0">0</h3>
+                    <span class="small text-white-50">Desafíos Auto-reportados</span>
                 </div>
             </div>
         </section>
@@ -337,18 +375,18 @@
                 <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="fw-bold text-gu-primary mb-0">Lección Destacada</h4>
-                        <a href="#" class="text-gu-secondary fw-bold text-decoration-none small hover-underline">Ver
+                        <a href="#education-content-grid" id="show-all-videos" class="text-gu-secondary fw-bold text-decoration-none small hover-underline">Ver
                             todos los videos</a>
                     </div>
 
                     <div class="card gu-card border-0 overflow-hidden group">
-                        <div class="position-relative bg-dark cursor-pointer overflow-hidden"
+                        <div id="featured-media" class="position-relative bg-dark cursor-pointer overflow-hidden"
                             style="aspect-ratio: 16/9;">
-                            <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
+                            <img id="featured-image" src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
                                 alt="Video cover"
                                 class="w-100 h-100 object-fit-cover opacity-75 transition-transform duration-500 hover:scale-105">
 
-                            <div class="position-absolute top-50 start-50 translate-middle">
+                            <div id="featured-play" class="position-absolute top-50 start-50 translate-middle">
                                 <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg transition-transform hover:scale-110"
                                     style="width: 64px; height: 64px; cursor: pointer;">
                                     <span
@@ -356,99 +394,37 @@
                                 </div>
                             </div>
                             <span
-                                class="position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-2 py-1 rounded small">08:45</span>
+                                id="featured-duration" class="position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-2 py-1 rounded small">-- min</span>
                         </div>
                         <div class="card-body p-4">
-                            <h5 class="fw-bold text-gu-primary mb-2">Introducción a la Economía Circular 2024</h5>
-                            <p class="text-secondary small mb-0">Un resumen completo de cómo podemos transformar el
-                                modelo de consumo actual en Valledupar para reducir residuos y potenciar la economía
-                                local.</p>
+                            <h5 id="featured-title" class="fw-bold text-gu-primary mb-2">Cargando lección destacada...</h5>
+                            <p id="featured-description" class="text-secondary small mb-0">Consultando contenidos educativos guardados en GreenUp.</p>
                         </div>
                     </div>
                 </section>
 
                 <section class="mb-4 fade-up" style="transition-delay: 0.2s;">
-                    <div class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
-                        <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap">Todos</button>
-                        <button
-                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Plásticos</button>
-                        <button
-                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Orgánicos</button>
-                        <button
-                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Electrónicos</button>
-                        <button
-                            class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-medium text-nowrap bg-light border-0 text-dark">Peligrosos</button>
+                    <div id="education-filters" class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
+                        <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap" disabled>Cargando...</button>
                     </div>
                 </section>
 
-                <section class="row g-4 fade-up" style="transition-delay: 0.3s;">
+                <section id="education-content-grid" class="row g-4 fade-up" style="transition-delay: 0.3s;">
+                    <div class="col-md-6"><div class="education-skeleton rounded-4"></div></div>
+                    <div class="col-md-6"><div class="education-skeleton rounded-4"></div></div>
+                </section>
 
-                    <div class="col-md-6">
-                        <article class="card gu-card h-100 border-0 d-flex flex-column">
-                            <div class="img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=600&q=80"
-                                    alt="Reciclaje plásticos">
-                                <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
-                                    <span
-                                        class="badge bg-dark bg-opacity-50 backdrop-blur d-flex align-items-center gap-1 rounded-pill py-2 px-3">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
-                                        3 min
-                                    </span>
-                                    <span class="badge bg-primary rounded-pill py-2 px-3">Plásticos</span>
-                                </div>
-                                <span
-                                    class="badge bg-success position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1 rounded-pill py-2 px-3 shadow">
-                                    <span class="material-symbols-outlined" style="font-size: 14px;">add_circle</span>
-                                    +5 pts
-                                </span>
-                            </div>
-                            <div class="card-body p-4 d-flex flex-column border-start border-4 border-primary">
-                                <h5 class="fw-bold text-gu-primary mb-2">Secretos del Reciclaje de Plástico</h5>
-                                <p class="text-secondary small mb-4 flex-grow-1">Aprende a diferenciar entre PET, HDPE y
-                                    otros tipos de polímeros para optimizar tu huella de carbono.</p>
-
-                                <button
-                                    class="btn btn-outline-primary w-100 rounded-3 fw-bold d-flex justify-content-center align-items-center gap-2 education-action"
-                                    data-pts="5">
-                                    <span class="material-symbols-outlined">check_circle</span> Marcar como leído
-                                </button>
-                            </div>
-                        </article>
+                <section class="mt-5 fade-up" style="transition-delay: 0.35s;">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-gu-secondary fs-3">recycling</span>
+                        <div>
+                            <h4 class="fw-bold text-gu-primary mb-0">Conoce los materiales</h4>
+                            <p class="text-secondary small mb-0">Origen, preparación y qué sí o no debes entregar.</p>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <article class="card gu-card h-100 border-0 d-flex flex-column">
-                            <div class="img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80"
-                                    alt="Compostaje urbano">
-                                <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
-                                    <span
-                                        class="badge bg-dark bg-opacity-50 backdrop-blur d-flex align-items-center gap-1 rounded-pill py-2 px-3">
-                                        <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
-                                        5 min
-                                    </span>
-                                    <span class="badge bg-warning text-dark rounded-pill py-2 px-3">Orgánicos</span>
-                                </div>
-                                <span
-                                    class="badge bg-success position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1 rounded-pill py-2 px-3 shadow">
-                                    <span class="material-symbols-outlined" style="font-size: 14px;">add_circle</span>
-                                    +5 pts
-                                </span>
-                            </div>
-                            <div class="card-body p-4 d-flex flex-column border-start border-4 border-warning">
-                                <h5 class="fw-bold text-gu-primary mb-2">Compostaje Urbano 101</h5>
-                                <p class="text-secondary small mb-4 flex-grow-1">Transforma tus residuos de cocina en
-                                    oro negro para tus plantas, incluso si vives en un apartamento pequeño.</p>
-
-                                <button
-                                    class="btn btn-outline-primary w-100 rounded-3 fw-bold d-flex justify-content-center align-items-center gap-2 education-action"
-                                    data-pts="5">
-                                    <span class="material-symbols-outlined">check_circle</span> Marcar como leído
-                                </button>
-                            </div>
-                        </article>
+                    <div id="education-materials" class="row g-3">
+                        <div class="col-12"><div class="education-skeleton rounded-4"></div></div>
                     </div>
-
                 </section>
             </div>
 
@@ -460,45 +436,9 @@
                         <h5 class="fw-bold text-gu-primary mb-0">Eco-Desafíos</h5>
                     </div>
 
-                    <div class="d-flex flex-column gap-3">
-                        <div
-                            class="bg-white p-3 rounded-3 border d-flex gap-3 hover-bg-light cursor-pointer transition-colors group">
-                            <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center flex-shrink-0"
-                                style="width: 48px; height: 48px;">
-                                <span class="material-symbols-outlined">shopping_bag</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fw-bold text-dark mb-1 small">Cero Bolsas Plásticas</h6>
-                                <p class="text-muted small mb-2" style="font-size: 0.8rem;">No uses bolsas plásticas por
-                                    3 días seguidos.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge text-success bg-success-subtle rounded-1">+20 pts</span>
-                                    <span class="text-gu-primary small fw-bold text-decoration-underline"
-                                        style="cursor: pointer;">Aceptar</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white p-3 rounded-3 border d-flex gap-3 hover-bg-light cursor-pointer transition-colors group">
-                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
-                                style="width: 48px; height: 48px;">
-                                <span class="material-symbols-outlined">power</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fw-bold text-dark mb-1 small">Apagón Selectivo</h6>
-                                <p class="text-muted small mb-2" style="font-size: 0.8rem;">Desconecta 3
-                                    electrodomésticos en la noche.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge text-success bg-success-subtle rounded-1">+15 pts</span>
-                                    <span class="text-gu-primary small fw-bold text-decoration-underline"
-                                        style="cursor: pointer;">Aceptar</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="education-challenges" class="d-flex flex-column gap-3">
+                        <div class="education-skeleton rounded-3" style="min-height: 150px;"></div>
                     </div>
-                    <button class="btn btn-outline-primary w-100 mt-4 rounded-3 fw-bold btn-sm py-2">Ver más
-                        desafíos</button>
                 </div>
 
                 <div class="card gu-card border-0 p-4 shadow-sm">
@@ -506,34 +446,8 @@
                         <span class="material-symbols-outlined text-gu-primary fs-4">menu_book</span>
                         <h5 class="fw-bold text-gu-primary mb-0">Recursos</h5>
                     </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
-                            <span class="material-symbols-outlined text-danger mt-1">picture_as_pdf</span>
-                            <div>
-                                <a href="#"
-                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Guía
-                                    de Separación - Valledupar</a>
-                                <span class="text-muted" style="font-size: 0.75rem;">PDF (2.4 MB)</span>
-                            </div>
-                        </li>
-                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
-                            <span class="material-symbols-outlined text-danger mt-1">movie</span>
-                            <div>
-                                <a href="#"
-                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Documental:
-                                    Nuestro Planeta</a>
-                                <span class="text-muted" style="font-size: 0.75rem;">Recomendación Netflix</span>
-                            </div>
-                        </li>
-                        <li class="list-group-item px-0 py-3 border-bottom-0 d-flex align-items-start gap-3">
-                            <span class="material-symbols-outlined text-danger mt-1">gavel</span>
-                            <div>
-                                <a href="#"
-                                    class="text-dark fw-bold text-decoration-none hover-primary-text small d-block mb-1">Leyes
-                                    Ambientales Locales</a>
-                                <span class="text-muted" style="font-size: 0.75rem;">Normativa Vigente</span>
-                            </div>
-                        </li>
+                    <ul id="education-resources" class="list-group list-group-flush">
+                        <li class="list-group-item px-0"><div class="education-skeleton rounded-3" style="min-height: 120px;"></div></li>
                     </ul>
                 </div>
 
@@ -547,7 +461,7 @@
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2 fw-medium">
                     <span class="material-symbols-outlined icon-fill">check_circle</span>
-                    <span id="toastMessage">¡Excelente! Has ganado Eco-Puntos.</span>
+                    <span id="toastMessage">Tu progreso fue guardado.</span>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
                     aria-label="Close"></button>
@@ -657,63 +571,13 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // 2. Lógica de Puntos "Billetera Ecológica"
-            let currentPoints = parseInt(localStorage.getItem('eco_puntos')) || 150;
-            const pointsDisplay = document.getElementById('eco-points-display');
-            pointsDisplay.innerText = currentPoints;
-
-            // Inicializar el Toast Nativo de Bootstrap
-            const toastElement = document.getElementById('pointsToast');
-            const toastObj = new bootstrap.Toast(toastElement, { delay: 3000 });
-            const toastMessage = document.getElementById('toastMessage');
-
-            // 3. Listener para "Marcar como Leído"
-            const actionButtons = document.querySelectorAll('.education-action');
-
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    if (this.disabled) return;
-
-                    const pointsToAdd = parseInt(this.dataset.pts);
-                    currentPoints += pointsToAdd;
-
-                    // Guardado ficticio (En un entorno real se haría un Fetch a Flask)
-                    localStorage.setItem('eco_puntos', currentPoints);
-
-                    // Animar el número sumando
-                    animatePoints(pointsDisplay, currentPoints - pointsToAdd, currentPoints);
-
-                    // Cambiar estilo del botón a "Completado"
-                    this.classList.replace('btn-outline-primary', 'btn-success');
-                    this.innerHTML = `<span class="material-symbols-outlined">verified</span> Completado`;
-                    this.disabled = true;
-
-                    // Mostrar Toast de Bootstrap
-                    toastMessage.innerText = `¡Excelente! Has ganado ${pointsToAdd} Eco-Puntos.`;
-                    toastObj.show();
-                });
-            });
-
-            // Función matemática para animar los números
-            function animatePoints(element, start, end) {
-                let current = start;
-                const range = end - start;
-                const duration = 800; // 0.8 Segundos
-                let startTime = null;
-
-                function step(currentTime) {
-                    if (!startTime) startTime = currentTime;
-                    const progress = Math.min((currentTime - startTime) / duration, 1);
-                    element.innerText = Math.floor(progress * range + start);
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    }
-                }
-                window.requestAnimationFrame(step);
-            }
         });
     </script>
+    <script src="../../js/proteger_ruta.js"></script>
+    <script src="../../js/api.js"></script>
     <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/logout.js"></script>
+    <script src="../../js/ciudadano_educacion.js"></script>
 </body>
 
 </html>

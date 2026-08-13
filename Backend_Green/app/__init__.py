@@ -53,6 +53,7 @@ def crear_app():
     from app.controllers.recicladoras_routes import recicladoras_bp
     from app.controllers.notificaciones_routes import notificaciones_bp
     from app.controllers.noticias_routes import noticias_bp
+    from app.controllers.educacion_routes import educacion_bp
 
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(tipo_documento_bp)
@@ -70,6 +71,15 @@ def crear_app():
     app.register_blueprint(recicladoras_bp)
     app.register_blueprint(notificaciones_bp)
     app.register_blueprint(noticias_bp)
+    app.register_blueprint(educacion_bp)
+
+    # Precalienta el listado en segundo plano para acelerar la primera visita a Noticias.
+    from app.services.noticias_service import iniciar_precalentamiento_cache_noticias
+    iniciar_precalentamiento_cache_noticias()
+
+    # YouTube se sincroniza en segundo plano y los resultados quedan en PostgreSQL.
+    from app.services.educacion_service import iniciar_sincronizacion_educacion
+    iniciar_sincronizacion_educacion()
     
     @app.route("/")
     def inicio():

@@ -39,10 +39,10 @@ async function peticionSegura(endpoint, metodo = "GET", datos = null) {
         try {
             const usuario = JSON.parse(usuarioGuardado);
             if (usuario.id_usuario) {
-                opciones.headers["id_usuario"] = usuario.id_usuario;
+                opciones.headers["id-usuario"] = usuario.id_usuario;
             }
             if (usuario.id_rol) {
-                opciones.headers["id_rol"] = usuario.id_rol;
+                opciones.headers["id-rol"] = usuario.id_rol;
             }
         } catch (error) {
             console.warn("No se pudo leer la sesion local:", error);

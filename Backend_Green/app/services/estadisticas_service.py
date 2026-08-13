@@ -6,6 +6,51 @@ from app.models.estadisticas_model import EstadisticasModel
 
 class EstadisticasService:
     @staticmethod
+    def inicio_ciudadano(usuario_id):
+        """Une los indicadores que necesita la pagina inicial del ciudadano."""
+        resumen = EstadisticasService.resumen_ciudadano(usuario_id)
+        complementos = EstadisticasModel.obtener_complementos_inicio_ciudadano(usuario_id)
+        usuario_ranking = next(
+            (fila for fila in resumen["ranking"] if fila["es_usuario_actual"]),
+            None,
+        )
+
+        return {
+            "total_puntos": resumen["total_puntos"],
+            "puntos_mes": resumen["puntos_mes"],
+            "total_kg": resumen["total_kg"],
+            "kg_mes": resumen["kg_mes"],
+            "total_entregas": resumen["total_entregas"],
+            "ultima_entrega": resumen["ultima_entrega"],
+            "posicion_ranking": usuario_ranking["posicion"] if usuario_ranking else None,
+            **complementos,
+        }
+
+    @staticmethod
+    def resumen_ciudadano(usuario_id):
+        """Prepara las estadisticas personales para el dashboard ciudadano."""
+        datos = EstadisticasModel.obtener_estadisticas_ciudadano(usuario_id)
+        ultima_entrega = datos.get("ultima_entrega")
+
+        return {
+            "total_puntos": datos.get("total_puntos", 0),
+            "total_kg": datos.get("total_kg", 0),
+            "total_entregas": datos.get("total_entregas", 0),
+            "puntos_mes": datos.get("puntos_mes", 0),
+            "kg_mes": datos.get("kg_mes", 0),
+            "ultima_entrega": ultima_entrega.isoformat() if ultima_entrega else None,
+            "desglose_materiales": datos.get("desglose_materiales", []),
+            "evolucion_mensual": datos.get("evolucion_mensual", []),
+            "ranking": [
+                {
+                    **fila,
+                    "es_usuario_actual": fila.get("id_usuario") == usuario_id,
+                }
+                for fila in datos.get("ranking", [])
+            ],
+        }
+
+    @staticmethod
     def formatear_datos_semanales(usuario_id):
         """
         Convierte la respuesta de Supabase en una lista lista para graficas.

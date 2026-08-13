@@ -272,6 +272,8 @@
                 compite de manera saludable para un Valledupar más verde.</p>
         </section>
 
+        <div id="estado-estadisticas" class="alert alert-danger mb-4" role="alert" hidden></div>
+
         <div class="row g-4 mb-5 fade-up" style="transition-delay: 0.1s;">
             <div class="col-md-4">
                 <div class="card gu-card bento-accent-green h-100 p-4 border-0">
@@ -282,10 +284,10 @@
                         </div>
                         <div>
                             <p class="small text-muted text-uppercase tracking-wider fw-bold mb-1">Total Eco-Puntos</p>
-                            <h3 class="fw-bold text-gu-secondary mb-0" id="total-puntos">1,250</h3>
+                            <h3 class="fw-bold text-gu-secondary mb-0" id="total-puntos">—</h3>
                             <p class="small text-success mb-0 mt-1 d-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> +12%
-                                este mes
+                                <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
+                                <span id="puntos-mes">Cargando...</span>
                             </p>
                         </div>
                     </div>
@@ -301,11 +303,11 @@
                         </div>
                         <div>
                             <p class="small text-muted text-uppercase tracking-wider fw-bold mb-1">Kilos Salvados</p>
-                            <h3 class="fw-bold text-gu-primary mb-0"><span id="total-kgs">84.5</span> <span
+                            <h3 class="fw-bold text-gu-primary mb-0"><span id="total-kgs">—</span> <span
                                     class="fs-6 fw-normal text-muted">kg</span></h3>
                             <p class="small text-gu-primary mb-0 mt-1 d-flex align-items-center gap-1">
                                 <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
-                                Meta: 100kg
+                                <span id="kgs-mes">Cargando...</span>
                             </p>
                         </div>
                     </div>
@@ -321,8 +323,8 @@
                         </div>
                         <div>
                             <p class="small text-muted text-uppercase tracking-wider fw-bold mb-1">Entregas</p>
-                            <h3 class="fw-bold text-gu-secondary mb-0" id="total-entregas">24</h3>
-                            <p class="small text-muted mb-0 mt-1">Última: hace 2 días</p>
+                            <h3 class="fw-bold text-gu-secondary mb-0" id="total-entregas">—</h3>
+                            <p class="small text-muted mb-0 mt-1" id="ultima-entrega">Cargando...</p>
                         </div>
                     </div>
                 </div>
@@ -339,10 +341,6 @@
                             <h4 class="fw-bold text-gu-primary mb-1">Distribución de Materiales</h4>
                             <p class="text-secondary small mb-0">Porcentaje acumulado por tipo de residuo reciclado.</p>
                         </div>
-                        <button
-                            class="btn btn-light rounded-circle p-2 d-flex align-items-center justify-content-center">
-                            <span class="material-symbols-outlined text-muted">more_vert</span>
-                        </button>
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="graficaMateriales"></canvas>
@@ -356,14 +354,8 @@
                             <p class="text-secondary small mb-0">Puntos obtenidos mensualmente durante el último año.
                             </p>
                         </div>
-                        <div class="d-flex gap-2">
-                            <span
-                                class="badge bg-light text-gu-primary border rounded-pill d-flex align-items-center px-3">2024</span>
-                            <button
-                                class="btn btn-light rounded-circle p-2 d-flex align-items-center justify-content-center">
-                                <span class="material-symbols-outlined text-muted">download</span>
-                            </button>
-                        </div>
+                        <span
+                            class="badge bg-light text-gu-primary border rounded-pill d-flex align-items-center px-3">Últimos 12 meses</span>
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="graficaEvolucion"></canvas>
@@ -380,73 +372,8 @@
                         <p class="small text-white-50 text-uppercase tracking-widest mb-0">Valledupar Región</p>
                     </div>
 
-                    <div class="list-group list-group-flush">
-
-                        <div class="ranking-item p-3 d-flex align-items-center gap-3">
-                            <div class="fw-bold text-warning fs-5" style="width: 25px; text-align: center;">1</div>
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuATW1m5ysEZQthZ6GtuQGgQDKfxO3k_MpWK_CC6NZ35dZ-oaxJNJTvEqaZM3j0J1UeMK9gRBvf3z8fcz4N8ss5SXL95FAjzik9nXBa9sIPOGNnAjAivkdC-WW7cSk4Bc0Zfiv2lc5ULt_nYIqvzpGb9HHboMWKaKXS2RNV9THrtr7nYg_FEDlA2kI_I8Dj-0GDLqAEDBXEmOctv1zc0hUx7me8uoB7Up0fjRBNnYoseZnSxmFxF11cw"
-                                alt="Avatar" class="rounded-circle object-fit-cover" width="40" height="40">
-                            <div class="flex-grow-1">
-                                <p class="fw-bold text-dark mb-0 small">Carlos Mendoza</p>
-                                <p class="text-muted small mb-0" style="font-size: 0.75rem;">3,420 pts</p>
-                            </div>
-                            <span class="material-symbols-outlined text-warning icon-fill">workspace_premium</span>
-                        </div>
-
-                        <div class="ranking-item p-3 d-flex align-items-center gap-3">
-                            <div class="fw-bold text-secondary fs-5"
-                                style="width: 25px; text-align: center; color: #94a3b8 !important;">2</div>
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7fAIgJ_jCUBcI9c0nmxSlqrAeRJRg23op_uvpdGvUAm5QVOrknG12jGG_VjgjxCGjo6TtE5PqIQ0HFt3rYaLMl8M3cpJZ-pMp5QrztHg80VP-NTaJtWfNwexMlKQA08HT3KOpDmRg_EFMOhoh3hJO8dmGCeMqCxVbw9iZz-fSjR-2vTjhRsM57sEB1DNKBPeUfpVmVmCG4wjwgHRMOnj21rDlnqB70fsQM-khac7bhAmrsJ0anFei"
-                                alt="Avatar" class="rounded-circle object-fit-cover" width="40" height="40">
-                            <div class="flex-grow-1">
-                                <p class="fw-bold text-dark mb-0 small">Maria Lopez</p>
-                                <p class="text-muted small mb-0" style="font-size: 0.75rem;">2,890 pts</p>
-                            </div>
-                            <span class="material-symbols-outlined icon-fill"
-                                style="color: #94a3b8;">workspace_premium</span>
-                        </div>
-
-                        <div class="ranking-item p-3 d-flex align-items-center gap-3">
-                            <div class="fw-bold fs-5" style="width: 25px; text-align: center; color: #fb923c;">3</div>
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWiUUL3zkAKB6V_lFb-7YhChQFcrQiqEpblWB54Go0wTH2d2c0Yguf1RKJxmuzGG94PGTJXI4AvgnqpJbBVtCTSTmEGdVRQAEgMyufVIFmlFop75vw4CqCqQL1aQrw6doXc6Bx4H6MX4NaCydES57eQHw4PfeV19u4LkHXyjakoQpC-IYALNWUujQAtJ0sz-ZU_h3IGnDyBn1gviQqeyo1DAJgbKBI-YEIa6sScqwN8iyBdFnsC0ep"
-                                alt="Avatar" class="rounded-circle object-fit-cover" width="40" height="40">
-                            <div class="flex-grow-1">
-                                <p class="fw-bold text-dark mb-0 small">Juan Quintero</p>
-                                <p class="text-muted small mb-0" style="font-size: 0.75rem;">2,150 pts</p>
-                            </div>
-                            <span class="material-symbols-outlined icon-fill"
-                                style="color: #fb923c;">workspace_premium</span>
-                        </div>
-
-                        <div class="ranking-item ranking-active-user p-3 d-flex align-items-center gap-3">
-                            <div class="fw-bold text-gu-secondary fs-5" style="width: 25px; text-align: center;">4</div>
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUhV4fz1tlyaNltXjyvB8aAuJXw9Y35QIIBR-YJsD_VzrfOBRaeZmc0aUVSvu-9SZcK3lRUPNgGSbXIoXzwvNovMRg9qGLaswfzFzmYRIRw1Ga1HvTLDBLcQfO9yJfGaNmfSE4SAU5s8419bbBsmLoMkI4uw0UR4ZT7dtCuaAolJw4zEtfK7jZu8p8a0RZk-xTkxdDfOGxF5khymGoq8yd8I8jps3yu745-PaaOJ9_nmqOhoIiOZEw"
-                                alt="Tú" class="rounded-circle object-fit-cover border border-2 border-success"
-                                width="40" height="40">
-                            <div class="flex-grow-1">
-                                <p class="fw-bolder text-gu-secondary mb-0 small">Alex (Tú)</p>
-                                <p class="text-gu-secondary fw-medium small mb-0" style="font-size: 0.75rem;">1,250 pts
-                                </p>
-                            </div>
-                            <span class="badge bg-gu-secondary text-white rounded-1"
-                                style="font-size: 10px;">SUBIENDO</span>
-                        </div>
-
-                        <div class="ranking-item p-3 d-flex align-items-center gap-3">
-                            <div class="fw-bold text-muted fs-6" style="width: 25px; text-align: center;">5</div>
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA7cuO_7qdXv-xxMMP7BorUJgAO251P2effx36rk0lA6saBciFsobsCaToLKcdYvEwXoN0DtfKQ1Nv6oix2aPiGEPF4-l_wwYViEES167_r_0gnBGBJft8u1th4P2e9PMxsBmI-k7rvka08B8JfZFfMCBloisjFEedn19Qp36b-j_oNqUaXNlJng1SgyIJbF7idCpOzj8b-_n4hse1qbtsKDOQ4nwWzWY-6IC57jXWFAxxN-OKpreI"
-                                alt="Avatar" class="rounded-circle object-fit-cover" width="40" height="40">
-                            <div class="flex-grow-1">
-                                <p class="fw-bold text-dark mb-0 small">Sofia Ruiz</p>
-                                <p class="text-muted small mb-0" style="font-size: 0.75rem;">1,120 pts</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="p-3 text-center bg-light border-top">
-                        <button class="btn btn-link text-gu-primary fw-bold text-decoration-none small p-0">Ver Ranking
-                            Completo</button>
+                    <div class="list-group list-group-flush" id="ranking-ciudadanos">
+                        <p class="text-muted small text-center p-4 mb-0">Cargando ranking...</p>
                     </div>
                 </div>
 
@@ -555,112 +482,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        /**
-         * GreenUp Statistics Dashboard Module
-         * * Este script inicializa las gráficas usando Chart.js
-         * En un entorno real, estos datos se obtendrán de /api/estadisticas
-         */
         document.addEventListener("DOMContentLoaded", function () {
-
-            // 1. Animaciones Fade-up
-            const observerOptions = { threshold: 0.1 };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add("visible");
                 });
-            }, observerOptions);
-            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-            // 2. Inicializar Gráficas
-            initCharts();
+            }, { threshold: 0.1 });
+            document.querySelectorAll(".fade-up").forEach(elemento => observer.observe(elemento));
         });
-
-        function initCharts() {
-            // A. Gráfico de Dona: Distribución de Materiales
-            const ctxMaterials = document.getElementById('graficaMateriales').getContext('2d');
-            new Chart(ctxMaterials, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Plástico', 'Orgánico', 'Electrónico', 'Papel/Cartón', 'Vidrio'],
-                    datasets: [{
-                        data: [40, 25, 10, 15, 10],
-                        backgroundColor: [
-                            '#003d6c', // Primary
-                            '#296c1f', // Secondary
-                            '#343d42', // Tertiary
-                            '#a0caff', // Primary Variant
-                            '#90d87d'  // Secondary Variant
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 15
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20,
-                                font: { family: 'Inter', size: 12 }
-                            }
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-
-            // B. Gráfico de Líneas: Evolución de Impacto
-            const ctxEvolution = document.getElementById('graficaEvolucion').getContext('2d');
-            const gradient = ctxEvolution.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(0, 61, 108, 0.2)');
-            gradient.addColorStop(1, 'rgba(0, 61, 108, 0)');
-
-            new Chart(ctxEvolution, {
-                type: 'line',
-                data: {
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                    datasets: [{
-                        label: 'Puntos Acumulados',
-                        data: [120, 240, 190, 410, 380, 560, 490, 720, 850, 990, 1100, 1250],
-                        borderColor: '#003d6c',
-                        backgroundColor: gradient,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#003d6c',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { display: true, color: 'rgba(193, 199, 209, 0.2)' },
-                            border: { display: false }
-                        },
-                        x: {
-                            grid: { display: false },
-                            border: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        }
     </script>
 
+    <script src="../../js/proteger_ruta.js?v=20260813"></script>
+    <script src="../../js/api.js?v=20260813"></script>
     <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/logout.js"></script>
+    <script src="../../js/estadisticas.js?v=20260813"></script>
 </body>
 
 </html>

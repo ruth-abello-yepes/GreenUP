@@ -180,6 +180,22 @@
             text-underline-offset: 4px;
         }
 
+        .footer-brand {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0;
+            letter-spacing: -0.6px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+
+        .footer-brand-green {
+            color: #ffffff;
+        }
+
+        .footer-brand-up {
+            color: #7ed957;
+        }
+
         /* Animaciones */
         .fade-up {
             opacity: 0;
@@ -308,40 +324,42 @@
     <main class="flex-grow-1" style="margin-top: 100px; margin-bottom: 60px;">
 
         <section class="container px-3 px-md-5 mb-4 fade-up">
-            <h1 class="display-5 fw-bold text-gu-primary mb-2">Boletín Ambiental GreenUp</h1>
+            <h1 class="display-5 fw-bold text-gu-primary mb-2">Boletín Ambiental de Colombia</h1>
             <p class="lead text-secondary" style="max-width: 800px;">
-                Mantente informado sobre las últimas tendencias en sostenibilidad, economía circular e iniciativas
-                locales. Tu conocimiento es la semilla del cambio.
+                Noticias reales sobre reciclaje, residuos, biodiversidad y protección del medio ambiente en Colombia.
+                Tu conocimiento es la semilla del cambio.
             </p>
         </section>
 
-        <section class="container px-3 px-md-5 mb-5 fade-up" style="transition-delay: 0.1s;">
+        <div class="container px-3 px-md-5">
+            <div id="estado-noticias" class="alert alert-info mb-4" role="status">Consultando noticias ambientales de
+                Colombia...</div>
+        </div>
+
+        <section class="container px-3 px-md-5 mb-5 fade-up" id="noticia-destacada"
+            style="transition-delay: 0.1s; display: none;">
             <div class="card gu-card featured-card border-0">
                 <div class="row g-0">
                     <div class="col-md-6 col-lg-7">
                         <div class="img-wrapper w-100">
-                            <img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1000&q=80"
-                                alt="Naturaleza Colombia">
+                            <img id="noticia-destacada-imagen" alt="Noticia ambiental destacada">
                             <span
                                 class="badge bg-gu-secondary position-absolute top-0 start-0 m-3 px-3 py-2 text-uppercase rounded-pill shadow-sm">Destacado
-                                Mundial</span>
+                                Colombia</span>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-5 d-flex flex-column justify-content-center p-4 p-lg-5">
                         <span class="text-gu-secondary fw-bold small mb-2 d-flex align-items-center gap-1"><span
-                                class="material-symbols-outlined fs-6">public</span> Biodiversidad</span>
-                        <h2 class="fw-bold text-gu-primary mb-3">Colombia fue sede de la COP16: Un hito histórico para
-                            la protección global</h2>
-                        <p class="text-secondary mb-4">
-                            Líderes de 196 países se reunieron para debatir el Marco Mundial de Biodiversidad,
-                            estableciendo metas críticas para detener la pérdida de especies y proteger el 30% de los
-                            océanos y tierras para 2030.
-                        </p>
+                                class="material-symbols-outlined fs-6">public</span> <span
+                                id="noticia-destacada-fuente">Medio colombiano</span></span>
+                        <h2 class="fw-bold text-gu-primary mb-3" id="noticia-destacada-titulo"></h2>
+                        <p class="text-secondary mb-4" id="noticia-destacada-descripcion"></p>
                         <div>
-                            <button class="btn btn-gu-primary px-4 py-2 d-inline-flex align-items-center gap-2">
+                            <a class="btn btn-gu-primary px-4 py-2 d-inline-flex align-items-center gap-2"
+                                id="noticia-destacada-enlace" target="_blank" rel="noopener noreferrer">
                                 Leer reportaje completo <span
                                     class="material-symbols-outlined fs-5">arrow_forward</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -353,167 +371,19 @@
             <div
                 class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom pb-3 gap-3">
                 <h3 class="fw-bold text-dark mb-0">Últimas Noticias</h3>
-
-                <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border bg-white"
-                    style="max-width: 300px;">
+                <div class="input-group bg-white rounded-pill shadow-sm px-2" style="max-width: 300px;">
                     <span class="input-group-text bg-transparent border-0"><span
                             class="material-symbols-outlined fs-6 text-muted">search</span></span>
-                    <input type="text" class="form-control border-0 shadow-none bg-transparent py-2 px-1"
+                    <input type="search" id="buscar-noticias"
+                        class="form-control border-0 shadow-none bg-transparent py-2 px-1"
                         placeholder="Buscar noticias...">
                 </div>
             </div>
 
-            <div class="row g-4">
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=600&q=80"
-                                alt="Prohibición de plásticos">
-                            <span
-                                class="badge bg-dark position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill">Legislación</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Julio, 2024
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">Entra en vigor la ley que prohíbe plásticos de un
-                                solo uso en Colombia</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">Bolsas de supermercado, pitillos y
-                                mezcladores comenzaron a salir del mercado formalmente. Conoce las alternativas
-                                compostables disponibles.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=600&q=80"
-                                alt="Energía Solar">
-                            <span
-                                class="badge bg-warning text-dark position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill">Energía</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Reciente
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">El Cesar se consolida como potencia en energía
-                                solar</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">Con la inauguración de nuevos megaparques
-                                fotovoltaicos como La Loma, la región lidera la transición energética aportando energía
-                                limpia al país.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1437382944886-45a9f73d4158?auto=format&fit=crop&w=600&q=80"
-                                alt="Río Guatapurí">
-                            <span class="badge text-white position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill"
-                                style="background-color: var(--gu-primary);">Comunidad</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Acción Local
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">Jornada de limpieza en el balneario Hurtado
-                                recolecta 3 toneladas</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">Voluntarios y fundaciones ambientales
-                                unieron fuerzas este fin de semana para remover plásticos y vidrios de las riberas del
-                                icónico Río Guatapurí.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80"
-                                alt="Planeta Tierra">
-                            <span
-                                class="badge bg-info text-dark position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill">Internacional</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Reporte ONU
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">Avanza el Tratado Global vinculante contra la
-                                contaminación por plásticos</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">La ONU entra en las etapas finales de
-                                negociación de un acuerdo histórico que obligará a las naciones a gestionar los
-                                microplásticos y el diseño de envases.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80"
-                                alt="Economía Circular Textil">
-                            <span
-                                class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill">Innovación</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Tendencias
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">La revolución de la economía circular llega a la
-                                industria de la moda</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">Nuevas startups logran triturar prendas
-                                viejas y separar fibras de algodón y poliéster para crear ropa nueva sin generar
-                                residuos.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="card gu-card h-100 border-0">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=600&q=80"
-                                alt="Turbinas Eólicas">
-                            <span
-                                class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill">Energía
-                                Eólica</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
-                                <span class="material-symbols-outlined fs-6">calendar_today</span> Agencia Energía
-                            </div>
-                            <h5 class="fw-bold text-gu-primary mb-3">La adopción de energías renovables marca un récord
-                                mundial histórico</h5>
-                            <p class="text-secondary small mb-4 flex-grow-1">La capacidad instalada creció un 50% en el
-                                último año a nivel global, impulsada por la caída drástica en los precios de los paneles
-                                solares.</p>
-                            <a href="#"
-                                class="text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto">Leer
-                                noticia <span class="material-symbols-outlined fs-5">chevron_right</span></a>
-                        </div>
-                    </article>
-                </div>
-
-            </div>
+            <div class="row g-4" id="noticias-grid" style="display: none;"></div>
 
             <nav aria-label="Navegación de noticias" class="mt-5 d-flex justify-content-center">
-                <ul class="pagination shadow-sm rounded-pill overflow-hidden bg-white p-1">
+                <ul class="pagination shadow-sm rounded-pill overflow-hidden bg-white p-1" id="paginacion-noticias">
                     <li class="page-item disabled"><a class="page-link border-0" href="#"><span
                                 class="material-symbols-outlined fs-6">chevron_left</span></a></li>
                     <li class="page-item active"><a class="page-link border-0" href="#">1</a></li>
@@ -523,6 +393,8 @@
                                 class="material-symbols-outlined fs-6">chevron_right</span></a></li>
                 </ul>
             </nav>
+
+            <p class="text-center small text-muted mt-3 mb-0" id="atribucion-noticias" hidden></p>
 
         </section>
 
@@ -555,9 +427,8 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
-                            style="margin-right: -2px;">Green</span><span
-                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                        <span class="footer-brand" aria-label="GreenUp"><span
+                                class="footer-brand-green">Green</span><span class="footer-brand-up">Up</span></span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -619,8 +490,9 @@
 
             <div class="row align-items-center small text-white-50">
                 <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
-                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                    © 2026 <span class="footer-brand fw-bold" aria-label="GreenUp"><span
+                            class="footer-brand-green">Green</span><span class="footer-brand-up">Up</span></span>. Todos
+                    los derechos reservados.
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     <span>Valledupar, Cesar - Colombia</span>
@@ -668,7 +540,11 @@
             }
         });
     </script>
+    <script src="../../js/proteger_ruta.js?v=20260813"></script>
+    <script src="../../js/api.js?v=20260813"></script>
     <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/logout.js"></script>
+    <script src="../../js/noticias.js?v=20260813"></script>
 </body>
 
 </html>

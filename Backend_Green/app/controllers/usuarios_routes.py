@@ -9,7 +9,7 @@
 # GET  /api/usuarios/listar        -> Admin lista todos los usuarios
 # GET  /api/usuarios/ciudadanos    -> Admin lista solo ciudadanos
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 
 from app.services.usuarios_service import (
     servicio_registrar_usuario,
@@ -18,7 +18,10 @@ from app.services.usuarios_service import (
     servicio_buscar_usuario,
     servicio_actualizar_usuario,
     servicio_inhabilitar_usuario,
-    servicio_cambiar_estado_usuario
+    servicio_cambiar_estado_usuario,
+    servicio_obtener_perfil_usuario,
+    servicio_actualizar_perfil_usuario,
+    servicio_cambiar_password_usuario
 )
 
 from app.middlewares.auth_middleware import login_requerido
@@ -26,6 +29,100 @@ from app.middlewares.roles_middleware import rol_requerido
 
 
 usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/api/usuarios")
+
+
+@usuarios_bp.route("/perfil", methods=["GET"])
+@login_requerido
+def ruta_obtener_perfil_usuario():
+    """
+    Obtener perfil del usuario autenticado
+    ---
+    tags:
+      - Usuarios
+    description: Retorna los datos basicos del usuario usando el token JWT.
+    responses:
+      200:
+        description: Perfil encontrado correctamente
+      401:
+        description: No ha iniciado sesion
+      404:
+        description: Usuario no encontrado
+    """
+
+    respuesta, estado = servicio_obtener_perfil_usuario(g.id_usuario)
+
+    return jsonify(respuesta), estado
+
+
+@usuarios_bp.route("/perfil", methods=["PUT"])
+@login_requerido
+def ruta_actualizar_perfil_usuario():
+    """
+    Actualizar perfil del usuario autenticado
+    ---
+    tags:
+      - Usuarios
+    description: Actualiza nombres, apellidos, correo, celular y usuario.
+    responses:
+      200:
+        description: Perfil actualizado correctamente
+      400:
+        description: Datos invalidos o duplicados
+      401:
+        description: No ha iniciado sesion
+    """
+
+    datos = request.get_json() or {}
+
+    respuesta, estado = servicio_actualizar_perfil_usuario(g.id_usuario, datos)
+
+    return jsonify(respuesta), estado
+
+
+@usuarios_bp.route("/perfil", methods=["DELETE"])
+@login_requerido
+def ruta_eliminar_perfil_usuario():
+    """
+    Eliminar cuenta del usuario autenticado
+    ---
+    tags:
+      - Usuarios
+    description: Inactiva la cuenta propia del ciudadano usando el token JWT.
+    responses:
+      200:
+        description: Cuenta inactivada correctamente
+      401:
+        description: No ha iniciado sesion
+    """
+
+    respuesta, estado = servicio_inhabilitar_usuario(g.id_usuario)
+
+    return jsonify(respuesta), estado
+
+
+@usuarios_bp.route("/cambiar-password", methods=["PUT"])
+@login_requerido
+def ruta_cambiar_password_usuario():
+    """
+    Cambiar contrasena del usuario autenticado
+    ---
+    tags:
+      - Usuarios
+    description: Valida la contrasena actual y guarda una nueva contrasena segura.
+    responses:
+      200:
+        description: Contrasena actualizada correctamente
+      400:
+        description: Contrasena actual incorrecta o nueva contrasena insegura
+      401:
+        description: No ha iniciado sesion
+    """
+
+    datos = request.get_json() or {}
+
+    respuesta, estado = servicio_cambiar_password_usuario(g.id_usuario, datos)
+
+    return jsonify(respuesta), estado
 
 
 @usuarios_bp.route("/registro", methods=["POST"])

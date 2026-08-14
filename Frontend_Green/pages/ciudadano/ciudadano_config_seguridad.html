@@ -183,7 +183,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"><span
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span
                                     class="material-symbols-outlined fs-5">logout</span> Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -224,6 +224,9 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
+                </a>
             </div>
         </div>
     </div>
@@ -236,18 +239,18 @@
 
             <aside class="col-lg-3 col-md-4">
                 <div class="d-flex flex-column gap-2">
-                    <a href="#"
+                    <a href="ciudadano_config_perfil.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">person</span> Perfil
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_noti.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">notifications</span> Notificaciones
                     </a>
-                    <a href="#" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                    <a href="ciudadano_config_seguridad.html" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">security</span> Seguridad
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_preferencias.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">eco</span> Preferencias Eco
                     </a>
@@ -265,14 +268,53 @@
 
                     <div class="d-flex flex-column gap-5">
 
-                        <div
-                            class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center pb-4 border-bottom">
-                            <div class="mb-3 mb-sm-0">
+                        <!-- Contenedor donde ajustes.js muestra mensajes de exito o error. -->
+                        <div id="alertas-ajustes" aria-live="polite"></div>
+
+                        <!-- Formulario real para cambiar la contraseña desde el perfil del ciudadano. -->
+                        <div class="pb-4 border-bottom">
+                            <div class="mb-4">
                                 <h6 class="fw-bold text-dark mb-1">Cambiar Contraseña</h6>
-                                <p class="text-secondary small mb-0">Es recomendable actualizar tu contraseña cada 6
-                                    meses.</p>
+                                <p class="text-secondary small mb-0">
+                                    Es recomendable actualizar tu contraseña cada 6 meses.
+                                </p>
                             </div>
-                            <a class="btn btn-gu-primary rounded-pill px-4" href="../public/public_recuperar_contrasena.html">Actualizar</a>
+
+                            <form id="form-password" class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="password_actual" class="form-label small fw-bold text-dark ms-1">
+                                        Contraseña actual
+                                    </label>
+                                    <input type="password" class="form-control bg-light rounded-3 py-2 px-3"
+                                        id="password_actual" name="password_actual" autocomplete="current-password" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="nueva_password" class="form-label small fw-bold text-dark ms-1">
+                                        Nueva contraseña
+                                    </label>
+                                    <input type="password" class="form-control bg-light rounded-3 py-2 px-3"
+                                        id="nueva_password" name="nueva_password" autocomplete="new-password" minlength="8" required>
+                                    <div class="form-text">
+                                        Mínimo 8 caracteres, mayúscula, minúscula, número y símbolo.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="confirmar_password" class="form-label small fw-bold text-dark ms-1">
+                                        Confirmar nueva contraseña
+                                    </label>
+                                    <input type="password" class="form-control bg-light rounded-3 py-2 px-3"
+                                        id="confirmar_password" name="confirmar_password" autocomplete="new-password" minlength="8" required>
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-gu-primary rounded-pill px-4">
+                                        <span class="material-symbols-outlined fs-5">key</span>
+                                        Actualizar contraseña
+                                    </button>
+                                </div>
+                            </form>
                         </div>
 
                         <div
@@ -323,7 +365,7 @@
                                                 España • Hace 2 horas</p>
                                         </div>
                                     </div>
-                                    <button
+                                    <button type="button" id="btnCerrarSesionDispositivo"
                                         class="btn btn-link text-danger fw-medium text-decoration-none p-0 small">Cerrar
                                         sesión</button>
                                 </div>
@@ -334,7 +376,7 @@
                             <h6 class="fw-bold text-danger mb-2">Zona de Peligro</h6>
                             <p class="text-secondary small mb-3">Una vez que elimines tu cuenta, perderás todos tus
                                 Eco-Puntos y no hay vuelta atrás. Por favor, asegúrate.</p>
-                            <button class="btn btn-outline-danger rounded-pill px-4 fw-medium btn-sm">Eliminar Cuenta
+                            <button type="button" id="btnEliminarCuenta" class="btn btn-outline-danger rounded-pill px-4 fw-medium btn-sm">Eliminar Cuenta
                                 Permanentemente</button>
                         </div>
 
@@ -435,17 +477,28 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // Simulación de guardado para el switch de 2FA
+            // Guardado local para el switch de autenticacion en dos pasos.
             const switch2FA = document.getElementById('2faSwitch');
-            switch2FA.addEventListener('change', function () {
-                if (this.checked) {
-                    alert("Se ha enviado un SMS de verificación a tu número registrado.");
-                } else {
-                    alert("Has desactivado la autenticación de dos pasos. Tu cuenta es menos segura.");
-                }
-            });
+            if (switch2FA) {
+                switch2FA.checked = localStorage.getItem('greenup_2fa_activo') !== 'false';
+
+                switch2FA.addEventListener('change', function () {
+                    localStorage.setItem('greenup_2fa_activo', String(this.checked));
+
+                    if (this.checked) {
+                        alert("Autenticacion en dos pasos activada en este navegador.");
+                    } else {
+                        alert("Has desactivado la autenticación de dos pasos. Tu cuenta es menos segura.");
+                    }
+                });
+            }
         });
     </script>
+    <script src="../../js/proteger_ruta.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ajustes.js"></script>
 </body>
 
 </html>

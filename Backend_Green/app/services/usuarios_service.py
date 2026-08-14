@@ -12,10 +12,19 @@ from app.models.usuarios_model import (
     buscar_usuario_por_id,
     actualizar_usuario,
     inhabilitar_usuario,
-    cambiar_estado_usuario
+    cambiar_estado_usuario,
+    obtener_perfil_usuario,
+    buscar_usuario_por_correo_o_usuario_excluyendo_id,
+    actualizar_perfil_usuario,
+    obtener_usuario_con_contrasena,
+    actualizar_contrasena_db
 )
 
-from app.common.security import cifrar_contrasena, validar_contrasena_segura
+from app.common.security import (
+    cifrar_contrasena,
+    validar_contrasena_segura,
+    verificar_contrasena
+)
 
 
 def servicio_registrar_usuario(datos):
@@ -202,3 +211,131 @@ def servicio_cambiar_estado_usuario(id_usuario, datos):
     cambiar_estado_usuario(id_usuario, id_estado)
 
     return {"mensaje": "Estado del usuario actualizado correctamente"}, 200
+
+
+def servicio_obtener_perfil_usuario(id_usuario):
+    """
+    Retorna los datos reales del perfil del usuario autenticado.
+
+    Esta funcion se usa cuando ciudadano_ajustes.html carga la pagina.
+    """
+
+    usuario = obtener_perfil_usuario(id_usuario)
+
+    if usuario is None:
+        return {"mensaje": "Usuario no encontrado"}, 404
+
+    return usuario, 200
+
+
+def servicio_actualizar_perfil_usuario(id_usuario, datos):
+    """
+    Valida y actualiza los datos basicos del perfil del ciudadano.
+
+    El usuario puede cambiar nombres, apellidos, correo, celular y nombre
+    de usuario. No puede cambiar su rol ni su estado desde esta pantalla.
+    """
+
+    nombres = (datos.get("nombres") or "").strip()
+    apellidos = (datos.get("apellidos") or "").strip()
+    correo = (datos.get("correo") or "").strip().lower()
+    celular = (datos.get("celular") or "").strip()
+    usuario = (datos.get("usuario") or "").strip()
+
+    if not nombres:
+        return {"mensaje": "Los nombres son obligatorios"}, 400
+
+    if not apellidos:
+        return {"mensaje": "Los apellidos son obligatorios"}, 400
+
+    if not correo:
+        return {"mensaje": "El correo es obligatorio"}, 400
+
+    if "@" not in correo or "." not in correo:
+        return {"mensaje": "El correo no tiene un formato valido"}, 400
+
+    if not usuario:
+        return {"mensaje": "El nombre de usuario es obligatorio"}, 400
+
+    if len(usuario) < 5:
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
+
+    usuario_duplicado = buscar_usuario_por_correo_o_usuario_excluyendo_id(
+        correo,
+        usuario,
+        id_usuario
+    )
+
+    if usuario_duplicado:
+        if usuario_duplicado["correo"] == correo:
+            return {"mensaje": "El correo ya pertenece a otro usuario"}, 400
+
+        return {"mensaje": "El nombre de usuario ya pertenece a otro usuario"}, 400
+
+    try:
+        actualizar_perfil_usuario(
+            id_usuario,
+            nombres,
+            apellidos,
+            correo,
+            celular,
+            usuario
+        )
+
+        usuario_actualizado = obtener_perfil_usuario(id_usuario)
+
+        return {
+            "mensaje": "Datos de perfil actualizados correctamente",
+            "usuario": usuario_actualizado
+        }, 200
+
+    except Exception as error:
+        return {
+            "mensaje": "No fue posible actualizar el perfil",
+            "detalle": str(error)
+        }, 500
+
+
+def servicio_cambiar_password_usuario(id_usuario, datos):
+    """
+    Cambia la contrasena del usuario autenticado segun el RF003.
+
+    Primero valida la contrasena actual. Luego valida que la nueva contrasena
+    sea segura antes de guardarla cifrada en la base de datos.
+    """
+
+    password_actual = datos.get("password_actual")
+    nueva_password = datos.get("nueva_password")
+
+    if not password_actual:
+        return {"mensaje": "La contrasena actual es obligatoria"}, 400
+
+    contrasena_segura, mensaje_contrasena = validar_contrasena_segura(nueva_password)
+
+    if not contrasena_segura:
+        return {"mensaje": mensaje_contrasena}, 400
+
+    usuario = obtener_usuario_con_contrasena(id_usuario)
+
+    if usuario is None:
+        return {"mensaje": "Usuario no encontrado"}, 404
+
+    password_correcta = verificar_contrasena(
+        password_actual,
+        usuario["contrasena"]
+    )
+
+    if not password_correcta:
+        return {"mensaje": "La contrasena actual es incorrecta"}, 400
+
+    try:
+        nueva_password_cifrada = cifrar_contrasena(nueva_password)
+        actualizar_contrasena_db(id_usuario, nueva_password_cifrada)
+
+        return {"mensaje": "Contrasena actualizada correctamente"}, 200
+
+    except Exception as error:
+        return {
+            "mensaje": "No fue posible actualizar la contrasena",
+            "detalle": str(error)
+        }, 500

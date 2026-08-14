@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -301,7 +301,7 @@
                     type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar">
                     <span class="material-symbols-outlined text-gu-primary">menu</span>
                 </button>
-                <a class="navbar-brand fw-bold d-flex align-items-center" href="inicio.html">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
                     <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
@@ -340,22 +340,69 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
-                                href="ajustes_cuenta.html"><span class="material-symbols-outlined fs-5">settings</span>
+                                href="ciudadano_config_perfil.html"><span class="material-symbols-outlined fs-5">settings</span>
                                 Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
-                                href="ayuda_faq.html"><span class="material-symbols-outlined fs-5">help</span> Ayuda</a>
+                                href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span> Ayuda</a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
-                                onclick="cerrarSesion()"><span class="material-symbols-outlined fs-5">logout</span>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span class="material-symbols-outlined fs-5">logout</span>
                                 Cerrar Sesión</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- MENU MOVIL DEL CIUDADANO -->
+    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar"
+        aria-labelledby="mobileMenuSidebarLabel">
+        <div class="offcanvas-header border-bottom">
+            <div class="d-flex align-items-center">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="Logo" width="32" height="32" class="me-2">
+                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
+                        style="color: #4CAF50;">Up</span></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush rounded-0 mt-2">
+                <a href="ciudadano_inicio.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">home</span> Inicio
+                </a>
+                <a href="ciudadano_noticias.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">newspaper</span> Noticias
+                </a>
+                <a href="ciudadano_mapa.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
+                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    <span class="material-symbols-outlined">map</span> Mapa Eco
+                </a>
+                <a href="ciudadano_estadisticas.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">bar_chart</span> Estadisticas
+                </a>
+                <a href="ciudadano_educacion.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">school</span> Educacion
+                </a>
+                <a href="ciudadano_config_perfil.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">settings</span> Ajustes
+                </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger"
+                    onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- ÁREA PRINCIPAL DEL MAPA -->
     <main>
@@ -471,6 +518,9 @@
     <script src="../../js/cargar_usuario.js"></script>
     <script src="../../js/mapa.js"></script> <!-- Aquí se conecta el JS actualizado -->
 
+    <script src="../../js/auth.js"></script>
 </body>
 
 </html>
+
+

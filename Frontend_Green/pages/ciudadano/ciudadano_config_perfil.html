@@ -189,7 +189,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
                         <li><a class="dropdown-item d-flex align-items-center gap-2 fw-bold text-gu-primary py-2"
-                                href="ciudadano_configuracion.html"><span
+                                href="ciudadano_config_perfil.html"><span
                                     class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
                                 href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
@@ -197,7 +197,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"><span
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span
                                     class="material-symbols-outlined fs-5">logout</span> Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -238,6 +238,9 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
+                </a>
             </div>
         </div>
     </div>
@@ -250,18 +253,18 @@
 
             <aside class="col-lg-3 col-md-4">
                 <div class="d-flex flex-column gap-2">
-                    <a href="#" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
+                    <a href="ciudadano_config_perfil.html" class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">person</span> Perfil
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_noti.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3">
                         <span class="material-symbols-outlined">notifications</span> Notificaciones
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_seguridad.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3">
                         <span class="material-symbols-outlined">security</span> Seguridad
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_preferencias.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3">
                         <span class="material-symbols-outlined">eco</span> Preferencias Eco
                     </a>
@@ -281,31 +284,43 @@
                             <h4 class="fw-bold mb-1">Foto de Perfil</h4>
                             <p class="text-secondary small mb-3">Actualiza tu foto para que la comunidad te reconozca.
                             </p>
-                            <button class="btn btn-outline-primary rounded-pill fw-medium btn-sm px-4 py-2">Cambiar
+                            <button type="button" id="btnCambiarAvatar" class="btn btn-outline-primary rounded-pill fw-medium btn-sm px-4 py-2">Cambiar
                                 Avatar</button>
+                            <input type="file" id="inputAvatar" class="d-none" accept="image/*">
                         </div>
                     </div>
 
-                    <form id="profileSettingsForm">
+                    <!-- Contenedor donde ajustes.js muestra mensajes de exito o error. -->
+                    <div id="alertas-ajustes" aria-live="polite"></div>
+
+                    <!-- Formulario real del perfil: se llena y se guarda con Frontend_Green/js/ajustes.js. -->
+                    <form id="form-perfil">
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-dark ms-1">Nombre de Usuario</label>
+                                <label for="nombres" class="form-label small fw-bold text-dark ms-1">Nombres</label>
                                 <input type="text" class="form-control bg-light rounded-3 py-2 px-3"
-                                    value="CiudadanoEco" placeholder="Ingresa tu nombre" required>
+                                    id="nombres" name="nombres" placeholder="Ingresa tus nombres" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-dark ms-1">Correo Electrónico</label>
+                                <label for="apellidos" class="form-label small fw-bold text-dark ms-1">Apellidos</label>
+                                <input type="text" class="form-control bg-light rounded-3 py-2 px-3"
+                                    id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="correo" class="form-label small fw-bold text-dark ms-1">Correo Electrónico</label>
                                 <input type="email" class="form-control bg-light rounded-3 py-2 px-3"
-                                    value="usuario@greenup.eco" placeholder="email@ejemplo.com" required>
+                                    id="correo" name="correo" placeholder="email@ejemplo.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="celular" class="form-label small fw-bold text-dark ms-1">Celular / Teléfono</label>
+                                <input type="tel" class="form-control bg-light rounded-3 py-2 px-3"
+                                    id="celular" name="celular" placeholder="3001234567">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label small fw-bold text-dark ms-1">Ciudad</label>
-                                <div class="input-group shadow-sm rounded-3 overflow-hidden">
-                                    <span class="input-group-text bg-white border-end-0 text-muted"><span
-                                            class="material-symbols-outlined fs-5">location_on</span></span>
-                                    <input type="text" class="form-control bg-white border-start-0 py-2 ps-0"
-                                        value="Valledupar" placeholder="Ej. Valledupar" required>
-                                </div>
+                                <label for="usuario" class="form-label small fw-bold text-dark ms-1">Nombre de Usuario</label>
+                                <input type="text" class="form-control bg-light rounded-3 py-2 px-3"
+                                    id="usuario" name="usuario" minlength="5" placeholder="Ingresa tu usuario" required>
+                                <div class="form-text">Debe tener mínimo 5 caracteres.</div>
                             </div>
                         </div>
 
@@ -325,13 +340,14 @@
                                 <h6 class="fw-bold text-gu-primary mb-1">Seguridad de la cuenta</h6>
                                 <p class="mb-0 small text-secondary">Cambia tu contraseña usando el codigo de verificacion enviado al correo.</p>
                             </div>
-                            <a class="btn btn-gu-primary rounded-pill px-4" href="../public/public_recuperar_contrasena.html">Cambiar contraseña</a>
+                            <a class="btn btn-gu-primary rounded-pill px-4" href="ciudadano_config_seguridad.html">Cambiar contraseña</a>
                         </div>
 
                         <div class="d-flex justify-content-end pt-4 mt-2 border-top">
                             <button type="submit" id="saveBtn"
                                 class="btn btn-gu-primary px-5 py-2 shadow-sm d-flex align-items-center gap-2">
-                                <span>Guardar Cambios</span>
+                                <span class="material-symbols-outlined">save</span>
+                                <span>Guardar Datos de Perfil</span>
                             </button>
                         </div>
                     </form>
@@ -432,38 +448,14 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // 2. Interacción Simulación de "Guardar Cambios"
-            const form = document.getElementById('profileSettingsForm');
-            const saveBtn = document.getElementById('saveBtn');
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault(); // Evita que la página recargue
-
-                // Guardar texto original
-                const originalText = saveBtn.innerHTML;
-
-                // Cambiar estado a cargando
-                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Guardando...';
-                saveBtn.classList.add('opacity-75');
-                saveBtn.disabled = true;
-
-                // Simular llamada al Backend (Flask) con Timeout
-                setTimeout(() => {
-                    // Estado de éxito
-                    saveBtn.innerHTML = '<span class="material-symbols-outlined">check</span> ¡Cambios Guardados!';
-                    saveBtn.classList.replace('btn-gu-primary', 'btn-success');
-                    saveBtn.classList.remove('opacity-75');
-
-                    // Restaurar botón después de 2 segundos
-                    setTimeout(() => {
-                        saveBtn.innerHTML = originalText;
-                        saveBtn.classList.replace('btn-success', 'btn-gu-primary');
-                        saveBtn.disabled = false;
-                    }, 2000);
-                }, 1200); // 1.2s de "carga"
-            });
+            // El guardado real del perfil lo maneja Frontend_Green/js/ajustes.js.
         });
     </script>
+    <script src="../../js/proteger_ruta.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ajustes.js"></script>
 </body>
 
 </html>

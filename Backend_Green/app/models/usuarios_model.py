@@ -259,6 +259,128 @@ def cambiar_estado_usuario(id_usuario, id_estado):
     conexion.close()
 
 
+def obtener_perfil_usuario(id_usuario):
+    """
+    Obtiene los datos editables del perfil de un usuario autenticado.
+
+    Esta consulta se usa desde la pantalla de ajustes del ciudadano.
+    No retorna la contrasena porque ese dato nunca debe viajar al frontend.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = """
+    SELECT id_usuario,
+           nombres,
+           apellidos,
+           correo,
+           celular,
+           usuario,
+           id_rol
+    FROM usuarios
+    WHERE id_usuario = %s
+    """
+
+    cursor.execute(sql, (id_usuario,))
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario
+
+
+def buscar_usuario_por_correo_o_usuario_excluyendo_id(correo, usuario, id_usuario):
+    """
+    Busca si otro usuario ya tiene el mismo correo o nombre de usuario.
+
+    El id_usuario actual se excluye para que la persona pueda guardar su
+    propio correo o usuario sin que el sistema lo marque como duplicado.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = """
+    SELECT id_usuario,
+           correo,
+           usuario
+    FROM usuarios
+    WHERE (correo = %s OR usuario = %s)
+      AND id_usuario <> %s
+    LIMIT 1
+    """
+
+    cursor.execute(sql, (correo, usuario, id_usuario))
+    usuario_duplicado = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario_duplicado
+
+
+def actualizar_perfil_usuario(id_usuario, nombres, apellidos, correo, celular, usuario):
+    """
+    Actualiza solamente los datos permitidos desde ajustes de ciudadano.
+
+    No toca rol, estado, documento ni contrasena para evitar cambios
+    administrativos desde una pantalla de ciudadano.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    try:
+        sql = """
+        UPDATE usuarios
+        SET nombres = %s,
+            apellidos = %s,
+            correo = %s,
+            celular = %s,
+            usuario = %s
+        WHERE id_usuario = %s
+        """
+
+        cursor.execute(sql, (nombres, apellidos, correo, celular, usuario, id_usuario))
+        conexion.commit()
+
+    except Exception:
+        conexion.rollback()
+        raise
+
+    finally:
+        cursor.close()
+        conexion.close()
+
+
+def obtener_usuario_con_contrasena(id_usuario):
+    """
+    Obtiene el hash de contrasena del usuario autenticado.
+
+    Este dato se usa solo en backend para validar la contrasena actual.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = """
+    SELECT id_usuario,
+           contrasena
+    FROM usuarios
+    WHERE id_usuario = %s
+    """
+
+    cursor.execute(sql, (id_usuario,))
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario
+
+
 # =========================================================================
 # FUNCIONES NUEVAS PARA LA RECUPERACIÓN DE CONTRASEÑA
 # =========================================================================
@@ -322,18 +444,27 @@ def obtener_codigo_recuperacion_db(id_usuario, codigo):
 
 def actualizar_contrasena_db(id_usuario, nueva_contrasena):
     """
-    Actualiza la contraseña del usuario y elimina el código usado.
+    Actualiza la contrasena del usuario y elimina codigos de recuperacion.
+
+    Si ocurre un error, se hace rollback para no dejar la base de datos
+    en un estado incompleto.
     """
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    # 1. Actualizar contraseña
-    sql_update = "UPDATE usuarios SET contrasena = %s WHERE id_usuario = %s"
-    cursor.execute(sql_update, (nueva_contrasena, id_usuario))
+    try:
+        # 1. Actualizar contrasena.
+        sql_update = "UPDATE usuarios SET contrasena = %s WHERE id_usuario = %s"
+        cursor.execute(sql_update, (nueva_contrasena, id_usuario))
 
-    # 2. Borrar código consumido
-    cursor.execute("DELETE FROM codigos_recuperacion WHERE id_usuario = %s", (id_usuario,))
-    conexion.commit()
+        # 2. Borrar codigo de recuperacion consumido, si existe.
+        cursor.execute("DELETE FROM codigos_recuperacion WHERE id_usuario = %s", (id_usuario,))
+        conexion.commit()
 
-    cursor.close()
-    conexion.close()
+    except Exception:
+        conexion.rollback()
+        raise
+
+    finally:
+        cursor.close()
+        conexion.close()

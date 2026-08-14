@@ -225,7 +225,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"><span
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span
                                     class="material-symbols-outlined fs-5">logout</span> Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -266,6 +266,9 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
+                </a>
             </div>
         </div>
     </div>
@@ -278,15 +281,15 @@
 
             <aside class="col-lg-3 col-md-4">
                 <div class="d-flex flex-column gap-2">
-                    <a href="#"
+                    <a href="ciudadano_config_perfil.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">person</span> Perfil
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_noti.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">notifications</span> Notificaciones
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_seguridad.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">security</span> Seguridad
                     </a>
@@ -358,17 +361,17 @@
 
                                     <div class="d-flex flex-column gap-3">
                                         <label class="goal-radio-card d-flex align-items-center">
-                                            <input type="radio" name="goalRadio"
+                                            <input type="radio" name="goalRadio" value="reducir-plastico"
                                                 class="form-check-input mt-0 shadow-none" checked>
                                             <span class="ms-3 text-dark fw-medium">Reducir mi uso de plástico</span>
                                         </label>
                                         <label class="goal-radio-card d-flex align-items-center">
-                                            <input type="radio" name="goalRadio"
+                                            <input type="radio" name="goalRadio" value="minimizar-carbono"
                                                 class="form-check-input mt-0 shadow-none">
                                             <span class="ms-3 text-dark fw-medium">Minimizar mi huella de carbono</span>
                                         </label>
                                         <label class="goal-radio-card d-flex align-items-center">
-                                            <input type="radio" name="goalRadio"
+                                            <input type="radio" name="goalRadio" value="aprender-compostaje"
                                                 class="form-check-input mt-0 shadow-none">
                                             <span class="ms-3 text-dark fw-medium">Aprender sobre compostaje</span>
                                         </label>
@@ -386,7 +389,7 @@
                                     <p class="text-secondary small mb-3">¿Con qué frecuencia clasificas tus residuos?
                                     </p>
 
-                                    <select class="form-select form-select-lg mb-4 bg-light border-0 shadow-none fs-6">
+                                    <select id="selectFrecuenciaReciclaje" class="form-select form-select-lg mb-4 bg-light border-0 shadow-none fs-6">
                                         <option value="diario">Diario</option>
                                         <option value="semanal" selected>Semanal</option>
                                         <option value="ocasional">Ocasionalmente</option>
@@ -417,7 +420,7 @@
                                     </div>
                                 </div>
                                 <div class="form-check form-switch fs-3 ms-sm-3 mb-0">
-                                    <input class="form-check-input shadow-none" type="checkbox" role="switch" checked>
+                                    <input class="form-check-input shadow-none" type="checkbox" role="switch" id="switchImpactoPublico" checked>
                                 </div>
                             </div>
                         </div>
@@ -526,35 +529,13 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // Simulación de "Guardar Cambios"
-            const form = document.getElementById('preferencesForm');
-            const saveBtn = document.getElementById('saveBtn');
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const originalText = saveBtn.innerHTML;
-
-                // Carga
-                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Guardando...';
-                saveBtn.classList.add('opacity-75');
-                saveBtn.disabled = true;
-
-                // Simular Backend
-                setTimeout(() => {
-                    saveBtn.innerHTML = '<span class="material-symbols-outlined">check</span> ¡Cambios Guardados!';
-                    saveBtn.classList.replace('btn-gu-primary', 'btn-success');
-                    saveBtn.classList.remove('opacity-75');
-
-                    setTimeout(() => {
-                        saveBtn.innerHTML = originalText;
-                        saveBtn.classList.replace('btn-success', 'btn-gu-primary');
-                        saveBtn.disabled = false;
-                    }, 2000);
-                }, 1200);
-            });
+            // El guardado real de preferencias lo maneja Frontend_Green/js/ajustes.js.
         });
     </script>
+    <script src="../../js/proteger_ruta.js"></script>
+    <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ajustes.js"></script>
 </body>
 
 </html>

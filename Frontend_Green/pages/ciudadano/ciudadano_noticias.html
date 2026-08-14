@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -275,8 +275,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
-                                onclick="cerrarSesion()"><span class="material-symbols-outlined fs-5">logout</span>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span class="material-symbols-outlined fs-5">logout</span>
                                 Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -316,6 +315,9 @@
                 <a href="ciudadano_educacion.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
+                </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
                 </a>
             </div>
         </div>
@@ -545,6 +547,9 @@
     <script src="../../js/cargar_usuario.js"></script>
     <script src="../../js/logout.js"></script>
     <script src="../../js/noticias.js?v=20260813"></script>
+    <script src="../../js/auth.js"></script>
 </body>
 
 </html>
+
+

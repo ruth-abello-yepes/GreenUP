@@ -185,7 +185,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
                         <li><a class="dropdown-item d-flex align-items-center gap-2 fw-bold text-gu-primary py-2"
-                                href="ciudadano_configuracion.html"><span
+                                href="ciudadano_config_perfil.html"><span
                                     class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
                                 href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
@@ -193,7 +193,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"><span
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span
                                     class="material-symbols-outlined fs-5">logout</span> Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -234,6 +234,9 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
+                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
+                </a>
             </div>
         </div>
     </div>
@@ -246,19 +249,19 @@
 
             <aside class="col-lg-3 col-md-4">
                 <div class="d-flex flex-column gap-2">
-                    <a href="ciudadano_configuracion.html"
+                    <a href="ciudadano_config_perfil.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">person</span> Perfil
                     </a>
-                    <a href="ciudadano_configuracion2.html"
+                    <a href="ciudadano_config_noti.html"
                         class="btn sidebar-item active d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">notifications</span> Notificaciones
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_seguridad.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">security</span> Seguridad
                     </a>
-                    <a href="#"
+                    <a href="ciudadano_config_preferencias.html"
                         class="btn sidebar-item bg-white text-secondary d-flex align-items-center gap-3 p-3 rounded-3 shadow-sm">
                         <span class="material-symbols-outlined">eco</span> Preferencias Eco
                     </a>
@@ -469,35 +472,13 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-            // 2. Interacción Simulación de "Guardar Cambios"
-            const form = document.getElementById('notificationsForm');
-            const saveBtn = document.getElementById('saveBtn');
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault(); // Evita recarga de página
-
-                const originalText = saveBtn.innerHTML;
-
-                // Spinner nativo de Bootstrap
-                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Guardando...';
-                saveBtn.classList.add('opacity-75');
-                saveBtn.disabled = true;
-
-                // Simular llamada de guardado al Backend
-                setTimeout(() => {
-                    saveBtn.innerHTML = '<span class="material-symbols-outlined">check</span> ¡Cambios Guardados!';
-                    saveBtn.classList.replace('btn-gu-primary', 'btn-success');
-                    saveBtn.classList.remove('opacity-75');
-
-                    setTimeout(() => {
-                        saveBtn.innerHTML = originalText;
-                        saveBtn.classList.replace('btn-success', 'btn-gu-primary');
-                        saveBtn.disabled = false;
-                    }, 2000);
-                }, 1200);
-            });
+            // El guardado real de notificaciones lo maneja Frontend_Green/js/ajustes.js.
         });
     </script>
+    <script src="../../js/proteger_ruta.js"></script>
+    <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ajustes.js"></script>
 </body>
 
 </html>

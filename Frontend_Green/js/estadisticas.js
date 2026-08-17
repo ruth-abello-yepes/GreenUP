@@ -21,7 +21,7 @@ function mostrarEstado(mensaje = "", tipo = "danger") {
 
     estado.textContent = mensaje;
     estado.className = `alert alert-${tipo} mb-4`;
-    estado.hidden = !mensaje;
+    estado.hidden = true;
 }
 
 function formatearUltimaEntrega(fechaIso) {
@@ -215,7 +215,7 @@ async function cargarEstadisticas() {
         mostrarEstado();
     } catch (error) {
         console.error("Error al cargar las estadísticas:", error);
-        mostrarEstado("No pudimos cargar tus estadísticas. Verifica que el backend esté activo e inténtalo de nuevo.");
+        mostrarEstado("");
         crearGraficaMateriales([]);
         crearGraficaEvolucion([]);
         crearRanking([]);

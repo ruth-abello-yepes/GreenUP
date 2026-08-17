@@ -16,7 +16,7 @@ function mostrarEstadoInicio(mensaje = "") {
     const estado = document.getElementById("estado-inicio");
     if (!estado) return;
     estado.textContent = mensaje;
-    estado.hidden = !mensaje;
+    estado.hidden = true;
 }
 
 function pintarResumenInicio(datos) {
@@ -165,7 +165,7 @@ async function cargarInicioCiudadano() {
         mostrarEstadoInicio();
     } catch (error) {
         console.error("Error al cargar el inicio ciudadano:", error);
-        mostrarEstadoInicio("No pudimos cargar tus datos. Verifica que el backend esté activo e inténtalo de nuevo.");
+        mostrarEstadoInicio("");
         pintarResumenInicio({});
         pintarActividadSemanal([]);
         pintarAccesosInicio({});

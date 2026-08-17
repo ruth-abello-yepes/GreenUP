@@ -25,6 +25,7 @@ from app.common.security import (
     validar_contrasena_segura,
     verificar_contrasena
 )
+from app.models.notificaciones_model import crear_notificacion
 
 
 def servicio_registrar_usuario(datos):
@@ -90,7 +91,7 @@ def servicio_registrar_usuario(datos):
     # Primero la ciframos.
     contrasena_cifrada = cifrar_contrasena(contrasena)
 
-    registrar_usuario(
+    id_usuario_creado = registrar_usuario(
         nombres,
         apellidos,
         correo,
@@ -104,7 +105,14 @@ def servicio_registrar_usuario(datos):
         id_estado
     )
 
-    return {"mensaje": "Ciudadano registrado correctamente"}, 201
+    crear_notificacion(
+        "Nuevo ciudadano registrado",
+        f"Se registró un nuevo ciudadano en GreenUp: {nombres} {apellidos}.",
+        None,
+        1,
+    )
+
+    return {"mensaje": "Ciudadano registrado correctamente", "id_usuario": id_usuario_creado}, 201
 
 
 def servicio_listar_usuarios():

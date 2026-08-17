@@ -8,6 +8,24 @@
 from app.common.database import obtener_conexion
 
 
+def _tabla_existe(cursor, tabla):
+    """Confirma si una tabla auxiliar ya existe en PostgreSQL."""
+
+    cursor.execute(
+        """
+        SELECT EXISTS(
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+              AND table_name = %s
+        ) AS existe
+        """,
+        (tabla,),
+    )
+    respuesta = cursor.fetchone() or {}
+    return bool(respuesta.get("existe"))
+
+
 def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado):
     """
     Registra un usuario en la tabla usuarios.
@@ -68,7 +86,18 @@ def listar_usuarios():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = "SELECT * FROM usuarios"
+    if _tabla_existe(cursor, "ciudadano_puntos_juego"):
+        sql = """
+        SELECT
+            usuarios.*,
+            COALESCE(ciudadano_puntos_juego.puntos_total, 0) AS puntos_juego,
+            COALESCE(ciudadano_puntos_juego.noticias_completadas, 0) AS noticias_juego
+        FROM usuarios
+        LEFT JOIN ciudadano_puntos_juego
+          ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
+        """
+    else:
+        sql = "SELECT usuarios.*, 0 AS puntos_juego, 0 AS noticias_juego FROM usuarios"
 
     cursor.execute(sql)
     usuarios = cursor.fetchall()
@@ -89,11 +118,23 @@ def listar_ciudadanos():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = """
-    SELECT *
-    FROM usuarios
-    WHERE id_rol = 3
-    """
+    if _tabla_existe(cursor, "ciudadano_puntos_juego"):
+        sql = """
+        SELECT
+            usuarios.*,
+            COALESCE(ciudadano_puntos_juego.puntos_total, 0) AS puntos_juego,
+            COALESCE(ciudadano_puntos_juego.noticias_completadas, 0) AS noticias_juego
+        FROM usuarios
+        LEFT JOIN ciudadano_puntos_juego
+          ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
+        WHERE usuarios.id_rol = 3
+        """
+    else:
+        sql = """
+        SELECT usuarios.*, 0 AS puntos_juego, 0 AS noticias_juego
+        FROM usuarios
+        WHERE usuarios.id_rol = 3
+        """
 
     cursor.execute(sql)
     ciudadanos = cursor.fetchall()
@@ -115,7 +156,7 @@ def listar_duenos_recicladora():
     cursor = conexion.cursor()
 
     sql = """
-    SELECT *
+    SELECT usuarios.*, 0 AS puntos_juego, 0 AS noticias_juego
     FROM usuarios
     WHERE id_rol = 2
     """
@@ -137,7 +178,19 @@ def buscar_usuario_por_id(id_usuario):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = "SELECT * FROM usuarios WHERE id_usuario = %s"
+    if _tabla_existe(cursor, "ciudadano_puntos_juego"):
+        sql = """
+        SELECT
+            usuarios.*,
+            COALESCE(ciudadano_puntos_juego.puntos_total, 0) AS puntos_juego,
+            COALESCE(ciudadano_puntos_juego.noticias_completadas, 0) AS noticias_juego
+        FROM usuarios
+        LEFT JOIN ciudadano_puntos_juego
+          ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
+        WHERE usuarios.id_usuario = %s
+        """
+    else:
+        sql = "SELECT usuarios.*, 0 AS puntos_juego, 0 AS noticias_juego FROM usuarios WHERE id_usuario = %s"
 
     cursor.execute(sql, (id_usuario,))
     usuario = cursor.fetchone()

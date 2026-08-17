@@ -654,7 +654,7 @@ async function cargarUsuarios() {
     ...recicladoras.map((u) => ({ ...u, tipo_admin: "Recicladora" })),
   ];
 
-  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Estado"];
+  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Puntos juego", "Noticias leidas", "Estado"];
   adminTableData = filas.map((u) => ({
     raw: u,
     values: [
@@ -663,6 +663,8 @@ async function cargarUsuarios() {
       limpiar(u.usuario),
       limpiar(u.correo),
       limpiar(u.numero_documento),
+      limpiar(Number(u.puntos_juego) || 0),
+      limpiar(Number(u.noticias_juego) || 0),
       estadoHtml(u.id_estado),
     ],
     actions: renderEstadoUsuario(u),
@@ -674,7 +676,7 @@ async function cargarUsuarios() {
       <div class="card-title-row">
         <div>
           <h2>Tabla de usuarios registrados</h2>
-          <p>El administrador gestiona estados. Los registros nacen en ciudadano o recicladora.</p>
+          <p>El administrador gestiona estados y también revisa el avance del juego educativo por noticias.</p>
         </div>
         <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
           <span class="material-symbols-outlined">download</span> Exportar
@@ -1609,24 +1611,47 @@ async function limpiarFiltrosReporteAdmin() {
 }
 
 async function cargarNovedades() {
-  const datos = await apiAdmin("/novedades");
+  const [datos, noticiasAmbientales] = await Promise.all([
+    apiAdmin("/novedades"),
+    apiAdmin("/api/noticias/ambientales?pagina=1&por_pagina=4"),
+  ]);
   pintarHero([
     ["Noticias", String(datos.length)],
     ["Activas", String(datos.filter((n) => Number(n.id_estado) === 1).length)],
   ]);
   document.getElementById("admin-content").innerHTML = `
     <section class="content-grid content-layout row g-3">
-      <article class="data-card card col-12">
+      <article class="data-card card col-12 col-xl-7">
         <div class="card-title-row">
           <div>
             <h2>Noticias publicadas</h2>
             <p>Se muestran solo registros existentes.</p>
           </div>
-          <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-novedad">
-            <span class="material-symbols-outlined">add</span> Nueva noticia
-          </button>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="primary-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal-novedad">
+              <span class="material-symbols-outlined">add</span> Nueva noticia
+            </button>
+          </div>
         </div>
         ${renderNewsGrid(datos)}
+      </article>
+      <article class="data-card card col-12">
+        <div class="card-title-row">
+          <div>
+            <h2>Noticias ambientales externas</h2>
+            <p>Feed de noticias disponible para admin, recicladora y ciudadano.</p>
+          </div>
+        </div>
+        ${renderNoticiasAmbientalesAdmin(noticiasAmbientales.noticias || [])}
+      </article>
+      <article class="data-card card col-12">
+        <div class="card-title-row">
+          <div>
+            <h2>Puntaje del juego por noticias</h2>
+            <p>Seguimiento a los puntos obtenidos por los ciudadanos.</p>
+          </div>
+        </div>
+        <div id="tabla-puntajes-juego-admin">${renderEmpty("leaderboard", "Cargando puntajes...", "Espera un momento.")}</div>
       </article>
     </section>
     ${renderFormModal("modal-novedad", "Publicar noticia", "Contenido visible para la comunidad.", "form-novedad", [
@@ -1635,6 +1660,7 @@ async function cargarNovedades() {
       { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
     ], "guardarNovedad(event)", "Publicar")}
   `;
+  await cargarPuntajesJuegoAdmin();
 }
 
 async function guardarNovedad(evento) {
@@ -1658,6 +1684,80 @@ async function cambiarEstadoNovedad(idNovedad, idEstado) {
   });
   mostrarToast("Noticia actualizada", "El estado de la noticia cambio.");
   await cargarNovedades();
+}
+
+function renderForoGridAdmin(temas) {
+  if (!temas.length) return renderEmpty("forum", "No hay temas publicados.", "Cuando la comunidad publique aparecerá aquí.");
+  return `
+    <div class="news-grid">
+      ${temas.slice(0, 4).map((tema) => `
+        <article class="news-card card">
+          <div class="news-body">
+            <h3>${limpiar(tema.titulo)}</h3>
+            <p>${limpiar(tema.contenido)}</p>
+            <p>${limpiar(tema.autor || "Comunidad")} · ${limpiar(tema.tipo_publicacion || "tema")}</p>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderNoticiasAmbientalesAdmin(noticias) {
+  if (!noticias.length) return renderEmpty("newspaper", "No hay noticias ambientales.", "Cuando la API responda verás noticias aquí.");
+  return `
+    <div class="news-grid">
+      ${noticias.map((noticia) => `
+        <article class="news-card card">
+          <div class="news-image">
+            ${noticia.imagen ? `<img src="${limpiar(noticia.imagen)}" alt="${limpiar(noticia.titulo)}">` : ""}
+          </div>
+          <div class="news-body">
+            <h3>${limpiar(noticia.titulo)}</h3>
+            <p>${limpiar(noticia.descripcion || "")}</p>
+            <p>${limpiar(noticia.fuente || "GreenUp")} · ${limpiar(noticia.categoria || "Ambiental")}</p>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
+async function guardarTemaForoAdmin(evento) {
+  evento.preventDefault();
+  const payload = {
+    tipo_publicacion: document.getElementById("foro_tipo_publicacion")?.value || "tema",
+    titulo: document.getElementById("foro_titulo")?.value || "",
+    imagen: document.getElementById("foro_imagen")?.value || "",
+    contenido: document.getElementById("foro_contenido")?.value || "",
+  };
+  await apiAdmin("/api/comunidad/foro", { method: "POST", body: JSON.stringify(payload) });
+  mostrarToast("Foro actualizado", "El tema fue publicado correctamente.");
+  await cargarNovedades();
+}
+
+async function cargarPuntajesJuegoAdmin() {
+  const contenedor = document.getElementById("tabla-puntajes-juego-admin");
+  if (!contenedor) return;
+  try {
+    const datos = await apiAdmin("/api/comunidad/juego/puntajes");
+    if (!datos.length) {
+      contenedor.innerHTML = renderEmpty("leaderboard", "No hay puntajes registrados.", "Cuando un ciudadano responda noticias, aparecerá aquí.");
+      return;
+    }
+    contenedor.innerHTML = tablaDatos(
+      ["Ciudadano", "Usuario", "Puntos", "Noticias completadas", "Ultima actualizacion"],
+      datos.map((item) => [
+        item.ciudadano,
+        item.usuario,
+        item.puntos_total,
+        item.noticias_completadas,
+        formatearFechaAdmin(item.ultima_actualizacion),
+      ]),
+    );
+  } catch (error) {
+    contenedor.innerHTML = renderEmpty("leaderboard", "No fue posible cargar puntajes.", "Revisa la conexión del backend.");
+  }
 }
 
 async function cargarFaq() {

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUp | Ajustes de Cuenta</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos del Menú Lateral (Tabs) */
+        .list-group-item {
+            border: none;
+            border-radius: 8px !important;
+            margin-bottom: 4px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .list-group-item:hover {
+            background-color: #f1f5f9;
+            color: var(--gu-primary);
+        }
+
+        .list-group-item.active {
+            background-color: rgba(169, 242, 149, 0.3) !important;
+            color: var(--gu-secondary) !important;
+            font-weight: bold;
+        }
+
+        /* Estilos de Tarjetas */
+        .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==========================================
+        NAVBAR UNIFICADA - USUARIO REGISTRADO
+    =========================================== -->
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
+        style="height: 70px; z-index: 1050;">
+        <div class="container-fluid px-3 px-md-5">
+
+            <div class="d-flex align-items-center">
+                <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar"
+                    aria-controls="mobileMenuSidebar">
+                    <span class="material-symbols-outlined text-gu-primary">menu</span>
+                </button>
+
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
+                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                </a>
+            </div>
+
+            <!-- Menú Central -->
+            <div class="d-none d-md-flex h-100 align-items-center gap-4">
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_inicio.html">
+                    <span class="material-symbols-outlined fs-5">home</span> Inicio
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_noticias.html">
+                    <span class="material-symbols-outlined fs-5">newspaper</span> Noticias
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_mapa.html">
+                    <span class="material-symbols-outlined fs-5">map</span> Mapa Eco
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_estadisticas.html">
+                    <span class="material-symbols-outlined fs-5">bar_chart</span> Estadísticas
+                </a>
+                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_educacion.html">
+                    <span class="material-symbols-outlined fs-5">school</span> Educación
+                </a>
+            </div>
+
+            <!-- Perfil y Notificaciones -->
+            <div class="d-flex align-items-center gap-2">
+                <button
+                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
+                    <span class="material-symbols-outlined text-gu-primary">notifications</span>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                        style="margin-top: 8px; margin-left: -10px;"></span>
+                </button>
+
+                <div class="dropdown border-start ps-2 ms-1">
+                    <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span
+                            class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Username</span>
+                        <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
+                        <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2 active bg-light"
+                                href="ciudadano_ajustes.html"><span
+                                    class="material-symbols-outlined fs-5">settings</span> Ajustes</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
+                                href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
+                                Ayuda</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
+                                onclick="cerrarSesion()"><span class="material-symbols-outlined fs-5">logout</span>
+                                Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- OFFCANVAS (Menú Móvil) -->
+    <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
+        <div class="offcanvas-header border-bottom">
+            <div class="d-flex align-items-center">
+                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
+                        style="color: #4CAF50;">Up</span></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush rounded-0 mt-2">
+                <a href="ciudadano_inicio.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">home</span> Inicio
+                </a>
+                <a href="ciudadano_noticias.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">newspaper</span> Noticias
+                </a>
+                <a href="ciudadano_mapa.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">map</span> Mapa Eco
+                </a>
+                <a href="ciudadano_estadisticas.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">bar_chart</span> Estadísticas
+                </a>
+                <a href="ciudadano_educacion.html"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
+                    <span class="material-symbols-outlined">school</span> Educación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR FLOTANTE PARA TOASTS (NOTIFICACIONES) -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;" id="toast-container"></div>
+
+    <!-- ==========================================
+        CONTENIDO PRINCIPAL: AJUSTES (TABS DINÁMICOS)
+    =========================================== -->
+    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
+
+        <div class="mb-4">
+            <h1 class="display-6 fw-bold text-gu-primary mb-1">Ajustes de Cuenta</h1>
+            <p class="text-secondary">Gestiona tu información personal y configuración de seguridad en un solo lugar.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- ASIDE: MENÚ LATERAL INTERACTIVO -->
+            <aside class="col-lg-3 col-md-4">
+                <div class="list-group shadow-sm p-2 bg-white rounded-4" id="list-tab" role="tablist">
+                    <button class="list-group-item list-group-item-action active d-flex align-items-center gap-3 py-3"
+                        id="list-perfil-list" data-bs-toggle="list" data-bs-target="#list-perfil" type="button"
+                        role="tab">
+                        <span class="material-symbols-outlined fs-5">person</span> Perfil
+                    </button>
+                    <button class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3"
+                        id="list-notificaciones-list" data-bs-toggle="list" data-bs-target="#list-notificaciones"
+                        type="button" role="tab">
+                        <span class="material-symbols-outlined fs-5">notifications</span> Notificaciones
+                    </button>
+                    <button class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3"
+                        id="list-seguridad-list" data-bs-toggle="list" data-bs-target="#list-seguridad" type="button"
+                        role="tab">
+                        <span class="material-symbols-outlined fs-5">security</span> Seguridad
+                    </button>
+                </div>
+            </aside>
+
+            <!-- CONTENIDO DINÁMICO DE LAS PESTAÑAS -->
+            <div class="col-lg-9 col-md-8">
+                <div class="tab-content" id="nav-tabContent">
+
+                    <!-- 1. PANEL: PERFIL -->
+                    <div class="tab-pane fade show active" id="list-perfil" role="tabpanel">
+                        <div class="gu-card p-4 p-md-5">
+                            <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Información Personal</h4>
+
+                            <div class="d-flex align-items-center gap-4 mb-4 pb-4 border-bottom">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border"
+                                    style="width: 80px; height: 80px;">
+                                    <span class="material-symbols-outlined text-secondary"
+                                        style="font-size: 40px;">account_circle</span>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Foto de Perfil</h6>
+                                    <button type="button"
+                                        class="btn btn-outline-secondary btn-sm rounded-pill px-3">Cambiar
+                                        Avatar</button>
+                                </div>
+                            </div>
+
+                            <form class="ajustes-form">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Nombres</label>
+                                        <input type="text" class="form-control" placeholder="Ej. Juan Carlos" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Apellidos</label>
+                                        <input type="text" class="form-control" placeholder="Ej. Pérez" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Nombre de
+                                            Usuario</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light text-muted">@</span>
+                                            <input type="text" class="form-control" placeholder="juanperez_eco"
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Celular</label>
+                                        <input type="tel" class="form-control" placeholder="300 000 0000" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-semibold text-secondary">Correo
+                                            Electrónico</label>
+                                        <input type="email" class="form-control" placeholder="juan.perez@correo.com"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit"
+                                        class="btn btn-success bg-gu-secondary rounded-pill px-4 py-2 fw-semibold btn-guardar">Guardar
+                                        Cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 2. PANEL: NOTIFICACIONES -->
+                    <div class="tab-pane fade" id="list-notificaciones" role="tabpanel">
+                        <div class="gu-card p-4 p-md-5">
+                            <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Alertas y Notificaciones</h4>
+
+                            <div class="d-flex flex-column gap-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Nuevos Eco-Puntos</h6>
+                                        <p class="small text-secondary mb-0">Recibir alertas cuando tu reciclaje sea
+                                            aprobado.</p>
+                                    </div>
+                                    <div class="form-check form-switch fs-4 mb-0">
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch"
+                                            checked>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Boletín Semanal</h6>
+                                        <p class="small text-secondary mb-0">Resumen de tu impacto y noticias
+                                            ecológicas.</p>
+                                    </div>
+                                    <div class="form-check form-switch fs-4 mb-0">
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch"
+                                            checked>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Alertas de Puntos Ecológicos</h6>
+                                        <p class="small text-secondary mb-0">Notificaciones si un contenedor está
+                                            inactivo.</p>
+                                    </div>
+                                    <div class="form-check form-switch fs-4 mb-0">
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. PANEL: SEGURIDAD -->
+                    <div class="tab-pane fade" id="list-seguridad" role="tabpanel">
+                        <div class="gu-card p-4 p-md-5">
+                            <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Privacidad y Seguridad</h4>
+
+                            <form class="ajustes-form mb-5">
+                                <h6 class="fw-bold mb-3">Cambiar Contraseña</h6>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12">
+                                        <label class="form-label small fw-semibold text-secondary">Contraseña
+                                            Actual</label>
+                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Nueva
+                                            Contraseña</label>
+                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold text-secondary">Confirmar Nueva
+                                            Contraseña</label>
+                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit"
+                                        class="btn btn-outline-success rounded-pill px-4 fw-semibold btn-guardar">Actualizar
+                                        Contraseña</button>
+                                </div>
+                            </form>
+
+                            <div class="border-top pt-4">
+                                <div
+                                    class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+                                    <div>
+                                        <h6 class="fw-bold text-danger mb-1">Autenticación de Dos Pasos (2FA)</h6>
+                                        <p class="small text-secondary mb-0">Pide un código extra al iniciar sesión.</p>
+                                    </div>
+                                    <button type="button"
+                                        class="btn btn-light border fw-semibold rounded-pill px-3">Habilitar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER GLOBAL -->
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top" id="main-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                        <span class="text-gu-primary bg-white px-1 rounded-start-1"
+                            style="margin-right: -2px;">Green</span><span
+                            class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                    </div>
+                    <p class="text-white-50 small pe-lg-3">
+                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
+                        limpios y economía circular en Valledupar.
+                    </p>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="ciudadano_noticias.html"
+                                class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
+                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span
+                        class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dependencias JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SCRIPT DE FUNCIONALIDAD SPA (Manejo de Formularios y Scroll Móvil) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // 1. MANEJO DE FORMULARIOS: Evitar recarga de página
+            const forms = document.querySelectorAll('.ajustes-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const btn = this.querySelector('.btn-guardar');
+                    if (!btn) return;
+
+                    const originalText = btn.innerHTML;
+
+                    // Efecto de carga visual
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...';
+                    btn.disabled = true;
+
+                    // Simulación de petición al servidor
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        mostrarToast('✅ ¡Cambios guardados con éxito!');
+                    }, 1000);
+                });
+            });
+
+            // 2. MANEJO DE INTERRUPTORES (Switches)
+            const switches = document.querySelectorAll('.switch-ajuste');
+            switches.forEach(sw => {
+                sw.addEventListener('change', function () {
+                    mostrarToast('✅ Preferencia de notificación actualizada.');
+                });
+            });
+
+            // 3. AUTO-SCROLL PARA CELULARES (Mejora de usabilidad móvil)
+            const tabs = document.querySelectorAll('#list-tab button');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Si es una pantalla móvil o tablet (menor a 992px)
+                    if (window.innerWidth < 992) {
+                        setTimeout(() => {
+                            const contentArea = document.getElementById('nav-tabContent');
+                            if (contentArea) {
+                                // Realiza scroll suave hacia el contenido de la pestaña seleccionada
+                                const yOffset = -80; // Compensación por la navbar fija
+                                const y = contentArea.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                window.scrollTo({ top: y, behavior: 'smooth' });
+                            }
+                        }, 200);
+                    }
+                });
+            });
+        });
+
+        // 4. FUNCIÓN PARA MOSTRAR LAS ALERTAS (Toasts) NATIVAS DE BOOTSTRAP
+        function mostrarToast(mensaje) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toastHTML = `
+                <div class="toast align-items-center text-bg-success border-0 mb-2 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body fw-medium fs-6">
+                            ${mensaje}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>`;
+
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            const toastEl = container.lastElementChild;
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+
+            // Eliminar del DOM cuando desaparezca para no acumular basura
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
+    </script>
+</body>
+
+</html>

@@ -54,18 +54,38 @@ function crearTarjetaNoticia(noticia) {
     );
     cuerpo.append(metadatos, titulo, descripcion);
 
+    const acciones = crearElemento("div", "d-flex flex-wrap gap-2 mt-auto");
+
     if (noticia.url_original) {
         const enlace = crearElemento(
             "a",
-            "text-gu-secondary fw-bold text-decoration-none d-flex align-items-center gap-1 mt-auto",
+            "btn btn-outline-success rounded-pill d-inline-flex align-items-center gap-1",
             "Leer noticia"
         );
         enlace.href = noticia.url_original;
         enlace.target = "_blank";
         enlace.rel = "noopener noreferrer";
         enlace.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "chevron_right"));
-        cuerpo.appendChild(enlace);
+        acciones.appendChild(enlace);
     }
+
+    if (noticia.id_noticia) {
+        const juego = crearElemento(
+            "button",
+            "btn btn-gu-primary rounded-pill d-inline-flex align-items-center gap-1",
+            "Jugar y ganar puntos"
+        );
+        juego.type = "button";
+        juego.addEventListener("click", () => {
+            if (typeof abrirQuizNoticia === "function") {
+                abrirQuizNoticia(noticia.id_noticia, noticia.titulo || "Noticia ambiental");
+            }
+        });
+        juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "quiz"));
+        acciones.appendChild(juego);
+    }
+
+    cuerpo.appendChild(acciones);
 
     articulo.append(imagenWrapper, cuerpo);
     columna.appendChild(articulo);
@@ -126,9 +146,11 @@ function pintarPaginacion(paginacion) {
 
 function pintarEstadoNoticias(mensaje, tipo = "info") {
     const estado = document.getElementById("estado-noticias");
+    if (!estado) return;
+    const esMensajeTecnico = String(mensaje || "").includes("WORLD_NEWS_API_KEY");
     estado.className = `alert alert-${tipo} mb-4`;
-    estado.textContent = mensaje;
-    estado.hidden = !mensaje;
+    estado.textContent = esMensajeTecnico ? "" : mensaje;
+    estado.hidden = !mensaje || esMensajeTecnico;
 }
 
 function pintarRespuestaNoticias(datos, pagina, busqueda) {

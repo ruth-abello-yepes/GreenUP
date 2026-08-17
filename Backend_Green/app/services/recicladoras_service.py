@@ -26,6 +26,7 @@ from app.models.recicladoras_model import (
 )
 from app.models.ubicaciones_model import crear_ubicacion
 from app.models.novedades_model import crear_novedad
+from app.models.notificaciones_model import crear_notificacion
 from app.common.security import cifrar_contrasena, validar_contrasena_segura
 def _geocodificar_direccion(direccion):
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
@@ -145,6 +146,19 @@ def servicio_registrar_dueno_recicladora(datos):
     )
     asociar_punto_a_recicladora(id_usuario_creado, id_punto_creado)
 
+    crear_notificacion(
+        "Nueva recicladora registrada",
+        f"Se registró la recicladora {nombre_empresa} y su punto ecológico quedó disponible para seguimiento.",
+        None,
+        1,
+    )
+    crear_notificacion(
+        "Nuevo punto ecológico disponible",
+        f"Ya puedes consultar en el mapa el nuevo punto ecológico de {nombre_empresa}.",
+        None,
+        3,
+    )
+
     return {
         "mensaje": "Dueno de punto ecologico registrado correctamente",
         "id_usuario": id_usuario_creado,
@@ -190,6 +204,7 @@ def servicio_obtener_punto_recicladora(id_usuario):
         return {"mensaje": "Esta recicladora aun no tiene punto ecologico asociado"}, 404
     return recicladora, 200
 def servicio_actualizar_punto_recicladora(id_usuario, datos):
+    recicladora = buscar_recicladora_por_usuario(id_usuario)
     direccion = datos.get("direccion") or datos.get("direccion_empresa")
     if direccion and not datos.get("latitud") and not datos.get("longitud"):
         latitud, longitud = _geocodificar_direccion(direccion)
@@ -200,6 +215,21 @@ def servicio_actualizar_punto_recicladora(id_usuario, datos):
     actualizado = actualizar_punto_recicladora(id_usuario, datos)
     if not actualizado:
         return {"mensaje": "No se encontro el punto ecologico propio de esta recicladora"}, 404
+
+    nombre_empresa = (recicladora or {}).get("nombre_empresa") or "una recicladora"
+    nueva_direccion = direccion or (recicladora or {}).get("direccion_empresa") or "la ubicación actualizada"
+    crear_notificacion(
+        "Punto ecológico actualizado",
+        f"{nombre_empresa} actualizó su ubicación. Revisa la nueva dirección: {nueva_direccion}.",
+        None,
+        1,
+    )
+    crear_notificacion(
+        "Nueva ubicación disponible",
+        f"{nombre_empresa} cambió su dirección. Mira la nueva ubicación en el mapa GreenUp.",
+        None,
+        3,
+    )
     return {"mensaje": "Punto ecologico actualizado correctamente"}, 200
 def servicio_cambiar_estado_punto_recicladora(id_usuario, datos):
     id_estado = datos.get("id_estado")
@@ -256,6 +286,18 @@ def servicio_crear_novedad_recicladora(id_usuario, datos):
         datos.get("motivo") or titulo,
         datos.get("comentario") or descripcion,
         datos.get("ubicacion") or recicladora.get("direccion_punto") or recicladora.get("direccion_empresa"),
+    )
+    crear_notificacion(
+        "Nueva publicación de recicladora",
+        f"{recicladora.get('nombre_empresa') or 'Una recicladora'} publicó una novedad visible en GreenUp.",
+        None,
+        1,
+    )
+    crear_notificacion(
+        "Nueva publicación ambiental",
+        "Una recicladora compartió una novedad. Revísala en GreenUp.",
+        None,
+        3,
     )
     return {"mensaje": "Novedad registrada correctamente"}, 201
 def servicio_responder_novedad_recicladora(id_usuario, id_novedad, datos):

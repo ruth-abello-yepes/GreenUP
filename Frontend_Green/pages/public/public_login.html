@@ -613,12 +613,6 @@
           gratis</a>
       </p>
 
-      <div class="access-links" aria-label="Accesos relacionados">
-        <a href="public_registro.html?tipo=recicladora">Registrar recicladora</a>
-        <a href="admin_login.html">Acceso administrador</a>
-      </div>
-
-
     </div>
     <!-- ============================================================
        COLUMNA IZQUIERDA: Formulario de Login — END
@@ -634,7 +628,7 @@
     <div class="hero-col d-none d-lg-block" style="width:50%;">
 
       <!-- Imagen de fondo -->
-      <img class="hero-img" alt="Sostenibilidad"
+      <img class="hero-img" id="loginHeroImage" alt="Sostenibilidad"
         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDElT_oscI5c48pbSED-PUmZBwmonaFm-1teBZ_L5UbYlj2tV50xbUlxkp-hunrDqdf4A8h936CTTr-48EjlGCETlpsTTCXQp0Zz0ARYwaYpktH1gM9xtTWVlP8g5r9J8B2GTiKi89y9tlIVqUeckUaD3keYhXnO3bNQme6OwwrA67RbCujLg-1BhUAW38gK7z8zKXTvmj3RUzEPrXaM9uUTyNa-ey1NQlfKprqnG47UW5M7o-QWgOCNGxnMJc43ULUI1cIHQnFTAE" />
 
       <!-- Overlay degradado -->
@@ -745,6 +739,23 @@
       const y = (window.innerHeight / 2 - e.pageY) / 40;
       card.style.transform = `translate(${x}px, ${y}px)`;
     });
+
+    const imagenesLogin = [
+      "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1200&q=80"
+    ];
+
+    let indiceLogin = 0;
+    setInterval(() => {
+      const imagen = document.getElementById('loginHeroImage');
+      if (!imagen) return;
+      indiceLogin = (indiceLogin + 1) % imagenesLogin.length;
+      imagen.src = imagenesLogin[indiceLogin];
+    }, 3500);
   </script>
 
   <script src="../../js/api.js"></script>

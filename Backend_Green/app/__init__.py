@@ -54,6 +54,7 @@ def crear_app():
     from app.controllers.notificaciones_routes import notificaciones_bp
     from app.controllers.noticias_routes import noticias_bp
     from app.controllers.educacion_routes import educacion_bp
+    from app.controllers.comunidad_routes import comunidad_bp
 
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(tipo_documento_bp)
@@ -72,6 +73,7 @@ def crear_app():
     app.register_blueprint(notificaciones_bp)
     app.register_blueprint(noticias_bp)
     app.register_blueprint(educacion_bp)
+    app.register_blueprint(comunidad_bp)
 
     # Precalienta el listado en segundo plano para acelerar la primera visita a Noticias.
     from app.services.noticias_service import iniciar_precalentamiento_cache_noticias

@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenUp | Ajustes de Cuenta</title>
 
-    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts & Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -115,9 +113,6 @@
 
 <body>
 
-    <!-- ==========================================
-        NAVBAR UNIFICADA - USUARIO REGISTRADO
-    =========================================== -->
     <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
         style="height: 70px; z-index: 1050;">
         <div class="container-fluid px-3 px-md-5">
@@ -134,7 +129,6 @@
                 </a>
             </div>
 
-            <!-- Menú Central -->
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_inicio.html">
                     <span class="material-symbols-outlined fs-5">home</span> Inicio
@@ -153,7 +147,6 @@
                 </a>
             </div>
 
-            <!-- Perfil y Notificaciones -->
             <div class="d-flex align-items-center gap-2">
                 <button
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
@@ -181,16 +174,18 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
-                                onclick="cerrarSesion()"><span class="material-symbols-outlined fs-5">logout</span>
-                                Cerrar Sesión</a></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2 btn-logout-global"
+                                href="#">
+                                <span class="material-symbols-outlined fs-5 text-danger">logout</span> Cerrar Sesión
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- OFFCANVAS (Menú Móvil) -->
     <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
         <div class="offcanvas-header border-bottom">
             <div class="d-flex align-items-center">
@@ -225,12 +220,8 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR FLOTANTE PARA TOASTS (NOTIFICACIONES) -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;" id="toast-container"></div>
 
-    <!-- ==========================================
-        CONTENIDO PRINCIPAL: AJUSTES (TABS DINÁMICOS)
-    =========================================== -->
     <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
 
         <div class="mb-4">
@@ -240,7 +231,6 @@
         </div>
 
         <div class="row g-4">
-            <!-- ASIDE: MENÚ LATERAL INTERACTIVO -->
             <aside class="col-lg-3 col-md-4">
                 <div class="list-group shadow-sm p-2 bg-white rounded-4" id="list-tab" role="tablist">
                     <button class="list-group-item list-group-item-action active d-flex align-items-center gap-3 py-3"
@@ -261,11 +251,9 @@
                 </div>
             </aside>
 
-            <!-- CONTENIDO DINÁMICO DE LAS PESTAÑAS -->
             <div class="col-lg-9 col-md-8">
                 <div class="tab-content" id="nav-tabContent">
 
-                    <!-- 1. PANEL: PERFIL -->
                     <div class="tab-pane fade show active" id="list-perfil" role="tabpanel">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Información Personal</h4>
@@ -323,7 +311,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. PANEL: NOTIFICACIONES -->
                     <div class="tab-pane fade" id="list-notificaciones" role="tabpanel">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Alertas y Notificaciones</h4>
@@ -340,7 +327,6 @@
                                             checked>
                                     </div>
                                 </div>
-
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="fw-bold mb-1">Boletín Semanal</h6>
@@ -352,7 +338,6 @@
                                             checked>
                                     </div>
                                 </div>
-
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="fw-bold mb-1">Alertas de Puntos Ecológicos</h6>
@@ -367,7 +352,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. PANEL: SEGURIDAD -->
                     <div class="tab-pane fade" id="list-seguridad" role="tabpanel">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Privacidad y Seguridad</h4>
@@ -417,7 +401,6 @@
         </div>
     </main>
 
-    <!-- FOOTER GLOBAL -->
     <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top" id="main-footer">
         <div class="container">
             <div class="row g-4">
@@ -468,14 +451,10 @@
         </div>
     </footer>
 
-    <!-- Dependencias JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- SCRIPT DE FUNCIONALIDAD SPA (Manejo de Formularios y Scroll Móvil) -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
-            // 1. MANEJO DE FORMULARIOS: Evitar recarga de página
             const forms = document.querySelectorAll('.ajustes-form');
             forms.forEach(form => {
                 form.addEventListener('submit', function (e) {
@@ -486,11 +465,9 @@
 
                     const originalText = btn.innerHTML;
 
-                    // Efecto de carga visual
                     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...';
                     btn.disabled = true;
 
-                    // Simulación de petición al servidor
                     setTimeout(() => {
                         btn.innerHTML = originalText;
                         btn.disabled = false;
@@ -499,7 +476,6 @@
                 });
             });
 
-            // 2. MANEJO DE INTERRUPTORES (Switches)
             const switches = document.querySelectorAll('.switch-ajuste');
             switches.forEach(sw => {
                 sw.addEventListener('change', function () {
@@ -507,17 +483,14 @@
                 });
             });
 
-            // 3. AUTO-SCROLL PARA CELULARES (Mejora de usabilidad móvil)
             const tabs = document.querySelectorAll('#list-tab button');
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
-                    // Si es una pantalla móvil o tablet (menor a 992px)
                     if (window.innerWidth < 992) {
                         setTimeout(() => {
                             const contentArea = document.getElementById('nav-tabContent');
                             if (contentArea) {
-                                // Realiza scroll suave hacia el contenido de la pestaña seleccionada
-                                const yOffset = -80; // Compensación por la navbar fija
+                                const yOffset = -80;
                                 const y = contentArea.getBoundingClientRect().top + window.pageYOffset + yOffset;
                                 window.scrollTo({ top: y, behavior: 'smooth' });
                             }
@@ -527,7 +500,6 @@
             });
         });
 
-        // 4. FUNCIÓN PARA MOSTRAR LAS ALERTAS (Toasts) NATIVAS DE BOOTSTRAP
         function mostrarToast(mensaje) {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -547,10 +519,12 @@
             const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
             toast.show();
 
-            // Eliminar del DOM cuando desaparezca para no acumular basura
             toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
         }
     </script>
+
+    <script src="../../js/cargar_usuario.js"></script>
+    <script src="../../js/auth.js"></script>
 </body>
 
 </html>

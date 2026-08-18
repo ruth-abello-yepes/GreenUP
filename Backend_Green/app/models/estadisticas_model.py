@@ -4,6 +4,14 @@
 from app.common.database import obtener_conexion
 
 
+ESTADO_CONFIRMADO_SQL = """
+(
+    LOWER(COALESCE(registrar_reciclaje.estado, '')) = 'confirmado'
+    OR registrar_reciclaje.id_estado = 2
+)
+"""
+
+
 class EstadisticasModel:
     @staticmethod
     def obtener_complementos_inicio_ciudadano(usuario_id):
@@ -13,7 +21,7 @@ class EstadisticasModel:
 
         try:
             cursor.execute(
-                """
+                f"""
                 SELECT
                     CASE EXTRACT(DOW FROM fecha_dia::date)
                         WHEN 0 THEN 'DOM'
@@ -33,7 +41,7 @@ class EstadisticasModel:
                 LEFT JOIN registrar_reciclaje
                     ON registrar_reciclaje.fecha_hora::date = fecha_dia::date
                    AND registrar_reciclaje.id_usuario = %s
-                   AND registrar_reciclaje.id_estado = 1
+                   AND {ESTADO_CONFIRMADO_SQL}
                 GROUP BY fecha_dia
                 ORDER BY fecha_dia
                 """,
@@ -42,7 +50,7 @@ class EstadisticasModel:
             actividad_semanal = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total
                 FROM puntos_reciclaje
                 WHERE id_estado = 1
@@ -51,7 +59,7 @@ class EstadisticasModel:
             puntos_ecologicos = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total
                 FROM contenido_educativo
                 WHERE id_estado = 1
@@ -60,7 +68,7 @@ class EstadisticasModel:
             contenidos = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT id_contenido, titulo, descripcion, tipo, url_recurso, imagen
                 FROM contenido_educativo
                 WHERE id_estado = 1
@@ -71,7 +79,7 @@ class EstadisticasModel:
             contenido_destacado = cursor.fetchone()
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total
                 FROM usuarios
                 WHERE id_rol = 3
@@ -81,7 +89,7 @@ class EstadisticasModel:
             ciudadanos = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total
                 FROM notificaciones
                 WHERE id_estado = 1
@@ -112,7 +120,7 @@ class EstadisticasModel:
 
         try:
             cursor.execute(
-                """
+                f"""
                 SELECT
                     COALESCE(SUM(puntos_obtenidos), 0)::int AS total_puntos,
                     COALESCE(SUM(cantidad), 0)::float AS total_kg,
@@ -126,14 +134,14 @@ class EstadisticasModel:
                     MAX(fecha_hora) AS ultima_entrega
                 FROM registrar_reciclaje
                 WHERE id_usuario = %s
-                  AND id_estado = 1
+                  AND {ESTADO_CONFIRMADO_SQL}
                 """,
                 (usuario_id,),
             )
             resumen = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     COALESCE(tipo_material.nombre, 'Sin clasificar') AS material,
                     COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS cantidad
@@ -141,7 +149,7 @@ class EstadisticasModel:
                 LEFT JOIN tipo_material
                     ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
                 WHERE registrar_reciclaje.id_usuario = %s
-                  AND registrar_reciclaje.id_estado = 1
+                  AND {ESTADO_CONFIRMADO_SQL}
                 GROUP BY tipo_material.nombre
                 ORDER BY cantidad DESC, material
                 """,
@@ -162,7 +170,7 @@ class EstadisticasModel:
                 LEFT JOIN registrar_reciclaje
                     ON DATE_TRUNC('month', registrar_reciclaje.fecha_hora) = mes
                    AND registrar_reciclaje.id_usuario = %s
-                   AND registrar_reciclaje.id_estado = 1
+                   AND {ESTADO_CONFIRMADO_SQL}
                 GROUP BY mes
                 ORDER BY mes
                 """,
@@ -186,7 +194,7 @@ class EstadisticasModel:
                     FROM usuarios
                     LEFT JOIN registrar_reciclaje
                         ON registrar_reciclaje.id_usuario = usuarios.id_usuario
-                       AND registrar_reciclaje.id_estado = 1
+                       AND {ESTADO_CONFIRMADO_SQL}
                     WHERE usuarios.id_rol = 3
                       AND usuarios.id_estado = 1
                     GROUP BY usuarios.id_usuario, usuarios.nombres, usuarios.apellidos,
@@ -235,13 +243,14 @@ class EstadisticasModel:
         cursor = conexion.cursor()
 
         try:
-            query = """
+            query = f"""
                 SELECT
                     EXTRACT(DOW FROM fecha_hora)::int AS dia_numero,
                     COALESCE(SUM(cantidad), 0) AS total_kg
                 FROM registrar_reciclaje
                 WHERE id_usuario = %s
                 AND fecha_hora >= NOW() - INTERVAL '7 days'
+                AND {ESTADO_CONFIRMADO_SQL}
                 GROUP BY dia_numero
             """
             cursor.execute(query, (usuario_id,))
@@ -260,17 +269,18 @@ class EstadisticasModel:
 
         try:
             cursor.execute(
-                """
+                f"""
                 SELECT
                     COUNT(*)::int AS total_reciclajes,
                     COALESCE(SUM(cantidad), 0)::float AS total_cantidad
                 FROM registrar_reciclaje
+                WHERE {ESTADO_CONFIRMADO_SQL}
                 """
             )
             resumen = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total_usuarios
                 FROM usuarios
                 """
@@ -278,7 +288,7 @@ class EstadisticasModel:
             usuarios = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT COUNT(*)::int AS total_puntos
                 FROM puntos_reciclaje
                 """
@@ -286,7 +296,7 @@ class EstadisticasModel:
             puntos = cursor.fetchone() or {}
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     COALESCE(tipo_residuo.nombre, 'Sin clasificar') AS nombre,
                     COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS total
@@ -295,6 +305,7 @@ class EstadisticasModel:
                     ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
                 LEFT JOIN tipo_residuo
                     ON tipo_material.id_tipo_residuo = tipo_residuo.id_tipo_residuo
+                WHERE {ESTADO_CONFIRMADO_SQL}
                 GROUP BY tipo_residuo.nombre
                 ORDER BY total DESC
                 """
@@ -309,6 +320,7 @@ class EstadisticasModel:
                 FROM registrar_reciclaje
                 LEFT JOIN tipo_material
                     ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
+                WHERE {ESTADO_CONFIRMADO_SQL}
                 GROUP BY tipo_material.nombre
                 ORDER BY total DESC
                 LIMIT 8
@@ -325,6 +337,7 @@ class EstadisticasModel:
                 FROM registrar_reciclaje
                 LEFT JOIN usuarios
                     ON registrar_reciclaje.id_usuario = usuarios.id_usuario
+                WHERE {ESTADO_CONFIRMADO_SQL}
                 GROUP BY usuarios.id_usuario, usuarios.nombres, usuarios.apellidos
                 ORDER BY total DESC
                 LIMIT 10
@@ -338,6 +351,7 @@ class EstadisticasModel:
                     TO_CHAR(DATE_TRUNC('month', fecha_hora), 'YYYY-MM') AS mes,
                     COALESCE(SUM(cantidad), 0)::float AS total
                 FROM registrar_reciclaje
+                WHERE {ESTADO_CONFIRMADO_SQL}
                 GROUP BY DATE_TRUNC('month', fecha_hora)
                 ORDER BY mes
                 LIMIT 12

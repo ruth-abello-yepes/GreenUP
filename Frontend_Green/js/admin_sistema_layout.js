@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 
 async function iniciarAdminSistema() {
   if (!protegerAdminSistema()) return;
-  aplicarTemaAdminSistema();
+  quitarModoOscuroAdminSistema();
   pintarEstructuraBase();
   await cargarModuloAdmin();
   iniciarMonitoreoAdmin();
@@ -285,6 +285,13 @@ function aplicarTemaAdminSistema() {
   const tema = obtenerTemaAdminSistema();
   document.body.classList.remove("admin-theme-dark", "admin-theme-light");
   document.body.classList.add(tema === "oscuro" ? "admin-theme-dark" : "admin-theme-light");
+}
+
+function quitarModoOscuroAdminSistema() {
+  localStorage.setItem("greenup_admin_tema", "claro");
+  localStorage.setItem("greenup_admin_perfil_modo", "claro");
+  document.body.classList.remove("admin-theme-dark");
+  document.body.classList.add("admin-theme-light");
 }
 
 function cambiarTemaAdminSistema(modo) {
@@ -356,9 +363,8 @@ async function apiAdmin(ruta, opciones = {}) {
 function pintarEstructuraBase() {
   const actual = moduloActual();
   const admin = obtenerAdminActual();
-  const temaActual = obtenerTemaAdminSistema();
   document.body.classList.add("admin-app");
-  aplicarTemaAdminSistema();
+  quitarModoOscuroAdminSistema();
   document.body.innerHTML = `
     <aside class="app-sidebar d-flex flex-column">
       ${renderBrand()}
@@ -376,12 +382,23 @@ function pintarEstructuraBase() {
     <header class="app-topbar">
       <div class="mobile-brand">${renderBrand()}</div>
       <div class="topbar-actions">
-        <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
+        <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="mostrarPanelNotificacionesAdmin()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
-        <button class="icon-button theme-toggle-button btn btn-light" type="button" title="Cambiar tema" onclick="alternarTemaAdminSistema()">
-          <span class="material-symbols-outlined">${temaActual === "oscuro" ? "light_mode" : "dark_mode"}</span>
-        </button>
+        <section class="notifications-menu" id="adminNotificationsMenu" aria-hidden="true" aria-label="Panel de notificaciones del administrador">
+          <div class="notifications-head">
+            <div>
+              <h2>Notificaciones</h2>
+              <p>Actividad reciente del sistema</p>
+            </div>
+            <span class="notifications-badge">0</span>
+          </div>
+          <div class="inline-empty-state">
+            <span class="material-symbols-outlined">inbox</span>
+            <strong>Sin notificaciones</strong>
+            <small>Cuando haya movimientos nuevos del sistema aparecerán aquí.</small>
+          </div>
+        </section>
         <div class="dropdown admin-user-dropdown">
           <button class="user-menu btn d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="user-avatar">${iniciales(admin.nombres || admin.usuario || "A")}</span>
@@ -404,7 +421,7 @@ function pintarEstructuraBase() {
               </a>
             </li>
             <li>
-              <button class="dropdown-item" type="button" onclick="pedirPermisoNotificaciones()">
+              <button class="dropdown-item" type="button" onclick="mostrarPanelNotificacionesAdmin()">
                 <span class="material-symbols-outlined">notifications</span> Notificaciones
               </button>
             </li>
@@ -2478,6 +2495,62 @@ function notificarAdmin(titulo, cuerpo) {
   }
 }
 
+function mostrarPanelNotificacionesAdmin() {
+  const panel = document.getElementById("adminNotificationsMenu");
+  if (!panel) return;
+  const abierto = panel.classList.toggle("open");
+  panel.setAttribute("aria-hidden", String(!abierto));
+  if (abierto) {
+    cargarNotificacionesAdmin();
+  }
+}
+
+async function cargarNotificacionesAdmin() {
+  const panel = document.getElementById("adminNotificationsMenu");
+  if (!panel) return;
+
+  try {
+    const notificaciones = await apiAdmin("/api/notificaciones");
+    const badge = panel.querySelector(".notifications-badge");
+    const noLeidas = notificaciones.filter((item) => !item.leida).length;
+    if (badge) badge.textContent = String(noLeidas);
+
+    const contenedor = panel.querySelector(".inline-empty-state");
+    if (!contenedor) return;
+
+    if (!notificaciones.length) {
+      contenedor.innerHTML = `
+        <span class="material-symbols-outlined">inbox</span>
+        <strong>Sin notificaciones</strong>
+        <small>No tienes alertas nuevas en el panel del administrador.</small>
+      `;
+      return;
+    }
+
+    contenedor.innerHTML = notificaciones.map((item) => `
+      <article class="notification-item ${item.leida ? "" : "unread"}" data-admin-notification-id="${item.id_notificacion}">
+        <span class="material-symbols-outlined">${item.leida ? "notifications" : "notifications_active"}</span>
+        <div>
+          <strong>${limpiar(item.titulo)}</strong>
+          <p>${limpiar(item.mensaje)}</p>
+          <small>${limpiar(formatearFechaAdmin(item.fecha_hora))}</small>
+        </div>
+      </article>
+    `).join("");
+
+    contenedor.querySelectorAll("[data-admin-notification-id]").forEach((item) => {
+      item.addEventListener("click", async () => {
+        const id = item.getAttribute("data-admin-notification-id");
+        await apiAdmin(`/api/notificaciones/${id}/leida`, { method: "PUT" });
+        item.classList.remove("unread");
+        cargarNotificacionesAdmin();
+      });
+    });
+  } catch (error) {
+    console.warn("No se pudieron cargar las notificaciones del administrador", error);
+  }
+}
+
 function mostrarToast(titulo, cuerpo) {
   const stack = document.getElementById("toast-stack");
   if (!stack) return;
@@ -2513,6 +2586,15 @@ function iniciarMonitoreoAdmin() {
     }
   }, ADMIN_REFRESH_MS);
 }
+
+document.addEventListener("click", (event) => {
+  const panel = document.getElementById("adminNotificationsMenu");
+  if (!panel || !panel.classList.contains("open")) return;
+  if (event.target.closest("#adminNotificationsMenu")) return;
+  if (event.target.closest('[title="Notificaciones"]')) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+});
 
 function exportarTablaCSV(nombreArchivo) {
   const filas = adminTableData;

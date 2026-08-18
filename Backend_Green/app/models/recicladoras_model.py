@@ -278,9 +278,12 @@ def listar_registros_por_recicladora(id_usuario, fecha_inicio=None, fecha_fin=No
             registrar_reciclaje.id_tipo_material,
             registrar_reciclaje.id_punto,
             registrar_reciclaje.id_estado,
+            registrar_reciclaje.motivo_rechazo,
+            registrar_reciclaje.fecha_confirmacion,
+            registrar_reciclaje.id_recicladora_confirma,
             COALESCE(tipo_material.nombre, 'Material') AS material,
             COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
-            COALESCE(estado.descripcion, 'Estado') AS estado
+            COALESCE(NULLIF(registrar_reciclaje.estado, ''), estado.descripcion, 'Sin estado') AS estado
         FROM registrar_reciclaje
         LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
         LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
@@ -293,7 +296,7 @@ def listar_registros_por_recicladora(id_usuario, fecha_inicio=None, fecha_fin=No
     cursor.close()
     conexion.close()
     return registros
-def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado):
+def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado, puntos_obtenidos=None, motivo_rechazo=None):
     perfil = buscar_recicladora_por_usuario(id_usuario)
     if not perfil or not perfil.get("id_punto"):
         return False
@@ -303,11 +306,23 @@ def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado):
     cursor.execute(
         """
         UPDATE registrar_reciclaje
-        SET id_estado = %s
+        SET id_estado = %s,
+            puntos_obtenidos = COALESCE(%s, puntos_obtenidos),
+            puntos_otorgados = COALESCE(%s, puntos_otorgados),
+            motivo_rechazo = COALESCE(%s, motivo_rechazo),
+            id_recicladora_confirma = %s
         WHERE id_registro = %s
           AND id_punto = %s
         """,
-        (id_estado, id_registro, perfil["id_punto"]),
+        (
+            id_estado,
+            puntos_obtenidos,
+            puntos_obtenidos,
+            motivo_rechazo,
+            id_usuario,
+            id_registro,
+            perfil["id_punto"],
+        ),
     )
     actualizado = cursor.rowcount > 0
     conexion.commit()
@@ -540,7 +555,7 @@ def obtener_dashboard_recicladora(id_usuario):
             COUNT(DISTINCT id_usuario)::int AS recicladores,
             0::int AS alertas
         FROM registrar_reciclaje
-        WHERE id_estado = 1
+        WHERE LOWER(COALESCE(estado, '')) = 'confirmado'
           AND id_punto = %s
     """, (id_punto,))
     resumen = cursor.fetchone()
@@ -564,7 +579,7 @@ def obtener_dashboard_recicladora(id_usuario):
         ) AS dia
         LEFT JOIN registrar_reciclaje
             ON DATE(registrar_reciclaje.fecha_hora) = dia::date
-            AND registrar_reciclaje.id_estado = 1
+            AND LOWER(COALESCE(registrar_reciclaje.estado, '')) = 'confirmado'
             AND registrar_reciclaje.id_punto = %s
         GROUP BY dia
         ORDER BY dia
@@ -577,14 +592,16 @@ def obtener_dashboard_recicladora(id_usuario):
             registrar_reciclaje.cantidad::float AS cantidad,
             registrar_reciclaje.fecha_hora,
             registrar_reciclaje.id_estado,
+            registrar_reciclaje.motivo_rechazo,
             COALESCE(tipo_material.nombre, 'Material') AS material,
             COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
-            COALESCE(puntos_reciclaje.nombre, 'Punto sin asignar') AS punto
+            COALESCE(puntos_reciclaje.nombre, 'Punto sin asignar') AS punto,
+            COALESCE(NULLIF(registrar_reciclaje.estado, ''), 'Sin estado') AS estado
         FROM registrar_reciclaje
         LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
         LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
         LEFT JOIN puntos_reciclaje ON registrar_reciclaje.id_punto = puntos_reciclaje.id_punto
-        WHERE registrar_reciclaje.id_estado = 1
+        WHERE LOWER(COALESCE(registrar_reciclaje.estado, '')) = 'confirmado'
           AND registrar_reciclaje.id_punto = %s
         ORDER BY registrar_reciclaje.fecha_hora DESC
         LIMIT 5

@@ -249,9 +249,64 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if not id_estado:
         return {"mensaje": "El estado es obligatorio"}, 400
 
-    actualizado = cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado)
+    registro = None
+    registros_actuales = listar_registros_por_recicladora(id_usuario)
+    for item in registros_actuales:
+        if int(item.get("id_registro", 0)) == int(id_registro):
+            registro = item
+            break
+
+    if not registro:
+        return {"mensaje": "Registro no encontrado para el punto de esta recicladora"}, 404
+
+    id_estado = int(id_estado)
+    puntos_obtenidos = datos.get("puntos_obtenidos")
+    motivo_rechazo = datos.get("motivo_rechazo")
+
+    if id_estado == 2 and puntos_obtenidos in (None, "", 0, "0"):
+        puntos_por_kg = float(datos.get("puntos_por_kg") or 10)
+        puntos_obtenidos = round((float(registro.get("cantidad") or 0) * puntos_por_kg), 2)
+
+    actualizado = cambiar_estado_registro_recicladora(
+        id_usuario,
+        id_registro,
+        id_estado,
+        puntos_obtenidos,
+        motivo_rechazo,
+    )
     if not actualizado:
         return {"mensaje": "Registro no encontrado para el punto de esta recicladora"}, 404
+
+    if id_estado == 2:
+        crear_notificacion(
+            "Reciclaje confirmado",
+            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada por la recicladora.",
+            registro.get("id_usuario"),
+            None,
+        )
+        crear_notificacion(
+            "Reciclaje confirmado en punto",
+            "Una recicladora confirmo una nueva entrega registrada por un ciudadano.",
+            None,
+            1,
+        )
+        return {"mensaje": "Registro confirmado correctamente", "estado": "confirmado"}, 200
+
+    if id_estado == 3:
+        crear_notificacion(
+            "Reciclaje rechazado",
+            f"Tu entrega fue rechazada. Motivo: {motivo_rechazo or 'Sin observaciones adicionales'}.",
+            registro.get("id_usuario"),
+            None,
+        )
+        crear_notificacion(
+            "Reciclaje rechazado en punto",
+            "Una recicladora rechazo una entrega ciudadana y el historial ya fue actualizado.",
+            None,
+            1,
+        )
+        return {"mensaje": "Registro rechazado correctamente", "estado": "rechazado"}, 200
+
     return {"mensaje": "Estado del registro actualizado correctamente"}, 200
 def servicio_listar_materiales_recicladora(id_usuario):
     return listar_materiales_punto_recicladora(id_usuario), 200

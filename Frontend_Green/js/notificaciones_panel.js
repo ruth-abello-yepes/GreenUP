@@ -131,6 +131,35 @@ function prepararAccionesSoporteGreenUp() {
         boton.innerHTML = '<span class="material-symbols-outlined">forum</span>';
         document.body.appendChild(boton);
     }
+
+    if (!document.getElementById("greenup-reciclaje-float")) {
+        const botonRegistro = document.createElement("button");
+        botonRegistro.id = "greenup-reciclaje-float";
+        botonRegistro.type = "button";
+        botonRegistro.className = "btn btn-success rounded-circle shadow position-fixed d-inline-flex align-items-center justify-content-center";
+        botonRegistro.style.width = "58px";
+        botonRegistro.style.height = "58px";
+        botonRegistro.style.right = "18px";
+        botonRegistro.style.bottom = "88px";
+        botonRegistro.style.zIndex = "1080";
+        botonRegistro.title = "Registrar reciclaje";
+        botonRegistro.setAttribute("aria-label", "Registrar reciclaje");
+        botonRegistro.innerHTML = '<span class="material-symbols-outlined">add</span>';
+
+        botonRegistro.addEventListener("click", () => {
+            const token = localStorage.getItem("token");
+            const usuarioGuardado = localStorage.getItem("usuario");
+
+            if (!token || !usuarioGuardado) {
+                window.location.href = "../public/public_login.html";
+                return;
+            }
+
+            window.location.href = "ciudadano_registrar_reciclaje.html";
+        });
+
+        document.body.appendChild(botonRegistro);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

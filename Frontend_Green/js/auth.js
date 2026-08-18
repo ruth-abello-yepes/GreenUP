@@ -201,3 +201,11 @@ window.confirmarCerrarSesion = confirmarCerrarSesion;
 
 // Alias para pantallas antiguas que aun llamen ejecutarCierreSesion().
 window.ejecutarCierreSesion = confirmarCerrarSesion;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const botonesSalir = document.querySelectorAll(".btn-logout-global");
+
+  botonesSalir.forEach(boton => {
+    boton.addEventListener("click", confirmarCerrarSesion);
+  });
+});

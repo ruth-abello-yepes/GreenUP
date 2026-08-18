@@ -184,7 +184,9 @@
         }
 
         @keyframes education-loading {
-            to { background-position: -200% 0; }
+            to {
+                background-position: -200% 0;
+            }
         }
     </style>
 </head>
@@ -246,7 +248,8 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
-                                href="ajustes_cuenta.html"><span class="material-symbols-outlined fs-5">settings</span>
+                                href="ciudadano_ajustes.html"><span
+                                    class="material-symbols-outlined fs-5">settings</span>
                                 Ajustes</a></li>
                         <li><a class="dropdown-item d-flex align-items-center gap-2 text-secondary py-2"
                                 href="ciudadano_faq.html"><span class="material-symbols-outlined fs-5">help</span>
@@ -254,7 +257,9 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#" onclick="confirmarCerrarSesion(event); return false;"><span class="material-symbols-outlined fs-5">logout</span>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" href="#"
+                                onclick="confirmarCerrarSesion(event); return false;"><span
+                                    class="material-symbols-outlined fs-5">logout</span>
                                 Cerrar Sesión</a></li>
                     </ul>
                 </div>
@@ -295,7 +300,9 @@
                     style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
                     <span class="material-symbols-outlined">school</span> Educación
                 </a>
-                <a href="#" class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger" onclick="confirmarCerrarSesion(event); return false;">
+                <a href="#"
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger"
+                    onclick="confirmarCerrarSesion(event); return false;">
                     <span class="material-symbols-outlined">logout</span> Cerrar Sesion
                 </a>
             </div>
@@ -316,15 +323,16 @@
                 <div class="col-lg-5">
                     <div class="glass-card p-4 rounded-4 shadow-lg transition-transform hover-translate-up">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-uppercase tracking-wider small fw-bold text-white-50">Tu aprendizaje</span>
-                            <span
-                                class="material-symbols-outlined text-gu-accent icon-fill fs-3">task_alt</span>
+                            <span class="text-uppercase tracking-wider small fw-bold text-white-50">Tu
+                                aprendizaje</span>
+                            <span class="material-symbols-outlined text-gu-accent icon-fill fs-3">task_alt</span>
                         </div>
-                        <h2 class="display-4 fw-bold text-white mb-0"><span id="lessons-completed-display">0</span> <span
-                                class="fs-5 fw-normal text-white-50">lecciones</span></h2>
+                        <h2 class="display-4 fw-bold text-white mb-0"><span id="lessons-completed-display">0</span>
+                            <span class="fs-5 fw-normal text-white-50">lecciones</span></h2>
                         <p class="small text-gu-accent mb-3">Completadas por ti</p>
                         <div class="progress mb-2 bg-white bg-opacity-25" style="height: 8px;">
-                            <div id="education-progress-bar" class="progress-bar bg-gu-accent rounded-pill" style="width: 0%"></div>
+                            <div id="education-progress-bar" class="progress-bar bg-gu-accent rounded-pill"
+                                style="width: 0%"></div>
                         </div>
                         <p class="small text-white-50 mb-0 d-flex align-items-center gap-1">
                             <span class="material-symbols-outlined fs-6 text-gu-accent">verified_user</span>
@@ -377,14 +385,16 @@
                 <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="fw-bold text-gu-primary mb-0">Lección Destacada</h4>
-                        <a href="#education-content-grid" id="show-all-videos" class="text-gu-secondary fw-bold text-decoration-none small hover-underline">Ver
+                        <a href="#education-content-grid" id="show-all-videos"
+                            class="text-gu-secondary fw-bold text-decoration-none small hover-underline">Ver
                             todos los videos</a>
                     </div>
 
                     <div class="card gu-card border-0 overflow-hidden group">
                         <div id="featured-media" class="position-relative bg-dark cursor-pointer overflow-hidden"
                             style="aspect-ratio: 16/9;">
-                            <img id="featured-image" src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
+                            <img id="featured-image"
+                                src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
                                 alt="Video cover"
                                 class="w-100 h-100 object-fit-cover opacity-75 transition-transform duration-500 hover:scale-105">
 
@@ -395,25 +405,33 @@
                                         class="material-symbols-outlined text-gu-primary fs-1 icon-fill">play_arrow</span>
                                 </div>
                             </div>
-                            <span
-                                id="featured-duration" class="position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-2 py-1 rounded small">-- min</span>
+                            <span id="featured-duration"
+                                class="position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-2 py-1 rounded small">--
+                                min</span>
                         </div>
                         <div class="card-body p-4">
-                            <h5 id="featured-title" class="fw-bold text-gu-primary mb-2">Cargando lección destacada...</h5>
-                            <p id="featured-description" class="text-secondary small mb-0">Consultando contenidos educativos guardados en GreenUp.</p>
+                            <h5 id="featured-title" class="fw-bold text-gu-primary mb-2">Cargando lección destacada...
+                            </h5>
+                            <p id="featured-description" class="text-secondary small mb-0">Consultando contenidos
+                                educativos guardados en GreenUp.</p>
                         </div>
                     </div>
                 </section>
 
                 <section class="mb-4 fade-up" style="transition-delay: 0.2s;">
                     <div id="education-filters" class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
-                        <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap" disabled>Cargando...</button>
+                        <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap"
+                            disabled>Cargando...</button>
                     </div>
                 </section>
 
                 <section id="education-content-grid" class="row g-4 fade-up" style="transition-delay: 0.3s;">
-                    <div class="col-md-6"><div class="education-skeleton rounded-4"></div></div>
-                    <div class="col-md-6"><div class="education-skeleton rounded-4"></div></div>
+                    <div class="col-md-6">
+                        <div class="education-skeleton rounded-4"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="education-skeleton rounded-4"></div>
+                    </div>
                 </section>
 
                 <section class="mt-5 fade-up" style="transition-delay: 0.35s;">
@@ -425,7 +443,9 @@
                         </div>
                     </div>
                     <div id="education-materials" class="row g-3">
-                        <div class="col-12"><div class="education-skeleton rounded-4"></div></div>
+                        <div class="col-12">
+                            <div class="education-skeleton rounded-4"></div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -449,7 +469,9 @@
                         <h5 class="fw-bold text-gu-primary mb-0">Recursos</h5>
                     </div>
                     <ul id="education-resources" class="list-group list-group-flush">
-                        <li class="list-group-item px-0"><div class="education-skeleton rounded-3" style="min-height: 120px;"></div></li>
+                        <li class="list-group-item px-0">
+                            <div class="education-skeleton rounded-3" style="min-height: 120px;"></div>
+                        </li>
                     </ul>
                 </div>
 
@@ -585,9 +607,13 @@
     <script src="../../js/auth.js"></script>
 </body>
 
+<<<<<<< HEAD
+</html>
+=======
 </html>
 
 
 
 
 
+>>>>>>> d9a0bbbce21b487ed240c9a6358ad256ad3bc4b8

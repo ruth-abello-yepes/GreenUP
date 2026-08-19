@@ -35,6 +35,9 @@ function escapeHtml(value) {
 
 function statusClass(status) {
   const text = String(status).toLowerCase();
+  if (text.includes("pendiente")) return "warning";
+  if (text.includes("rechaz")) return "danger";
+  if (text.includes("confirm")) return "success";
   if (text.includes("revision") || text.includes("programada") || text.includes("proceso")) return "warning";
   if (text.includes("transito") || text.includes("en ruta") || text.includes("enviado") || text.includes("recolectado")) return "blue";
   if (text.includes("inactivo") || text.includes("cerrado")) return "danger";
@@ -188,6 +191,86 @@ function renderMaterialsTable(materiales) {
     });
   });
 }
+
+function renderRegistrosRecicladoraTable(registros) {
+  const card = [...document.querySelectorAll(".table-card")]
+    .find((item) => item.querySelector("h2")?.textContent === "Entradas recientes");
+  const tbody = card?.querySelector("tbody");
+  if (!tbody) return;
+
+  if (!registros.length) {
+    rowsToTable("Entradas recientes", []);
+    return;
+  }
+
+  tbody.innerHTML = registros.map((item) => {
+    const estado = String(item.estado || "").toLowerCase();
+    const pendiente = estado === "pendiente";
+    const rechazado = estado === "rechazado";
+    const confirmado = estado === "confirmado";
+
+    return `
+      <tr>
+        <td>#RR-${item.id_registro}</td>
+        <td>${escapeHtml(item.usuario || `Usuario ${item.id_usuario}`)}</td>
+        <td>${escapeHtml(item.material || `Material ${item.id_tipo_material}`)}</td>
+        <td>${formatKg(item.cantidad)}</td>
+        <td><span class="status-pill status-${statusClass(item.estado || "pendiente")}">${escapeHtml(item.estado || "pendiente")}</span></td>
+        <td>
+          <span class="action-group">
+            ${pendiente ? `
+              <button class="btn-icon registro-confirmar" type="button" data-id="${item.id_registro}" aria-label="Confirmar">
+                <span class="material-symbols-outlined">task_alt</span>
+              </button>
+              <button class="btn-icon registro-rechazar" type="button" data-id="${item.id_registro}" aria-label="Rechazar">
+                <span class="material-symbols-outlined">cancel</span>
+              </button>
+            ` : ""}
+            ${confirmado ? `<small class="text-success fw-semibold">Confirmado</small>` : ""}
+            ${rechazado ? `<small class="text-danger fw-semibold">Rechazado</small>` : ""}
+          </span>
+          ${item.motivo_rechazo ? `<div class="small text-danger mt-1">${escapeHtml(item.motivo_rechazo)}</div>` : ""}
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  tbody.querySelectorAll(".registro-confirmar").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const id = Number(button.dataset.id);
+      const confirmar = window.confirm("¿Confirmar este reciclaje y sumar puntos al ciudadano?");
+      if (!confirmar) return;
+      try {
+        await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
+          method: "PUT",
+          body: JSON.stringify({ id_estado: 2 }),
+        });
+        alert("Registro confirmado correctamente");
+        refreshCurrentPage();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  });
+
+  tbody.querySelectorAll(".registro-rechazar").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const id = Number(button.dataset.id);
+      const motivo = window.prompt("Escribe el motivo del rechazo:");
+      if (motivo === null) return;
+      try {
+        await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
+          method: "PUT",
+          body: JSON.stringify({ id_estado: 3, motivo_rechazo: motivo.trim() || "Sin motivo adicional" }),
+        });
+        alert("Registro rechazado correctamente");
+        refreshCurrentPage();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  });
+}
 function updateDashboard(data) {
   setText('[data-summary-label="Hoy"]', formatKg(data.material_recuperado_kg));
   setText('[data-summary-label="Actividad"]', `${Number(data.cargas_activas) || 0} cargas`);
@@ -278,20 +361,14 @@ async function refreshCurrentPage() {
 
     if (current === "recicladora_registros_reciclaje.html") {
       setText('[data-summary-label="Registros"]', registros.length);
-      setText('[data-summary-label="Pendientes"]', 0);
-      rowsToTable("Entradas recientes", registros.map((item) => [
-        `#RR-${item.id_registro}`,
-        item.usuario || `Usuario ${item.id_usuario}`,
-        item.material || `Material ${item.id_tipo_material}`,
-        formatKg(item.cantidad),
-        item.estado || (Number(item.id_estado) === 1 ? "Activo" : "Inactivo"),
-      ]));
+      setText('[data-summary-label="Pendientes"]', registros.filter((item) => String(item.estado || "").toLowerCase() === "pendiente").length);
+      renderRegistrosRecicladoraTable(registros);
       setExportData(registros.map((item) => [
         `#RR-${item.id_registro}`,
         item.usuario || `Usuario ${item.id_usuario}`,
         item.material || `Material ${item.id_tipo_material}`,
         formatKg(item.cantidad),
-        item.estado || (Number(item.id_estado) === 1 ? "Activo" : "Inactivo"),
+        item.estado || "pendiente",
       ]), "registros_recicladora.csv");
     }
   }
@@ -451,31 +528,10 @@ function bindNotificationsMenu() {
   });
 }
 
-function aplicarTemaRecicladora(theme) {
-  const dark = theme === "dark";
-  document.body.classList.toggle("recicladora-theme-dark", dark);
-
-  document.querySelectorAll(".theme-toggle").forEach((button) => {
-    button.classList.toggle("active", dark);
-    button.setAttribute("aria-label", dark ? "Activar modo claro" : "Activar modo oscuro");
-    button.setAttribute("title", dark ? "Modo claro" : "Modo oscuro");
-    const icon = button.querySelector(".material-symbols-outlined");
-    if (icon) icon.textContent = dark ? "light_mode" : "dark_mode";
-  });
-}
-
-function bindThemeToggle() {
-  const savedTheme = localStorage.getItem("recicladora_tema") || "light";
-  aplicarTemaRecicladora(savedTheme);
-
-  document.querySelectorAll(".theme-toggle").forEach((button) => {
-    button.addEventListener("click", () => {
-      const dark = !document.body.classList.contains("recicladora-theme-dark");
-      const nextTheme = dark ? "dark" : "light";
-      localStorage.setItem("recicladora_tema", nextTheme);
-      aplicarTemaRecicladora(nextTheme);
-    });
-  });
+function quitarTemaOscuroRecicladora() {
+  document.body.classList.remove("recicladora-theme-dark");
+  localStorage.removeItem("recicladora_tema");
+  document.querySelectorAll(".theme-toggle").forEach((button) => button.remove());
 }
 function abrirModal(id) {
   const modal = document.getElementById(id);
@@ -846,7 +902,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   bindUserMenu();
   bindNotificationsMenu();
-  bindThemeToggle();
+  quitarTemaOscuroRecicladora();
   bindModalForms();
   bindProfilePhotoInput();
   bindProfilePhotoSave();

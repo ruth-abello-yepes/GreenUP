@@ -52,10 +52,18 @@
     const completados = Number(resumen.contenidos_completados || 0);
     const total = Math.max(estado.datos?.contenidos?.length || 0, 1);
 
-    $("#lessons-completed-display").textContent = completados.toLocaleString("es-CO");
-    $("#community-reads").textContent = Number(resumen.lecturas_comunidad || 0).toLocaleString("es-CO");
-    $("#community-challenges").textContent = Number(resumen.desafios_comunidad || 0).toLocaleString("es-CO");
-    $("#education-progress-bar").style.width = `${Math.min(100, Math.round((completados / total) * 100))}%`;
+    if ($("#lessons-completed-display")) {
+      $("#lessons-completed-display").textContent = completados.toLocaleString("es-CO");
+    }
+    if ($("#community-reads")) {
+      $("#community-reads").textContent = Number(resumen.lecturas_comunidad || 0).toLocaleString("es-CO");
+    }
+    if ($("#community-challenges")) {
+      $("#community-challenges").textContent = Number(resumen.desafios_comunidad || 0).toLocaleString("es-CO");
+    }
+    if ($("#education-progress-bar")) {
+      $("#education-progress-bar").style.width = `${Math.min(100, Math.round((completados / total) * 100))}%`;
+    }
   }
 
   function videos() {
@@ -100,6 +108,7 @@
 
   function renderFiltros() {
     const contenedor = $("#education-filters");
+    if (!contenedor) return;
     const contenidos = (estado.datos?.contenidos || []).filter((item) => item.tipo !== "recurso");
     const categorias = ["Todos", ...new Set(contenidos.map((item) => item.categoria || "General"))];
     contenedor.innerHTML = categorias.map((categoria) => {
@@ -154,6 +163,7 @@
 
   function renderContenidos() {
     const contenedor = $("#education-content-grid");
+    if (!contenedor) return;
     let contenidos = (estado.datos?.contenidos || []).filter((item) => item.tipo !== "recurso");
     if (estado.categoria !== "Todos") {
       contenidos = contenidos.filter((item) => (item.categoria || "General") === estado.categoria);
@@ -175,6 +185,7 @@
 
   function renderMateriales() {
     const contenedor = $("#education-materials");
+    if (!contenedor) return;
     const materiales = estado.datos?.materiales || [];
     contenedor.innerHTML = materiales.length ? materiales.map((material) => {
       const imagen = urlSegura(material.imagen, "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=700&q=80");
@@ -206,6 +217,7 @@
 
   function renderDesafios() {
     const contenedor = $("#education-challenges");
+    if (!contenedor) return;
     const desafios = estado.datos?.desafios || [];
     contenedor.innerHTML = desafios.length ? desafios.map((desafio) => {
       const disponible = desafio.estado_usuario === "disponible";
@@ -235,6 +247,7 @@
 
   function renderRecursos() {
     const contenedor = $("#education-resources");
+    if (!contenedor) return;
     const recursos = (estado.datos?.contenidos || []).filter((item) => ["guia", "recurso"].includes(item.tipo));
     contenedor.innerHTML = recursos.length ? recursos.map((item) => {
       const url = urlSegura(item.url_recurso);
@@ -304,7 +317,9 @@
       renderTodo();
     } catch (error) {
       mostrarEstado(`${error.message}. Verifica que Flask esté ejecutándose y que la migración de Educación se haya aplicado.`);
-      $("#education-content-grid").innerHTML = '<div class="col-12"><div class="alert alert-light border">Sin conexión con el backend.</div></div>';
+      if ($("#education-content-grid")) {
+        $("#education-content-grid").innerHTML = '<div class="col-12"><div class="alert alert-light border">Sin conexión con el backend.</div></div>';
+      }
     }
   }
 

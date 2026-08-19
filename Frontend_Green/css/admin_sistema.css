@@ -2050,3 +2050,94 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
     height: 560px;
   }
 }
+/* Panel de notificaciones del administrador: mismo lenguaje visual de recicladora. */
+.notifications-menu {
+  position: absolute;
+  top: 72px;
+  right: 0;
+  width: min(360px, calc(100vw - 24px));
+  background: #fff;
+  border: 1px solid rgba(0, 61, 108, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 26, 46, 0.12);
+  padding: 18px;
+  display: none;
+  z-index: 1100;
+}
+
+.notifications-menu.open {
+  display: block;
+}
+
+.notifications-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.notifications-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.notifications-head p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.notifications-badge {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d7f33;
+  color: #fff;
+  font-weight: 700;
+}
+
+.inline-empty-state {
+  border: 1px solid rgba(41, 108, 31, 0.14);
+  background: #f8fffa;
+  border-radius: 18px;
+  padding: 24px 18px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.inline-empty-state .material-symbols-outlined,
+.notification-item .material-symbols-outlined {
+  color: #1d7f33;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  border: 1px solid rgba(0, 61, 108, 0.08);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.notification-item.unread {
+  border-color: rgba(41, 108, 31, 0.35);
+  background: #f6fff7;
+}
+
+.notification-item strong {
+  display: block;
+  color: #0f172a;
+}
+
+.notification-item p,
+.notification-item small {
+  margin: 0;
+  color: #64748b;
+}

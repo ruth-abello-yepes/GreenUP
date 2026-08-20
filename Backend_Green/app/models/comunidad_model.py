@@ -379,6 +379,26 @@ def listar_preguntas_noticia(id_noticia):
         conexion.close()
 
 
+def eliminar_preguntas_noticia(id_noticia):
+    """Borra las preguntas actuales de una noticia para regenerarlas o reemplazarlas."""
+
+    asegurar_tablas_comunidad()
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            """
+            DELETE FROM noticia_cuestionarios
+            WHERE id_noticia = %s
+            """,
+            (id_noticia,),
+        )
+        conexion.commit()
+    finally:
+        cursor.close()
+        conexion.close()
+
+
 def crear_pregunta_noticia(id_noticia, pregunta, opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta, explicacion):
     """Inserta una pregunta de quiz para una noticia."""
 
@@ -400,6 +420,48 @@ def crear_pregunta_noticia(id_noticia, pregunta, opcion_a, opcion_b, opcion_c, o
         id_pregunta = cursor.fetchone()["id_pregunta"]
         conexion.commit()
         return id_pregunta
+    finally:
+        cursor.close()
+        conexion.close()
+
+
+def reemplazar_preguntas_noticia(id_noticia, preguntas):
+    """Sustituye por completo el cuestionario de una noticia."""
+
+    asegurar_tablas_comunidad()
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            """
+            DELETE FROM noticia_cuestionarios
+            WHERE id_noticia = %s
+            """,
+            (id_noticia,),
+        )
+
+        for pregunta in preguntas:
+            cursor.execute(
+                """
+                INSERT INTO noticia_cuestionarios (
+                    id_noticia, pregunta, opcion_a, opcion_b, opcion_c, opcion_d,
+                    respuesta_correcta, explicacion
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    id_noticia,
+                    pregunta["pregunta"],
+                    pregunta["opcion_a"],
+                    pregunta["opcion_b"],
+                    pregunta["opcion_c"],
+                    pregunta["opcion_d"],
+                    pregunta["respuesta_correcta"],
+                    pregunta.get("explicacion"),
+                ),
+            )
+
+        conexion.commit()
     finally:
         cursor.close()
         conexion.close()

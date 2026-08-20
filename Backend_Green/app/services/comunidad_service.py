@@ -1,9 +1,10 @@
 ## Archivo: comunidad_service.py
 ## Reglas de negocio del foro y del juego educativo por noticias.
 
+import re
+
 from app.models.comunidad_model import (
     crear_respuesta_foro,
-    crear_pregunta_noticia,
     crear_tema_foro,
     listar_respuestas_tema,
     listar_preguntas_noticia,
@@ -13,6 +14,7 @@ from app.models.comunidad_model import (
     marcar_tema_moderado,
     obtener_puntaje_ciudadano,
     registrar_resultado_juego,
+    reemplazar_preguntas_noticia,
     sumar_puntos_respuesta_foro,
 )
 from app.models.noticias_model import listar_noticias
@@ -27,6 +29,17 @@ PALABRAS_PROHIBIDAS = {
 
 TERMINOS_IMAGEN_INDEBIDA = {
     "adult", "porno", "xxx", "desnudo", "desnuda", "sex", "onlyfans",
+}
+
+PALABRAS_VACIAS = {
+    "a", "al", "algo", "algunas", "algunos", "ante", "antes", "como", "con", "contra",
+    "cual", "cuando", "de", "del", "desde", "donde", "dos", "el", "ella", "ellas", "ellos",
+    "en", "entre", "era", "eran", "es", "esa", "esas", "ese", "eso", "esos", "esta",
+    "estas", "este", "esto", "estos", "fue", "fueron", "ha", "han", "hasta", "hay", "la",
+    "las", "le", "les", "lo", "los", "más", "mas", "mi", "mis", "muy", "no", "nos", "o",
+    "otra", "otras", "otro", "otros", "para", "pero", "por", "porque", "que", "se", "sin",
+    "sobre", "son", "su", "sus", "también", "te", "tiene", "tienen", "todo", "todos", "tras",
+    "tu", "un", "una", "uno", "unas", "unos", "y", "ya",
 }
 
 
@@ -47,6 +60,217 @@ def _imagen_es_aceptable(imagen):
     if not valor:
         return True
     return not any(termino in valor for termino in TERMINOS_IMAGEN_INDEBIDA)
+
+
+def _limpiar_espacios(texto):
+    """Normaliza espacios en blanco para reutilizar frases de la noticia."""
+
+    return " ".join(str(texto or "").split()).strip()
+
+
+def _dividir_oraciones(texto):
+    """Separa el texto en oraciones cortas para reutilizarlas en preguntas."""
+
+    limpio = _limpiar_espacios(texto)
+    if not limpio:
+        return []
+    partes = re.split(r"(?<=[.!?])\s+", limpio)
+    return [parte.strip(" .") for parte in partes if parte.strip(" .")]
+
+
+def _extraer_palabras_clave(*textos):
+    """Obtiene palabras útiles del título y la descripción."""
+
+    conteo = {}
+    for texto in textos:
+        for palabra in re.findall(r"[A-Za-zÁÉÍÓÚáéíóúÑñ0-9]+", str(texto or "").lower()):
+            if len(palabra) < 4 or palabra in PALABRAS_VACIAS:
+                continue
+            conteo[palabra] = conteo.get(palabra, 0) + 1
+    return [palabra for palabra, _ in sorted(conteo.items(), key=lambda item: (-item[1], item[0]))]
+
+
+def _capitalizar_frase(texto):
+    """Deja una frase con mayúscula inicial para mostrarla mejor."""
+
+    valor = _limpiar_espacios(texto)
+    if not valor:
+        return ""
+    return valor[0].upper() + valor[1:]
+
+
+def _crear_titulo_alterado(titulo, palabra_original, palabra_nueva):
+    """Crea un distractor cambiando una palabra del título sin romper la lectura."""
+
+    if not palabra_original or not palabra_nueva:
+        return titulo
+    patron = re.compile(rf"\b{re.escape(palabra_original)}\b", re.IGNORECASE)
+    reemplazado = patron.sub(palabra_nueva, titulo, count=1)
+    return _capitalizar_frase(reemplazado)
+
+
+def _crear_opciones_con_respuesta(correcta, distractores):
+    """Arma las cuatro opciones dejando la correcta en A."""
+
+    opciones = [correcta]
+    for distractor in distractores:
+        valor = _capitalizar_frase(distractor)
+        if valor and valor.lower() != str(correcta).lower() and valor not in opciones:
+            opciones.append(valor)
+        if len(opciones) == 4:
+            break
+    while len(opciones) < 4:
+        opciones.append(f"Opción alternativa {len(opciones)}")
+    return {
+        "opcion_a": opciones[0],
+        "opcion_b": opciones[1],
+        "opcion_c": opciones[2],
+        "opcion_d": opciones[3],
+        "respuesta_correcta": "A",
+    }
+
+
+def _resumir_texto(texto, limite=140):
+    """Recorta un texto manteniendo una frase entendible para el quiz."""
+
+    valor = _limpiar_espacios(texto)
+    if len(valor) <= limite:
+        return valor
+    recorte = valor[:limite].rsplit(" ", 1)[0].strip()
+    return f"{recorte}..."
+
+
+def _construir_pregunta_desde_resumen(titulo, resumen_correcto):
+    """Crea una pregunta basada en el resumen real de la noticia."""
+
+    distractores = [
+        "La noticia trata exclusivamente sobre entretenimiento y redes sociales.",
+        "La publicación habla de resultados deportivos sin relación ambiental.",
+        "El artículo se centra en promociones comerciales de productos de moda.",
+    ]
+    opciones = _crear_opciones_con_respuesta(resumen_correcto, distractores)
+    return {
+        "pregunta": f"¿Qué resumen sí corresponde a la noticia \"{titulo}\"?",
+        **opciones,
+        "explicacion": "La opción correcta resume el contenido real registrado en GreenUp.",
+    }
+
+
+def _construir_pregunta_de_palabra_clave(palabra_clave, titulo, palabras_clave):
+    """Pregunta por un concepto real mencionado en la noticia."""
+
+    base_distractores = [
+        "farándula", "videojuegos", "pasarela", "televisión", "turismo", "fútbol",
+        "celebridades", "criptomonedas", "cine", "gastronomía",
+    ]
+    distractores = [palabra for palabra in base_distractores if palabra not in palabras_clave and palabra != palabra_clave][:3]
+    opciones = _crear_opciones_con_respuesta(palabra_clave, distractores)
+    return {
+        "pregunta": f"¿Cuál de estos conceptos aparece de forma directa en la noticia \"{titulo}\"?",
+        **opciones,
+        "explicacion": f"\"{_capitalizar_frase(palabra_clave)}\" sí hace parte del contenido de la noticia.",
+    }
+
+
+def _construir_pregunta_de_titulo(titulo, palabras_clave):
+    """Pregunta por el título real de la noticia."""
+
+    palabra_a = palabras_clave[0] if palabras_clave else "ambiental"
+    palabra_b = palabras_clave[1] if len(palabras_clave) > 1 else "sostenible"
+    palabra_c = palabras_clave[2] if len(palabras_clave) > 2 else "urbano"
+    distractores = [
+        _crear_titulo_alterado(titulo, palabra_a, "espectáculo"),
+        _crear_titulo_alterado(titulo, palabra_b, "moda"),
+        _crear_titulo_alterado(titulo, palabra_c, "fútbol"),
+    ]
+    opciones = _crear_opciones_con_respuesta(_capitalizar_frase(titulo), distractores)
+    return {
+        "pregunta": "¿Cuál es el título correcto de la noticia?",
+        **opciones,
+        "explicacion": "La respuesta correcta coincide con el título guardado para la noticia.",
+    }
+
+
+def _construir_pregunta_de_fuente(fuente):
+    """Pregunta por la fuente real con distractores genéricos."""
+
+    opciones = _crear_opciones_con_respuesta(
+        _capitalizar_frase(fuente),
+        ["Fuente anónima sin verificar", "Cadena de mensajes reenviados", "Portal de deportes y espectáculos"],
+    )
+    return {
+        "pregunta": "¿Qué fuente aparece registrada para esta noticia?",
+        **opciones,
+        "explicacion": "La opción correcta es la fuente guardada junto a la noticia.",
+    }
+
+
+def _construir_pregunta_de_categoria(categoria):
+    """Pregunta por la categoría real de la noticia."""
+
+    opciones = _crear_opciones_con_respuesta(
+        _capitalizar_frase(categoria),
+        ["Deportes", "Entretenimiento", "Moda y farándula"],
+    )
+    return {
+        "pregunta": "¿En qué categoría fue clasificada esta noticia?",
+        **opciones,
+        "explicacion": "La categoría correcta se tomó del registro real de la noticia.",
+    }
+
+
+def _construir_pregunta_de_oracion(oracion, titulo, indice):
+    """Convierte una oración del texto en una pregunta de comprensión literal."""
+
+    opciones = _crear_opciones_con_respuesta(
+        _resumir_texto(oracion, 160),
+        [
+            "La noticia afirma que el tema no tiene relación con el medio ambiente.",
+            "El texto dice que no existe participación ciudadana en este caso.",
+            "La publicación niega cualquier impacto o cambio asociado al tema.",
+        ],
+    )
+    return {
+        "pregunta": f"Según el texto de la noticia \"{titulo}\", ¿cuál de estas afirmaciones sí aparece en la descripción? ({indice})",
+        **opciones,
+        "explicacion": "La respuesta correcta fue tomada literalmente de la descripción guardada.",
+    }
+
+
+def _construir_pregunta_de_accion(accion_positiva, titulo):
+    """Genera una pregunta sobre la acción correcta sugerida por la noticia."""
+
+    opciones = _crear_opciones_con_respuesta(
+        _capitalizar_frase(accion_positiva),
+        [
+            "Ignorar la separación de residuos y mezclar todos los materiales",
+            "Quemar residuos para deshacerse de ellos más rápido",
+            "Depositar materiales aprovechables junto con basura ordinaria",
+        ],
+    )
+    return {
+        "pregunta": f"De acuerdo con lo que plantea la noticia \"{titulo}\", ¿qué acción es la más adecuada?",
+        **opciones,
+        "explicacion": "La noticia apunta a una práctica ambiental correcta relacionada con su contenido.",
+    }
+
+
+def _construir_pregunta_de_beneficio(beneficio, titulo):
+    """Pregunta por la consecuencia positiva asociada al texto."""
+
+    opciones = _crear_opciones_con_respuesta(
+        _capitalizar_frase(beneficio),
+        [
+            "Aumentar la contaminación y reducir la participación ciudadana",
+            "Eliminar el reciclaje como práctica cotidiana",
+            "Promover el uso descontrolado de materiales desechables",
+        ],
+    )
+    return {
+        "pregunta": f"¿Qué beneficio ambiental se relaciona con la noticia \"{titulo}\"?",
+        **opciones,
+        "explicacion": "La opción correcta resume el beneficio que se desprende del texto de la noticia.",
+    }
 
 
 def servicio_listar_foro(id_rol):
@@ -149,51 +373,79 @@ def servicio_responder_tema_foro(id_tema, id_usuario, id_rol, datos):
 
 def _preguntas_generadas_desde_noticia(noticia):
     """
-    Crea tres preguntas simples y educativas a partir de la noticia.
+    Crea seis preguntas educativas usando el contenido real de la noticia.
 
-    Se prioriza que el juego sea entendible y estable para el prototipo.
+    El objetivo es que el cuestionario se sienta más ligado al artículo,
+    pero sin depender de servicios externos adicionales.
     """
 
-    fuente = noticia.get("fuente") or "GreenUp"
-    categoria = noticia.get("categoria") or "Medio ambiente"
-    titulo = noticia.get("titulo") or "Noticia ambiental"
+    fuente = _limpiar_espacios(noticia.get("fuente") or "GreenUp")
+    categoria = _limpiar_espacios(noticia.get("categoria") or "Medio ambiente")
+    titulo = _limpiar_espacios(noticia.get("titulo") or "Noticia ambiental")
+    descripcion = _limpiar_espacios(noticia.get("descripcion") or "")
+    titulo_minuscula = titulo.lower()
+    descripcion_minuscula = descripcion.lower()
+    oraciones = _dividir_oraciones(descripcion)
+    palabras_clave = _extraer_palabras_clave(titulo, descripcion)
+
+    accion_positiva = "separar residuos y usar correctamente los puntos ecológicos"
+    beneficio = "reducir el impacto ambiental y fortalecer la cultura de reciclaje"
+
+    if "plást" in titulo_minuscula or "plást" in descripcion_minuscula:
+        accion_positiva = "reducir plásticos de un solo uso y separar envases aprovechables"
+        beneficio = "evitar contaminación en calles, ríos y rellenos sanitarios"
+    elif "orgán" in titulo_minuscula or "compost" in descripcion_minuscula:
+        accion_positiva = "separar residuos orgánicos para compostaje o aprovechamiento"
+        beneficio = "aprovechar mejor los residuos y disminuir malos olores"
+    elif "electr" in titulo_minuscula or "raee" in titulo_minuscula or "electr" in descripcion_minuscula:
+        accion_positiva = "llevar aparatos electrónicos a puntos autorizados"
+        beneficio = "evitar contaminación por componentes peligrosos"
+    elif "vidrio" in titulo_minuscula or "cartón" in titulo_minuscula or "papel" in titulo_minuscula:
+        accion_positiva = "clasificar materiales aprovechables y entregarlos limpios"
+        beneficio = "facilitar el aprovechamiento de materiales reciclables"
+
+    if not descripcion:
+        descripcion = f"La noticia fue registrada en GreenUp dentro de la categoría {categoria} y proviene de la fuente {fuente}."
+        oraciones = _dividir_oraciones(descripcion)
+
+    primera_oracion = oraciones[0] if oraciones else descripcion
+    segunda_oracion = oraciones[1] if len(oraciones) > 1 else descripcion
+    palabra_principal = palabras_clave[0] if palabras_clave else categoria.lower()
 
     return [
-        {
-            "pregunta": f"¿Cuál es el tema principal de la noticia \"{titulo}\"?",
-            "opcion_a": categoria,
-            "opcion_b": "Deportes",
-            "opcion_c": "Entretenimiento",
-            "opcion_d": "Tecnología móvil",
-            "respuesta_correcta": "A",
-            "explicacion": "La noticia fue clasificada por GreenUp dentro de esa categoría ambiental.",
-        },
-        {
-            "pregunta": "¿Qué acción ciudadana se relaciona mejor con el aprendizaje de esta noticia?",
-            "opcion_a": "Separar correctamente residuos y participar activamente",
-            "opcion_b": "Quemar residuos para reducir espacio",
-            "opcion_c": "Mezclar reciclables con orgánicos",
-            "opcion_d": "Ignorar los puntos ecológicos",
-            "respuesta_correcta": "A",
-            "explicacion": "La educación ambiental de GreenUp siempre busca decisiones responsables y sostenibles.",
-        },
-        {
-            "pregunta": f"¿Desde qué fuente se registró esta noticia en GreenUp?",
-            "opcion_a": fuente,
-            "opcion_b": "Documento interno sin fuente",
-            "opcion_c": "Cadena de mensajes anónimos",
-            "opcion_d": "Foro sin verificación",
-            "respuesta_correcta": "A",
-            "explicacion": "GreenUp guarda la fuente asociada para mantener trazabilidad de la información.",
-        },
+        _construir_pregunta_de_titulo(titulo, palabras_clave),
+        _construir_pregunta_desde_resumen(titulo, _resumir_texto(primera_oracion, 160)),
+        _construir_pregunta_de_oracion(segunda_oracion, titulo, 2),
+        _construir_pregunta_de_palabra_clave(palabra_principal, titulo, palabras_clave),
+        _construir_pregunta_de_accion(accion_positiva, titulo),
+        _construir_pregunta_de_beneficio(beneficio, titulo),
     ]
+
+
+def _preguntas_necesitan_actualizacion(preguntas_guardadas):
+    """Detecta si el cuestionario viejo debe regenerarse."""
+
+    if len(preguntas_guardadas) != 6:
+        return True
+
+    patrones_viejos = (
+        "¿cuál es el tema principal de la noticia",
+        "¿qué acción ciudadana se relaciona mejor con el aprendizaje de esta noticia?",
+        "¿desde qué fuente se registró esta noticia en greenup?",
+    )
+    for pregunta in preguntas_guardadas:
+        texto = str(pregunta.get("pregunta") or "").strip().lower()
+        if any(texto.startswith(patron) for patron in patrones_viejos):
+            return True
+
+    return False
 
 
 def servicio_listar_preguntas_noticia(id_noticia):
     """Entrega las preguntas del juego para una noticia."""
 
     preguntas = listar_preguntas_noticia(id_noticia)
-    if preguntas:
+    if preguntas and not _preguntas_necesitan_actualizacion(preguntas):
         return {"preguntas": preguntas}, 200
 
     noticias = listar_noticias()
@@ -202,19 +454,53 @@ def servicio_listar_preguntas_noticia(id_noticia):
         return {"mensaje": "La noticia no existe"}, 404
 
     generadas = _preguntas_generadas_desde_noticia(noticia)
-    for pregunta in generadas:
-        crear_pregunta_noticia(
-            id_noticia,
-            pregunta["pregunta"],
-            pregunta["opcion_a"],
-            pregunta["opcion_b"],
-            pregunta["opcion_c"],
-            pregunta["opcion_d"],
-            pregunta["respuesta_correcta"],
-            pregunta["explicacion"],
-        )
+    reemplazar_preguntas_noticia(id_noticia, generadas)
 
     return {"preguntas": listar_preguntas_noticia(id_noticia)}, 200
+
+
+def servicio_registrar_preguntas_noticia(id_noticia, datos):
+    """Permite guardar manualmente un cuestionario de seis preguntas para una noticia."""
+
+    preguntas = datos.get("preguntas") or []
+    if not isinstance(preguntas, list):
+        return {"mensaje": "Las preguntas deben enviarse en una lista"}, 400
+
+    if len(preguntas) != 6:
+        return {"mensaje": "Debes registrar exactamente 6 preguntas por noticia"}, 400
+
+    errores = []
+    preguntas_limpias = []
+    for indice, pregunta in enumerate(preguntas, start=1):
+        fila = {
+            "pregunta": str((pregunta or {}).get("pregunta") or "").strip(),
+            "opcion_a": str((pregunta or {}).get("opcion_a") or "").strip(),
+            "opcion_b": str((pregunta or {}).get("opcion_b") or "").strip(),
+            "opcion_c": str((pregunta or {}).get("opcion_c") or "").strip(),
+            "opcion_d": str((pregunta or {}).get("opcion_d") or "").strip(),
+            "respuesta_correcta": str((pregunta or {}).get("respuesta_correcta") or "").strip().upper(),
+            "explicacion": str((pregunta or {}).get("explicacion") or "").strip(),
+        }
+
+        if not all([fila["pregunta"], fila["opcion_a"], fila["opcion_b"], fila["opcion_c"], fila["opcion_d"]]):
+            errores.append(f"La pregunta {indice} tiene campos vacíos.")
+        if fila["respuesta_correcta"] not in {"A", "B", "C", "D"}:
+            errores.append(f"La pregunta {indice} debe indicar una respuesta correcta entre A, B, C o D.")
+        preguntas_limpias.append(fila)
+
+    if errores:
+        return {"mensaje": "No se pudieron guardar las preguntas", "errores": errores}, 400
+
+    noticias = listar_noticias()
+    noticia = next((item for item in noticias if int(item.get("id_noticia")) == int(id_noticia)), None)
+    if not noticia:
+        return {"mensaje": "La noticia no existe"}, 404
+
+    reemplazar_preguntas_noticia(id_noticia, preguntas_limpias)
+    return {
+        "mensaje": "Preguntas registradas correctamente",
+        "preguntas": listar_preguntas_noticia(id_noticia),
+    }, 201
 
 
 def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
@@ -231,20 +517,36 @@ def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
             return respuesta, estado
         preguntas = respuesta["preguntas"]
 
+    faltantes = []
     correctas = 0
     detalle = []
-    for pregunta in preguntas:
+    for indice, pregunta in enumerate(preguntas, start=1):
         seleccion = str(respuestas.get(str(pregunta["id_pregunta"]), "")).upper()
+        if seleccion not in {"A", "B", "C", "D"}:
+            faltantes.append({
+                "id_pregunta": pregunta["id_pregunta"],
+                "numero": indice,
+                "mensaje": f"Debes responder la pregunta {indice}.",
+            })
+            continue
         es_correcta = seleccion == str(pregunta["respuesta_correcta"]).upper()
         if es_correcta:
             correctas += 1
         detalle.append({
             "id_pregunta": pregunta["id_pregunta"],
+            "numero": indice,
+            "pregunta": pregunta["pregunta"],
             "seleccion": seleccion,
             "respuesta_correcta": pregunta["respuesta_correcta"],
             "correcta": es_correcta,
             "explicacion": pregunta.get("explicacion"),
         })
+
+    if faltantes:
+        return {
+            "mensaje": "Debes responder todas las preguntas antes de enviar.",
+            "errores": faltantes,
+        }, 400
 
     total = len(preguntas)
     puntaje = correctas * 10

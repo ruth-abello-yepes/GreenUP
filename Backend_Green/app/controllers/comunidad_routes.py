@@ -11,6 +11,7 @@ from app.services.comunidad_service import (
     servicio_listar_preguntas_noticia,
     servicio_listar_puntajes_juego,
     servicio_puntaje_ciudadano,
+    servicio_registrar_preguntas_noticia,
     servicio_responder_tema_foro,
     servicio_resolver_juego_noticia,
 )
@@ -48,6 +49,15 @@ def ruta_responder_tema_foro(id_tema):
 @login_requerido
 def ruta_listar_preguntas_noticia(id_noticia):
     respuesta, estado = servicio_listar_preguntas_noticia(id_noticia)
+    return jsonify(respuesta), estado
+
+
+@comunidad_bp.route("/juego/noticias/<int:id_noticia>/preguntas", methods=["POST"])
+@login_requerido
+@rol_requerido([1, 2])
+def ruta_registrar_preguntas_noticia(id_noticia):
+    datos = request.get_json() or {}
+    respuesta, estado = servicio_registrar_preguntas_noticia(id_noticia, datos)
     return jsonify(respuesta), estado
 
 

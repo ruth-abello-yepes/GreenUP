@@ -158,7 +158,7 @@ class EstadisticasModel:
             materiales = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     TO_CHAR(mes, 'YYYY-MM') AS mes,
                     COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)::int AS puntos
@@ -179,7 +179,7 @@ class EstadisticasModel:
             evolucion_mensual = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 WITH totales AS (
                     SELECT
                         usuarios.id_usuario,
@@ -313,7 +313,7 @@ class EstadisticasModel:
             reciclaje_por_residuo = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     COALESCE(tipo_material.nombre, 'Sin material') AS nombre,
                     COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS total
@@ -329,7 +329,7 @@ class EstadisticasModel:
             reciclaje_por_material = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     usuarios.id_usuario,
                     CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS nombre,
@@ -346,7 +346,7 @@ class EstadisticasModel:
             ranking_usuarios = cursor.fetchall()
 
             cursor.execute(
-                """
+                f"""
                 SELECT
                     TO_CHAR(DATE_TRUNC('month', fecha_hora), 'YYYY-MM') AS mes,
                     COALESCE(SUM(cantidad), 0)::float AS total

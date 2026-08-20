@@ -13,7 +13,7 @@ function getUser() {
 }
 
 function getApiBase() {
-  return typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
+  return typeof API_URL !== "undefined" ? API_URL : "http://10.228.218.23:5000";
 }
 
 function getSessionHeaders() {
@@ -136,9 +136,9 @@ function rowsToTable(tableTitle, rows) {
   tbody.innerHTML = rows.map((row) => `
     <tr>
       ${row.map((cell, index) => index === row.length - 1
-        ? `<td><span class="status-pill status-${statusClass(cell)}">${escapeHtml(cell)}</span></td>`
-        : `<td>${escapeHtml(cell)}</td>`
-      ).join("")}
+    ? `<td><span class="status-pill status-${statusClass(cell)}">${escapeHtml(cell)}</span></td>`
+    : `<td>${escapeHtml(cell)}</td>`
+  ).join("")}
       <td><span class="action-group"><button class="btn-icon" type="button" aria-label="Ver"><span class="material-symbols-outlined">visibility</span></button></span></td>
     </tr>
   `).join("");

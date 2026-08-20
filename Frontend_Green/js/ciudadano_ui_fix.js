@@ -25,6 +25,83 @@ function corregirEnlacesCiudadano() {
 }
 
 /**
+ * Mantiene disponibles las rutas principales del ciudadano en escritorio y
+ * en el menu hamburguesa. Registrar reciclaje tambien se agrega al menu del
+ * perfil para que no dependa exclusivamente del boton flotante "+".
+ */
+function completarNavegacionCiudadano() {
+    const archivoActual = window.location.pathname.split("/").pop() || "";
+    const rutasPrincipales = [
+        { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
+        { href: "ciudadano_noticias.html", icono: "newspaper", texto: "Noticias" },
+        { href: "ciudadano_mapa.html", icono: "map", texto: "Mapa Eco" },
+        { href: "ciudadano_estadisticas.html", icono: "bar_chart", texto: "Estadísticas" },
+        { href: "ciudadano_educacion.html", icono: "school", texto: "Educación" },
+    ];
+    const rutaRegistro = {
+        href: "ciudadano_registrar_reciclaje.html",
+        icono: "recycling",
+        texto: "Registrar reciclaje",
+    };
+
+    const tieneRuta = (contenedor, href) => Array.from(contenedor.querySelectorAll("a[href]"))
+        .some((enlace) => enlace.getAttribute("href") === href);
+
+    const navegacionEscritorio = document.querySelector(
+        "nav.navbar .container-fluid > .d-none.d-md-flex"
+    );
+    if (navegacionEscritorio) {
+        rutasPrincipales.forEach((ruta) => {
+            if (tieneRuta(navegacionEscritorio, ruta.href)) return;
+
+            const enlace = document.createElement("a");
+            enlace.href = ruta.href;
+            enlace.className = "nav-link text-secondary d-flex align-items-center gap-1";
+            enlace.innerHTML = `<span class="material-symbols-outlined fs-5">${ruta.icono}</span> ${ruta.texto}`;
+            navegacionEscritorio.appendChild(enlace);
+        });
+    }
+
+    const menuMovil = document.querySelector("#mobileMenuSidebar .list-group");
+    if (menuMovil) {
+        [...rutasPrincipales, rutaRegistro].forEach((ruta) => {
+            if (tieneRuta(menuMovil, ruta.href)) return;
+
+            const enlace = document.createElement("a");
+            enlace.href = ruta.href;
+            enlace.className = "list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary";
+            enlace.innerHTML = `<span class="material-symbols-outlined">${ruta.icono}</span> ${ruta.texto}`;
+
+            const cerrarSesion = Array.from(menuMovil.querySelectorAll("a"))
+                .find((item) => (item.textContent || "").toLowerCase().includes("cerrar sesi"));
+            menuMovil.insertBefore(enlace, cerrarSesion || null);
+        });
+
+        const enlaceActual = Array.from(menuMovil.querySelectorAll("a[href]"))
+            .find((enlace) => enlace.getAttribute("href") === archivoActual);
+        if (enlaceActual) {
+            enlaceActual.classList.remove("text-secondary");
+            enlaceActual.classList.add("text-success", "fw-semibold", "bg-success-subtle");
+            enlaceActual.setAttribute("aria-current", "page");
+        }
+    }
+
+    document.querySelectorAll(".navbar .dropdown-menu").forEach((menuPerfil) => {
+        if (tieneRuta(menuPerfil, rutaRegistro.href)) return;
+
+        const opcion = document.createElement("li");
+        const enlace = document.createElement("a");
+        enlace.href = rutaRegistro.href;
+        enlace.className = "dropdown-item d-flex align-items-center gap-2 text-success fw-semibold py-2";
+        enlace.innerHTML = `<span class="material-symbols-outlined fs-5">${rutaRegistro.icono}</span>${rutaRegistro.texto}`;
+        opcion.appendChild(enlace);
+
+        const separador = menuPerfil.querySelector(".dropdown-divider")?.closest("li");
+        menuPerfil.insertBefore(opcion, separador || menuPerfil.firstChild);
+    });
+}
+
+/**
  * Quita secciones que el usuario ya no quiere mostrar.
  */
 function quitarModulosNoDeseadosCiudadano() {
@@ -105,6 +182,7 @@ function redirigirAjustesAntiguos() {
 document.addEventListener("DOMContentLoaded", () => {
     redirigirAjustesAntiguos();
     corregirEnlacesCiudadano();
+    completarNavegacionCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
     corregirFooterCiudadano();

@@ -630,15 +630,15 @@ async function cargarPanel() {
           <a class="ghost-button btn btn-outline-secondary" href="admin_usuarios.html">Ver usuarios</a>
         </div>
         ${tablaDatos(
-          ["ID", "Nombre", "Usuario", "Rol", "Estado"],
-          usuarios.slice(0, 8).map((u) => [
-            u.id_usuario,
-            `${u.nombres || ""} ${u.apellidos || ""}`,
-            u.usuario,
-            nombreRol(u.id_rol),
-            estadoHtml(u.id_estado),
-          ]),
-        )}
+    ["ID", "Nombre", "Usuario", "Rol", "Estado"],
+    usuarios.slice(0, 8).map((u) => [
+      u.id_usuario,
+      `${u.nombres || ""} ${u.apellidos || ""}`,
+      u.usuario,
+      nombreRol(u.id_rol),
+      estadoHtml(u.id_estado),
+    ]),
+  )}
       </article>
       <article class="module-card card col-12 col-xl-4">
         <div class="card-title-row">
@@ -1672,10 +1672,10 @@ async function cargarNovedades() {
       </article>
     </section>
     ${renderFormModal("modal-novedad", "Publicar noticia", "Contenido visible para la comunidad.", "form-novedad", [
-      { id: "titulo", label: "Titulo" },
-      { id: "imagen", label: "URL de imagen" },
-      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-    ], "guardarNovedad(event)", "Publicar")}
+    { id: "titulo", label: "Titulo" },
+    { id: "imagen", label: "URL de imagen" },
+    { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
+  ], "guardarNovedad(event)", "Publicar")}
   `;
   await cargarPuntajesJuegoAdmin();
 }
@@ -1799,11 +1799,11 @@ async function cargarFaq() {
       </article>
     </section>
     ${renderFormModal("modal-faq", "Nueva pregunta", "Respuesta visible para usuarios.", "form-faq", [
-      { id: "pregunta", label: "Pregunta", full: true },
-      { id: "categoria", label: "Categoria" },
-      { id: "orden", label: "Orden", type: "number" },
-      { id: "respuesta", label: "Respuesta", type: "textarea", full: true },
-    ], "guardarFaq(event)", "Guardar")}
+    { id: "pregunta", label: "Pregunta", full: true },
+    { id: "categoria", label: "Categoria" },
+    { id: "orden", label: "Orden", type: "number" },
+    { id: "respuesta", label: "Respuesta", type: "textarea", full: true },
+  ], "guardarFaq(event)", "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -1843,12 +1843,12 @@ async function cargarContenido() {
       </article>
     </section>
     ${renderFormModal("modal-contenido", "Nuevo contenido", "Recurso educativo para GreenUp.", "form-contenido", [
-      { id: "titulo", label: "Titulo" },
-      { id: "tipo", label: "Tipo", type: "select", options: [["articulo", "Articulo"], ["video", "Video"], ["infografia", "Infografia"]] },
-      { id: "url_recurso", label: "URL recurso" },
-      { id: "imagen", label: "URL imagen" },
-      { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
-    ], "guardarContenido(event)", "Guardar")}
+    { id: "titulo", label: "Titulo" },
+    { id: "tipo", label: "Tipo", type: "select", options: [["articulo", "Articulo"], ["video", "Video"], ["infografia", "Infografia"]] },
+    { id: "url_recurso", label: "URL recurso" },
+    { id: "imagen", label: "URL imagen" },
+    { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
+  ], "guardarContenido(event)", "Guardar")}
   `;
   pintarTablaActual();
 }
@@ -2403,8 +2403,8 @@ function renderNewsGrid(noticias) {
   return `
     <div class="news-grid">
       ${noticias.map((n) => {
-        const activo = Number(n.id_estado) === 1;
-        return `
+    const activo = Number(n.id_estado) === 1;
+    return `
           <article class="news-card card">
             <div class="news-image">
               ${n.imagen ? `<img src="${limpiar(n.imagen)}" alt="${limpiar(n.titulo)}">` : ""}
@@ -2421,7 +2421,7 @@ function renderNewsGrid(noticias) {
             </div>
           </article>
         `;
-      }).join("")}
+  }).join("")}
     </div>
   `;
 }

@@ -13,6 +13,7 @@ async function cargarRoles() {
         Ruta:
         GET http://127.0.0.1:5000/api/roles/listar
     */
+
   const respuesta = await fetch(API_URL + "/api/roles/listar");
 
   /*

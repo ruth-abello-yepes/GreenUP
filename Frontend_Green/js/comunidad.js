@@ -32,6 +32,16 @@ function mostrarAvisoComunidad(selector, tipo, mensaje) {
 }
 
 /**
+ * Convierte una letra de respuesta en texto legible para el usuario.
+ * @param {string} letra
+ * @returns {string}
+ */
+function formatearLetraRespuesta(letra) {
+    const valor = String(letra || "").toUpperCase();
+    return valor ? `Opción ${valor}` : "Sin respuesta";
+}
+
+/**
  * Lee una imagen local y la convierte a Base64 para enviarla en JSON.
  * @param {HTMLInputElement|null} input
  * @returns {Promise<string>}
@@ -375,23 +385,39 @@ async function abrirQuizNoticia(idNoticia, titulo) {
     const formulario = document.getElementById("form-juego-noticias");
     formulario.innerHTML = "";
     formulario.dataset.idNoticia = String(idNoticia);
+    formulario.noValidate = true;
     new bootstrap.Modal(document.getElementById("modalJuegoNoticias")).show();
 
     try {
         const respuesta = await peticionSegura(`/api/comunidad/juego/noticias/${idNoticia}/preguntas`, "GET");
         if (!respuesta.ok) throw new Error(respuesta.datos.mensaje || "No se pudieron cargar las preguntas");
 
-        respuesta.datos.preguntas.forEach((pregunta, indice) => {
+        const preguntas = respuesta.datos.preguntas || [];
+        if (!preguntas.length) {
+            throw new Error("Esta noticia todavía no tiene preguntas disponibles.");
+        }
+
+        const encabezado = document.createElement("div");
+        encabezado.className = "alert alert-light border rounded-4 mb-0";
+        encabezado.innerHTML = `
+            <strong class="d-block mb-1">Cuestionario de la noticia</strong>
+            <span class="text-secondary small">Responde las ${preguntas.length} preguntas. Si dejas alguna vacía, el sistema te la marcará antes de guardar.</span>
+        `;
+        formulario.appendChild(encabezado);
+
+        preguntas.forEach((pregunta, indice) => {
             const bloque = document.createElement("fieldset");
-            bloque.className = "border rounded-4 p-3";
+            bloque.className = "border rounded-4 p-3 pregunta-juego";
+            bloque.dataset.preguntaId = String(pregunta.id_pregunta);
             bloque.innerHTML = `
                 <legend class="float-none w-auto px-2 fs-6 fw-bold mb-2">${indice + 1}. ${escaparComunidad(pregunta.pregunta)}</legend>
                 ${["A", "B", "C", "D"].map((letra) => `
                     <label class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="pregunta_${pregunta.id_pregunta}" value="${letra}" required>
+                        <input class="form-check-input" type="radio" name="pregunta_${pregunta.id_pregunta}" value="${letra}">
                         <span class="form-check-label">${escaparComunidad(pregunta[`opcion_${letra.toLowerCase()}`])}</span>
                     </label>
                 `).join("")}
+                <div class="invalid-feedback d-block small mt-2" hidden></div>
             `;
             formulario.appendChild(bloque);
         });
@@ -417,18 +443,100 @@ async function resolverJuegoNoticias(evento) {
     const formulario = evento.currentTarget;
     const idNoticia = formulario.dataset.idNoticia;
     const respuestas = {};
+    const faltantes = [];
+
+    formulario.querySelectorAll(".pregunta-juego").forEach((bloque, indice) => {
+        const aviso = bloque.querySelector(".invalid-feedback");
+        if (aviso) {
+            aviso.hidden = true;
+            aviso.textContent = "";
+        }
+        bloque.classList.remove("border-danger", "bg-danger-subtle");
+
+        const marcada = bloque.querySelector('input[type="radio"]:checked');
+        if (!marcada) {
+            faltantes.push(indice + 1);
+            bloque.classList.add("border-danger", "bg-danger-subtle");
+            if (aviso) {
+                aviso.hidden = false;
+                aviso.textContent = `Debes responder la pregunta ${indice + 1}.`;
+            }
+        }
+    });
+
+    if (faltantes.length) {
+        mostrarAvisoComunidad(
+            "#estado-juego-noticias",
+            "warning",
+            `Faltan respuestas en las preguntas: ${faltantes.join(", ")}.`
+        );
+        document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+    }
+
     new FormData(formulario).forEach((valor, llave) => {
         respuestas[llave.replace("pregunta_", "")] = valor;
     });
 
     try {
         const respuesta = await peticionSegura(`/api/comunidad/juego/noticias/${idNoticia}/resolver`, "POST", { respuestas });
-        if (!respuesta.ok) throw new Error(respuesta.datos.mensaje || "No se pudo calificar el juego");
+        if (!respuesta.ok) {
+            const errorControlado = new Error(respuesta.datos.mensaje || "No se pudo calificar el juego");
+            errorControlado.detalles = respuesta.datos;
+            throw errorControlado;
+        }
         const datos = respuesta.datos;
         mostrarAvisoComunidad("#estado-juego-noticias", "success", `Obtuviste ${datos.puntaje_obtenido} puntos y acertaste ${datos.respuestas_correctas} de ${datos.total_preguntas}.`);
+        document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        formulario.querySelectorAll(".pregunta-juego").forEach((bloque) => {
+            bloque.classList.remove("border-danger", "bg-danger-subtle");
+        });
+
+        const resumenViejo = formulario.querySelector(".resultado-juego-detalle");
+        if (resumenViejo) resumenViejo.remove();
+
+        const detalle = Array.isArray(datos.detalle) ? datos.detalle : [];
+        const errores = detalle.filter((item) => !item.correcta);
+        const panelResultado = document.createElement("div");
+        panelResultado.className = `resultado-juego-detalle alert ${errores.length ? "alert-warning" : "alert-success"} mb-0`;
+        panelResultado.innerHTML = errores.length
+            ? `
+                <strong class="d-block mb-2">Revisa estos errores</strong>
+                <ul class="mb-0 ps-3">
+                    ${errores.map((item) => `
+                        <li class="mb-2">
+                            <strong>Pregunta ${escaparComunidad(item.numero)}:</strong> ${escaparComunidad(item.pregunta)}<br>
+                            <span>Tu respuesta: ${escaparComunidad(formatearLetraRespuesta(item.seleccion))}.</span><br>
+                            <span>Respuesta correcta: ${escaparComunidad(formatearLetraRespuesta(item.respuesta_correcta))}.</span><br>
+                            <span class="text-secondary">${escaparComunidad(item.explicacion || "Revisa el contenido de la noticia para reforzar este punto.")}</span>
+                        </li>
+                    `).join("")}
+                </ul>
+            `
+            : `
+                <strong class="d-block mb-2">Excelente</strong>
+                <span>Respondiste correctamente las ${detalle.length} preguntas de esta noticia.</span>
+            `;
+        formulario.appendChild(panelResultado);
         await cargarResumenJuegoCiudadano();
     } catch (error) {
+        const respuestaError = error?.detalles || {};
+        const errores = Array.isArray(respuestaError.errores) ? respuestaError.errores : [];
+        if (errores.length) {
+            errores.forEach((item) => {
+                const numero = Number(item.numero || 0);
+                if (!numero) return;
+                const bloque = formulario.querySelectorAll(".pregunta-juego")[numero - 1];
+                const aviso = bloque?.querySelector(".invalid-feedback");
+                bloque?.classList.add("border-danger", "bg-danger-subtle");
+                if (aviso) {
+                    aviso.hidden = false;
+                    aviso.textContent = item.mensaje || `Debes responder la pregunta ${numero}.`;
+                }
+            });
+        }
         mostrarAvisoComunidad("#estado-juego-noticias", "warning", error.message || "No se pudo enviar el juego.");
+        document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 }
 

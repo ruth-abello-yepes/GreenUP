@@ -2,6 +2,7 @@
 
 const IMAGEN_NOTICIA_FALLBACK =
     "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=900&q=80";
+const MODO_NOTICIAS_PUBLICO = document.body.dataset.newsMode === "public";
 let paginaNoticias = 1;
 let temporizadorBusqueda = null;
 
@@ -24,7 +25,10 @@ function crearElemento(etiqueta, clase, texto) {
 
 function crearTarjetaNoticia(noticia) {
     const columna = crearElemento("div", "col-lg-4 col-md-6");
-    const articulo = crearElemento("article", "card gu-card h-100 border-0");
+    const articulo = crearElemento(
+        "article",
+        MODO_NOTICIAS_PUBLICO ? "news-card h-100" : "card gu-card h-100 border-0"
+    );
     const imagenWrapper = crearElemento("div", "img-wrapper");
     const imagen = document.createElement("img");
     imagen.src = noticia.imagen || IMAGEN_NOTICIA_FALLBACK;
@@ -69,7 +73,7 @@ function crearTarjetaNoticia(noticia) {
         acciones.appendChild(enlace);
     }
 
-    if (noticia.id_noticia) {
+    if (noticia.id_noticia && !MODO_NOTICIAS_PUBLICO) {
         const juego = crearElemento(
             "button",
             "btn btn-gu-primary rounded-pill d-inline-flex align-items-center gap-1",

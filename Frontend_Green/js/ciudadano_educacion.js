@@ -135,7 +135,7 @@
       : `<a class="btn btn-light border w-100" href="${escapar(recurso)}" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined fs-6">open_in_new</span> Abrir guía</a>`;
 
     return `
-      <div class="col-md-6">
+      <div class="col-md-4">
         <article class="card gu-card h-100 border-0 d-flex flex-column">
           <div class="img-wrapper">
             <img src="${escapar(imagen)}" alt="${escapar(item.titulo)}" loading="lazy" referrerpolicy="no-referrer">

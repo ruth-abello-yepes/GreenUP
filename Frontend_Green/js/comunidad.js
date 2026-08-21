@@ -587,8 +587,6 @@ async function cargarFeedNoticiasComunidad() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    prepararFormularioForoSegunRol();
-    cargarForoGreenUp();
     cargarResumenJuegoCiudadano();
     cargarFeedNoticiasComunidad();
 });

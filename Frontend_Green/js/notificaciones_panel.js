@@ -344,7 +344,7 @@ function prepararAccionesSoporteGreenUp() {
         boton.style.bottom = "18px";
         boton.style.zIndex = "1080";
         boton.title = "Escribir por WhatsApp";
-        boton.innerHTML = '<span class="material-symbols-outlined">forum</span>';
+        boton.innerHTML = '<span class="material-symbols-outlined">support_agent</span>';
         document.body.appendChild(boton);
     }
 

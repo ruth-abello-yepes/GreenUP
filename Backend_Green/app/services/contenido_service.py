@@ -4,6 +4,7 @@
 # Servicio de contenido educativo
 
 from app.models.contenido_model import (
+    cambiar_estado_contenido,
     crear_contenido,
     listar_contenidos
 )
@@ -34,3 +35,16 @@ def servicio_crear_contenido(data):
 def servicio_listar_contenidos():
     datos = listar_contenidos()
     return datos, 200
+
+
+def servicio_cambiar_estado_contenido(id_contenido, data):
+    id_estado = data.get("id_estado")
+
+    if not id_estado:
+        return {"mensaje": "El estado es obligatorio"}, 400
+
+    actualizado = cambiar_estado_contenido(id_contenido, id_estado)
+    if not actualizado:
+        return {"mensaje": "Contenido educativo no encontrado"}, 404
+
+    return {"mensaje": "Estado del contenido actualizado correctamente"}, 200

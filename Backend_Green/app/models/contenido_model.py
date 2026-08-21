@@ -36,3 +36,20 @@ def listar_contenidos():
     conexion.close()
 
     return datos
+
+
+def cambiar_estado_contenido(id_contenido, id_estado):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute(
+        "UPDATE contenido_educativo SET id_estado = %s WHERE id_contenido = %s",
+        (id_estado, id_contenido),
+    )
+    actualizado = cursor.rowcount > 0
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+    return actualizado

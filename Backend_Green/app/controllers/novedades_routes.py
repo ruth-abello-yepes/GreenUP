@@ -20,7 +20,7 @@ novedades_bp = Blueprint("novedades", __name__)
 
 @novedades_bp.route("/novedades", methods=["POST"])
 @login_requerido
-@rol_requerido([1, 2])
+@rol_requerido([1, 2, 3])
 def ruta_crear_novedad():
     data = request.get_json()
     data["id_usuario"] = g.id_usuario

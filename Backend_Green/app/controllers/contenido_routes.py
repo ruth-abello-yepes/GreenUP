@@ -8,6 +8,7 @@ from flask import Blueprint, g, request, jsonify
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
 from app.services.contenido_service import (
+    servicio_cambiar_estado_contenido,
     servicio_crear_contenido,
     servicio_listar_contenidos
 )
@@ -18,7 +19,7 @@ contenido_bp = Blueprint("contenido", __name__)
 
 @contenido_bp.route("/contenido", methods=["POST"])
 @login_requerido
-@rol_requerido([1])
+@rol_requerido([1, 2])
 def ruta_crear_contenido():
     """
     Crear contenido educativo
@@ -78,4 +79,13 @@ def ruta_listar_contenidos():
         description: Lista de contenidos educativos
     """
     respuesta, estado = servicio_listar_contenidos()
+    return jsonify(respuesta), estado
+
+
+@contenido_bp.route("/contenido/<int:id_contenido>/estado", methods=["PUT"])
+@login_requerido
+@rol_requerido([1, 2])
+def ruta_cambiar_estado_contenido(id_contenido):
+    data = request.get_json() or {}
+    respuesta, estado = servicio_cambiar_estado_contenido(id_contenido, data)
     return jsonify(respuesta), estado

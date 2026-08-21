@@ -215,14 +215,14 @@ function crearMenuHamburguesaCiudadano() {
         </div>
         <div class="ciudadano-hamburger-panel__links">
             ${rutasMenu.map((ruta) => {
-                const activo = ruta.href === archivoActual ? " is-active" : "";
-                return `
+        const activo = ruta.href === archivoActual ? " is-active" : "";
+        return `
                     <a class="ciudadano-hamburger-panel__link${activo}" href="${ruta.href}" data-requiere-sesion="${ruta.requiereSesion ? "true" : "false"}">
                         <span class="material-symbols-outlined">${ruta.icono}</span>
                         <span>${ruta.texto}</span>
                     </a>
                 `;
-            }).join("")}
+    }).join("")}
             <button class="ciudadano-hamburger-panel__logout" type="button">
                 <span class="material-symbols-outlined">logout</span>
                 <span>Cerrar sesión</span>
@@ -415,6 +415,27 @@ function estilizarBotonesCerrarSesionCiudadano() {
  * Corrige el footer para que la marca no use fondo blanco.
  */
 function corregirFooterCiudadano() {
+    const rutasFooter = {
+        "misión": "../public/public_sobre_nosotros.html",
+        "mision": "../public/public_sobre_nosotros.html",
+        "visión": "../public/public_sobre_nosotros.html",
+        "vision": "../public/public_sobre_nosotros.html",
+        "impacto": "../public/public_estadisticas.html",
+        "equipo": "../public/public_sobre_nosotros.html",
+        "carreras": "mailto:greenup213@gmail.com?subject=Quiero%20hacer%20parte%20de%20GreenUp",
+        "boletín": "ciudadano_educacion.html#noticias",
+        "boletin": "ciudadano_educacion.html#noticias",
+        "eventos": "ciudadano_educacion.html#noticias",
+        "eco-blog": "ciudadano_educacion.html#noticias",
+        "novedades": "ciudadano_educacion.html#noticias",
+        "privacidad": "../public/public_sobre_nosotros.html#privacidad",
+        "términos": "../public/public_sobre_nosotros.html#terminos",
+        "terminos": "../public/public_sobre_nosotros.html#terminos",
+        "cookies": "../public/public_sobre_nosotros.html#cookies",
+        "contacto": "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp",
+        "soporte": "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp",
+    };
+
     document.querySelectorAll("footer span").forEach((span) => {
         const texto = (span.textContent || "").trim().toLowerCase();
         if (texto === "green" || texto === "up") {
@@ -425,10 +446,24 @@ function corregirFooterCiudadano() {
 
     document.querySelectorAll("footer a").forEach((enlace) => {
         const texto = (enlace.textContent || "").trim().toLowerCase();
+        if ((enlace.getAttribute("href") || "") === "#") {
+            const destino = Object.entries(rutasFooter).find(([clave]) => texto.includes(clave))?.[1];
+            enlace.href = destino || "mailto:greenup213@gmail.com?subject=GreenUp";
+        }
         if (texto.includes("soporte")) {
             enlace.href = "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp";
             enlace.setAttribute("data-greenup-mail", "true");
         }
+    });
+
+    document.querySelectorAll("[data-greenup-mail]").forEach((enlace) => {
+        enlace.href = "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp";
+    });
+
+    document.querySelectorAll("[data-greenup-whatsapp]").forEach((enlace) => {
+        enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20necesito%20ayuda";
+        enlace.target = "_blank";
+        enlace.rel = "noopener noreferrer";
     });
 
     document.querySelectorAll("button, a").forEach((elemento) => {
@@ -440,6 +475,162 @@ function corregirFooterCiudadano() {
             });
         }
     });
+}
+
+/**
+ * Da una accion real a enlaces heredados que quedaron como href="#".
+ */
+function conectarEnlacesVaciosCiudadano() {
+    document.querySelectorAll('a[href="#"]').forEach((enlace) => {
+        const texto = (enlace.textContent || "").trim().toLowerCase();
+        const icono = enlace.querySelector(".material-symbols-outlined")?.textContent?.trim().toLowerCase() || "";
+
+        if (enlace.getAttribute("onclick") || texto.includes("cerrar sesi")) return;
+
+        if (enlace.closest("footer")) {
+            return;
+        }
+
+        if (enlace.classList.contains("navbar-brand") || texto.includes("green up") || texto.includes("greenup")) {
+            enlace.href = "ciudadano_inicio.html";
+            return;
+        }
+
+        if (icono === "arrow_back") {
+            enlace.href = "ciudadano_educacion.html";
+            return;
+        }
+
+        if (texto.includes("consejo") || texto.includes("evento") || texto.includes("desaf")) {
+            enlace.href = "ciudadano_educacion.html";
+            return;
+        }
+
+        if (icono === "share" || icono === "public") {
+            enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20quiero%20conocer%20m%C3%A1s";
+            enlace.target = "_blank";
+            enlace.rel = "noopener noreferrer";
+            return;
+        }
+
+        if (icono === "mail") {
+            enlace.href = "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp";
+            return;
+        }
+
+        if (texto.includes("privacidad")) {
+            enlace.href = "../public/public_sobre_nosotros.html#privacidad";
+            return;
+        }
+
+        if (texto.includes("cookies")) {
+            enlace.href = "../public/public_sobre_nosotros.html#cookies";
+            return;
+        }
+
+        if (texto.includes("términos") || texto.includes("terminos")) {
+            enlace.href = "../public/public_sobre_nosotros.html#terminos";
+        }
+    });
+}
+
+/**
+ * Conecta el modal de "Sugerir Punto" del mapa ciudadano con el backend de novedades.
+ */
+function conectarSugerenciaPuntoCiudadano() {
+    const abrirBtn = document.getElementById("btn-abrir-sugerencia");
+    const enviarBtn = document.getElementById("btn-enviar-sugerencia");
+    const modal = document.getElementById("modalSugerirPunto");
+    const formulario = document.getElementById("form-sugerir-punto");
+
+    if (!abrirBtn || !enviarBtn || !modal || !formulario) return;
+
+    const obtenerInstanciaModal = () => {
+        if (!window.bootstrap?.Modal) return null;
+        return window.bootstrap.Modal.getOrCreateInstance(modal);
+    };
+
+    const mostrarToast = () => {
+        const toast = document.getElementById("successToast");
+        if (toast && window.bootstrap?.Toast) {
+            window.bootstrap.Toast.getOrCreateInstance(toast).show();
+            return;
+        }
+        alert("¡Gracias! Tu sugerencia ha sido enviada para revisión.");
+    };
+
+    abrirBtn.type = "button";
+    abrirBtn.addEventListener("click", () => {
+        const modalBootstrap = obtenerInstanciaModal();
+        if (modalBootstrap) {
+            modalBootstrap.show();
+        } else {
+            modal.classList.add("show");
+            modal.style.display = "block";
+            modal.removeAttribute("aria-hidden");
+        }
+    });
+
+    const enviarSugerencia = async (evento) => {
+        evento.preventDefault();
+
+        const campos = formulario.querySelectorAll("input");
+        const nombreLugar = (campos[0]?.value || "").trim();
+        const direccion = (campos[1]?.value || "").trim();
+        const materiales = (campos[2]?.value || "").trim();
+
+        if (!nombreLugar || !direccion || !materiales) {
+            formulario.reportValidity();
+            return;
+        }
+
+        const textoOriginal = enviarBtn.textContent;
+        enviarBtn.disabled = true;
+        enviarBtn.textContent = "Enviando...";
+
+        const payload = {
+            titulo: "Sugerencia de punto ecológico",
+            motivo: "Sugerencia de punto ecológico",
+            descripcion: `${nombreLugar}. Dirección aproximada: ${direccion}. Materiales recibidos: ${materiales}.`,
+            comentario: `Materiales recibidos: ${materiales}`,
+            ubicacion: direccion
+        };
+
+        try {
+            let respuesta;
+            if (typeof peticionSegura === "function") {
+                respuesta = await peticionSegura("/novedades", "POST", payload);
+            } else {
+                const token = localStorage.getItem("token");
+                const response = await fetch(`${window.API_URL || "https://greenup-hoxj.onrender.com/"}/novedades`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify(payload)
+                });
+                respuesta = { ok: response.ok, datos: await response.json().catch(() => ({})) };
+            }
+
+            if (!respuesta.ok) {
+                throw new Error(respuesta.datos?.mensaje || "No se pudo enviar la sugerencia.");
+            }
+
+            formulario.reset();
+            obtenerInstanciaModal()?.hide();
+            mostrarToast();
+        } catch (error) {
+            console.error("Error enviando sugerencia de punto:", error);
+            alert(error.message || "No se pudo enviar la sugerencia. Intenta de nuevo.");
+        } finally {
+            enviarBtn.disabled = false;
+            enviarBtn.textContent = textoOriginal;
+        }
+    };
+
+    formulario.addEventListener("submit", enviarSugerencia);
+    enviarBtn.type = "submit";
 }
 
 /**
@@ -464,4 +655,6 @@ document.addEventListener("DOMContentLoaded", () => {
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
     corregirFooterCiudadano();
+    conectarEnlacesVaciosCiudadano();
+    conectarSugerenciaPuntoCiudadano();
 });

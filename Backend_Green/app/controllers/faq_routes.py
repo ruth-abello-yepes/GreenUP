@@ -18,7 +18,7 @@ faq_bp = Blueprint("faq", __name__)
 
 @faq_bp.route("/faq", methods=["POST"])
 @login_requerido
-@rol_requerido([1])
+@rol_requerido([1, 2])
 def ruta_crear_pregunta():
     data = request.get_json()
     respuesta, estado = servicio_crear_pregunta(data)

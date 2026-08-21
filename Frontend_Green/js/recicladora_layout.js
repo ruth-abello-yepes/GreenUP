@@ -39,7 +39,7 @@ function statusClass(status) {
   if (text.includes("confirm")) return "success";
   if (text.includes("revision") || text.includes("programada") || text.includes("proceso")) return "warning";
   if (text.includes("transito") || text.includes("en ruta") || text.includes("enviado") || text.includes("recolectado")) return "blue";
-  if (text.includes("inactivo") || text.includes("cerrado")) return "danger";
+  if (text.includes("inactivo") || text.includes("cerrado") || text.includes("oculto") || text.includes("borrador")) return "danger";
   return "success";
 }
 
@@ -86,6 +86,47 @@ function setExportData(rows, filename) {
   });
 }
 
+function showRecicladoraDetail(title, rows) {
+  let modal = document.getElementById("recicladoraDetailModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "recicladoraDetailModal";
+    modal.className = "gu-modal-backdrop";
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = `
+      <section class="gu-modal" role="dialog" aria-modal="true" aria-labelledby="recicladoraDetailTitle">
+        <header class="gu-modal-header">
+          <div>
+            <h2 id="recicladoraDetailTitle">Detalle</h2>
+            <p>Información cargada desde la pantalla actual.</p>
+          </div>
+          <button class="btn-icon" type="button" data-close-detail aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </header>
+        <div class="form-grid" id="recicladoraDetailBody"></div>
+      </section>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal || event.target.closest("[data-close-detail]")) {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+    });
+  }
+
+  modal.querySelector("#recicladoraDetailTitle").textContent = title || "Detalle";
+  modal.querySelector("#recicladoraDetailBody").innerHTML = rows.map((value, index) => `
+    <label class="field-full">
+      <span class="form-label">Dato ${index + 1}</span>
+      <input class="form-control" value="${escapeHtml(value)}" readonly>
+    </label>
+  `).join("");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
 function downloadCsv(rows, filename) {
   if (!rows.length) return;
   const csv = rows.map((row) => row.map((cell) => {
@@ -112,7 +153,7 @@ function bindGenericExportButtons() {
     });
   });
 }
-function rowsToTable(tableTitle, rows) {
+function rowsToTable(tableTitle, rows, options = {}) {
   const tableCards = [...document.querySelectorAll(".table-card")];
   const card = tableCards.find((item) => item.querySelector("h2")?.textContent === tableTitle);
   const tbody = card?.querySelector("tbody");
@@ -132,15 +173,66 @@ function rowsToTable(tableTitle, rows) {
     return;
   }
 
-  tbody.innerHTML = rows.map((row) => `
+  tbody.innerHTML = rows.map((row, index) => {
+    const values = Array.isArray(row) ? row : row.values || [];
+    const customActions = typeof options.renderActions === "function" ? options.renderActions(row, index) : "";
+    const detailButton = `
+      <button class="btn-icon row-view-detail" type="button" aria-label="Ver detalle" data-title="${escapeHtml(tableTitle)}" data-row="${encodeURIComponent(JSON.stringify(values))}">
+        <span class="material-symbols-outlined">visibility</span>
+      </button>
+    `;
+    return `
     <tr>
-      ${row.map((cell, index) => index === row.length - 1
-    ? `<td><span class="status-pill status-${statusClass(cell)}">${escapeHtml(cell)}</span></td>`
-    : `<td>${escapeHtml(cell)}</td>`
-  ).join("")}
-      <td><span class="action-group"><button class="btn-icon" type="button" aria-label="Ver"><span class="material-symbols-outlined">visibility</span></button></span></td>
+      ${values.map((cell, cellIndex) => cellIndex === values.length - 1
+      ? `<td><span class="status-pill status-${statusClass(cell)}">${escapeHtml(cell)}</span></td>`
+      : `<td>${escapeHtml(cell)}</td>`
+    ).join("")}
+      <td>
+        <span class="action-group">
+          ${customActions || detailButton}
+        </span>
+      </td>
     </tr>
-  `).join("");
+  `;
+  }).join("");
+
+  tbody.querySelectorAll(".row-view-detail").forEach((button) => {
+    button.addEventListener("click", () => {
+      const datos = JSON.parse(decodeURIComponent(button.dataset.row || "%5B%5D"));
+      showRecicladoraDetail(button.dataset.title || tableTitle, datos);
+    });
+  });
+}
+
+function nombreEstadoVisibilidad(idEstado) {
+  return Number(idEstado) === 1 ? "Publicado" : "Oculto";
+}
+
+async function alternarContenidoEducativoRecicladora(idContenido, idEstadoActual) {
+  const idEstado = Number(idEstadoActual) === 1 ? 2 : 1;
+  const accion = idEstado === 1 ? "publicar" : "ocultar";
+  if (!confirm(`¿Quieres ${accion} este recurso educativo?`)) return;
+
+  await fetchJson(`/contenido/${idContenido}/estado`, {
+    method: "PUT",
+    body: JSON.stringify({ id_estado: idEstado }),
+  });
+  await refreshCurrentPage();
+}
+
+async function alternarNovedadRecicladora(idNovedad, idEstadoActual) {
+  const idEstado = Number(idEstadoActual) === 1 ? 2 : 1;
+  const accion = idEstado === 1 ? "activar" : "ocultar";
+  if (!confirm(`¿Quieres ${accion} esta novedad?`)) return;
+
+  await fetchJson(`/api/recicladoras/novedades/${idNovedad}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      id_estado: idEstado,
+      respuesta: idEstado === 1 ? "Novedad publicada nuevamente." : "Novedad ocultada por la recicladora.",
+    }),
+  });
+  await refreshCurrentPage();
 }
 function renderMaterialsTable(materiales) {
   const card = [...document.querySelectorAll(".table-card")]
@@ -389,18 +481,51 @@ async function refreshCurrentPage() {
     const contenidos = await fetchJson("/contenido");
     const activos = contenidos.filter((item) => Number(item.id_estado) === 1);
     setText('[data-summary-label="Publicados"]', activos.length);
-    setText('[data-summary-label="Borradores"]', 0);
-    rowsToTable("Recursos educativos", activos.map((item) => [item.titulo, item.tipo, "Educacion", "Publicado"]));
-    setExportData(activos.map((item) => [item.titulo, item.tipo, item.descripcion || "", item.url_recurso || "", item.imagen || ""]), "contenido_educativo.csv");
+    setText('[data-summary-label="Borradores"]', Math.max(0, contenidos.length - activos.length));
+    rowsToTable(
+      "Recursos educativos",
+      contenidos.map((item) => ({
+        id: item.id_contenido,
+        idEstado: item.id_estado,
+        values: [item.titulo, item.tipo, "Educacion", nombreEstadoVisibilidad(item.id_estado)],
+      })),
+      {
+        renderActions: (row) => `
+          <button class="btn-icon" type="button" title="${Number(row.idEstado) === 1 ? "Ocultar recurso" : "Publicar recurso"}" aria-label="${Number(row.idEstado) === 1 ? "Ocultar recurso" : "Publicar recurso"}" onclick="alternarContenidoEducativoRecicladora(${Number(row.id)}, ${Number(row.idEstado) || 2})">
+            <span class="material-symbols-outlined">${Number(row.idEstado) === 1 ? "visibility_off" : "visibility"}</span>
+          </button>
+        `,
+      }
+    );
+    setExportData(contenidos.map((item) => [item.titulo, item.tipo, item.descripcion || "", item.url_recurso || "", item.imagen || "", nombreEstadoVisibilidad(item.id_estado)]), "contenido_educativo.csv");
   }
 
   if (current === "recicladora_novedades.html") {
     const novedades = await fetchJson("/api/recicladoras/novedades");
     const activas = novedades.filter((item) => Number(item.id_estado) === 1);
     setText('[data-summary-label="Activas"]', activas.length);
-    setText('[data-summary-label="Programadas"]', 0);
-    rowsToTable("Comunicaciones", activas.map((item) => [item.titulo, item.fecha || item.fecha_publicacion || "", item.usuario || "Ciudadano", item.estado || "Activa"]));
-    setExportData(activas.map((item) => [item.titulo, item.fecha || item.fecha_publicacion || "", item.usuario || "", item.descripcion || "", item.estado || "Activa"]), "novedades_recicladora.csv");
+    setText('[data-summary-label="Programadas"]', Math.max(0, novedades.length - activas.length));
+    rowsToTable(
+      "Comunicaciones",
+      novedades.map((item) => ({
+        id: item.id_novedad,
+        idEstado: item.id_estado,
+        values: [
+          item.titulo,
+          item.fecha || item.fecha_publicacion || "",
+          item.usuario || "Ciudadano",
+          Number(item.id_estado) === 1 ? (item.estado || "Activa") : "Oculta",
+        ],
+      })),
+      {
+        renderActions: (row) => `
+          <button class="btn-icon" type="button" title="${Number(row.idEstado) === 1 ? "Ocultar novedad" : "Activar novedad"}" aria-label="${Number(row.idEstado) === 1 ? "Ocultar novedad" : "Activar novedad"}" onclick="alternarNovedadRecicladora(${Number(row.id)}, ${Number(row.idEstado) || 2})">
+            <span class="material-symbols-outlined">${Number(row.idEstado) === 1 ? "visibility_off" : "visibility"}</span>
+          </button>
+        `,
+      }
+    );
+    setExportData(novedades.map((item) => [item.titulo, item.fecha || item.fecha_publicacion || "", item.usuario || "", item.descripcion || "", Number(item.id_estado) === 1 ? (item.estado || "Activa") : "Oculta"]), "novedades_recicladora.csv");
   }
 
   if (current === "recicladora_reportes.html") {
@@ -805,6 +930,40 @@ function bindReportExports() {
   });
 }
 
+function normalizarFooterRecicladora() {
+  const enlaces = {
+    "privacidad": "../public/public_sobre_nosotros.html#privacidad",
+    "términos": "../public/public_sobre_nosotros.html#terminos",
+    "terminos": "../public/public_sobre_nosotros.html#terminos",
+    "cookies": "../public/public_sobre_nosotros.html#cookies",
+    "contacto": "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp",
+    "soporte": "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp",
+    "eco-blog": "../public/public_noticias.html",
+    "novedades": "recicladora_novedades.html",
+    "eventos": "recicladora_novedades.html",
+    "misión": "../public/public_sobre_nosotros.html",
+    "mision": "../public/public_sobre_nosotros.html",
+    "impacto": "../public/public_estadisticas.html",
+    "equipo": "../public/public_sobre_nosotros.html",
+    "carreras": "mailto:greenup213@gmail.com?subject=Quiero%20hacer%20parte%20de%20GreenUp",
+  };
+
+  document.querySelectorAll("footer a[href='#'], footer a:not([href])").forEach((enlace) => {
+    const texto = (enlace.textContent || "").trim().toLowerCase();
+    const destino = Object.entries(enlaces).find(([clave]) => texto.includes(clave))?.[1];
+    enlace.href = destino || "mailto:greenup213@gmail.com?subject=GreenUp";
+  });
+
+  document.querySelectorAll("[data-greenup-mail]").forEach((enlace) => {
+    enlace.href = "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp";
+  });
+  document.querySelectorAll("[data-greenup-whatsapp]").forEach((enlace) => {
+    enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20necesito%20ayuda";
+    enlace.target = "_blank";
+    enlace.rel = "noopener noreferrer";
+  });
+}
+
 function iniciarCambioContrasenaDesdePerfil() {
   const correo = document.querySelector('[data-profile-field="correo"]')?.value?.trim() || getUser().correo || "";
   if (correo && correo !== "Cargando...") {
@@ -908,6 +1067,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindGenericExportButtons();
   bindProfileSave();
   bindReportExports();
+  normalizarFooterRecicladora();
 
   const current = getCurrentFile();
   if (current === "recicladora_perfil.html") {

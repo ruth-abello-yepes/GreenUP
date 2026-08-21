@@ -2,6 +2,7 @@
 ## Inicializa la aplicacion Flask, registra blueprints y configura extensiones.
 
 import os
+import traceback
 from dotenv import load_dotenv
 
 # Cargar variables de entorno desde el archivo .env
@@ -25,18 +26,24 @@ def _origenes_cors_permitidos():
     CORS_ORIGINS=https://midominio.com,http://127.0.0.1:5502
     """
 
-    origenes_env = os.getenv("CORS_ORIGINS")
-    if origenes_env:
-        return [origen.strip() for origen in origenes_env.split(",") if origen.strip()]
-
-    return [
+    origenes_base = [
         "http://127.0.0.1:5500",
         "http://127.0.0.1:5501",
         "http://127.0.0.1:5502",
         "http://localhost:5500",
         "http://localhost:5501",
         "http://localhost:5502",
+        "https://greenupgrup.netlify.app",
+        "https://greenup-hoxj.onrender.com",
+        "https://ruth-abello-yepes.github.io",
     ]
+    origenes_env = [
+        origen.strip()
+        for origen in os.getenv("CORS_ORIGINS", "").split(",")
+        if origen.strip()
+    ]
+
+    return sorted(set(origenes_base + origenes_env))
 
 
 def crear_app():
@@ -115,6 +122,27 @@ def crear_app():
             "mensaje": "Backend GreenUp funcionando correctamente"
         }
 
+    @app.route("/health/db")
+    def salud_base_datos():
+        """
+        Verifica conexión real con PostgreSQL/Supabase sin exponer credenciales.
+        Sirve para confirmar rápidamente Render + base de datos.
+        """
+
+        from app.common.database import obtener_conexion
+
+        try:
+            conexion = obtener_conexion()
+            cursor = conexion.cursor()
+            cursor.execute("SELECT 1 AS ok")
+            cursor.fetchone()
+            cursor.close()
+            conexion.close()
+            return jsonify({"ok": True, "mensaje": "Base de datos conectada"}), 200
+        except Exception as error:
+            print(f"Error de conexión a base de datos GreenUP: {error}")
+            return jsonify({"ok": False, "mensaje": "Base de datos no disponible"}), 503
+
     @app.errorhandler(404)
     def error_no_encontrado(error):
         """
@@ -143,6 +171,7 @@ def crear_app():
         """
 
         print(f"Error interno GreenUP: {error}")
+        traceback.print_exc()
         return jsonify({"mensaje": "Error interno del servidor"}), 500
 
     return app

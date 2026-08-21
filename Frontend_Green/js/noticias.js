@@ -1,4 +1,4 @@
-/** Noticias ambientales reales para la vista del ciudadano. */
+/** Noticias ambientales reales para vistas publicas y Aprende del ciudadano. */
 
 const IMAGEN_NOTICIA_FALLBACK =
     "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=900&q=80";
@@ -77,7 +77,7 @@ function crearTarjetaNoticia(noticia) {
         const juego = crearElemento(
             "button",
             "btn btn-gu-primary rounded-pill d-inline-flex align-items-center gap-1",
-            "Jugar y ganar puntos"
+            "Responder quiz"
         );
         juego.type = "button";
         juego.addEventListener("click", () => {
@@ -251,6 +251,8 @@ async function cargarNoticias(pagina = 1) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const buscador = document.getElementById("buscar-noticias");
+    if (!buscador || !document.getElementById("noticias-grid")) return;
+
     buscador.addEventListener("input", () => {
         clearTimeout(temporizadorBusqueda);
         temporizadorBusqueda = setTimeout(() => cargarNoticias(1), 350);

@@ -3,7 +3,7 @@
 
 # Rutas de contenido educativo
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
@@ -61,6 +61,7 @@ def ruta_crear_contenido():
         description: Faltan datos obligatorios
     """
     data = request.get_json()
+    data["id_usuario"] = g.id_usuario
     respuesta, estado = servicio_crear_contenido(data)
     return jsonify(respuesta), estado
 

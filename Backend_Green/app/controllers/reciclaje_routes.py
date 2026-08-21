@@ -65,5 +65,6 @@ def ruta_buscar_reciclaje(id_registro):
 @rol_requerido([1])
 def ruta_cambiar_estado_reciclaje(id_registro):
     data = request.get_json() or {}
+    data["id_recicladora_confirma"] = g.id_usuario
     respuesta, estado = servicio_cambiar_estado_reciclaje(id_registro, data)
     return jsonify(respuesta), estado

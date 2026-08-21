@@ -25,7 +25,8 @@ function corregirEnlacesCiudadano() {
         "ajustes_cuenta.html": "ciudadano_ajustes.html",
         "ciudadano_config_perfil.html": "ciudadano_ajustes.html",
         "/ciudadano/inicio": "ciudadano_inicio.html",
-        "ciudadano_log_comunidad.html": "ciudadano_noticias.html",
+        "ciudadano_log_comunidad.html": "ciudadano_educacion.html#noticias",
+        "ciudadano_noticias.html": "ciudadano_educacion.html#noticias",
         "ciudadano_mapa_puntos.html": "ciudadano_mapa.html",
         "ciudadano_estadisticas_personales.html": "ciudadano_estadisticas.html",
         "ciudadano_contenido_educativo.html": "ciudadano_educacion.html",
@@ -36,6 +37,37 @@ function corregirEnlacesCiudadano() {
         if (href && mapaRutas[href]) {
             enlace.setAttribute("href", mapaRutas[href]);
         }
+
+        if (href && href.split("?")[0].split("#")[0].endsWith("ciudadano_noticias.html")) {
+            enlace.setAttribute("href", "ciudadano_educacion.html#noticias");
+        }
+    });
+}
+
+/**
+ * Noticias vive dentro de Aprende; se eliminan entradas duplicadas de la
+ * navegacion principal y movil sin tocar enlaces informativos del footer.
+ */
+function normalizarNavegacionAprendeCiudadano() {
+    const contenedores = [
+        document.querySelector("nav.navbar .container-fluid > .d-none.d-md-flex"),
+        document.querySelector("#mobileMenuSidebar .list-group"),
+        document.getElementById("ciudadano-hamburger-panel")?.querySelector(".ciudadano-hamburger-panel__links"),
+    ].filter(Boolean);
+
+    contenedores.forEach((contenedor) => {
+        contenedor.querySelectorAll("a[href]").forEach((enlace) => {
+            const href = enlace.getAttribute("href") || "";
+            const texto = (enlace.textContent || "").trim().toLowerCase();
+
+            if (href.includes("ciudadano_educacion.html#noticias") || texto === "noticias") {
+                enlace.remove();
+            }
+
+            if (href === "ciudadano_educacion.html" && texto.includes("educaci")) {
+                enlace.innerHTML = enlace.innerHTML.replace(/Educaci[oó]n/g, "Aprende");
+            }
+        });
     });
 }
 
@@ -66,12 +98,6 @@ function crearNavegacionInferiorCiudadano() {
             activos: ["ciudadano_inicio.html"],
         },
         {
-            href: "ciudadano_noticias.html",
-            icono: "newspaper",
-            texto: "Noticias",
-            activos: ["ciudadano_noticias.html"],
-        },
-        {
             href: "ciudadano_estadisticas.html",
             icono: "trending_up",
             texto: "Estadísticas",
@@ -89,7 +115,7 @@ function crearNavegacionInferiorCiudadano() {
             href: "ciudadano_educacion.html",
             icono: "menu_book",
             texto: "Aprende",
-            activos: ["ciudadano_educacion.html"],
+            activos: ["ciudadano_educacion.html", "ciudadano_noticias.html"],
         },
         {
             href: "ciudadano_ajustes.html",
@@ -163,7 +189,6 @@ function crearMenuHamburguesaCiudadano() {
     const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
     const rutasMenu = [
         { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
-        { href: "ciudadano_noticias.html", icono: "newspaper", texto: "Noticias" },
         { href: "ciudadano_mapa.html", icono: "recycling", texto: "Recicladoras" },
         { href: "ciudadano_estadisticas.html", icono: "trending_up", texto: "Estadísticas" },
         { href: "ciudadano_educacion.html", icono: "menu_book", texto: "Aprende" },
@@ -282,10 +307,9 @@ function completarNavegacionCiudadano() {
     const archivoActual = window.location.pathname.split("/").pop() || "";
     const rutasPrincipales = [
         { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
-        { href: "ciudadano_noticias.html", icono: "newspaper", texto: "Noticias" },
         { href: "ciudadano_mapa.html", icono: "map", texto: "Mapa Eco" },
         { href: "ciudadano_estadisticas.html", icono: "bar_chart", texto: "Estadísticas" },
-        { href: "ciudadano_educacion.html", icono: "school", texto: "Educación" },
+        { href: "ciudadano_educacion.html", icono: "school", texto: "Aprende" },
     ];
     const rutaRegistro = {
         href: "ciudadano_registrar_reciclaje.html",
@@ -435,6 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     completarNavegacionCiudadano();
     crearNavegacionInferiorCiudadano();
     crearMenuHamburguesaCiudadano();
+    normalizarNavegacionAprendeCiudadano();
     cerrarOffcanvasViejoCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();

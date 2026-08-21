@@ -13,6 +13,8 @@
 
 from flask import Blueprint, request, jsonify
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.materiales_service import (
     servicio_crear_material,
     servicio_listar_materiales,
@@ -45,6 +47,8 @@ def ruta_listar_materiales():
 
 
 @materiales_bp.route("/materiales/<int:id_material>", methods=["GET"])
+@login_requerido
+@rol_requerido([1, 2])
 def ruta_buscar_material(id_material):
     """Busca un material por ID."""
     respuesta, estado = servicio_buscar_material(id_material)

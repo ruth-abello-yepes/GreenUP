@@ -1,7 +1,7 @@
 ## Archivo: noticias_routes.py
 ## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, g, jsonify, request
 
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
@@ -42,6 +42,7 @@ def ruta_listar_noticias():
 @rol_requerido([1])
 def ruta_crear_noticia():
     datos = request.get_json() or {}
+    datos["id_usuario"] = g.id_usuario
     respuesta, estado = servicio_crear_noticia(datos)
     return jsonify(respuesta), estado
 

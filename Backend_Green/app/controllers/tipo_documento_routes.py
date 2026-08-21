@@ -83,6 +83,8 @@ def ruta_listar_tipos_documento():
 
 
 @tipo_documento_bp.route("/buscar/<int:id_tipo_documento>", methods=["GET"])
+@login_requerido
+@rol_requerido([1])
 def ruta_buscar_tipo_documento(id_tipo_documento):
     """
     Buscar tipo de documento por ID

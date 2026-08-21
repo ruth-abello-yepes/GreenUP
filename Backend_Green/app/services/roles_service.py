@@ -33,6 +33,9 @@ def servicio_buscar_rol(id_rol):
 
 
 def servicio_actualizar_rol(id_rol, datos):
+    if int(id_rol) == 1:
+        return {"mensaje": "El rol Administrador no puede modificarse desde el panel"}, 403
+
     nombre = datos.get("nombre")
     descripcion = datos.get("descripcion")
     id_estado = datos.get("id_estado")
@@ -46,6 +49,9 @@ def servicio_actualizar_rol(id_rol, datos):
 
 
 def servicio_inhabilitar_rol(id_rol):
+    if int(id_rol) == 1:
+        return {"mensaje": "El rol Administrador no puede inhabilitarse"}, 403
+
     inhabilitar_rol(id_rol)
 
     return {"mensaje": "Rol inhabilitado correctamente"}, 200

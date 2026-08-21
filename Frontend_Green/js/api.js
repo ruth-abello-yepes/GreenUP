@@ -34,21 +34,6 @@ async function peticionSegura(endpoint, metodo = "GET", datos = null) {
         opciones.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const usuarioGuardado = localStorage.getItem("usuario");
-    if (usuarioGuardado) {
-        try {
-            const usuario = JSON.parse(usuarioGuardado);
-            if (usuario.id_usuario) {
-                opciones.headers["id-usuario"] = usuario.id_usuario;
-            }
-            if (usuario.id_rol) {
-                opciones.headers["id-rol"] = usuario.id_rol;
-            }
-        } catch (error) {
-            console.warn("No se pudo leer la sesion local:", error);
-        }
-    }
-
     // 3. Si hay datos para enviar (ej. un formulario), los agregamos al cuerpo
     if (datos && (metodo === "POST" || metodo === "PUT")) {
         opciones.body = JSON.stringify(datos);

@@ -389,9 +389,20 @@ def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado, punt
                 WHEN %s = 3 THEN 'rechazado'
                 ELSE COALESCE(estado, 'pendiente')
             END,
-            puntos_obtenidos = COALESCE(%s, puntos_obtenidos),
-            puntos_otorgados = COALESCE(%s, puntos_otorgados),
-            motivo_rechazo = COALESCE(%s, motivo_rechazo),
+            puntos_obtenidos = CASE
+                WHEN %s = 2 THEN COALESCE(%s, puntos_obtenidos, 0)
+                WHEN %s = 3 THEN 0
+                ELSE COALESCE(%s, puntos_obtenidos)
+            END,
+            puntos_otorgados = CASE
+                WHEN %s = 2 THEN COALESCE(%s, puntos_otorgados, 0)
+                WHEN %s = 3 THEN 0
+                ELSE COALESCE(%s, puntos_otorgados)
+            END,
+            motivo_rechazo = CASE
+                WHEN %s = 3 THEN COALESCE(%s, motivo_rechazo)
+                ELSE motivo_rechazo
+            END,
             id_recicladora_confirma = %s,
             fecha_confirmacion = CASE
                 WHEN %s IN (2, 3) THEN CURRENT_TIMESTAMP
@@ -405,8 +416,15 @@ def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado, punt
             id_estado,
             id_estado,
             id_estado,
+            id_estado,
             puntos_obtenidos,
+            id_estado,
             puntos_obtenidos,
+            id_estado,
+            puntos_obtenidos,
+            id_estado,
+            puntos_obtenidos,
+            id_estado,
             motivo_rechazo,
             id_usuario,
             id_estado,

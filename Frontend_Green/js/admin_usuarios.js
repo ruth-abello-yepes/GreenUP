@@ -14,23 +14,23 @@ async function cargarUsuariosAdmin() {
   }
 
   const admin = JSON.parse(usuarioGuardado);
+  const token = localStorage.getItem("token");
 
-  if (Number(admin.id_rol) !== 1) {
+  if (Number(admin.id_rol) !== 1 || !token) {
     alert("No tienes permisos de administrador.");
     window.location.href = "../public/public_login.html";
     return;
   }
 
-  await cargarCiudadanos(admin);
-  await cargarDuenosRecicladora(admin);
+  await cargarCiudadanos(token);
+  await cargarDuenosRecicladora(token);
 }
 
-async function cargarCiudadanos(admin) {
+async function cargarCiudadanos(token) {
   const respuesta = await fetch(API_URL + "/api/usuarios/ciudadanos", {
     method: "GET",
     headers: {
-      "id-usuario": admin.id_usuario,
-      "id-rol": admin.id_rol,
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -65,12 +65,11 @@ async function cargarCiudadanos(admin) {
   });
 }
 
-async function cargarDuenosRecicladora(admin) {
+async function cargarDuenosRecicladora(token) {
   const respuesta = await fetch(API_URL + "/api/recicladoras/listar", {
     method: "GET",
     headers: {
-      "id-usuario": admin.id_usuario,
-      "id-rol": admin.id_rol,
+      Authorization: `Bearer ${token}`,
     },
   });
 

@@ -347,6 +347,14 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if not id_estado:
         return {"mensaje": "El estado es obligatorio"}, 400
 
+    try:
+        id_estado = int(id_estado)
+    except (TypeError, ValueError):
+        return {"mensaje": "El estado debe ser numerico"}, 400
+
+    if id_estado not in (1, 2, 3):
+        return {"mensaje": "Estado no permitido"}, 400
+
     registro = None
     registros_actuales = listar_registros_por_recicladora(id_usuario)
     for item in registros_actuales:
@@ -357,7 +365,6 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if not registro:
         return {"mensaje": "Registro no encontrado para el punto de esta recicladora"}, 404
 
-    id_estado = int(id_estado)
     if id_estado not in (2, 3):
         return {"mensaje": "Solo puedes confirmar o rechazar una solicitud pendiente"}, 400
 
@@ -379,6 +386,9 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if id_estado == 3 and not motivo_rechazo:
         motivo_rechazo = "La recicladora rechazo la entrega durante la validacion."
 
+    if id_estado == 3:
+        puntos_obtenidos = 0
+
     actualizado = cambiar_estado_registro_recicladora(
         id_usuario,
         id_registro,
@@ -387,7 +397,7 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
         motivo_rechazo,
     )
     if not actualizado:
-        return {"mensaje": "Registro no encontrado para el punto de esta recicladora"}, 404
+        return {"mensaje": "Registro no encontrado para el punto de esta recicladora o ya procesado"}, 409
 
     if id_estado == 2:
         crear_notificacion(

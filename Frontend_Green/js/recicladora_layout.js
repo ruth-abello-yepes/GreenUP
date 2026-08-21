@@ -13,17 +13,14 @@ function getUser() {
 }
 
 function getApiBase() {
-  return typeof API_URL !== "undefined" ? API_URL : "http://10.228.218.23:5000";
+  return typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
 }
 
 function getSessionHeaders() {
-  const user = getUser();
   const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(user.id_usuario ? { id_usuario: user.id_usuario, "id-usuario": user.id_usuario } : {}),
-    ...(user.id_rol ? { id_rol: user.id_rol, "id-rol": user.id_rol } : {}),
   };
 }
 

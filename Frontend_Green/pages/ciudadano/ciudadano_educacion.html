@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenUp | Educación Ambiental</title>
+    <title>GreenUp | Aprende</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -183,6 +183,45 @@
             border-left: 4px solid var(--gu-secondary);
         }
 
+        .learn-section-tabs {
+            background: #ffffff;
+            border: 1px solid rgba(0, 61, 108, 0.08);
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(0, 61, 108, 0.06);
+            display: inline-flex;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .learn-section-tabs a {
+            align-items: center;
+            border-radius: 999px;
+            color: #475569;
+            display: inline-flex;
+            font-weight: 800;
+            gap: 8px;
+            padding: 10px 18px;
+            text-decoration: none;
+        }
+
+        .learn-section-tabs a:hover,
+        .learn-section-tabs a.is-active {
+            background: var(--gu-primary);
+            color: #ffffff;
+        }
+
+        #noticias .featured-card .img-wrapper {
+            height: 100%;
+            border-radius: 15px 0 0 15px;
+        }
+
+        @media (max-width: 767.98px) {
+            #noticias .featured-card .img-wrapper {
+                height: 250px;
+                border-radius: 15px 15px 0 0;
+            }
+        }
+
         @keyframes education-loading {
             to {
                 background-position: -200% 0;
@@ -191,7 +230,7 @@
     </style>
 </head>
 
-<body>
+<body data-news-mode="aprende">
 
     <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
         style="height: 70px; z-index: 1050;">
@@ -215,9 +254,6 @@
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_inicio.html">
                     <span class="material-symbols-outlined fs-5">home</span> Inicio
                 </a>
-                <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_noticias.html">
-                    <span class="material-symbols-outlined fs-5">newspaper</span> Noticias
-                </a>
                 <a class="nav-link text-secondary d-flex align-items-center gap-1" href="ciudadano_mapa.html">
                     <span class="material-symbols-outlined fs-5">map</span> Mapa Eco
                 </a>
@@ -225,7 +261,7 @@
                     <span class="material-symbols-outlined fs-5">bar_chart</span> Estadísticas
                 </a>
                 <a class="nav-link active-custom h-100 d-flex align-items-center gap-1" href="ciudadano_educacion.html">
-                    <span class="material-symbols-outlined fs-5">school</span> Educación
+                    <span class="material-symbols-outlined fs-5">school</span> Aprende
                 </a>
             </div>
 
@@ -242,7 +278,7 @@
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span
-                            class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Username</span>
+                            class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Usuario</span>
                         <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
                         <span class="material-symbols-outlined text-muted fs-6">expand_more</span>
                     </button>
@@ -283,10 +319,6 @@
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">home</span> Inicio
                 </a>
-                <a href="ciudadano_noticias.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
-                    <span class="material-symbols-outlined">newspaper</span> Noticias
-                </a>
                 <a href="ciudadano_mapa.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-secondary hover-bg-light">
                     <span class="material-symbols-outlined">map</span> Mapa Eco
@@ -298,7 +330,7 @@
                 <a href="ciudadano_educacion.html"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
                     style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
-                    <span class="material-symbols-outlined">school</span> Educación
+                    <span class="material-symbols-outlined">school</span> Aprende
                 </a>
                 <a href="#"
                     class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger"
@@ -315,7 +347,7 @@
             class="eco-gradient text-white rounded-4 p-4 p-md-5 mb-5 position-relative shadow-sm fade-up overflow-hidden">
             <div class="row align-items-center position-relative z-10">
                 <div class="col-lg-7 mb-4 mb-lg-0">
-                    <h1 class="display-5 fw-bold mb-3">Aprende, actúa y registra tu progreso ambiental</h1>
+                    <h1 class="display-5 fw-bold mb-3">Aprende</h1>
                     <p class="lead text-white-50 mb-0">Conviértete en un experto del reciclaje y las prácticas
                         sostenibles. Guarda lo que has visto y lleva un seguimiento personal de tus hábitos.</p>
                 </div>
@@ -346,6 +378,15 @@
         </section>
 
         <div id="education-status" class="alert d-none mb-4" role="alert"></div>
+
+        <nav class="learn-section-tabs mb-4 fade-up" aria-label="Secciones de Aprende">
+            <a class="is-active" href="#contenidos-aprende" data-learn-tab="contenidos">
+                <span class="material-symbols-outlined">menu_book</span> Contenido educativo
+            </a>
+            <a href="#noticias" data-learn-tab="noticias">
+                <span class="material-symbols-outlined">newspaper</span> Noticias
+            </a>
+        </nav>
 
         <div class="alert alert-warning border-warning-subtle d-flex align-items-start gap-3 mb-4 fade-up" role="note">
             <span class="material-symbols-outlined mt-1">info</span>
@@ -379,7 +420,7 @@
             </div>
         </section>
 
-        <div class="row g-5">
+        <div class="row g-5" id="contenidos-aprende">
             <div class="col-12">
 
                 <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
@@ -480,6 +521,66 @@
 
             </aside>
         </div>
+
+        <section id="noticias" class="pt-5 mt-5 border-top">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4 pb-3">
+                <div>
+                    <span class="badge bg-gu-secondary rounded-pill px-3 py-2 mb-2">Aprende / Noticias</span>
+                    <h2 class="fw-bold text-gu-primary mb-2">Noticias ambientales de Colombia</h2>
+                    <p class="text-secondary mb-0" style="max-width: 780px;">
+                        Consulta noticias reales sobre reciclaje, residuos, biodiversidad y medio ambiente. Desde cada
+                        noticia puedes abrir el juego de preguntas cuando esté disponible.
+                    </p>
+                </div>
+                <div class="input-group bg-white rounded-pill shadow-sm px-2" style="max-width: 330px;">
+                    <span class="input-group-text bg-transparent border-0">
+                        <span class="material-symbols-outlined fs-6 text-muted">search</span>
+                    </span>
+                    <input type="search" id="buscar-noticias"
+                        class="form-control border-0 shadow-none bg-transparent py-2 px-1"
+                        placeholder="Buscar noticias...">
+                </div>
+            </div>
+
+            <div id="estado-noticias" class="alert alert-info mb-4" role="status">Consultando noticias ambientales de
+                Colombia...</div>
+
+            <section class="mb-5" id="noticia-destacada" style="display: none;">
+                <div class="card gu-card featured-card border-0">
+                    <div class="row g-0">
+                        <div class="col-md-6 col-lg-7">
+                            <div class="img-wrapper w-100">
+                                <img id="noticia-destacada-imagen" alt="Noticia ambiental destacada">
+                                <span
+                                    class="badge bg-gu-secondary position-absolute top-0 start-0 m-3 px-3 py-2 text-uppercase rounded-pill shadow-sm">Destacado
+                                    Colombia</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-5 d-flex flex-column justify-content-center p-4 p-lg-5">
+                            <span class="text-gu-secondary fw-bold small mb-2 d-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined fs-6">public</span>
+                                <span id="noticia-destacada-fuente">Medio colombiano</span>
+                            </span>
+                            <h3 class="fw-bold text-gu-primary mb-3" id="noticia-destacada-titulo"></h3>
+                            <p class="text-secondary mb-4" id="noticia-destacada-descripcion"></p>
+                            <a class="btn btn-gu-primary px-4 py-2 d-inline-flex align-items-center gap-2"
+                                id="noticia-destacada-enlace" target="_blank" rel="noopener noreferrer">
+                                Leer noticia <span class="material-symbols-outlined fs-5">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="row g-4" id="noticias-grid" style="display: none;"></div>
+
+            <nav aria-label="Navegación de noticias" class="mt-5 d-flex justify-content-center" hidden>
+                <ul class="pagination shadow-sm rounded-pill overflow-hidden bg-white p-1"
+                    id="paginacion-noticias"></ul>
+            </nav>
+
+            <p class="text-center small text-muted mt-3 mb-0" id="atribucion-noticias" hidden></p>
+        </section>
     </main>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
@@ -542,9 +643,9 @@
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-6">
-                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Aprende</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="ciudadano_noticias.html"
+                        <li><a href="ciudadano_educacion.html#noticias"
                                 class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a></li>
                         <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
                         <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
@@ -598,6 +699,16 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
+            const activarPestanaAprende = () => {
+                const hash = window.location.hash === '#noticias' ? '#noticias' : '#contenidos-aprende';
+                document.querySelectorAll('[data-learn-tab]').forEach((enlace) => {
+                    enlace.classList.toggle('is-active', enlace.getAttribute('href') === hash);
+                });
+            };
+
+            activarPestanaAprende();
+            window.addEventListener('hashchange', activarPestanaAprende);
+
         });
     </script>
     <script src="../../js/proteger_ruta.js"></script>
@@ -605,6 +716,8 @@
     <script src="../../js/cargar_usuario.js"></script>
     <script src="../../js/logout.js"></script>
     <script src="../../js/ciudadano_educacion.js?v=20260820-1"></script>
+    <script src="../../js/noticias.js?v=20260821-aprende-1"></script>
+    <script src="../../js/comunidad.js?v=20260821-aprende-1"></script>
     <script src="../../js/notificaciones_panel.js"></script>
     <script src="../../js/ciudadano_ui_fix.js"></script>
     <script src="../../js/auth.js"></script>

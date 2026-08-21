@@ -16,7 +16,6 @@ from app.models.comunidad_model import (
     obtener_puntaje_ciudadano,
     registrar_resultado_juego,
     reemplazar_preguntas_noticia,
-    sumar_puntos_respuesta_foro,
 )
 from app.models.noticias_model import listar_noticias
 from app.models.notificaciones_model import crear_notificacion
@@ -338,7 +337,7 @@ def servicio_crear_tema_foro(id_usuario, id_rol, datos):
 
 
 def servicio_responder_tema_foro(id_tema, id_usuario, id_rol, datos):
-    """Permite responder un tema del foro y asigna puntos al ciudadano."""
+    """Permite responder un tema del foro sin asignar recompensas por ahora."""
 
     respuesta = (datos.get("respuesta") or "").strip()
     imagen = (datos.get("imagen") or "").strip() or None
@@ -356,9 +355,6 @@ def servicio_responder_tema_foro(id_tema, id_usuario, id_rol, datos):
 
     id_respuesta = crear_respuesta_foro(id_tema, id_usuario, id_rol, respuesta, imagen)
     puntos_otorgados = 0
-    if id_rol == 3:
-        sumar_puntos_respuesta_foro(id_usuario, 5)
-        puntos_otorgados = 5
 
     crear_notificacion(
         "Nueva respuesta en foro",
@@ -533,7 +529,7 @@ def servicio_registrar_preguntas_noticia(id_noticia, datos):
 
 
 def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
-    """Califica las respuestas del ciudadano y suma puntos."""
+    """Califica las respuestas del ciudadano y registra progreso educativo sin sumar puntos."""
 
     respuestas = datos.get("respuestas") or {}
     if not isinstance(respuestas, dict):
@@ -578,7 +574,7 @@ def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
         }, 400
 
     total = len(preguntas)
-    puntaje = correctas * 10
+    puntaje = 0
     puntaje_nuevo = registrar_resultado_juego(id_noticia, id_usuario, puntaje, correctas, total)
     puntaje_actual = obtener_puntaje_ciudadano(id_usuario) or {
         "puntos_total": puntaje,
@@ -588,7 +584,7 @@ def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
     return {
         "mensaje": "Juego calificado correctamente",
         "puntaje_obtenido": puntaje,
-        "puntos_sumados": puntaje_nuevo,
+        "puntos_sumados": 0,
         "respuestas_correctas": correctas,
         "total_preguntas": total,
         "detalle": detalle,

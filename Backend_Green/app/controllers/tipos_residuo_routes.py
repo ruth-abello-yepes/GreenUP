@@ -5,6 +5,7 @@
 # Aquí se crean las URL del módulo.
 
 from flask import Blueprint, request, jsonify
+
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
 from app.services.tipos_residuo_service import (
@@ -41,6 +42,8 @@ def ruta_listar_tipos_residuo():
 
 
 @tipos_residuo_bp.route("/tipos-residuo/<int:id_tipo_residuo>", methods=["GET"])
+@login_requerido
+@rol_requerido([1, 2])
 def ruta_buscar_tipo_residuo(id_tipo_residuo):
     """Ruta para buscar un tipo de residuo."""
 

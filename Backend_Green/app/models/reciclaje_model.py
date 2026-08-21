@@ -113,6 +113,7 @@ def listar_reciclajes():
             ) AS usuario,
             registrar_reciclaje.id_tipo_material,
             COALESCE(tipo_material.nombre, 'Material') AS material,
+            COALESCE(tipo_material.puntos_por_kg, 0)::float AS puntos_por_kg,
             registrar_reciclaje.id_punto,
             COALESCE(puntos_reciclaje.nombre, 'Punto ecologico') AS punto
         FROM registrar_reciclaje
@@ -334,21 +335,52 @@ def cambiar_estado_reciclaje(id_registro, id_estado, puntos_obtenidos=None, moti
     sql = """
     UPDATE registrar_reciclaje
     SET id_estado = %s,
-        puntos_obtenidos = COALESCE(%s, puntos_obtenidos),
-        puntos_otorgados = COALESCE(%s, puntos_otorgados),
-        motivo_rechazo = COALESCE(%s, motivo_rechazo),
-        id_recicladora_confirma = COALESCE(%s, id_recicladora_confirma)
+        estado = CASE
+            WHEN %s = 2 THEN 'confirmado'
+            WHEN %s = 3 THEN 'rechazado'
+            ELSE COALESCE(estado, 'pendiente')
+        END,
+        puntos_obtenidos = CASE
+            WHEN %s = 2 THEN COALESCE(%s, puntos_obtenidos, 0)
+            WHEN %s = 3 THEN 0
+            ELSE COALESCE(%s, puntos_obtenidos)
+        END,
+        puntos_otorgados = CASE
+            WHEN %s = 2 THEN COALESCE(%s, puntos_otorgados, 0)
+            WHEN %s = 3 THEN 0
+            ELSE COALESCE(%s, puntos_otorgados)
+        END,
+        motivo_rechazo = CASE
+            WHEN %s = 3 THEN COALESCE(%s, motivo_rechazo)
+            ELSE motivo_rechazo
+        END,
+        id_recicladora_confirma = COALESCE(%s, id_recicladora_confirma),
+        fecha_confirmacion = CASE
+            WHEN %s IN (2, 3) THEN CURRENT_TIMESTAMP
+            ELSE fecha_confirmacion
+        END
     WHERE id_registro = %s
+      AND LOWER(COALESCE(estado, 'pendiente')) = 'pendiente'
     """
 
     cursor.execute(
         sql,
         (
             id_estado,
+            id_estado,
+            id_estado,
+            id_estado,
             puntos_obtenidos,
+            id_estado,
             puntos_obtenidos,
+            id_estado,
+            puntos_obtenidos,
+            id_estado,
+            puntos_obtenidos,
+            id_estado,
             motivo_rechazo,
             id_recicladora_confirma,
+            id_estado,
             id_registro,
         ),
     )

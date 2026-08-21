@@ -53,26 +53,8 @@ def login_requerido(funcion):
             except jwt.InvalidTokenError:
                 return jsonify({"mensaje": "Token invalido"}), 401
 
-        if not _permitir_headers_de_desarrollo():
-            return jsonify({
-                "mensaje": "Debes iniciar sesion para usar esta ruta"
-            }), 401
-
-        # Estos headers solo quedan como apoyo local para pruebas controladas.
-        id_usuario = request.headers.get("id_usuario") or request.headers.get("id-usuario")
-        id_rol = request.headers.get("id_rol") or request.headers.get("id-rol")
-
-        if not id_usuario or not id_rol:
-            return jsonify({
-                "mensaje": "Debes iniciar sesion para usar esta ruta"
-            }), 401
-
-        try:
-            g.id_usuario = int(id_usuario)
-            g.id_rol = int(id_rol)
-        except (TypeError, ValueError):
-            return jsonify({"mensaje": "Datos de sesion invalidos"}), 401
-
-        return funcion(*args, **kwargs)
+        return jsonify({
+            "mensaje": "Debes iniciar sesion con un token valido para usar esta ruta"
+        }), 401
 
     return decorador

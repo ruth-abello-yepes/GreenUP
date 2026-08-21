@@ -190,7 +190,7 @@ def servicio_cambiar_estado_reciclaje(id_registro, data):
     )
 
     if not actualizado:
-        return {"mensaje": "Registro no encontrado"}, 404
+        return {"mensaje": "Registro no encontrado o ya procesado"}, 409
 
     if id_estado == 2:
         crear_notificacion(
@@ -199,8 +199,7 @@ def servicio_cambiar_estado_reciclaje(id_registro, data):
             registro.get("id_usuario"),
             None,
         )
-
-    if id_estado == 3:
+    elif id_estado == 3:
         crear_notificacion(
             "Reciclaje rechazado",
             f"Tu entrega fue rechazada. Motivo: {motivo_rechazo}.",

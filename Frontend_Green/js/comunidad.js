@@ -127,8 +127,8 @@ function prepararFormularioForoSegunRol() {
                                 <span class="material-symbols-outlined">thumb_up</span>
                             </span>
                             <div>
-                                <div class="fw-semibold">Ganas eco-puntos por responder</div>
-                                <div class="small text-secondary">Cada aporte aprobado suma puntos a tu actividad.</div>
+                                <div class="fw-semibold">Participas en la comunidad GreenUp</div>
+                                <div class="small text-secondary">Cada aporte ayuda a compartir buenas prácticas ambientales.</div>
                             </div>
                         </div>
                     </div>
@@ -272,7 +272,7 @@ async function cargarForoGreenUp() {
                                         <input class="form-control respuesta-imagen-archivo" type="file" accept="image/*">
                                     </div>
                                     <div class="col-12">
-                                        <button class="btn btn-outline-success rounded-pill px-4" type="submit">Responder y ganar puntos</button>
+                                        <button class="btn btn-outline-success rounded-pill px-4" type="submit">Responder</button>
                                     </div>
                                 </form>
                             ` : ""}
@@ -337,7 +337,7 @@ async function responderTemaForo(evento) {
         const respuesta = await peticionSegura(`/api/comunidad/foro/${idTema}/respuestas`, "POST", datos);
         if (!respuesta.ok) throw new Error(respuesta.datos.mensaje || "No se pudo responder el tema");
         formulario.reset();
-        alert(`Respuesta enviada correctamente. Sumaste ${respuesta.datos.puntos_otorgados || 0} puntos.`);
+        alert("Respuesta enviada correctamente.");
         await cargarForoGreenUp();
         await cargarResumenJuegoCiudadano();
     } catch (error) {
@@ -360,7 +360,7 @@ function prepararModalJuegoNoticias() {
                 <div class="modal-header">
                     <div>
                         <h2 class="modal-title h5 mb-1" id="juegoNoticiasTitulo">Juego educativo</h2>
-                        <p class="text-secondary small mb-0">Responde y gana puntos como ciudadano GreenUp.</p>
+                        <p class="text-secondary small mb-0">Responde para reforzar lo aprendido sobre ambiente y reciclaje.</p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
@@ -428,7 +428,7 @@ async function abrirQuizNoticia(idNoticia, titulo) {
         boton.textContent = "Enviar respuesta";
         formulario.appendChild(boton);
         formulario.onsubmit = resolverJuegoNoticias;
-        mostrarAvisoComunidad("#estado-juego-noticias", "info", "Responde las preguntas para sumar puntos.");
+        mostrarAvisoComunidad("#estado-juego-noticias", "info", "Responde las preguntas para comprobar lo aprendido.");
     } catch (error) {
         mostrarAvisoComunidad("#estado-juego-noticias", "warning", error.message || "No fue posible abrir el juego.");
     }
@@ -486,7 +486,7 @@ async function resolverJuegoNoticias(evento) {
             throw errorControlado;
         }
         const datos = respuesta.datos;
-        mostrarAvisoComunidad("#estado-juego-noticias", "success", `Obtuviste ${datos.puntaje_obtenido} puntos y acertaste ${datos.respuestas_correctas} de ${datos.total_preguntas}.`);
+        mostrarAvisoComunidad("#estado-juego-noticias", "success", `Acertaste ${datos.respuestas_correctas} de ${datos.total_preguntas} preguntas.`);
         document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
         formulario.querySelectorAll(".pregunta-juego").forEach((bloque) => {
             bloque.classList.remove("border-danger", "bg-danger-subtle");
@@ -541,7 +541,7 @@ async function resolverJuegoNoticias(evento) {
 }
 
 /**
- * Carga el puntaje del ciudadano.
+ * Carga el resumen educativo del ciudadano.
  */
 async function cargarResumenJuegoCiudadano() {
     const tarjeta = document.getElementById("puntaje-juego-resumen");
@@ -551,11 +551,11 @@ async function cargarResumenJuegoCiudadano() {
         if (!respuesta.ok) throw new Error();
         const puntaje = respuesta.datos.puntaje || {};
         tarjeta.innerHTML = `
-            <strong class="d-block fs-4 text-gu-primary mb-1">${escaparComunidad(Number(puntaje.puntos_total) || 0)} pts</strong>
-            <span class="text-secondary">Participaciones y noticias: ${escaparComunidad(Number(puntaje.noticias_completadas) || 0)}</span>
+            <strong class="d-block fs-4 text-gu-primary mb-1">${escaparComunidad(Number(puntaje.noticias_completadas) || 0)}</strong>
+            <span class="text-secondary">Noticias educativas completadas</span>
         `;
     } catch {
-        tarjeta.innerHTML = `<span class="text-secondary">Puntaje no disponible</span>`;
+        tarjeta.innerHTML = `<span class="text-secondary">Resumen no disponible</span>`;
     }
 }
 

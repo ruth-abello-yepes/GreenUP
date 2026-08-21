@@ -2,8 +2,11 @@
 
 function protegerRol(rolPermitido) {
   const usuarioGuardado = localStorage.getItem("usuario");
+  const tokenGuardado = localStorage.getItem("token");
 
-  if (!usuarioGuardado) {
+  if (!usuarioGuardado || !tokenGuardado) {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
     alert("Debes iniciar sesion primero");
     window.location.href = "../public/public_login.html";
     return;

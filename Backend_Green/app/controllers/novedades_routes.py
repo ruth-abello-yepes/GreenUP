@@ -3,7 +3,7 @@
 
 # Rutas de novedades
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
@@ -20,9 +20,10 @@ novedades_bp = Blueprint("novedades", __name__)
 
 @novedades_bp.route("/novedades", methods=["POST"])
 @login_requerido
-@rol_requerido([1])
+@rol_requerido([1, 2])
 def ruta_crear_novedad():
     data = request.get_json()
+    data["id_usuario"] = g.id_usuario
     respuesta, estado = servicio_crear_novedad(data)
     return jsonify(respuesta), estado
 

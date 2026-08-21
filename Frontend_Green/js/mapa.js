@@ -148,16 +148,11 @@
   }
 
   function getSessionHeaders() {
-    try {
-      const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-      return {
-        "Content-Type": "application/json",
-        ...(user.id_usuario ? { id_usuario: user.id_usuario, "id-usuario": user.id_usuario } : {}),
-        ...(user.id_rol ? { id_rol: user.id_rol, "id-rol": user.id_rol } : {}),
-      };
-    } catch {
-      return { "Content-Type": "application/json" };
-    }
+    const token = localStorage.getItem("token");
+    return {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
   }
 
   async function loadOwnRecyclingCenter() {

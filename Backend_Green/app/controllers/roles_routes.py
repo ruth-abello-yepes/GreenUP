@@ -70,6 +70,8 @@ def ruta_registrar_rol():
 
 
 @roles_bp.route("/listar", methods=["GET"])
+@login_requerido
+@rol_requerido([1])
 def ruta_listar_roles():
     """
     Listar roles
@@ -87,6 +89,8 @@ def ruta_listar_roles():
 
 
 @roles_bp.route("/buscar/<int:id_rol>", methods=["GET"])
+@login_requerido
+@rol_requerido([1])
 def ruta_buscar_rol(id_rol):
     """
     Buscar rol por ID

@@ -101,6 +101,29 @@ class SeguridadIntegracionTest(unittest.TestCase):
 
         self.assertEqual(respuesta.status_code, 401)
 
+    def test_cors_permite_origen_local_del_frontend(self):
+        """El backend acepta el origen local usado por Live Server."""
+
+        respuesta = self.cliente.get(
+            "/materiales",
+            headers={"Origin": "http://127.0.0.1:5502"},
+        )
+
+        self.assertEqual(
+            respuesta.headers.get("Access-Control-Allow-Origin"),
+            "http://127.0.0.1:5502",
+        )
+
+    def test_cors_no_abre_cualquier_origen(self):
+        """Evita que cualquier sitio externo pueda consumir el backend."""
+
+        respuesta = self.cliente.get(
+            "/materiales",
+            headers={"Origin": "https://sitio-no-autorizado.example"},
+        )
+
+        self.assertIsNone(respuesta.headers.get("Access-Control-Allow-Origin"))
+
     def test_supabase_tiene_rls_en_tablas_publicas(self):
         """Verifica que ninguna tabla publica quede sin Row Level Security."""
 
@@ -120,6 +143,51 @@ class SeguridadIntegracionTest(unittest.TestCase):
 
         self.assertEqual(tablas_sin_rls, [])
 
+    def test_funciones_publicas_tienen_search_path(self):
+        """Evita la alerta Function Search Path Mutable de Supabase."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT proname
+                FROM pg_proc funcion
+                INNER JOIN pg_namespace esquema
+                  ON esquema.oid = funcion.pronamespace
+                WHERE esquema.nspname = 'public'
+                  AND funcion.prokind = 'f'
+                  AND NOT EXISTS (
+                    SELECT 1
+                    FROM unnest(COALESCE(funcion.proconfig, ARRAY[]::text[])) cfg
+                    WHERE cfg LIKE 'search_path=%'
+                  )
+                ORDER BY proname
+                """
+            )
+            funciones_sin_search_path = [fila["proname"] for fila in cursor.fetchall()]
+
+        self.assertEqual(funciones_sin_search_path, [])
+
+    def test_no_hay_policies_de_escritura_abiertas(self):
+        """Comprueba que las escrituras por Data API no queden con condicion true."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT tablename, policyname
+                FROM pg_policies
+                WHERE schemaname = 'public'
+                  AND cmd IN ('ALL', 'INSERT', 'UPDATE', 'DELETE')
+                  AND (
+                    COALESCE(qual, '') = 'true'
+                    OR COALESCE(with_check, '') = 'true'
+                  )
+                ORDER BY tablename, policyname
+                """
+            )
+            policies_abiertas = cursor.fetchall()
+
+        self.assertEqual(policies_abiertas, [])
+
     def test_restricciones_unicas_principales_existen(self):
         """Comprueba unicidad de documento, correo, usuario y NIT."""
 
@@ -128,6 +196,28 @@ class SeguridadIntegracionTest(unittest.TestCase):
             "usuarios_usuario_key",
             "usuarios_numero_documento_key",
             "recicladoras_nit_empresa_key",
+        }
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT conname
+                FROM pg_constraint
+                WHERE connamespace = 'public'::regnamespace
+                  AND conname = ANY(%s)
+                """,
+                (list(restricciones),),
+            )
+            existentes = {fila["conname"] for fila in cursor.fetchall()}
+
+        self.assertEqual(existentes, restricciones)
+
+    def test_checks_minimos_de_usuario_existen(self):
+        """Comprueba reglas de longitud minima para usuario y documento."""
+
+        restricciones = {
+            "chk_usuarios_usuario_minimo_greenup",
+            "chk_usuarios_documento_minimo_greenup",
         }
 
         with self.conexion.cursor() as cursor:
@@ -184,6 +274,65 @@ class SeguridadIntegracionTest(unittest.TestCase):
             triggers = cursor.fetchall()
 
         self.assertGreaterEqual(len(triggers), 1)
+
+    def test_no_hay_duplicados_en_datos_reales_de_usuarios(self):
+        """Revisa que los datos actuales no tengan cedulas, usuarios o correos repetidos."""
+
+        consultas = {
+            "documentos": """
+                SELECT LOWER(REGEXP_REPLACE(TRIM(numero_documento), '[^0-9A-Za-z]', '', 'g')) AS clave
+                FROM usuarios
+                WHERE numero_documento IS NOT NULL
+                  AND TRIM(numero_documento) <> ''
+                GROUP BY 1
+                HAVING COUNT(*) > 1
+            """,
+            "correos": """
+                SELECT LOWER(TRIM(correo)) AS clave
+                FROM usuarios
+                WHERE correo IS NOT NULL
+                  AND TRIM(correo) <> ''
+                GROUP BY 1
+                HAVING COUNT(*) > 1
+            """,
+            "usuarios": """
+                SELECT LOWER(TRIM(usuario)) AS clave
+                FROM usuarios
+                WHERE usuario IS NOT NULL
+                  AND TRIM(usuario) <> ''
+                GROUP BY 1
+                HAVING COUNT(*) > 1
+            """,
+        }
+
+        with self.conexion.cursor() as cursor:
+            for nombre, sql in consultas.items():
+                with self.subTest(nombre=nombre):
+                    cursor.execute(sql)
+                    self.assertEqual(cursor.fetchall(), [])
+
+    def test_no_hay_reciclajes_huerfanos(self):
+        """Comprueba que cada reciclaje tenga usuario, material y punto existente."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT COUNT(*) AS total
+                FROM registrar_reciclaje reciclaje
+                LEFT JOIN usuarios usuario
+                  ON usuario.id_usuario = reciclaje.id_usuario
+                LEFT JOIN tipo_material material
+                  ON material.id_tipo_material = reciclaje.id_tipo_material
+                LEFT JOIN puntos_reciclaje punto
+                  ON punto.id_punto = reciclaje.id_punto
+                WHERE usuario.id_usuario IS NULL
+                   OR material.id_tipo_material IS NULL
+                   OR punto.id_punto IS NULL
+                """
+            )
+            resultado = cursor.fetchone()
+
+        self.assertEqual(resultado["total"], 0)
 
     def test_registro_ciudadano_rechaza_cuerpo_vacio(self):
         """Evita errores internos cuando el registro llega sin datos."""

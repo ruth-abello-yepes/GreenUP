@@ -17,10 +17,36 @@ from app.common.swagger import configurar_swagger
 mail = Mail()
 
 
+def _origenes_cors_permitidos():
+    """
+    Define desde que paginas se puede llamar al backend.
+
+    Si el equipo necesita otro dominio en despliegue, lo agrega en .env con:
+    CORS_ORIGINS=https://midominio.com,http://127.0.0.1:5502
+    """
+
+    origenes_env = os.getenv("CORS_ORIGINS")
+    if origenes_env:
+        return [origen.strip() for origen in origenes_env.split(",") if origen.strip()]
+
+    return [
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501",
+        "http://127.0.0.1:5502",
+        "http://localhost:5500",
+        "http://localhost:5501",
+        "http://localhost:5502",
+    ]
+
+
 def crear_app():
     app = Flask(__name__)
 
-    CORS(app)
+    CORS(
+        app,
+        resources={r"/*": {"origins": _origenes_cors_permitidos()}},
+        supports_credentials=False,
+    )
 
     # Configuración del servidor de correo SMTP (Gmail)
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'

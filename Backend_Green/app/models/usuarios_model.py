@@ -212,7 +212,13 @@ def buscar_usuario_por_usuario(usuario):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = "SELECT * FROM usuarios WHERE usuario = %s OR correo = %s"
+    sql = """
+    SELECT *
+    FROM usuarios
+    WHERE LOWER(TRIM(usuario)) = LOWER(TRIM(%s))
+       OR LOWER(TRIM(correo)) = LOWER(TRIM(%s))
+    LIMIT 1
+    """
 
     cursor.execute(sql, (usuario, usuario))
     usuario_encontrado = cursor.fetchone()
@@ -234,7 +240,13 @@ def buscar_usuario_por_documento(numero_documento):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = "SELECT * FROM usuarios WHERE numero_documento = %s"
+    sql = """
+    SELECT *
+    FROM usuarios
+    WHERE LOWER(REGEXP_REPLACE(TRIM(numero_documento), '[^0-9A-Za-z]', '', 'g')) =
+          LOWER(REGEXP_REPLACE(TRIM(%s), '[^0-9A-Za-z]', '', 'g'))
+    LIMIT 1
+    """
     cursor.execute(sql, (numero_documento,))
     usuario_encontrado = cursor.fetchone()
 
@@ -382,7 +394,10 @@ def buscar_usuario_por_correo_o_usuario_excluyendo_id(correo, usuario, id_usuari
            correo,
            usuario
     FROM usuarios
-    WHERE (correo = %s OR usuario = %s)
+    WHERE (
+            LOWER(TRIM(correo)) = LOWER(TRIM(%s))
+         OR LOWER(TRIM(usuario)) = LOWER(TRIM(%s))
+          )
       AND id_usuario <> %s
     LIMIT 1
     """

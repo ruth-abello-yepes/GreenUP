@@ -12,6 +12,8 @@ let pasoActual = 1;
 const totalPasos = 3;
 const MENSAJE_CONTRASENA_SEGURA =
   "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.";
+const MENSAJE_USUARIO_CORTO = "El usuario debe tener mínimo 5 caracteres.";
+const MENSAJE_DOCUMENTO_INVALIDO = "La cédula o documento debe tener mínimo 5 números.";
 const registroEstado = {
   materiales: [],
 };
@@ -117,6 +119,25 @@ function mostrarCamposEmpresa() {
   } else {
     camposEmpresa.classList.add("d-none");
   }
+}
+
+/**
+ * Limpia el documento para validar siempre el mismo formato.
+ * Si el usuario escribe puntos, guiones o espacios, solo quedan los numeros.
+ * @param {string} documento - Cedula o documento escrito en el formulario.
+ * @returns {string} Documento listo para enviar al backend.
+ */
+function limpiarDocumentoRegistro(documento) {
+  return String(documento || "").replace(/\D/g, "");
+}
+
+/**
+ * Revisa que el usuario tenga el largo minimo pedido por GreenUp.
+ * @param {string} usuario - Nombre de usuario escrito en el formulario.
+ * @returns {boolean} true cuando el usuario tiene 5 o mas caracteres.
+ */
+function validarUsuarioRegistro(usuario) {
+  return String(usuario || "").trim().length >= 5;
 }
 
 function escaparRegistro(valor) {
@@ -259,8 +280,8 @@ async function registrarCuenta() {
   const celular = document.getElementById("celular").value;
   const genero = document.getElementById("genero").value;
   const idTipoDocumento = document.getElementById("id_tipo_documento").value;
-  const numeroDocumento = document.getElementById("numero_documento").value;
-  const usuario = document.getElementById("usuario").value;
+  const numeroDocumento = limpiarDocumentoRegistro(document.getElementById("numero_documento").value);
+  const usuario = document.getElementById("usuario").value.trim();
   const contrasena = document.getElementById("contrasena").value;
   const confirmarContrasena = document.getElementById("confirmar_contrasena").value;
   const terminos = document.getElementById("terminos").checked;
@@ -268,6 +289,16 @@ async function registrarCuenta() {
   // Validaciones
   if (!validarContrasenaSegura(contrasena)) {
     alert(MENSAJE_CONTRASENA_SEGURA);
+    return;
+  }
+
+  if (!validarUsuarioRegistro(usuario)) {
+    alert(MENSAJE_USUARIO_CORTO);
+    return;
+  }
+
+  if (numeroDocumento.length < 5) {
+    alert(MENSAJE_DOCUMENTO_INVALIDO);
     return;
   }
 

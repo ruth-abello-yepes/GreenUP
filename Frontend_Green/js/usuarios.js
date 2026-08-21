@@ -19,6 +19,10 @@
 
 const MENSAJE_CONTRASENA_SEGURA =
   "La contrasena debe tener minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.";
+const MENSAJE_USUARIO_CORTO =
+  "El usuario debe tener minimo 5 caracteres.";
+const MENSAJE_DOCUMENTO_INVALIDO =
+  "La cedula o documento debe tener minimo 5 numeros.";
 
 function validarContrasenaSegura(contrasena) {
   return (
@@ -29,6 +33,14 @@ function validarContrasenaSegura(contrasena) {
     /[^A-Za-z0-9\s]/.test(contrasena) &&
     !/\s/.test(contrasena)
   );
+}
+
+function limpiarDocumentoUsuario(documento) {
+  /*
+        Dejamos el documento solamente con numeros.
+        Asi 1.234.567 y 1234567 se validan como el mismo documento.
+    */
+  return String(documento || "").replace(/\D/g, "");
 }
 
 async function registrarUsuario(evento) {
@@ -51,14 +63,24 @@ async function registrarUsuario(evento) {
   const nombres = document.getElementById("nombres").value;
   const apellidos = document.getElementById("apellidos").value;
   const correo = document.getElementById("correo").value;
-  const usuario = document.getElementById("usuario").value;
+  const usuario = document.getElementById("usuario").value.trim();
   const contrasena = document.getElementById("contrasena").value;
-  const numero_documento = document.getElementById("numero_documento").value;
+  const numero_documento = limpiarDocumentoUsuario(document.getElementById("numero_documento").value);
   const celular = document.getElementById("celular").value;
   const id_tipo_documento = document.getElementById("id_tipo_documento").value;
 
   if (!validarContrasenaSegura(contrasena)) {
     alert(MENSAJE_CONTRASENA_SEGURA);
+    return;
+  }
+
+  if (usuario.length < 5) {
+    alert(MENSAJE_USUARIO_CORTO);
+    return;
+  }
+
+  if (numero_documento.length < 5) {
+    alert(MENSAJE_DOCUMENTO_INVALIDO);
     return;
   }
 

@@ -3,6 +3,7 @@
 
 
 import os
+import re
 
 import googlemaps
 
@@ -38,6 +39,26 @@ def _correo_valido(correo):
     return bool(correo and "@" in correo and "." in correo)
 
 
+def _texto_limpio(datos, *llaves):
+    """
+    Lee campos enviados desde formularios distintos y elimina espacios extra.
+    Esto evita que una pantalla mande "cedula" y otra "numero_documento".
+    """
+
+    for llave in llaves:
+        valor = datos.get(llave)
+        if valor is not None:
+            return str(valor).strip()
+
+    return ""
+
+
+def _documento_limpio(numero_documento):
+    """Convierte el documento en solo numeros antes de validar y guardar."""
+
+    return re.sub(r"\D", "", str(numero_documento or ""))
+
+
 def _geocodificar_direccion(direccion):
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key or not direccion:
@@ -69,21 +90,23 @@ def servicio_registrar_dueno_recicladora(datos):
     id_rol = 2
     """
 
-    nombres = datos.get("nombres") or datos.get("nombre_empresa")
-    apellidos = datos.get("apellidos") or "Empresa"
-    correo = (datos.get("correo") or "").strip().lower()
-    usuario = (datos.get("usuario") or "").strip()
+    datos = datos or {}
+
+    nombres = _texto_limpio(datos, "nombres", "nombre_empresa") or None
+    apellidos = _texto_limpio(datos, "apellidos") or "Empresa"
+    correo = _texto_limpio(datos, "correo", "email").lower()
+    usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username")
     contrasena = datos.get("contrasena")
-    numero_documento = datos.get("numero_documento")
-    celular = datos.get("celular")
+    numero_documento = _documento_limpio(_texto_limpio(datos, "numero_documento", "documento", "cedula", "cc"))
+    celular = _texto_limpio(datos, "celular", "telefono")
     foto_perfil = datos.get("foto_perfil", "")
 
-    id_tipo_documento = datos.get("id_tipo_documento")
+    id_tipo_documento = datos.get("id_tipo_documento") or datos.get("tipo_documento")
 
-    nit_empresa = datos.get("nit_empresa")
-    nombre_empresa = datos.get("nombre_empresa")
-    direccion_empresa = datos.get("direccion_empresa")
-    telefono_empresa = datos.get("telefono_empresa")
+    nit_empresa = _texto_limpio(datos, "nit_empresa", "nit")
+    nombre_empresa = _texto_limpio(datos, "nombre_empresa")
+    direccion_empresa = _texto_limpio(datos, "direccion_empresa", "direccion")
+    telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono")
     camara_comercio = datos.get("camara_comercio", "")
     ids_materiales = datos.get("ids_materiales") or []
     horario = datos.get("horario")
@@ -114,6 +137,9 @@ def servicio_registrar_dueno_recicladora(datos):
 
     if not numero_documento:
         return {"mensaje": "El numero de documento es obligatorio"}, 400
+
+    if len(numero_documento) < 5:
+        return {"mensaje": "El numero de documento debe tener minimo 5 digitos"}, 400
 
     if not id_tipo_documento:
         return {"mensaje": "El tipo de documento es obligatorio"}, 400

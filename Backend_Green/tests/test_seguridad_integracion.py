@@ -16,7 +16,9 @@ from psycopg2.extras import RealDictCursor
 
 
 BASE_BACKEND = Path(__file__).resolve().parents[1]
+BASE_PROYECTO = BASE_BACKEND.parent
 sys.path.insert(0, str(BASE_BACKEND))
+load_dotenv(BASE_PROYECTO / ".env")
 load_dotenv(BASE_BACKEND / ".env")
 
 
@@ -166,6 +168,23 @@ class SeguridadIntegracionTest(unittest.TestCase):
 
         self.assertEqual(existentes, indices)
 
+    def test_trigger_valida_usuario_y_documento(self):
+        """Confirma que Supabase bloquee usuario corto y documento duplicado."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT trigger_name
+                FROM information_schema.triggers
+                WHERE event_object_schema = 'public'
+                  AND event_object_table = 'usuarios'
+                  AND trigger_name = 'trg_greenup_validar_usuario_unico'
+                """
+            )
+            triggers = cursor.fetchall()
+
+        self.assertGreaterEqual(len(triggers), 1)
+
     def test_registro_ciudadano_rechaza_cuerpo_vacio(self):
         """Evita errores internos cuando el registro llega sin datos."""
 
@@ -173,6 +192,63 @@ class SeguridadIntegracionTest(unittest.TestCase):
 
         self.assertEqual(respuesta.status_code, 400)
         self.assertIn("nombres", respuesta.get_json()["mensaje"].lower())
+
+    def test_registro_ciudadano_rechaza_usuario_menor_a_cinco(self):
+        """El registro publico no acepta nombres de usuario demasiado cortos."""
+
+        respuesta = self.cliente.post(
+            "/api/usuarios/registro",
+            json={
+                "nombres": "Prueba",
+                "apellidos": "Usuario",
+                "correo": "usuario_corto_greenup@example.com",
+                "usuario": "abc",
+                "contrasena": "GreenUp2026!",
+                "numero_documento": "900001234",
+                "celular": "3000000000",
+                "id_tipo_documento": 1,
+                "genero": "Otro",
+            },
+        )
+
+        self.assertEqual(respuesta.status_code, 400)
+        self.assertIn("minimo 5", respuesta.get_json()["mensaje"].lower())
+
+    def test_registro_ciudadano_rechaza_documento_duplicado(self):
+        """No permite crear otro ciudadano con una cedula ya registrada."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT numero_documento
+                FROM usuarios
+                WHERE numero_documento IS NOT NULL
+                  AND TRIM(numero_documento) <> ''
+                LIMIT 1
+                """
+            )
+            usuario_existente = cursor.fetchone()
+
+        if not usuario_existente:
+            self.skipTest("No hay usuarios existentes para validar cedula duplicada.")
+
+        respuesta = self.cliente.post(
+            "/api/usuarios/registro",
+            json={
+                "nombres": "Prueba",
+                "apellidos": "Duplicada",
+                "correo": "documento_duplicado_greenup@example.com",
+                "usuario": "duplicado_greenup",
+                "contrasena": "GreenUp2026!",
+                "numero_documento": usuario_existente["numero_documento"],
+                "celular": "3000000000",
+                "id_tipo_documento": 1,
+                "genero": "Otro",
+            },
+        )
+
+        self.assertEqual(respuesta.status_code, 400)
+        self.assertIn("documento", respuesta.get_json()["mensaje"].lower())
 
     def test_reciclaje_tiene_candados_de_cantidad_y_puntos(self):
         """Revisa checks para evitar cantidades invalidas y puntos negativos."""

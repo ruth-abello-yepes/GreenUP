@@ -28,12 +28,37 @@ from app.common.security import (
     verificar_contrasena
 )
 from app.models.notificaciones_model import crear_notificacion
+import re
 
 
 def _correo_valido(correo):
     """Valida un correo con una regla sencilla y entendible."""
 
     return bool(correo and "@" in correo and "." in correo)
+
+
+def _texto_limpio(datos, *llaves):
+    """
+    Lee un dato enviado por el frontend y lo convierte en texto sin espacios
+    sobrantes. Acepta varias llaves porque algunas pantallas usan nombres
+    diferentes para el mismo campo.
+    """
+
+    for llave in llaves:
+        valor = datos.get(llave)
+        if valor is not None:
+            return str(valor).strip()
+
+    return ""
+
+
+def _documento_limpio(numero_documento):
+    """
+    Limpia el numero de documento antes de validarlo y guardarlo.
+    La cedula debe quedar como numeros, sin puntos, espacios ni guiones.
+    """
+
+    return re.sub(r"\D", "", str(numero_documento or ""))
 
 
 def servicio_registrar_usuario(datos):
@@ -52,15 +77,17 @@ def servicio_registrar_usuario(datos):
     id_rol = 3
     """
 
-    nombres = datos.get("nombres")
-    apellidos = datos.get("apellidos")
-    correo = datos.get("correo")
-    usuario = datos.get("usuario")
-    contrasena = datos.get("contrasena")
-    numero_documento = datos.get("numero_documento")
-    celular = datos.get("celular")
+    datos = datos or {}
+
+    nombres = _texto_limpio(datos, "nombres", "nombre")
+    apellidos = _texto_limpio(datos, "apellidos", "apellido")
+    correo = _texto_limpio(datos, "correo", "email")
+    usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username")
+    contrasena = datos.get("contrasena") or datos.get("password")
+    numero_documento = _documento_limpio(_texto_limpio(datos, "numero_documento", "documento", "cedula", "cc"))
+    celular = _texto_limpio(datos, "celular", "telefono")
     foto_perfil = datos.get("foto_perfil", "")
-    id_tipo_documento = datos.get("id_tipo_documento")
+    id_tipo_documento = datos.get("id_tipo_documento") or datos.get("tipo_documento")
     genero = (datos.get("genero") or "").strip() or None
 
     # El ciudadano siempre queda activo.
@@ -87,8 +114,6 @@ def servicio_registrar_usuario(datos):
     if not usuario:
         return {"mensaje": "El usuario es obligatorio"}, 400
 
-    usuario = usuario.strip()
-
     if len(usuario) < 5:
         return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
 
@@ -99,6 +124,9 @@ def servicio_registrar_usuario(datos):
 
     if not numero_documento:
         return {"mensaje": "El numero de documento es obligatorio"}, 400
+
+    if len(numero_documento) < 5:
+        return {"mensaje": "El numero de documento debe tener minimo 5 digitos"}, 400
 
     if buscar_usuario_por_usuario(usuario):
         return {"mensaje": "El usuario o correo ya se encuentra registrado"}, 400

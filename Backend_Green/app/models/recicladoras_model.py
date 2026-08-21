@@ -282,6 +282,7 @@ def listar_registros_por_recicladora(id_usuario, fecha_inicio=None, fecha_fin=No
             registrar_reciclaje.fecha_confirmacion,
             registrar_reciclaje.id_recicladora_confirma,
             COALESCE(tipo_material.nombre, 'Material') AS material,
+            COALESCE(tipo_material.puntos_por_kg, 0)::float AS puntos_por_kg,
             COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
             COALESCE(NULLIF(registrar_reciclaje.estado, ''), estado.descripcion, 'Sin estado') AS estado
         FROM registrar_reciclaje
@@ -307,19 +308,32 @@ def cambiar_estado_registro_recicladora(id_usuario, id_registro, id_estado, punt
         """
         UPDATE registrar_reciclaje
         SET id_estado = %s,
+            estado = CASE
+                WHEN %s = 2 THEN 'confirmado'
+                WHEN %s = 3 THEN 'rechazado'
+                ELSE COALESCE(estado, 'pendiente')
+            END,
             puntos_obtenidos = COALESCE(%s, puntos_obtenidos),
             puntos_otorgados = COALESCE(%s, puntos_otorgados),
             motivo_rechazo = COALESCE(%s, motivo_rechazo),
-            id_recicladora_confirma = %s
+            id_recicladora_confirma = %s,
+            fecha_confirmacion = CASE
+                WHEN %s IN (2, 3) THEN CURRENT_TIMESTAMP
+                ELSE fecha_confirmacion
+            END
         WHERE id_registro = %s
           AND id_punto = %s
+          AND LOWER(COALESCE(estado, 'pendiente')) = 'pendiente'
         """,
         (
+            id_estado,
+            id_estado,
             id_estado,
             puntos_obtenidos,
             puntos_obtenidos,
             motivo_rechazo,
             id_usuario,
+            id_estado,
             id_registro,
             perfil["id_punto"],
         ),

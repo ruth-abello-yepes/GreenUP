@@ -7,6 +7,7 @@ from app.models.comunidad_model import (
     crear_respuesta_foro,
     crear_tema_foro,
     listar_respuestas_tema,
+    buscar_preguntas_duplicadas_otras_noticias,
     listar_preguntas_noticia,
     listar_puntajes_juego,
     listar_temas_foro,
@@ -172,26 +173,27 @@ def _construir_pregunta_de_palabra_clave(palabra_clave, titulo, palabras_clave):
     }
 
 
-def _construir_pregunta_de_titulo(titulo, palabras_clave):
+def _construir_pregunta_de_titulo(titulo, palabras_clave, titulo_correcto=None):
     """Pregunta por el título real de la noticia."""
 
+    titulo_real = titulo_correcto or titulo
     palabra_a = palabras_clave[0] if palabras_clave else "ambiental"
     palabra_b = palabras_clave[1] if len(palabras_clave) > 1 else "sostenible"
     palabra_c = palabras_clave[2] if len(palabras_clave) > 2 else "urbano"
     distractores = [
-        _crear_titulo_alterado(titulo, palabra_a, "espectáculo"),
-        _crear_titulo_alterado(titulo, palabra_b, "moda"),
-        _crear_titulo_alterado(titulo, palabra_c, "fútbol"),
+        _crear_titulo_alterado(titulo_real, palabra_a, "espectáculo"),
+        _crear_titulo_alterado(titulo_real, palabra_b, "moda"),
+        _crear_titulo_alterado(titulo_real, palabra_c, "fútbol"),
     ]
-    opciones = _crear_opciones_con_respuesta(_capitalizar_frase(titulo), distractores)
+    opciones = _crear_opciones_con_respuesta(_capitalizar_frase(titulo_real), distractores)
     return {
-        "pregunta": "¿Cuál es el título correcto de la noticia?",
+        "pregunta": f"¿Cuál es el título correcto de la noticia \"{titulo}\"?",
         **opciones,
         "explicacion": "La respuesta correcta coincide con el título guardado para la noticia.",
     }
 
 
-def _construir_pregunta_de_fuente(fuente):
+def _construir_pregunta_de_fuente(fuente, titulo):
     """Pregunta por la fuente real con distractores genéricos."""
 
     opciones = _crear_opciones_con_respuesta(
@@ -199,13 +201,13 @@ def _construir_pregunta_de_fuente(fuente):
         ["Fuente anónima sin verificar", "Cadena de mensajes reenviados", "Portal de deportes y espectáculos"],
     )
     return {
-        "pregunta": "¿Qué fuente aparece registrada para esta noticia?",
+        "pregunta": f"¿Qué fuente aparece registrada para la noticia \"{titulo}\"?",
         **opciones,
         "explicacion": "La opción correcta es la fuente guardada junto a la noticia.",
     }
 
 
-def _construir_pregunta_de_categoria(categoria):
+def _construir_pregunta_de_categoria(categoria, titulo):
     """Pregunta por la categoría real de la noticia."""
 
     opciones = _crear_opciones_con_respuesta(
@@ -213,7 +215,7 @@ def _construir_pregunta_de_categoria(categoria):
         ["Deportes", "Entretenimiento", "Moda y farándula"],
     )
     return {
-        "pregunta": "¿En qué categoría fue clasificada esta noticia?",
+        "pregunta": f"¿En qué categoría fue clasificada la noticia \"{titulo}\"?",
         **opciones,
         "explicacion": "La categoría correcta se tomó del registro real de la noticia.",
     }
@@ -382,6 +384,7 @@ def _preguntas_generadas_desde_noticia(noticia):
     fuente = _limpiar_espacios(noticia.get("fuente") or "GreenUp")
     categoria = _limpiar_espacios(noticia.get("categoria") or "Medio ambiente")
     titulo = _limpiar_espacios(noticia.get("titulo") or "Noticia ambiental")
+    titulo_pregunta = f"{titulo} (registro GreenUp {noticia.get('id_noticia')})"
     descripcion = _limpiar_espacios(noticia.get("descripcion") or "")
     titulo_minuscula = titulo.lower()
     descripcion_minuscula = descripcion.lower()
@@ -413,12 +416,12 @@ def _preguntas_generadas_desde_noticia(noticia):
     palabra_principal = palabras_clave[0] if palabras_clave else categoria.lower()
 
     return [
-        _construir_pregunta_de_titulo(titulo, palabras_clave),
-        _construir_pregunta_desde_resumen(titulo, _resumir_texto(primera_oracion, 160)),
-        _construir_pregunta_de_oracion(segunda_oracion, titulo, 2),
-        _construir_pregunta_de_palabra_clave(palabra_principal, titulo, palabras_clave),
-        _construir_pregunta_de_accion(accion_positiva, titulo),
-        _construir_pregunta_de_beneficio(beneficio, titulo),
+        _construir_pregunta_de_titulo(titulo_pregunta, palabras_clave, titulo),
+        _construir_pregunta_desde_resumen(titulo_pregunta, _resumir_texto(primera_oracion, 160)),
+        _construir_pregunta_de_oracion(segunda_oracion, titulo_pregunta, 2),
+        _construir_pregunta_de_palabra_clave(palabra_principal, titulo_pregunta, palabras_clave),
+        _construir_pregunta_de_accion(accion_positiva, titulo_pregunta),
+        _construir_pregunta_de_beneficio(beneficio, titulo_pregunta),
     ]
 
 
@@ -432,6 +435,10 @@ def _preguntas_necesitan_actualizacion(preguntas_guardadas):
         "¿cuál es el tema principal de la noticia",
         "¿qué acción ciudadana se relaciona mejor con el aprendizaje de esta noticia?",
         "¿desde qué fuente se registró esta noticia en greenup?",
+        "¿qué fuente aparece asociada a esta noticia dentro de greenup?",
+        "¿qué resumen representa mejor el contenido de la noticia?",
+        "¿cuál es el título correcto de la noticia?",
+        "¿en qué categoría fue clasificada esta noticia?",
     )
     for pregunta in preguntas_guardadas:
         texto = str(pregunta.get("pregunta") or "").strip().lower()
@@ -445,7 +452,10 @@ def servicio_listar_preguntas_noticia(id_noticia):
     """Entrega las preguntas del juego para una noticia."""
 
     preguntas = listar_preguntas_noticia(id_noticia)
-    if preguntas and not _preguntas_necesitan_actualizacion(preguntas):
+    textos = [pregunta.get("pregunta") for pregunta in preguntas]
+    duplicadas = buscar_preguntas_duplicadas_otras_noticias(id_noticia, textos) if preguntas else []
+
+    if preguntas and not _preguntas_necesitan_actualizacion(preguntas) and not duplicadas:
         return {"preguntas": preguntas}, 200
 
     noticias = listar_noticias()
@@ -471,6 +481,7 @@ def servicio_registrar_preguntas_noticia(id_noticia, datos):
 
     errores = []
     preguntas_limpias = []
+    preguntas_normalizadas = set()
     for indice, pregunta in enumerate(preguntas, start=1):
         fila = {
             "pregunta": str((pregunta or {}).get("pregunta") or "").strip(),
@@ -486,6 +497,11 @@ def servicio_registrar_preguntas_noticia(id_noticia, datos):
             errores.append(f"La pregunta {indice} tiene campos vacíos.")
         if fila["respuesta_correcta"] not in {"A", "B", "C", "D"}:
             errores.append(f"La pregunta {indice} debe indicar una respuesta correcta entre A, B, C o D.")
+
+        normalizada = _limpiar_espacios(fila["pregunta"]).lower()
+        if normalizada in preguntas_normalizadas:
+            errores.append(f"La pregunta {indice} está repetida dentro del mismo cuestionario.")
+        preguntas_normalizadas.add(normalizada)
         preguntas_limpias.append(fila)
 
     if errores:
@@ -495,6 +511,19 @@ def servicio_registrar_preguntas_noticia(id_noticia, datos):
     noticia = next((item for item in noticias if int(item.get("id_noticia")) == int(id_noticia)), None)
     if not noticia:
         return {"mensaje": "La noticia no existe"}, 404
+
+    duplicadas = buscar_preguntas_duplicadas_otras_noticias(
+        id_noticia,
+        [pregunta["pregunta"] for pregunta in preguntas_limpias],
+    )
+    if duplicadas:
+        return {
+            "mensaje": "No puedes repetir preguntas que ya pertenecen a otra noticia.",
+            "errores": [
+                f"La pregunta \"{item['pregunta']}\" ya existe en la noticia {item['id_noticia']}."
+                for item in duplicadas
+            ],
+        }, 400
 
     reemplazar_preguntas_noticia(id_noticia, preguntas_limpias)
     return {

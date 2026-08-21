@@ -268,13 +268,10 @@ function obtenerAdminActual() {
 function obtenerTemaAdminSistema() {
   /*
     TEMA GLOBAL DEL ADMIN:
-    Lee si el administrador quiere ver todo el panel en oscuro o blanco.
-    Tambien acepta la clave antigua del perfil para no perder la preferencia.
+    El panel del administrador queda fijo en modo claro para mantener una
+    interfaz uniforme en todas las pantallas.
   */
-  const temaGuardado = localStorage.getItem("greenup_admin_tema")
-    || localStorage.getItem("greenup_admin_perfil_modo")
-    || "claro";
-  return temaGuardado === "oscuro" ? "oscuro" : "claro";
+  return "claro";
 }
 
 function aplicarTemaAdminSistema() {
@@ -283,6 +280,8 @@ function aplicarTemaAdminSistema() {
     Estas clases cambian navbar, fondo, tarjetas, tablas, formularios y mapa.
   */
   const tema = obtenerTemaAdminSistema();
+  localStorage.setItem("greenup_admin_tema", "claro");
+  localStorage.setItem("greenup_admin_perfil_modo", "claro");
   document.body.classList.remove("admin-theme-dark", "admin-theme-light");
   document.body.classList.add(tema === "oscuro" ? "admin-theme-dark" : "admin-theme-light");
 }
@@ -297,14 +296,15 @@ function quitarModoOscuroAdminSistema() {
 function cambiarTemaAdminSistema(modo) {
   /*
     CAMBIO MANUAL DE TEMA:
-    Guarda la preferencia y actualiza visualmente todo el panel administrador.
+    Se conserva la funcion para no romper botones antiguos, pero siempre deja
+    el administrador en modo claro.
   */
-  localStorage.setItem("greenup_admin_tema", modo);
-  localStorage.setItem("greenup_admin_perfil_modo", modo === "oscuro" ? "oscuro" : "claro");
+  localStorage.setItem("greenup_admin_tema", "claro");
+  localStorage.setItem("greenup_admin_perfil_modo", "claro");
   aplicarTemaAdminSistema();
   actualizarBotonTemaAdminSistema();
   if (moduloActual() === "perfil") cargarPerfil();
-  mostrarToast("Tema actualizado", modo === "oscuro" ? "Modo oscuro activado en todo el panel." : "Modo blanco activado en todo el panel.");
+  mostrarToast("Tema claro activo", "El panel administrador usa una apariencia clara y uniforme.");
 }
 
 function alternarTemaAdminSistema() {

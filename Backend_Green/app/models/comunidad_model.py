@@ -379,6 +379,38 @@ def listar_preguntas_noticia(id_noticia):
         conexion.close()
 
 
+def buscar_preguntas_duplicadas_otras_noticias(id_noticia, preguntas):
+    """Busca si una pregunta activa ya pertenece a otra noticia."""
+
+    textos = [
+        " ".join(str(pregunta or "").split()).strip().lower()
+        for pregunta in preguntas
+        if str(pregunta or "").strip()
+    ]
+    if not textos:
+        return []
+
+    asegurar_tablas_comunidad()
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT id_noticia, pregunta
+            FROM noticia_cuestionarios
+            WHERE id_estado = 1
+              AND id_noticia <> %s
+              AND LOWER(TRIM(REGEXP_REPLACE(pregunta, '\\s+', ' ', 'g'))) = ANY(%s)
+            ORDER BY id_noticia, id_pregunta
+            """,
+            (id_noticia, textos),
+        )
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conexion.close()
+
+
 def eliminar_preguntas_noticia(id_noticia):
     """Borra las preguntas actuales de una noticia para regenerarlas o reemplazarlas."""
 

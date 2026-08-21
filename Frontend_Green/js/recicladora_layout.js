@@ -18,8 +18,10 @@ function getApiBase() {
 
 function getSessionHeaders() {
   const user = getUser();
+  const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(user.id_usuario ? { id_usuario: user.id_usuario, "id-usuario": user.id_usuario } : {}),
     ...(user.id_rol ? { id_rol: user.id_rol, "id-rol": user.id_rol } : {}),
   };

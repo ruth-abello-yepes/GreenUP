@@ -264,7 +264,7 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     motivo_rechazo = datos.get("motivo_rechazo")
 
     if id_estado == 2 and puntos_obtenidos in (None, "", 0, "0"):
-        puntos_por_kg = float(datos.get("puntos_por_kg") or 10)
+        puntos_por_kg = float(registro.get("puntos_por_kg") or datos.get("puntos_por_kg") or 0)
         puntos_obtenidos = round((float(registro.get("cantidad") or 0) * puntos_por_kg), 2)
 
     actualizado = cambiar_estado_registro_recicladora(
@@ -280,7 +280,7 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if id_estado == 2:
         crear_notificacion(
             "Reciclaje confirmado",
-            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada por la recicladora.",
+            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada y sumaste {puntos_obtenidos} Ecopuntos.",
             registro.get("id_usuario"),
             None,
         )

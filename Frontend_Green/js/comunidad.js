@@ -425,7 +425,7 @@ async function abrirQuizNoticia(idNoticia, titulo) {
         const boton = document.createElement("button");
         boton.type = "submit";
         boton.className = "btn btn-success rounded-pill px-4 py-2";
-        boton.textContent = "Enviar respuestas";
+        boton.textContent = "Enviar respuesta";
         formulario.appendChild(boton);
         formulario.onsubmit = resolverJuegoNoticias;
         mostrarAvisoComunidad("#estado-juego-noticias", "info", "Responde las preguntas para sumar puntos.");

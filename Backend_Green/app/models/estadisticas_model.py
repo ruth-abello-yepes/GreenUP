@@ -121,22 +121,45 @@ class EstadisticasModel:
         try:
             cursor.execute(
                 f"""
+                WITH reciclaje AS (
+                    SELECT
+                        COALESCE(SUM(puntos_obtenidos), 0)::int AS puntos_reciclaje,
+                        COALESCE(SUM(cantidad), 0)::float AS total_kg,
+                        COUNT(*)::int AS total_entregas,
+                        COALESCE(SUM(puntos_obtenidos) FILTER (
+                            WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
+                        ), 0)::int AS puntos_reciclaje_mes,
+                        COALESCE(SUM(cantidad) FILTER (
+                            WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
+                        ), 0)::float AS kg_mes,
+                        MAX(fecha_hora) AS ultima_entrega
+                    FROM registrar_reciclaje
+                    WHERE id_usuario = %s
+                      AND {ESTADO_CONFIRMADO_SQL}
+                ), juego AS (
+                    SELECT
+                        COALESCE(puntos_total, 0)::int AS puntos_juego
+                    FROM ciudadano_puntos_juego
+                    WHERE id_usuario = %s
+                ), juego_mes AS (
+                    SELECT
+                        COALESCE(SUM(puntaje_obtenido), 0)::int AS puntos_juego_mes
+                    FROM noticia_juego_intentos
+                    WHERE id_usuario = %s
+                      AND fecha_resolucion >= DATE_TRUNC('month', CURRENT_DATE)
+                )
                 SELECT
-                    COALESCE(SUM(puntos_obtenidos), 0)::int AS total_puntos,
-                    COALESCE(SUM(cantidad), 0)::float AS total_kg,
-                    COUNT(*)::int AS total_entregas,
-                    COALESCE(SUM(puntos_obtenidos) FILTER (
-                        WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
-                    ), 0)::int AS puntos_mes,
-                    COALESCE(SUM(cantidad) FILTER (
-                        WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
-                    ), 0)::float AS kg_mes,
-                    MAX(fecha_hora) AS ultima_entrega
-                FROM registrar_reciclaje
-                WHERE id_usuario = %s
-                  AND {ESTADO_CONFIRMADO_SQL}
+                    reciclaje.puntos_reciclaje + COALESCE(juego.puntos_juego, 0) AS total_puntos,
+                    reciclaje.total_kg,
+                    reciclaje.total_entregas,
+                    reciclaje.puntos_reciclaje_mes + COALESCE(juego_mes.puntos_juego_mes, 0) AS puntos_mes,
+                    reciclaje.kg_mes,
+                    reciclaje.ultima_entrega
+                FROM reciclaje
+                LEFT JOIN juego ON TRUE
+                LEFT JOIN juego_mes ON TRUE
                 """,
-                (usuario_id,),
+                (usuario_id, usuario_id, usuario_id),
             )
             resumen = cursor.fetchone() or {}
 
@@ -189,12 +212,17 @@ class EstadisticasModel:
                             NULLIF(TRIM(usuarios.apellidos), '')
                         ) AS nombre,
                         usuarios.foto_perfil,
-                        COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)::int AS total_puntos,
+                        (
+                            COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)
+                            + COALESCE(MAX(ciudadano_puntos_juego.puntos_total), 0)
+                        )::int AS total_puntos,
                         COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS total_kg
                     FROM usuarios
                     LEFT JOIN registrar_reciclaje
                         ON registrar_reciclaje.id_usuario = usuarios.id_usuario
                        AND {ESTADO_CONFIRMADO_SQL}
+                    LEFT JOIN ciudadano_puntos_juego
+                        ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
                     WHERE usuarios.id_rol = 3
                       AND usuarios.id_estado = 1
                     GROUP BY usuarios.id_usuario, usuarios.nombres, usuarios.apellidos,
@@ -289,8 +317,11 @@ class EstadisticasModel:
 
             cursor.execute(
                 f"""
-                SELECT COUNT(*)::int AS total_puntos
-                FROM puntos_reciclaje
+                SELECT
+                    (
+                        COALESCE((SELECT SUM(puntos_obtenidos) FROM registrar_reciclaje WHERE {ESTADO_CONFIRMADO_SQL}), 0)
+                        + COALESCE((SELECT SUM(puntos_total) FROM ciudadano_puntos_juego), 0)
+                    )::int AS total_puntos
                 """
             )
             puntos = cursor.fetchone() or {}
@@ -333,11 +364,17 @@ class EstadisticasModel:
                 SELECT
                     usuarios.id_usuario,
                     CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS nombre,
-                    COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS total
+                    (
+                        COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)
+                        + COALESCE(MAX(ciudadano_puntos_juego.puntos_total), 0)
+                    )::int AS total
                 FROM registrar_reciclaje
-                LEFT JOIN usuarios
+                RIGHT JOIN usuarios
                     ON registrar_reciclaje.id_usuario = usuarios.id_usuario
-                WHERE {ESTADO_CONFIRMADO_SQL}
+                   AND {ESTADO_CONFIRMADO_SQL}
+                LEFT JOIN ciudadano_puntos_juego
+                    ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
+                WHERE usuarios.id_rol = 3
                 GROUP BY usuarios.id_usuario, usuarios.nombres, usuarios.apellidos
                 ORDER BY total DESC
                 LIMIT 10

@@ -60,6 +60,12 @@ function crearNavegacionInferiorCiudadano() {
     const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
     const rutas = [
         {
+            href: "ciudadano_inicio.html",
+            icono: "home",
+            texto: "Inicio",
+            activos: ["ciudadano_inicio.html"],
+        },
+        {
             href: "ciudadano_noticias.html",
             icono: "newspaper",
             texto: "Noticias",
@@ -83,7 +89,7 @@ function crearNavegacionInferiorCiudadano() {
             href: "ciudadano_educacion.html",
             icono: "menu_book",
             texto: "Aprende",
-            activos: ["ciudadano_educacion.html", "ciudadano_noticias.html"],
+            activos: ["ciudadano_educacion.html"],
         },
         {
             href: "ciudadano_ajustes.html",
@@ -147,7 +153,7 @@ function crearNavegacionInferiorCiudadano() {
  */
 function crearMenuHamburguesaCiudadano() {
     const botonMenu = document.querySelector(
-        '.navbar-toggler[data-bs-target="#mobileMenuSidebar"], .navbar-toggler[data-bs-target="#mobileOffcanvas"]'
+        '[data-bs-target="#mobileMenuSidebar"], [data-bs-target="#mobileOffcanvas"], [aria-controls="mobileMenuSidebar"], [aria-controls="mobileOffcanvas"]'
     );
 
     if (!botonMenu || document.getElementById("ciudadano-hamburger-panel")) {
@@ -167,6 +173,7 @@ function crearMenuHamburguesaCiudadano() {
 
     botonMenu.removeAttribute("data-bs-toggle");
     botonMenu.removeAttribute("data-bs-target");
+    botonMenu.removeAttribute("aria-controls");
     botonMenu.setAttribute("aria-label", "Abrir menú ciudadano");
     botonMenu.setAttribute("aria-expanded", "false");
 
@@ -202,10 +209,12 @@ function crearMenuHamburguesaCiudadano() {
 
     botonMenu.addEventListener("click", (evento) => {
         evento.preventDefault();
+        evento.stopPropagation();
+        cerrarOffcanvasViejoCiudadano();
         const abrir = panel.hidden;
         panel.hidden = !abrir;
         botonMenu.setAttribute("aria-expanded", String(abrir));
-    });
+    }, true);
 
     panel.querySelectorAll("[data-requiere-sesion='true']").forEach((enlace) => {
         enlace.addEventListener("click", (evento) => {
@@ -242,6 +251,26 @@ function crearMenuHamburguesaCiudadano() {
         panel.hidden = true;
         botonMenu.setAttribute("aria-expanded", "false");
     });
+}
+
+/**
+ * Cierra el offcanvas viejo de Bootstrap si llegó a abrirse.
+ */
+function cerrarOffcanvasViejoCiudadano() {
+    document.querySelectorAll(".offcanvas.show").forEach((offcanvas) => {
+        offcanvas.classList.remove("show");
+        offcanvas.setAttribute("aria-hidden", "true");
+        offcanvas.removeAttribute("aria-modal");
+        offcanvas.removeAttribute("role");
+    });
+
+    document.querySelectorAll(".offcanvas-backdrop").forEach((fondo) => {
+        fondo.remove();
+    });
+
+    document.body.classList.remove("offcanvas-backdrop", "modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("padding-right");
 }
 
 /**
@@ -406,6 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
     completarNavegacionCiudadano();
     crearNavegacionInferiorCiudadano();
     crearMenuHamburguesaCiudadano();
+    cerrarOffcanvasViejoCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
     corregirFooterCiudadano();

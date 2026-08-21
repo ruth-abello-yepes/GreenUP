@@ -59,7 +59,7 @@
     bottom: 0;
     box-shadow: 0 -16px 38px rgba(0, 61, 108, 0.18);
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 2px;
     left: 50%;
     max-width: 760px;
@@ -76,12 +76,12 @@
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     font-weight: 800;
     gap: 4px;
     justify-content: center;
-    min-height: 72px;
-    padding: 8px 4px;
+    min-height: 70px;
+    padding: 8px 2px;
     text-align: center;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   }
@@ -97,7 +97,7 @@
   /* Iconos de las opciones normales. */
   .ciudadano-bottom-nav__link .material-symbols-outlined {
     color: currentColor;
-    font-size: 2rem;
+    font-size: 1.85rem;
     line-height: 1;
   }
 
@@ -110,7 +110,7 @@
   /* Botón central de reciclar. */
   .ciudadano-bottom-nav__link--primary {
     margin-top: -30px;
-    min-height: 96px;
+    min-height: 94px;
   }
 
   /* Círculo grande del botón central. */
@@ -121,15 +121,15 @@
     border-radius: 999px;
     box-shadow: 0 10px 22px rgba(8, 122, 46, 0.25);
     display: inline-flex;
-    height: 72px;
+    height: 68px;
     justify-content: center;
-    width: 72px;
+    width: 68px;
   }
 
   /* Icono + del botón central. */
   .ciudadano-bottom-nav__main-icon .material-symbols-outlined {
     color: #2f8f2f;
-    font-size: 3rem;
+    font-size: 2.85rem;
     font-weight: 700;
   }
 
@@ -167,7 +167,12 @@
     position: fixed;
     top: 76px;
     width: 310px;
-    z-index: 2200;
+    z-index: 2300;
+  }
+
+  /* Se elimina cualquier fondo oscuro que Bootstrap haya dejado del menú viejo. */
+  .offcanvas-backdrop {
+    display: none !important;
   }
 
   /* El atributo hidden sí debe esconder el panel. */
@@ -252,22 +257,22 @@
   }
 
   .ciudadano-bottom-nav__link {
-    font-size: 0.68rem;
-    min-height: 66px;
+    font-size: 0.58rem;
+    min-height: 64px;
     padding-left: 2px;
     padding-right: 2px;
   }
 
   .ciudadano-bottom-nav__link .material-symbols-outlined {
-    font-size: 1.75rem;
+    font-size: 1.55rem;
   }
 
   .ciudadano-bottom-nav__main-icon {
-    height: 64px;
-    width: 64px;
+    height: 60px;
+    width: 60px;
   }
 
   .ciudadano-bottom-nav__main-icon .material-symbols-outlined {
-    font-size: 2.65rem;
+    font-size: 2.45rem;
   }
 }

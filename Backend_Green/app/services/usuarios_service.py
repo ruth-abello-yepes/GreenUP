@@ -169,6 +169,50 @@ def servicio_registrar_usuario(datos):
     return {"mensaje": "Ciudadano registrado correctamente", "id_usuario": id_usuario_creado}, 201
 
 
+def servicio_validar_disponibilidad_registro(datos):
+    """
+    Revisa si el documento y el usuario pueden usarse antes de terminar
+    el registro. No devuelve informacion privada, solo banderas true/false.
+    """
+
+    datos = datos or {}
+    usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username")
+    numero_documento = _documento_limpio(_texto_limpio(datos, "numero_documento", "documento", "cedula", "cc"))
+
+    usuario_valido = len(usuario) >= 5
+    documento_valido = len(numero_documento) >= 5
+    usuario_registrado = bool(usuario and buscar_usuario_por_usuario(usuario))
+    documento_registrado = bool(numero_documento and buscar_usuario_por_documento(numero_documento))
+
+    mensaje = "Datos disponibles"
+
+    if not usuario_valido:
+        mensaje = "El usuario debe tener minimo 5 caracteres"
+
+    if not documento_valido:
+        mensaje = "El numero de documento debe tener minimo 5 digitos"
+
+    if usuario_registrado:
+        mensaje = "El usuario ya se encuentra registrado"
+
+    if documento_registrado:
+        mensaje = "Cedula ya registrada"
+
+    return {
+        "mensaje": mensaje,
+        "usuario_valido": usuario_valido,
+        "documento_valido": documento_valido,
+        "usuario_registrado": usuario_registrado,
+        "documento_registrado": documento_registrado,
+        "puede_continuar": (
+            usuario_valido
+            and documento_valido
+            and not usuario_registrado
+            and not documento_registrado
+        ),
+    }, 200
+
+
 def servicio_listar_usuarios():
     """
     Lista todos los usuarios.

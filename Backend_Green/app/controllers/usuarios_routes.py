@@ -21,7 +21,8 @@ from app.services.usuarios_service import (
     servicio_cambiar_estado_usuario,
     servicio_obtener_perfil_usuario,
     servicio_actualizar_perfil_usuario,
-    servicio_cambiar_password_usuario
+    servicio_cambiar_password_usuario,
+    servicio_validar_disponibilidad_registro
 )
 
 from app.middlewares.auth_middleware import login_requerido
@@ -184,6 +185,21 @@ def ruta_registrar_usuario():
     datos = request.get_json() or {}
 
     respuesta, estado = servicio_registrar_usuario(datos)
+
+    return jsonify(respuesta), estado
+
+
+@usuarios_bp.route("/validar-registro", methods=["POST"])
+def ruta_validar_registro():
+    """
+    Valida documento y usuario antes de pasar a la pantalla de contrasena.
+
+    Esta ruta solo devuelve disponibilidad. No entrega informacion privada de
+    cuentas ya registradas.
+    """
+
+    datos = request.get_json() or {}
+    respuesta, estado = servicio_validar_disponibilidad_registro(datos)
 
     return jsonify(respuesta), estado
 

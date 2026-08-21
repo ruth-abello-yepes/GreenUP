@@ -26,7 +26,7 @@ def _tabla_existe(cursor, tabla):
     return bool(respuesta.get("existe"))
 
 
-def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado):
+def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado, genero=None):
     """
     Registra un usuario en la tabla usuarios.
 
@@ -46,8 +46,8 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
 
     sql = """
     INSERT INTO usuarios
-    (nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    (nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado, genero)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING id_usuario
     """
 
@@ -62,7 +62,8 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
         foto_perfil,
         id_tipo_documento,
         id_rol,
-        id_estado
+        id_estado,
+        genero
     )
 
     cursor.execute(sql, datos)

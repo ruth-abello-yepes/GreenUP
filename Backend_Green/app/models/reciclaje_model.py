@@ -56,6 +56,38 @@ def crear_reciclaje(cantidad, observaciones, id_usuario, id_tipo_material, id_pu
     return registro["id_registro"]
 
 
+def punto_acepta_material(id_punto, id_tipo_material):
+    """
+    Confirma si el punto ecológico seleccionado recibe el material elegido.
+
+    Esta regla evita que un ciudadano registre vidrio, plástico u otro material
+    en un punto que no lo tiene marcado como aceptado.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute(
+        """
+        SELECT 1
+        FROM punto_material
+        INNER JOIN puntos_reciclaje
+            ON puntos_reciclaje.id_punto = punto_material.id_punto
+           AND puntos_reciclaje.id_estado = 1
+        INNER JOIN tipo_material
+            ON tipo_material.id_tipo_material = punto_material.id_tipo_material
+           AND tipo_material.id_estado = 1
+        WHERE punto_material.id_punto = %s
+          AND punto_material.id_tipo_material = %s
+        LIMIT 1
+        """,
+        (id_punto, id_tipo_material),
+    )
+    existe = cursor.fetchone() is not None
+    cursor.close()
+    conexion.close()
+    return existe
+
+
 def listar_reciclajes():
     """
     Lista todos los reciclajes con datos entendibles para el administrador.
@@ -219,7 +251,12 @@ def listar_catalogo_reciclaje():
                 string_agg(DISTINCT tipo_material.nombre, ', ')
                     FILTER (WHERE tipo_material.nombre IS NOT NULL),
                 ''
-            ) AS materiales_aceptados
+            ) AS materiales_aceptados,
+            COALESCE(
+                array_agg(DISTINCT tipo_material.id_tipo_material)
+                    FILTER (WHERE tipo_material.id_tipo_material IS NOT NULL),
+                ARRAY[]::integer[]
+            ) AS materiales_ids
         FROM puntos_reciclaje
         LEFT JOIN punto_material
             ON punto_material.id_punto = puntos_reciclaje.id_punto

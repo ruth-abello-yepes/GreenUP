@@ -53,6 +53,7 @@ def servicio_registrar_usuario(datos):
     celular = datos.get("celular")
     foto_perfil = datos.get("foto_perfil", "")
     id_tipo_documento = datos.get("id_tipo_documento")
+    genero = (datos.get("genero") or "").strip() or None
 
     # El ciudadano siempre queda activo.
     id_estado = 1
@@ -87,6 +88,9 @@ def servicio_registrar_usuario(datos):
     if not id_tipo_documento:
         return {"mensaje": "El tipo de documento es obligatorio"}, 400
 
+    if genero not in ("Femenino", "Masculino", "Otro"):
+        return {"mensaje": "Debes seleccionar un genero valido"}, 400
+
     # Nunca guardamos la contrasena normal.
     # Primero la ciframos.
     contrasena_cifrada = cifrar_contrasena(contrasena)
@@ -102,7 +106,8 @@ def servicio_registrar_usuario(datos):
         foto_perfil,
         id_tipo_documento,
         id_rol,
-        id_estado
+        id_estado,
+        genero
     )
 
     crear_notificacion(

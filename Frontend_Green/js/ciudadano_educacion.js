@@ -47,6 +47,16 @@
     estado.toast.show();
   }
 
+  function escribirTexto(selector, texto) {
+    const elemento = $(selector);
+    if (elemento) elemento.textContent = texto;
+  }
+
+  function escribirAtributo(selector, atributo, valor) {
+    const elemento = $(selector);
+    if (elemento) elemento.setAttribute(atributo, valor);
+  }
+
   function renderResumen() {
     const resumen = estado.datos?.resumen || {};
     const completados = Number(resumen.contenidos_completados || 0);
@@ -74,18 +84,18 @@
     const contenido = videos().find((item) => item.destacado) || videos()[0];
     const medio = $("#featured-media");
     if (!contenido || !medio) {
-      $("#featured-title").textContent = "Aún no hay videos disponibles";
-      $("#featured-description").textContent = "El administrador puede publicar contenido o configurar YouTube en el backend.";
+      escribirTexto("#featured-title", "Aún no hay videos disponibles");
+      escribirTexto("#featured-description", "El administrador puede publicar contenido o configurar YouTube en el backend.");
       $("#featured-play")?.classList.add("d-none");
       return;
     }
 
     const imagen = urlSegura(contenido.imagen, "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=900&q=80");
-    $("#featured-image").src = imagen;
-    $("#featured-image").alt = contenido.titulo;
-    $("#featured-title").textContent = contenido.titulo;
-    $("#featured-description").textContent = contenido.descripcion || "Video educativo de reciclaje y sostenibilidad.";
-    $("#featured-duration").textContent = `${Number(contenido.duracion_minutos || 5)} min`;
+    escribirAtributo("#featured-image", "src", imagen);
+    escribirAtributo("#featured-image", "alt", contenido.titulo);
+    escribirTexto("#featured-title", contenido.titulo);
+    escribirTexto("#featured-description", contenido.descripcion || "Video educativo de reciclaje y sostenibilidad.");
+    escribirTexto("#featured-duration", `${Number(contenido.duracion_minutos || 5)} min`);
     medio.dataset.contentId = contenido.id_contenido;
     medio.onclick = () => reproducirVideo(contenido);
   }

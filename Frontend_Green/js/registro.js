@@ -196,6 +196,7 @@ async function registrarCuenta() {
   const apellidos = document.getElementById("apellidos").value;
   const correo = document.getElementById("correo").value;
   const celular = document.getElementById("celular").value;
+  const genero = document.getElementById("genero").value;
   const idTipoDocumento = document.getElementById("id_tipo_documento").value;
   const numeroDocumento = document.getElementById("numero_documento").value;
   const usuario = document.getElementById("usuario").value;
@@ -219,6 +220,11 @@ async function registrarCuenta() {
     return;
   }
 
+  if (tipoRegistro === "ciudadano" && !genero) {
+    alert("Debes seleccionar tu género.");
+    return;
+  }
+
   // Base de datos compartida entre roles
   const datosBase = {
     nombres: nombres,
@@ -228,6 +234,7 @@ async function registrarCuenta() {
     contrasena: contrasena,
     numero_documento: numeroDocumento,
     celular: celular,
+    genero: genero || "Otro",
     foto_perfil: "",
     id_tipo_documento: Number(idTipoDocumento),
   };

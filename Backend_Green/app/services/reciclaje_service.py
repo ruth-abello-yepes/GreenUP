@@ -10,7 +10,8 @@ from app.models.reciclaje_model import (
     listar_catalogo_reciclaje,
     listar_reciclajes_por_usuario,
     buscar_reciclaje,
-    cambiar_estado_reciclaje
+    cambiar_estado_reciclaje,
+    punto_acepta_material,
 )
 from app.models.notificaciones_model import crear_notificacion
 
@@ -45,6 +46,11 @@ def servicio_crear_reciclaje(data, id_usuario_sesion=None):
 
     if cantidad <= 0:
         return {"mensaje": "La cantidad debe ser mayor que cero"}, 400
+
+    if not punto_acepta_material(id_punto, id_tipo_material):
+        return {
+            "mensaje": "El punto ecológico seleccionado no recibe ese material. Elige un material aceptado por la recicladora."
+        }, 400
 
     id_registro = crear_reciclaje(cantidad, observaciones, id_usuario, id_tipo_material, id_punto)
 

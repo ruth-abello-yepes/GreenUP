@@ -56,14 +56,27 @@
   function llenarMateriales() {
     const select = $("#id_tipo_material");
     if (!select) return;
+    const idPunto = Number($("#id_punto")?.value || 0);
+    const punto = estado.puntos.find((item) => Number(item.id_punto) === idPunto);
+    const idsAceptados = Array.isArray(punto?.materiales_ids)
+      ? punto.materiales_ids.map((id) => Number(id))
+      : [];
+    const materialesDisponibles = idPunto && idsAceptados.length
+      ? estado.materiales.filter((material) => idsAceptados.includes(Number(material.id_tipo_material)))
+      : estado.materiales;
+
     select.innerHTML = `
-      <option value="">Selecciona un material</option>
-      ${estado.materiales.map((material) => `
+      <option value="">${idPunto ? "Selecciona un material aceptado" : "Selecciona primero un punto o material"}</option>
+      ${materialesDisponibles.map((material) => `
         <option value="${material.id_tipo_material}">
           ${escapar(material.nombre)}${material.unidad ? ` (${escapar(material.unidad)})` : ""}
         </option>
       `).join("")}
     `;
+
+    if (idPunto && !materialesDisponibles.length) {
+      select.innerHTML = '<option value="">Este punto todavía no tiene materiales aceptados</option>';
+    }
   }
 
   function llenarPuntos() {
@@ -206,6 +219,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     $("#form-reciclaje")?.addEventListener("submit", enviarRegistro);
+    $("#id_punto")?.addEventListener("change", llenarMateriales);
     iniciarPantalla();
   });
 })();

@@ -36,6 +36,7 @@ def obtener_conexion():
         user=DB_USER,
         password=DB_PASSWORD,
         dbname=DB_NAME,
+        sslmode="require",
         cursor_factory=RealDictCursor  # Para que las consultas devuelvan diccionarios JSON compatibles con Flask
     )
     return conexion

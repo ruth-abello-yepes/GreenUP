@@ -363,6 +363,70 @@ class SeguridadIntegracionTest(unittest.TestCase):
         self.assertEqual(respuesta.status_code, 400)
         self.assertIn("minimo 5", respuesta.get_json()["mensaje"].lower())
 
+    def test_validar_registro_detecta_usuario_corto(self):
+        """El validador previo impide avanzar con usuario menor de 5 caracteres."""
+
+        respuesta = self.cliente.post(
+            "/api/usuarios/validar-registro",
+            json={
+                "numero_documento": "900001234",
+                "usuario": "abc",
+            },
+        )
+        datos = respuesta.get_json()
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertFalse(datos["usuario_valido"])
+        self.assertFalse(datos["puede_continuar"])
+
+    def test_validar_registro_detecta_documento_duplicado(self):
+        """El validador previo muestra cedula registrada antes de crear contrasena."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT numero_documento
+                FROM usuarios
+                WHERE numero_documento IS NOT NULL
+                  AND TRIM(numero_documento) <> ''
+                LIMIT 1
+                """
+            )
+            usuario_existente = cursor.fetchone()
+
+        if not usuario_existente:
+            self.skipTest("No hay usuarios existentes para validar cedula duplicada.")
+
+        respuesta = self.cliente.post(
+            "/api/usuarios/validar-registro",
+            json={
+                "numero_documento": usuario_existente["numero_documento"],
+                "usuario": "usuario_nuevo_greenup",
+            },
+        )
+        datos = respuesta.get_json()
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertTrue(datos["documento_registrado"])
+        self.assertFalse(datos["puede_continuar"])
+
+    def test_validar_registro_permite_datos_disponibles(self):
+        """El validador previo permite avanzar cuando usuario y documento no existen."""
+
+        respuesta = self.cliente.post(
+            "/api/usuarios/validar-registro",
+            json={
+                "numero_documento": "99999888777666",
+                "usuario": "usuario_disponible_greenup",
+            },
+        )
+        datos = respuesta.get_json()
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertFalse(datos["documento_registrado"])
+        self.assertFalse(datos["usuario_registrado"])
+        self.assertTrue(datos["puede_continuar"])
+
     def test_registro_ciudadano_rechaza_documento_duplicado(self):
         """No permite crear otro ciudadano con una cedula ya registrada."""
 

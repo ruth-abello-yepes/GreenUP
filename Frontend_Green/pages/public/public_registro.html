@@ -448,11 +448,17 @@
                 <div class="col-md-6">
                   <label class="form-label">Número de documento</label>
                   <input id="numero_documento" class="form-control" type="text" placeholder="1234567890" required />
+                  <div id="mensaje-documento" class="invalid-feedback">
+                    Cédula ya registrada.
+                  </div>
                 </div>
 
                 <div class="col-12">
                   <label class="form-label">Nombre de usuario</label>
                   <input id="usuario" class="form-control" type="text" placeholder="anyeli123" minlength="5" required />
+                  <div id="mensaje-usuario" class="invalid-feedback">
+                    El usuario debe tener mínimo 5 caracteres.
+                  </div>
                 </div>
               </div>
 

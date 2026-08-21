@@ -140,6 +140,100 @@ function validarUsuarioRegistro(usuario) {
   return String(usuario || "").trim().length >= 5;
 }
 
+/**
+ * Limpia los mensajes rojos del paso de documento y usuario.
+ * Se ejecuta antes de volver a validar para no dejar mensajes antiguos.
+ */
+function limpiarMensajesRegistro() {
+  const campos = ["numero_documento", "usuario"];
+  const mensajes = ["mensaje-documento", "mensaje-usuario"];
+
+  campos.forEach((idCampo) => {
+    document.getElementById(idCampo)?.classList.remove("is-invalid");
+  });
+
+  mensajes.forEach((idMensaje) => {
+    const mensaje = document.getElementById(idMensaje);
+    if (mensaje) mensaje.textContent = "";
+  });
+}
+
+/**
+ * Muestra un error debajo de un input del formulario.
+ * @param {string} idCampo - ID del input que debe marcarse en rojo.
+ * @param {string} idMensaje - ID del texto que aparece debajo del input.
+ * @param {string} texto - Mensaje que vera el usuario.
+ */
+function mostrarErrorRegistro(idCampo, idMensaje, texto) {
+  const campo = document.getElementById(idCampo);
+  const mensaje = document.getElementById(idMensaje);
+
+  if (campo) campo.classList.add("is-invalid");
+  if (mensaje) mensaje.textContent = texto;
+}
+
+/**
+ * Valida el paso donde se escribe documento y usuario.
+ * Primero revisa longitud en el navegador y despues pregunta al backend si ya
+ * existe una cuenta con ese documento o usuario.
+ * @async
+ * @returns {Promise<boolean>} true si puede pasar al siguiente paso.
+ */
+async function validarPasoDocumentoUsuario() {
+  limpiarMensajesRegistro();
+
+  const numeroDocumento = limpiarDocumentoRegistro(document.getElementById("numero_documento")?.value);
+  const usuario = document.getElementById("usuario")?.value.trim() || "";
+  let puedeContinuar = true;
+
+  if (numeroDocumento.length < 5) {
+    mostrarErrorRegistro("numero_documento", "mensaje-documento", MENSAJE_DOCUMENTO_INVALIDO);
+    puedeContinuar = false;
+  }
+
+  if (!validarUsuarioRegistro(usuario)) {
+    mostrarErrorRegistro("usuario", "mensaje-usuario", MENSAJE_USUARIO_CORTO);
+    puedeContinuar = false;
+  }
+
+  if (!puedeContinuar) {
+    return false;
+  }
+
+  try {
+    const respuesta = await peticionSegura("/api/usuarios/validar-registro", "POST", {
+      numero_documento: numeroDocumento,
+      usuario,
+    });
+
+    const datos = respuesta.datos || {};
+
+    if (datos.documento_registrado) {
+      mostrarErrorRegistro("numero_documento", "mensaje-documento", "Cédula ya registrada.");
+      puedeContinuar = false;
+    }
+
+    if (datos.usuario_registrado) {
+      mostrarErrorRegistro("usuario", "mensaje-usuario", "El usuario ya se encuentra registrado.");
+      puedeContinuar = false;
+    }
+
+    if (!datos.usuario_valido) {
+      mostrarErrorRegistro("usuario", "mensaje-usuario", MENSAJE_USUARIO_CORTO);
+      puedeContinuar = false;
+    }
+
+    return puedeContinuar && datos.puede_continuar;
+  } catch (error) {
+    mostrarErrorRegistro(
+      "numero_documento",
+      "mensaje-documento",
+      "No se pudo validar el documento. Verifica que el backend esté activo.",
+    );
+    return false;
+  }
+}
+
 function escaparRegistro(valor) {
   return String(valor ?? "")
     .replaceAll("&", "&amp;")
@@ -202,7 +296,12 @@ function leerMaterialesSeleccionados() {
  * Si se encuentra en el último paso, inicia el proceso de registro.
  * @function siguientePaso
  */
-function siguientePaso() {
+async function siguientePaso() {
+  if (pasoActual === 2) {
+    const pasoValido = await validarPasoDocumentoUsuario();
+    if (!pasoValido) return;
+  }
+
   if (pasoActual < totalPasos) {
     document.getElementById("seccion-" + pasoActual).classList.add("d-none");
     pasoActual = pasoActual + 1;

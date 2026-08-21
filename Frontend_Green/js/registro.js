@@ -4,14 +4,17 @@
  * * Este archivo registra dos tipos de usuarios:
  * 1. Ciudadano (POST /api/usuarios/registro)
  * 2. Dueño de punto ecológico (POST /api/recicladoras/registro)
- * * Nota: La cámara de comercio por ahora guarda el nombre del archivo, 
- * no el archivo real en el servidor.
+ * * Nota: La cámara de comercio queda registrada como referencia
+ * y su validación queda pendiente para revisión administrativa.
  */
 
 let pasoActual = 1;
 const totalPasos = 3;
 const MENSAJE_CONTRASENA_SEGURA =
   "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.";
+const registroEstado = {
+  materiales: [],
+};
 
 /**
  * Valida que una contraseña cumpla con los criterios de seguridad establecidos.
@@ -110,9 +113,67 @@ function mostrarCamposEmpresa() {
 
   if (tipoRegistro === "recicladora") {
     camposEmpresa.classList.remove("d-none");
+    cargarMaterialesRegistroRecicladora();
   } else {
     camposEmpresa.classList.add("d-none");
   }
+}
+
+function escaparRegistro(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/**
+ * Consulta los materiales activos que el sistema tiene guardados.
+ * Estos materiales se muestran como casillas para que la recicladora
+ * marque solo los materiales que realmente recibe.
+ * @async
+ * @function cargarMaterialesRegistroRecicladora
+ */
+async function cargarMaterialesRegistroRecicladora() {
+  const contenedor = document.getElementById("materiales-recicladora");
+  if (!contenedor || registroEstado.materiales.length) return;
+
+  try {
+    const respuesta = await peticionSegura("/materiales", "GET");
+    if (!respuesta.ok) throw new Error(respuesta.datos?.mensaje || "No se pudieron cargar materiales");
+    registroEstado.materiales = (respuesta.datos || []).filter((material) => Number(material.id_estado) === 1);
+
+    if (!registroEstado.materiales.length) {
+      contenedor.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">No hay materiales activos.</div></div>';
+      return;
+    }
+
+    contenedor.innerHTML = registroEstado.materiales.map((material) => `
+      <div class="col-md-6">
+        <label class="border rounded-3 p-3 d-flex gap-2 h-100">
+          <input class="form-check-input mt-1" type="checkbox" name="ids_materiales" value="${material.id_tipo_material}">
+          <span>
+            <strong class="d-block">${escaparRegistro(material.nombre)}</strong>
+            <small class="text-muted">${escaparRegistro(material.descripcion || "Material del catálogo GreenUp")}</small>
+          </span>
+        </label>
+      </div>
+    `).join("");
+  } catch (error) {
+    contenedor.innerHTML = `<div class="col-12"><div class="alert alert-danger mb-0">${escaparRegistro(error.message)}</div></div>`;
+  }
+}
+
+/**
+ * Lee los materiales marcados por la recicladora en el formulario.
+ * @function leerMaterialesSeleccionados
+ * @returns {number[]} Lista de IDs de materiales seleccionados.
+ */
+function leerMaterialesSeleccionados() {
+  return [...document.querySelectorAll('input[name="ids_materiales"]:checked')]
+    .map((input) => Number(input.value))
+    .filter((id) => id > 0);
 }
 
 /**
@@ -252,9 +313,15 @@ async function registrarCuenta() {
 
     const archivoCamara = document.getElementById("camara_comercio").files[0];
     let camaraComercio = "";
+    const idsMateriales = leerMaterialesSeleccionados();
 
     if (archivoCamara) {
       camaraComercio = archivoCamara.name;
+    }
+
+    if (!idsMateriales.length) {
+      alert("Debes seleccionar al menos un material que recibe la recicladora.");
+      return;
     }
 
     datosEnviar = {
@@ -264,6 +331,12 @@ async function registrarCuenta() {
       direccion_empresa: document.getElementById("direccion_empresa").value,
       telefono_empresa: document.getElementById("telefono_empresa").value,
       camara_comercio: camaraComercio,
+      dias_trabajo: document.getElementById("dias_trabajo").value,
+      hora_inicio: document.getElementById("hora_inicio").value,
+      hora_fin: document.getElementById("hora_fin").value,
+      dias_no_trabaja: document.getElementById("dias_no_trabaja").value,
+      horario: `${document.getElementById("hora_inicio").value || ""} - ${document.getElementById("hora_fin").value || ""}`.trim(),
+      ids_materiales: idsMateriales,
     };
   }
 

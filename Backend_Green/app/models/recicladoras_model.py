@@ -15,14 +15,37 @@ def _tabla_tiene_columna(cursor, tabla, columna):
         (tabla, columna),
     )
     return cursor.fetchone() is not None
-def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_empresa, telefono_empresa, camara_comercio, id_estado):
+def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_empresa, telefono_empresa, camara_comercio, id_estado, datos_extra=None):
+    """
+    Guarda los datos empresariales de una recicladora.
+
+    Los campos extra quedan con COALESCE para que registros antiguos sigan
+    funcionando aunque no envien horarios o estados de validacion.
+    """
+
+    datos_extra = datos_extra or {}
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
     sql = """
     INSERT INTO recicladoras
-    (id_usuario, nit_empresa, nombre_empresa, direccion_empresa, telefono_empresa, camara_comercio, id_estado)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    (
+        id_usuario,
+        nit_empresa,
+        nombre_empresa,
+        direccion_empresa,
+        telefono_empresa,
+        camara_comercio,
+        id_estado,
+        horario,
+        dias_trabajo,
+        hora_inicio,
+        hora_fin,
+        dias_no_trabaja,
+        estado_validacion_nit,
+        estado_camara_comercio
+    )
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     cursor.execute(sql, (
@@ -33,6 +56,13 @@ def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_emp
         telefono_empresa,
         camara_comercio,
         id_estado,
+        datos_extra.get("horario"),
+        datos_extra.get("dias_trabajo"),
+        datos_extra.get("hora_inicio"),
+        datos_extra.get("hora_fin"),
+        datos_extra.get("dias_no_trabaja"),
+        datos_extra.get("estado_validacion_nit", "pendiente"),
+        datos_extra.get("estado_camara_comercio", "pendiente"),
     ))
     conexion.commit()
 
@@ -71,7 +101,14 @@ def listar_recicladoras():
         recicladoras.nombre_empresa,
         recicladoras.direccion_empresa,
         recicladoras.telefono_empresa,
-        recicladoras.camara_comercio
+        recicladoras.camara_comercio,
+        recicladoras.horario,
+        recicladoras.dias_trabajo,
+        recicladoras.hora_inicio,
+        recicladoras.hora_fin,
+        recicladoras.dias_no_trabaja,
+        recicladoras.estado_validacion_nit,
+        recicladoras.estado_camara_comercio
     FROM usuarios
     INNER JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
     WHERE usuarios.id_rol = 2
@@ -113,6 +150,13 @@ def buscar_recicladora_por_usuario(id_usuario):
         recicladoras.direccion_empresa,
         recicladoras.telefono_empresa,
         recicladoras.camara_comercio,
+        recicladoras.horario AS horario_recicladora,
+        recicladoras.dias_trabajo,
+        recicladoras.hora_inicio,
+        recicladoras.hora_fin,
+        recicladoras.dias_no_trabaja,
+        recicladoras.estado_validacion_nit,
+        recicladoras.estado_camara_comercio,
         recicladoras.id_estado AS id_estado_recicladora,
         {id_punto_select}
         puntos_reciclaje.nombre AS nombre_punto,
@@ -165,7 +209,12 @@ def actualizar_perfil_recicladora(id_usuario, datos):
             nombre_empresa = COALESCE(%s, nombre_empresa),
             direccion_empresa = COALESCE(%s, direccion_empresa),
             telefono_empresa = COALESCE(%s, telefono_empresa),
-            camara_comercio = COALESCE(%s, camara_comercio)
+            camara_comercio = COALESCE(%s, camara_comercio),
+            horario = COALESCE(%s, horario),
+            dias_trabajo = COALESCE(%s, dias_trabajo),
+            hora_inicio = COALESCE(%s, hora_inicio),
+            hora_fin = COALESCE(%s, hora_fin),
+            dias_no_trabaja = COALESCE(%s, dias_no_trabaja)
         WHERE id_usuario = %s
         """,
         (
@@ -174,6 +223,11 @@ def actualizar_perfil_recicladora(id_usuario, datos):
             datos.get("direccion_empresa"),
             datos.get("telefono_empresa"),
             datos.get("camara_comercio"),
+            datos.get("horario"),
+            datos.get("dias_trabajo"),
+            datos.get("hora_inicio"),
+            datos.get("hora_fin"),
+            datos.get("dias_no_trabaja"),
             id_usuario,
         ),
     )

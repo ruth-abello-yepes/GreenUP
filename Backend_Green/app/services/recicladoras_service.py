@@ -59,8 +59,8 @@ def servicio_registrar_dueno_recicladora(datos):
     id_rol = 2
     """
 
-    nombres = datos.get("nombres")
-    apellidos = datos.get("apellidos")
+    nombres = datos.get("nombres") or datos.get("nombre_empresa")
+    apellidos = datos.get("apellidos") or "Empresa"
     correo = datos.get("correo")
     usuario = datos.get("usuario")
     contrasena = datos.get("contrasena")
@@ -75,6 +75,12 @@ def servicio_registrar_dueno_recicladora(datos):
     direccion_empresa = datos.get("direccion_empresa")
     telefono_empresa = datos.get("telefono_empresa")
     camara_comercio = datos.get("camara_comercio", "")
+    ids_materiales = datos.get("ids_materiales") or []
+    horario = datos.get("horario")
+    dias_trabajo = datos.get("dias_trabajo")
+    hora_inicio = datos.get("hora_inicio")
+    hora_fin = datos.get("hora_fin")
+    dias_no_trabaja = datos.get("dias_no_trabaja")
 
     if not nombres:
         return {"mensaje": "Los nombres son obligatorios"}, 400
@@ -107,6 +113,31 @@ def servicio_registrar_dueno_recicladora(datos):
 
     if not direccion_empresa:
         return {"mensaje": "La direccion de la empresa es obligatoria"}, 400
+
+    if len(str(usuario or "")) < 5:
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
+
+    if not str(nit_empresa).replace("-", "").replace(".", "").isdigit():
+        return {"mensaje": "El NIT debe contener solo numeros, puntos o guion"}, 400
+
+    if not camara_comercio:
+        return {"mensaje": "Debes cargar o registrar la camara de comercio"}, 400
+
+    if not isinstance(ids_materiales, list) or not ids_materiales:
+        return {"mensaje": "Debes seleccionar al menos un material que recibe la recicladora"}, 400
+
+    try:
+        ids_materiales_limpios = [int(id_material) for id_material in ids_materiales]
+    except (TypeError, ValueError):
+        return {"mensaje": "Los materiales seleccionados no son validos"}, 400
+
+    ids_materiales_limpios = [id_material for id_material in ids_materiales_limpios if id_material > 0]
+
+    if not ids_materiales_limpios:
+        return {"mensaje": "Debes seleccionar materiales validos"}, 400
+
+    if not horario and hora_inicio and hora_fin:
+        horario = f"{hora_inicio} - {hora_fin}"
     contrasena_cifrada = cifrar_contrasena(contrasena)
     id_rol = 2
     id_estado = 1
@@ -132,12 +163,21 @@ def servicio_registrar_dueno_recicladora(datos):
         direccion_empresa,
         telefono_empresa,
         camara_comercio,
-        id_estado
+        id_estado,
+        {
+            "horario": horario or "Horario por confirmar",
+            "dias_trabajo": dias_trabajo,
+            "hora_inicio": hora_inicio or None,
+            "hora_fin": hora_fin or None,
+            "dias_no_trabaja": dias_no_trabaja,
+            "estado_validacion_nit": "pendiente",
+            "estado_camara_comercio": "pendiente",
+        },
     )
     id_punto_creado = crear_ubicacion(
         nombre_empresa,
         direccion_empresa,
-        datos.get("horario", "Horario por confirmar"),
+        horario or "Horario por confirmar",
         datos.get("latitud"),
         datos.get("longitud"),
         telefono_empresa,
@@ -145,6 +185,7 @@ def servicio_registrar_dueno_recicladora(datos):
         id_estado
     )
     asociar_punto_a_recicladora(id_usuario_creado, id_punto_creado)
+    reemplazar_materiales_punto_recicladora(id_usuario_creado, ids_materiales_limpios)
 
     crear_notificacion(
         "Nueva recicladora registrada",

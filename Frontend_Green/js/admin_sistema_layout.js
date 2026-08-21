@@ -12,7 +12,7 @@
   - El mapa se actualiza automaticamente leyendo los puntos de Supabase.
 */
 
-const ADMIN_API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
+const ADMIN_API_BASE = typeof API_URL !== "undefined" ? API_URL : "https://greenup-hoxj.onrender.com";
 const ADMIN_REFRESH_MS = 8000;
 const ADMIN_HOME = "admin_panel.html";
 

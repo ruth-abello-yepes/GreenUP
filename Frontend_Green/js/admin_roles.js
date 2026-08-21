@@ -11,7 +11,7 @@ async function cargarRoles() {
         Nos conectamos al backend para pedir la lista de roles.
 
         Ruta:
-        GET http://127.0.0.1:5000/api/roles/listar
+        GET https://greenup-hoxj.onrender.com/api/roles/listar
     */
 
   const respuesta = await fetch(API_URL + "/api/roles/listar");

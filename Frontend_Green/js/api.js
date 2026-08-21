@@ -1,11 +1,10 @@
-// Esta es la URL donde está corriendo nuestro backend Flask.
-// Si Flask dice "Running on http://127.0.0.1:5000",
-// entonces esta es la URL que debemos usar.
+// Esta es la URL donde está corriendo nuestro backend Flask en Render.
+// Si necesitas trabajar localmente, cambia temporalmente esta línea por tu servidor local.
 /**
  * URL base donde se encuentra corriendo la API de Flask.
  * @constant {string}
  */
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://greenup-hoxj.onrender.com";
 
 /**
  * Realiza una petición HTTP estandarizada al backend de GreenUp, inyectando 

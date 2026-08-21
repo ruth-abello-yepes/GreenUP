@@ -14,7 +14,7 @@
     id_estado = 1
 
     Ruta que usa este archivo:
-    POST http://127.0.0.1:5000/api/usuarios/registro
+    POST https://greenup-hoxj.onrender.com/api/usuarios/registro
 */
 
 const MENSAJE_CONTRASENA_SEGURA =
@@ -90,11 +90,11 @@ async function registrarUsuario(evento) {
         API_URL esta guardado en el archivo api.js.
         Normalmente API_URL vale:
 
-        http://127.0.0.1:5000
+        https://greenup-hoxj.onrender.com
 
         Entonces la ruta completa queda:
 
-        http://127.0.0.1:5000/api/usuarios/registro
+        https://greenup-hoxj.onrender.com/api/usuarios/registro
     */
   const respuesta = await fetch(API_URL + "/api/usuarios/registro", {
     method: "POST",

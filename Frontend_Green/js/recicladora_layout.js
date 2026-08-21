@@ -13,7 +13,7 @@ function getUser() {
 }
 
 function getApiBase() {
-  return typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
+  return typeof API_URL !== "undefined" ? API_URL : "https://greenup-hoxj.onrender.com";
 }
 
 function getSessionHeaders() {

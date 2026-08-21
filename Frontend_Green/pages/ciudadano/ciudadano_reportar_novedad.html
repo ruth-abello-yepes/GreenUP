@@ -482,7 +482,7 @@
 
                 try {
                     // 2. Conexión con Flask
-                    const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : 'http://127.0.0.1:5000') + '/novedades', {
+                    const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : 'https://greenup-hoxj.onrender.com') + '/novedades', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

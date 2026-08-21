@@ -5,7 +5,7 @@
  */
 
 (function () {
-  const API_BASE = typeof API_URL !== "undefined" ? API_URL : "http://127.0.0.1:5000";
+  const API_BASE = typeof API_URL !== "undefined" ? API_URL : "https://greenup-hoxj.onrender.com";
   const DEFAULT_CENTER = [10.4631, -73.2532];
   const DEFAULT_CITY = "Valledupar, Cesar, Colombia";
 

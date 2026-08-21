@@ -1,4 +1,4 @@
-const RECUPERACION_API = "http://127.0.0.1:5000/api/recuperar-contrasena";
+const RECUPERACION_API = "https://greenup-hoxj.onrender.com/api/recuperar-contrasena";
 
 async function enviarRecuperacion(endpoint, datos) {
   const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {

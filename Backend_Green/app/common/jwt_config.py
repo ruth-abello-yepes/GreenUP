@@ -13,7 +13,12 @@ def obtener_jwt_secret():
     use una llave de longitud adecuada sin exponer secretos en el codigo.
     """
 
-    secreto = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or "greenup-dev-secret"
+    secreto = (
+        os.getenv("JWT_SECRET_KEY")
+        or os.getenv("JWT_SECRET")
+        or os.getenv("SECRET_KEY")
+        or "greenup-dev-secret"
+    )
     if len(secreto.encode("utf-8")) >= 32:
         return secreto
     return hashlib.sha256(secreto.encode("utf-8")).hexdigest()

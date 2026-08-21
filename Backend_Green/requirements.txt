@@ -11,4 +11,4 @@ pandas # Sirve para manejar datos y preparar reportes
 openpyxl # Sirve para exportar reportes en Excel
 reportlab # Sirve para exportar reportes en PDF
 requests # Consume servicios HTTP externos como World News API
-gunicorn
+gunicorn # Servidor WSGI usado por Render para ejecutar Flask en produccion

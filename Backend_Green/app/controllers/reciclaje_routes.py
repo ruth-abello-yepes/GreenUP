@@ -12,7 +12,7 @@ from app.services.reciclaje_service import (
     servicio_crear_reciclaje,
     servicio_listar_reciclajes,
     servicio_listar_reciclajes_ciudadano,
-    servicio_buscar_reciclaje,
+    servicio_buscar_reciclaje_autorizado,
     servicio_cambiar_estado_reciclaje
 )
 
@@ -56,7 +56,7 @@ def ruta_mis_reciclajes():
 @reciclaje_bp.route("/reciclaje/<int:id_registro>", methods=["GET"])
 @login_requerido
 def ruta_buscar_reciclaje(id_registro):
-    respuesta, estado = servicio_buscar_reciclaje(id_registro)
+    respuesta, estado = servicio_buscar_reciclaje_autorizado(id_registro, g.id_usuario, g.id_rol)
     return jsonify(respuesta), estado
 
 

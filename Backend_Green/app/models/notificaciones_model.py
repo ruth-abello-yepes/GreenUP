@@ -25,8 +25,35 @@ def listar_notificaciones(id_usuario, id_rol):
 
 
 def crear_notificacion(titulo, mensaje, id_usuario=None, id_rol=None):
+    """
+    Crea una notificacion real en Supabase.
+
+    Antes de insertar revisa si ya existe la misma notificacion reciente para
+    evitar duplicados cuando una accion se envia dos veces por error.
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor()
+    cursor.execute(
+        """
+        SELECT id_notificacion
+        FROM notificaciones
+        WHERE titulo = %s
+          AND mensaje = %s
+          AND COALESCE(id_usuario, 0) = COALESCE(%s, 0)
+          AND COALESCE(id_rol, 0) = COALESCE(%s, 0)
+          AND fecha_hora >= NOW() - INTERVAL '2 minutes'
+        ORDER BY fecha_hora DESC
+        LIMIT 1
+        """,
+        (titulo, mensaje, id_usuario, id_rol),
+    )
+    existente = cursor.fetchone()
+    if existente:
+        cursor.close()
+        conexion.close()
+        return existente["id_notificacion"]
+
     cursor.execute(
         """
         INSERT INTO notificaciones (titulo, mensaje, id_usuario, id_rol)

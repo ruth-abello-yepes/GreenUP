@@ -5,6 +5,8 @@
 
 from flask import Blueprint, request, jsonify
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.contenido_service import (
     servicio_crear_contenido,
     servicio_listar_contenidos
@@ -15,6 +17,8 @@ contenido_bp = Blueprint("contenido", __name__)
 
 
 @contenido_bp.route("/contenido", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_crear_contenido():
     """
     Crear contenido educativo

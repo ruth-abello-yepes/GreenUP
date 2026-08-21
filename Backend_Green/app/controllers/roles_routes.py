@@ -13,6 +13,8 @@
 
 from flask import Blueprint, request, jsonify
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.roles_service import (
     servicio_registrar_rol,
     servicio_listar_roles,
@@ -26,6 +28,8 @@ roles_bp = Blueprint("roles", __name__, url_prefix="/api/roles")
 
 
 @roles_bp.route("/registrar", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_registrar_rol():
     """
     Registrar rol
@@ -108,6 +112,8 @@ def ruta_buscar_rol(id_rol):
 
 
 @roles_bp.route("/actualizar/<int:id_rol>", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
 def ruta_actualizar_rol(id_rol):
     """
     Actualizar rol
@@ -156,6 +162,8 @@ def ruta_actualizar_rol(id_rol):
 
 
 @roles_bp.route("/inhabilitar/<int:id_rol>", methods=["DELETE"])
+@login_requerido
+@rol_requerido([1])
 def ruta_inhabilitar_rol(id_rol):
     """
     Inhabilitar rol

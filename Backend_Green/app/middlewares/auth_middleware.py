@@ -4,14 +4,35 @@
 # Archivo: auth_middleware.py
 # Revisa si el usuario envio sus datos de sesion en los headers.
 
-from functools import wraps
-from flask import request, jsonify, g
 import os
+from functools import wraps
+
+from flask import g, jsonify, request
 
 import jwt
 
 
+def _permitir_headers_de_desarrollo():
+    """
+    Indica si se aceptan headers manuales de usuario y rol.
+
+    En produccion debe estar apagado porque esos headers se pueden falsificar.
+    Solo se usa como ayuda local si el equipo configura:
+    GREENUP_PERMITIR_HEADERS_DEV=true
+    """
+
+    valor = (os.getenv("GREENUP_PERMITIR_HEADERS_DEV") or "").strip().lower()
+    return valor in ("1", "true", "si", "yes")
+
+
 def login_requerido(funcion):
+    """
+    Protege una ruta que necesita usuario autenticado.
+
+    Primero valida el JWT enviado por el frontend. Si no hay JWT, solo permite
+    headers manuales cuando el entorno local lo autoriza de manera explicita.
+    """
+
     @wraps(funcion)
     def decorador(*args, **kwargs):
         autorizacion = request.headers.get("Authorization", "")
@@ -31,9 +52,12 @@ def login_requerido(funcion):
             except jwt.InvalidTokenError:
                 return jsonify({"mensaje": "Token invalido"}), 401
 
-        # Aceptamos ambas formas:
-        # id_usuario o id-usuario
-        # id_rol o id-rol
+        if not _permitir_headers_de_desarrollo():
+            return jsonify({
+                "mensaje": "Debes iniciar sesion para usar esta ruta"
+            }), 401
+
+        # Estos headers solo quedan como apoyo local para pruebas controladas.
         id_usuario = request.headers.get("id_usuario") or request.headers.get("id-usuario")
         id_rol = request.headers.get("id_rol") or request.headers.get("id-rol")
 
@@ -42,8 +66,11 @@ def login_requerido(funcion):
                 "mensaje": "Debes iniciar sesion para usar esta ruta"
             }), 401
 
-        g.id_usuario = int(id_usuario)
-        g.id_rol = int(id_rol)
+        try:
+            g.id_usuario = int(id_usuario)
+            g.id_rol = int(id_rol)
+        except (TypeError, ValueError):
+            return jsonify({"mensaje": "Datos de sesion invalidos"}), 401
 
         return funcion(*args, **kwargs)
 

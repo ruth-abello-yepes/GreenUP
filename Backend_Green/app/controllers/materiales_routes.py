@@ -20,12 +20,16 @@ from app.services.materiales_service import (
     servicio_editar_material,
     servicio_cambiar_estado
 )
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 
 
 materiales_bp = Blueprint("materiales", __name__)
 
 
 @materiales_bp.route("/materiales", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_crear_material():
     """Crea un material reciclable."""
     data = request.get_json()
@@ -48,6 +52,8 @@ def ruta_buscar_material(id_material):
 
 
 @materiales_bp.route("/materiales/<int:id_material>", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
 def ruta_editar_material(id_material):
     """Edita un material existente."""
     data = request.get_json()
@@ -56,6 +62,8 @@ def ruta_editar_material(id_material):
 
 
 @materiales_bp.route("/materiales/<int:id_material>/estado", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
 def ruta_cambiar_estado(id_material):
     """Activa o inactiva un material."""
     data = request.get_json()

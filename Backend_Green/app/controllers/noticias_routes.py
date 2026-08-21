@@ -3,6 +3,8 @@
 
 from flask import Blueprint, jsonify, request
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.noticias_service import (
     servicio_cambiar_estado_noticia,
     servicio_crear_noticia,
@@ -36,6 +38,8 @@ def ruta_listar_noticias():
 
 
 @noticias_bp.route("/noticias", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_crear_noticia():
     datos = request.get_json() or {}
     respuesta, estado = servicio_crear_noticia(datos)
@@ -43,6 +47,8 @@ def ruta_crear_noticia():
 
 
 @noticias_bp.route("/noticias/<int:id_noticia>/estado", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
 def ruta_cambiar_estado_noticia(id_noticia):
     datos = request.get_json() or {}
     respuesta, estado = servicio_cambiar_estado_noticia(id_noticia, datos)

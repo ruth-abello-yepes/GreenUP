@@ -286,6 +286,15 @@ def servicio_listar_registros_recicladora(id_usuario, fecha_inicio=None, fecha_f
 
 
 def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos):
+    """
+    Confirma o rechaza una entrega que pertenece al punto de la recicladora.
+
+    Reglas importantes:
+    - Solo se puede procesar si esta pendiente.
+    - Los Ecopuntos se calculan en backend, no desde el navegador.
+    - Un rechazo siempre queda con cero puntos.
+    """
+
     id_estado = datos.get("id_estado")
     if not id_estado:
         return {"mensaje": "El estado es obligatorio"}, 400
@@ -301,12 +310,26 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
         return {"mensaje": "Registro no encontrado para el punto de esta recicladora"}, 404
 
     id_estado = int(id_estado)
-    puntos_obtenidos = datos.get("puntos_obtenidos")
+    if id_estado not in (2, 3):
+        return {"mensaje": "Solo puedes confirmar o rechazar una solicitud pendiente"}, 400
+
+    estado_actual = str(registro.get("estado") or "").strip().lower()
+    id_estado_actual = int(registro.get("id_estado") or 0)
+    if estado_actual in ("confirmado", "rechazado") or id_estado_actual in (2, 3):
+        return {
+            "mensaje": "Este reciclaje ya fue procesado y no puede confirmarse otra vez",
+            "estado": estado_actual or id_estado_actual,
+        }, 409
+
+    puntos_obtenidos = 0
     motivo_rechazo = datos.get("motivo_rechazo")
 
-    if id_estado == 2 and puntos_obtenidos in (None, "", 0, "0"):
+    if id_estado == 2:
         puntos_por_kg = float(registro.get("puntos_por_kg") or datos.get("puntos_por_kg") or 0)
-        puntos_obtenidos = round((float(registro.get("cantidad") or 0) * puntos_por_kg), 2)
+        puntos_obtenidos = int(round((float(registro.get("cantidad") or 0) * puntos_por_kg), 0))
+
+    if id_estado == 3 and not motivo_rechazo:
+        motivo_rechazo = "La recicladora rechazo la entrega durante la validacion."
 
     actualizado = cambiar_estado_registro_recicladora(
         id_usuario,

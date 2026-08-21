@@ -154,6 +154,7 @@ def buscar_reciclaje(id_registro):
                 'Usuario'
             ) AS usuario,
             COALESCE(tipo_material.nombre, 'Material') AS material,
+            COALESCE(tipo_material.puntos_por_kg, 0)::float AS puntos_por_kg,
             COALESCE(puntos_reciclaje.nombre, 'Punto ecologico') AS punto
         FROM registrar_reciclaje
         LEFT JOIN usuarios

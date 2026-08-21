@@ -17,6 +17,8 @@ ubicaciones_bp = Blueprint("ubicaciones", __name__)
 
 
 @ubicaciones_bp.route("/ubicaciones", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_crear_ubicacion():
 
     data = request.get_json()

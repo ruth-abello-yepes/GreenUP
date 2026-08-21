@@ -13,6 +13,8 @@
 
 from flask import Blueprint, request, jsonify
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.tipo_documento_service import (
     servicio_registrar_tipo_documento,
     servicio_listar_tipos_documento,
@@ -26,6 +28,8 @@ tipo_documento_bp = Blueprint("tipo_documento", __name__, url_prefix="/api/tipo-
 
 
 @tipo_documento_bp.route("/registrar", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_registrar_tipo_documento():
     """
     Registrar tipo de documento
@@ -104,6 +108,8 @@ def ruta_buscar_tipo_documento(id_tipo_documento):
 
 
 @tipo_documento_bp.route("/actualizar/<int:id_tipo_documento>", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
 def ruta_actualizar_tipo_documento(id_tipo_documento):
     """
     Actualizar tipo de documento
@@ -148,6 +154,8 @@ def ruta_actualizar_tipo_documento(id_tipo_documento):
 
 
 @tipo_documento_bp.route("/inhabilitar/<int:id_tipo_documento>", methods=["DELETE"])
+@login_requerido
+@rol_requerido([1])
 def ruta_inhabilitar_tipo_documento(id_tipo_documento):
     """
     Inhabilitar tipo de documento

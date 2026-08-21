@@ -5,6 +5,8 @@
 
 from flask import Blueprint, request, jsonify
 
+from app.middlewares.auth_middleware import login_requerido
+from app.middlewares.roles_middleware import rol_requerido
 from app.services.faq_service import (
     servicio_crear_pregunta,
     servicio_listar_preguntas
@@ -15,6 +17,8 @@ faq_bp = Blueprint("faq", __name__)
 
 
 @faq_bp.route("/faq", methods=["POST"])
+@login_requerido
+@rol_requerido([1])
 def ruta_crear_pregunta():
     data = request.get_json()
     respuesta, estado = servicio_crear_pregunta(data)

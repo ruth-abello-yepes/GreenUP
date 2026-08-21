@@ -42,7 +42,8 @@ function asegurarPanelNotificacionesCiudadano() {
     panel.setAttribute("aria-hidden", "true");
     panel.setAttribute("aria-label", "Panel de notificaciones");
     panel.style.width = "min(360px, calc(100vw - 24px))";
-    panel.style.top = "84px";
+    panel.style.width = "min(390px, calc(100vw - 24px))";
+    panel.style.top = "74px";
     panel.style.right = "12px";
     panel.style.zIndex = "1080";
     panel.style.display = "none";
@@ -50,7 +51,7 @@ function asegurarPanelNotificacionesCiudadano() {
         <div class="notifications-header">
             <div>
                 <h2>Notificaciones</h2>
-                <p>Actividad reciente de tu cuenta</p>
+                    <p>Actividad reciente del ciudadano</p>
             </div>
             <span class="notifications-badge" id="greenup-badge-notificaciones-panel">0</span>
         </div>
@@ -80,14 +81,15 @@ function asegurarEstilosNotificacionesCiudadano() {
         .greenup-notifications-menu {
             background: #ffffff;
             border: 1px solid #d9eadf;
-            border-radius: 20px;
-            box-shadow: 0 22px 50px rgba(0, 61, 108, .18);
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0, 61, 108, .16);
             padding: 16px;
+            position: fixed;
         }
 
         .greenup-notifications-menu .notifications-header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 16px;
             border-bottom: 1px solid #e5efe9;
@@ -97,7 +99,7 @@ function asegurarEstilosNotificacionesCiudadano() {
 
         .greenup-notifications-menu h2 {
             color: #0f172a;
-            font-size: 1.1rem;
+            font-size: 1.18rem;
             font-weight: 800;
             margin: 0;
         }
@@ -130,7 +132,7 @@ function asegurarEstilosNotificacionesCiudadano() {
         .greenup-notifications-menu .notification-item {
             align-items: flex-start;
             background: #f8fbf9;
-            border: 1px solid #dfece5;
+            border: 1px solid #d8eadf;
             border-radius: 16px;
             color: #0f172a;
             display: flex;
@@ -153,8 +155,18 @@ function asegurarEstilosNotificacionesCiudadano() {
             align-items: center;
             border-style: dashed;
             justify-content: center;
-            min-height: 150px;
+            color: #0f172a;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 168px;
             text-align: center;
+        }
+
+        .greenup-notifications-menu .notification-item.empty .material-symbols-outlined {
+            border: 1px solid #bfe3cc;
+            border-radius: 10px;
+            font-size: 2rem;
+            padding: 4px;
         }
 
         .greenup-notifications-menu .material-symbols-outlined {
@@ -270,10 +282,10 @@ async function cargarPanelNotificacionesCiudadano() {
         if (!notificaciones.length) {
             lista.innerHTML = `
                 <article class="notification-item empty">
-                    <span class="material-symbols-outlined">notifications_off</span>
+                    <span class="material-symbols-outlined">inbox</span>
                     <div>
                         <strong>Sin notificaciones</strong>
-                        <p>No tienes alertas nuevas para tu cuenta.</p>
+                        <p>Cuando haya alertas, solicitudes o cambios importantes aparecerán aquí.</p>
                     </div>
                 </article>
             `;

@@ -389,14 +389,14 @@ function pintarEstructuraBase() {
           <div class="notifications-head">
             <div>
               <h2>Notificaciones</h2>
-              <p>Actividad reciente del sistema</p>
+              <p>Actividad reciente del administrador</p>
             </div>
             <span class="notifications-badge">0</span>
           </div>
           <div class="inline-empty-state">
             <span class="material-symbols-outlined">inbox</span>
             <strong>Sin notificaciones</strong>
-            <small>Cuando haya movimientos nuevos del sistema aparecerán aquí.</small>
+            <small>Cuando haya alertas, solicitudes o cambios importantes aparecerán aquí.</small>
           </div>
         </section>
         <div class="dropdown admin-user-dropdown">
@@ -2553,7 +2553,7 @@ async function cargarNotificacionesAdmin() {
       contenedor.innerHTML = `
         <span class="material-symbols-outlined">inbox</span>
         <strong>Sin notificaciones</strong>
-        <small>No tienes alertas nuevas en el panel del administrador.</small>
+        <small>Cuando haya alertas, solicitudes o cambios importantes aparecerán aquí.</small>
       `;
       return;
     }

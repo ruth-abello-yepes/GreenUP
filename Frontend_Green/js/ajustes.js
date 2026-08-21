@@ -1,7 +1,7 @@
 /**
  * Archivo: ajustes.js
  * Pantallas:
- * - Frontend_Green/pages/ciudadano/ciudadano_config_perfil.html
+ * - Frontend_Green/pages/ciudadano/ciudadano_ajustes.html
  * - Frontend_Green/pages/ciudadano/ciudadano_config_seguridad.html
  *
  * Este archivo maneja los ajustes reales de cuenta del ciudadano.
@@ -591,7 +591,7 @@ function prepararBotonesGeneralesConfiguracion() {
     if (nombreIcono === "settings") {
       boton.addEventListener("click", (evento) => {
         evento.preventDefault();
-        window.location.href = "ciudadano_config_perfil.html";
+        window.location.href = "ciudadano_ajustes.html";
       });
     }
   });

@@ -182,7 +182,56 @@ function asegurarEstilosNotificacionesCiudadano() {
  * @returns {HTMLButtonElement|null}
  */
 function obtenerBotonNotificacionesCiudadano() {
-    return document.querySelector('button[aria-label*="notificación"], button[aria-label*="Notificaciones"]');
+    const botonPorNombre = document.querySelector(
+        'button[aria-label*="notificación"], button[aria-label*="Notificaciones"], button[title*="Notificaciones"]'
+    );
+
+    if (botonPorNombre) {
+        return botonPorNombre;
+    }
+
+    const iconoNotificaciones = Array.from(document.querySelectorAll(".material-symbols-outlined"))
+        .find((icono) => (icono.textContent || "").trim() === "notifications");
+
+    if (!iconoNotificaciones) {
+        return null;
+    }
+
+    const boton = iconoNotificaciones.closest("button");
+
+    if (boton) {
+        boton.setAttribute("aria-label", "Notificaciones");
+        return boton;
+    }
+
+    return null;
+}
+
+/**
+ * Busca el punto rojo de notificaciones aunque algunas pantallas no tengan ID.
+ * @returns {HTMLElement|null}
+ */
+function obtenerIndicadorNotificacionesCiudadano() {
+    const indicadorPorId = document.getElementById("indicador-notificaciones");
+
+    if (indicadorPorId) {
+        return indicadorPorId;
+    }
+
+    const boton = obtenerBotonNotificacionesCiudadano();
+
+    if (!boton) {
+        return null;
+    }
+
+    const indicador = boton.querySelector(".bg-danger.rounded-circle");
+
+    if (indicador) {
+        indicador.id = "indicador-notificaciones";
+        return indicador;
+    }
+
+    return null;
 }
 
 /**
@@ -202,10 +251,14 @@ function alternarPanelNotificacionesCiudadano() {
 async function cargarPanelNotificacionesCiudadano() {
     const lista = document.getElementById("greenup-lista-notificaciones");
     const badge = document.getElementById("greenup-badge-notificaciones-panel");
-    const indicador = document.getElementById("indicador-notificaciones");
+    const indicador = obtenerIndicadorNotificacionesCiudadano();
     if (!lista || !badge) return;
 
     try {
+        if (typeof peticionSegura !== "function") {
+            throw new Error("No se cargó el archivo api.js en esta pantalla");
+        }
+
         const respuesta = await peticionSegura("/api/notificaciones", "GET");
         if (!respuesta.ok) throw new Error(respuesta.datos.mensaje || "No fue posible cargar las notificaciones");
         const notificaciones = respuesta.datos || [];

@@ -8,7 +8,8 @@
  */
 function corregirEnlacesCiudadano() {
     const mapaRutas = {
-        "ajustes_cuenta.html": "ciudadano_config_perfil.html",
+        "ajustes_cuenta.html": "ciudadano_ajustes.html",
+        "ciudadano_config_perfil.html": "ciudadano_ajustes.html",
         "/ciudadano/inicio": "ciudadano_inicio.html",
         "ciudadano_log_comunidad.html": "ciudadano_noticias.html",
         "ciudadano_mapa_puntos.html": "ciudadano_mapa.html",
@@ -175,7 +176,7 @@ function corregirFooterCiudadano() {
 function redirigirAjustesAntiguos() {
     const archivoActual = window.location.pathname.split("/").pop() || "";
     if (archivoActual === "ajustes_cuenta.html") {
-        window.location.replace("ciudadano_config_perfil.html");
+        window.location.replace("ciudadano_ajustes.html");
     }
 }
 

@@ -34,6 +34,8 @@ def obtener_resumen_ciudadano():
 
 
 @estadisticas_bp.route("/estadisticas", methods=["GET"])
+@login_requerido
+@rol_requerido([1])
 def obtener_resumen_admin():
     """
     Ruta para el administrador del sistema.
@@ -43,8 +45,8 @@ def obtener_resumen_admin():
     """
     try:
         return jsonify(EstadisticasService.resumen_admin()), 200
-    except Exception as error:
-        return jsonify({"error": str(error)}), 500
+    except Exception:
+        return jsonify({"mensaje": "No fue posible cargar las estadisticas administrativas"}), 500
 
 
 @estadisticas_bp.route("/api/estadisticas/semana_actual", methods=["GET"])
@@ -58,5 +60,5 @@ def obtener_semana_actual():
     try:
         datos_grafica = EstadisticasService.formatear_datos_semanales(g.id_usuario)
         return jsonify(datos_grafica), 200
-    except Exception as error:
-        return jsonify({"error": str(error)}), 500
+    except Exception:
+        return jsonify({"mensaje": "No fue posible cargar la semana actual"}), 500

@@ -10,6 +10,7 @@ from functools import wraps
 from flask import g, jsonify, request
 
 import jwt
+from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
 
 def _permitir_headers_de_desarrollo():
@@ -41,8 +42,8 @@ def login_requerido(funcion):
             try:
                 payload = jwt.decode(
                     token,
-                    os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or "greenup-dev-secret",
-                    algorithms=["HS256"],
+                    obtener_jwt_secret(),
+                    algorithms=[JWT_ALGORITHM],
                 )
                 g.id_usuario = int(payload["id_usuario"])
                 g.id_rol = int(payload["id_rol"])

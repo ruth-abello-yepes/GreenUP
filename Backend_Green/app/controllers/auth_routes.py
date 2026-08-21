@@ -73,7 +73,7 @@ def ruta_login():
         description: Usuario no encontrado
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_login(datos)
 
@@ -120,7 +120,7 @@ def ruta_login_admin():
         description: Administrador no encontrado
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_login_admin(datos)
 
@@ -154,7 +154,7 @@ def ruta_solicitar_codigo():
       500:
         description: Error al enviar el correo
     """
-    datos = request.get_json()
+    datos = request.get_json() or {}
     respuesta, estado = solicitar_codigo_recuperacion(datos)
     return jsonify(respuesta), estado
 
@@ -192,7 +192,7 @@ def ruta_restablecer_contrasena():
       400:
         description: Código inválido, expirado o faltan datos
     """
-    datos = request.get_json()
+    datos = request.get_json() or {}
     respuesta, estado = restablecer_contrasena(datos)
     return jsonify(respuesta), estado
 
@@ -226,7 +226,7 @@ def ruta_verificar_codigo():
       400:
         description: Codigo invalido o expirado
     """
-    datos = request.get_json()
+    datos = request.get_json() or {}
     respuesta, estado = verificar_codigo_recuperacion(datos)
     return jsonify(respuesta), estado
 

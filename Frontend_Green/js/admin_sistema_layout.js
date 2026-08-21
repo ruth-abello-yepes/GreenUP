@@ -341,11 +341,18 @@ function protegerAdminSistema() {
 
 function headersAdmin() {
   const admin = obtenerAdminActual();
-  return {
+  const token = localStorage.getItem("token");
+  const headers = {
     "Content-Type": "application/json",
     "id-usuario": admin.id_usuario,
     "id-rol": admin.id_rol,
   };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
 }
 
 async function apiAdmin(ruta, opciones = {}) {

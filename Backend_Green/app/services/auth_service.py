@@ -24,6 +24,7 @@ import random
 from datetime import datetime, timedelta
 from flask_mail import Message
 import jwt
+from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
 from app.models.usuarios_model import (
     registrar_usuario,
@@ -47,8 +48,6 @@ ADMIN_USUARIO_INICIAL = "admin"
 ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
-JWT_SECRET = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or "greenup-dev-secret"
-JWT_ALGORITHM = "HS256"
 INTENTOS_LOGIN = {}
 
 
@@ -59,7 +58,7 @@ def _crear_token(usuario):
         "usuario": usuario["usuario"],
         "exp": datetime.utcnow() + timedelta(hours=8),
     }
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return jwt.encode(payload, obtener_jwt_secret(), algorithm=JWT_ALGORITHM)
 
 
 def _login_bloqueado(usuario):

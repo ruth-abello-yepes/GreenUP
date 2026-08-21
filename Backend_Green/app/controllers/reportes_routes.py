@@ -43,6 +43,9 @@ def ruta_reporte_reciclaje():
     formato = (request.args.get("formato") or "json").lower()
     respuesta, estado = servicio_reporte_reciclaje(filtros)
 
+    if estado != 200:
+        return jsonify(respuesta), estado
+
     if formato == "json":
         return jsonify(respuesta), estado
 

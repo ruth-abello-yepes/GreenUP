@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_mail import Mail
 
@@ -88,5 +88,35 @@ def crear_app():
         return {
             "mensaje": "Backend GreenUp funcionando correctamente"
         }
+
+    @app.errorhandler(404)
+    def error_no_encontrado(error):
+        """
+        Respuesta uniforme cuando una ruta no existe.
+
+        No se retorna informacion interna del servidor.
+        """
+
+        return jsonify({"mensaje": "Recurso no encontrado"}), 404
+
+    @app.errorhandler(405)
+    def error_metodo_no_permitido(error):
+        """
+        Respuesta uniforme cuando la ruta existe pero el metodo HTTP no aplica.
+        """
+
+        return jsonify({"mensaje": "Metodo no permitido para esta ruta"}), 405
+
+    @app.errorhandler(Exception)
+    def error_interno(error):
+        """
+        Respuesta general para errores no controlados.
+
+        El detalle se imprime en consola local, pero no se envia al frontend
+        para evitar exponer datos sensibles de la aplicacion.
+        """
+
+        print(f"Error interno GreenUP: {error}")
+        return jsonify({"mensaje": "Error interno del servidor"}), 500
 
     return app

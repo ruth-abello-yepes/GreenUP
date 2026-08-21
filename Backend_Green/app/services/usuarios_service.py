@@ -302,10 +302,9 @@ def servicio_actualizar_perfil_usuario(id_usuario, datos):
             "usuario": usuario_actualizado
         }, 200
 
-    except Exception as error:
+    except Exception:
         return {
-            "mensaje": "No fue posible actualizar el perfil",
-            "detalle": str(error)
+            "mensaje": "No fue posible actualizar el perfil"
         }, 500
 
 
@@ -347,8 +346,7 @@ def servicio_cambiar_password_usuario(id_usuario, datos):
 
         return {"mensaje": "Contrasena actualizada correctamente"}, 200
 
-    except Exception as error:
+    except Exception:
         return {
-            "mensaje": "No fue posible actualizar la contrasena",
-            "detalle": str(error)
+            "mensaje": "No fue posible actualizar la contrasena"
         }, 500

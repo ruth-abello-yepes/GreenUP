@@ -12,7 +12,7 @@ let pasoActual = 1;
 const totalPasos = 3;
 const MENSAJE_CONTRASENA_SEGURA =
   "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.";
-const MENSAJE_USUARIO_CORTO = "El usuario debe tener mínimo 5 caracteres.";
+const MENSAJE_USUARIO_CORTO = "El usuario debe tener mínimo 5 caracteres y solo letras o números.";
 const MENSAJE_DOCUMENTO_INVALIDO = "La cédula o documento debe tener mínimo 5 números.";
 const registroEstado = {
   materiales: [],
@@ -137,7 +137,7 @@ function limpiarDocumentoRegistro(documento) {
  * @returns {boolean} true cuando el usuario tiene 5 o mas caracteres.
  */
 function validarUsuarioRegistro(usuario) {
-  return String(usuario || "").trim().length >= 5;
+  return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}$/.test(String(usuario || "").trim());
 }
 
 /**
@@ -145,8 +145,8 @@ function validarUsuarioRegistro(usuario) {
  * Se ejecuta antes de volver a validar para no dejar mensajes antiguos.
  */
 function limpiarMensajesRegistro() {
-  const campos = ["numero_documento", "usuario"];
-  const mensajes = ["mensaje-documento", "mensaje-usuario"];
+  const campos = ["correo", "numero_documento", "usuario"];
+  const mensajes = ["mensaje-correo", "mensaje-documento", "mensaje-usuario"];
 
   campos.forEach((idCampo) => {
     document.getElementById(idCampo)?.classList.remove("is-invalid");
@@ -182,6 +182,7 @@ function mostrarErrorRegistro(idCampo, idMensaje, texto) {
 async function validarPasoDocumentoUsuario() {
   limpiarMensajesRegistro();
 
+  const correo = document.getElementById("correo")?.value.trim() || "";
   const numeroDocumento = limpiarDocumentoRegistro(document.getElementById("numero_documento")?.value);
   const usuario = document.getElementById("usuario")?.value.trim() || "";
   let puedeContinuar = true;
@@ -202,11 +203,32 @@ async function validarPasoDocumentoUsuario() {
 
   try {
     const respuesta = await peticionSegura("/api/usuarios/validar-registro", "POST", {
+      correo,
       numero_documento: numeroDocumento,
       usuario,
     });
 
     const datos = respuesta.datos || {};
+
+    if (!datos.correo_valido) {
+      mostrarErrorRegistro("correo", "mensaje-correo", "Ingresa un correo válido.");
+      alert("Revisa el correo electrónico antes de continuar.");
+      document.getElementById("seccion-" + pasoActual)?.classList.add("d-none");
+      pasoActual = 1;
+      document.getElementById("seccion-" + pasoActual)?.classList.remove("d-none");
+      actualizarVistaPasos();
+      puedeContinuar = false;
+    }
+
+    if (datos.correo_registrado) {
+      mostrarErrorRegistro("correo", "mensaje-correo", "El correo ya se encuentra registrado.");
+      alert("Ese correo ya tiene una cuenta registrada. Puedes iniciar sesión o usar otro correo.");
+      document.getElementById("seccion-" + pasoActual)?.classList.add("d-none");
+      pasoActual = 1;
+      document.getElementById("seccion-" + pasoActual)?.classList.remove("d-none");
+      actualizarVistaPasos();
+      puedeContinuar = false;
+    }
 
     if (datos.documento_registrado) {
       mostrarErrorRegistro("numero_documento", "mensaje-documento", "Cédula ya registrada.");

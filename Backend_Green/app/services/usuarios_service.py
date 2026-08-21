@@ -15,6 +15,7 @@ from app.models.usuarios_model import (
     cambiar_estado_usuario,
     buscar_usuario_por_documento,
     buscar_usuario_por_usuario,
+    buscar_usuario_por_correo,
     obtener_perfil_usuario,
     buscar_usuario_por_correo_o_usuario_excluyendo_id,
     actualizar_perfil_usuario,
@@ -59,6 +60,15 @@ def _documento_limpio(numero_documento):
     """
 
     return re.sub(r"\D", "", str(numero_documento or ""))
+
+
+def _usuario_valido(usuario):
+    """
+    Valida el nombre de usuario pedido por la interfaz:
+    minimo 5 caracteres y solo letras o numeros.
+    """
+
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}", str(usuario or "").strip()))
 
 
 def servicio_registrar_usuario(datos):
@@ -114,8 +124,8 @@ def servicio_registrar_usuario(datos):
     if not usuario:
         return {"mensaje": "El usuario es obligatorio"}, 400
 
-    if len(usuario) < 5:
-        return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
+    if not _usuario_valido(usuario):
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres y solo letras o numeros"}, 400
 
     contrasena_segura, mensaje_contrasena = validar_contrasena_segura(contrasena)
 
@@ -130,6 +140,9 @@ def servicio_registrar_usuario(datos):
 
     if buscar_usuario_por_usuario(usuario):
         return {"mensaje": "El usuario o correo ya se encuentra registrado"}, 400
+
+    if buscar_usuario_por_correo(correo):
+        return {"mensaje": "El correo ya se encuentra registrado"}, 400
 
     if buscar_usuario_por_documento(numero_documento):
         return {"mensaje": "El numero de documento ya se encuentra registrado"}, 400
@@ -177,17 +190,23 @@ def servicio_validar_disponibilidad_registro(datos):
 
     datos = datos or {}
     usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username")
+    correo = _texto_limpio(datos, "correo", "email").lower()
     numero_documento = _documento_limpio(_texto_limpio(datos, "numero_documento", "documento", "cedula", "cc"))
 
-    usuario_valido = len(usuario) >= 5
+    usuario_valido = _usuario_valido(usuario)
+    correo_valido = True if not correo else _correo_valido(correo)
     documento_valido = len(numero_documento) >= 5
     usuario_registrado = bool(usuario and buscar_usuario_por_usuario(usuario))
+    correo_registrado = bool(correo and buscar_usuario_por_correo(correo))
     documento_registrado = bool(numero_documento and buscar_usuario_por_documento(numero_documento))
 
     mensaje = "Datos disponibles"
 
     if not usuario_valido:
-        mensaje = "El usuario debe tener minimo 5 caracteres"
+        mensaje = "El usuario debe tener minimo 5 caracteres y solo letras o numeros"
+
+    if not correo_valido:
+        mensaje = "El correo no tiene un formato valido"
 
     if not documento_valido:
         mensaje = "El numero de documento debe tener minimo 5 digitos"
@@ -195,19 +214,26 @@ def servicio_validar_disponibilidad_registro(datos):
     if usuario_registrado:
         mensaje = "El usuario ya se encuentra registrado"
 
+    if correo_registrado:
+        mensaje = "El correo ya se encuentra registrado"
+
     if documento_registrado:
         mensaje = "Cedula ya registrada"
 
     return {
         "mensaje": mensaje,
         "usuario_valido": usuario_valido,
+        "correo_valido": correo_valido,
         "documento_valido": documento_valido,
         "usuario_registrado": usuario_registrado,
+        "correo_registrado": correo_registrado,
         "documento_registrado": documento_registrado,
         "puede_continuar": (
             usuario_valido
+            and correo_valido
             and documento_valido
             and not usuario_registrado
+            and not correo_registrado
             and not documento_registrado
         ),
     }, 200

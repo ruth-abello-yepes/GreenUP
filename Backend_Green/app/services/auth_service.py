@@ -93,8 +93,8 @@ def servicio_login(datos):
     El administrador NO entra por aqui.
     """
 
-    usuario = datos.get("usuario")
-    contrasena = datos.get("contrasena")
+    usuario = (datos.get("usuario") or datos.get("correo") or datos.get("email") or "").strip()
+    contrasena = datos.get("contrasena") or datos.get("password")
 
     if not usuario or not contrasena:
         return {"mensaje": "Usuario y contrasena son obligatorios"}, 400

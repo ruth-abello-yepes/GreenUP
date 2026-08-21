@@ -8,7 +8,7 @@ import re
 import googlemaps
 
 from app.models.usuarios_model import registrar_usuario
-from app.models.usuarios_model import buscar_usuario_por_documento, buscar_usuario_por_usuario
+from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_por_documento, buscar_usuario_por_usuario
 from app.models.recicladoras_model import (
     actualizar_perfil_recicladora,
     actualizar_punto_recicladora,
@@ -57,6 +57,12 @@ def _documento_limpio(numero_documento):
     """Convierte el documento en solo numeros antes de validar y guardar."""
 
     return re.sub(r"\D", "", str(numero_documento or ""))
+
+
+def _usuario_valido(usuario):
+    """Valida minimo 5 caracteres y solo letras o numeros."""
+
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}", str(usuario or "").strip()))
 
 
 def _geocodificar_direccion(direccion):
@@ -153,14 +159,17 @@ def servicio_registrar_dueno_recicladora(datos):
     if not direccion_empresa:
         return {"mensaje": "La direccion de la empresa es obligatoria"}, 400
 
-    if len(str(usuario or "")) < 5:
-        return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
+    if not _usuario_valido(usuario):
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres y solo letras o numeros"}, 400
 
     if not str(nit_empresa).replace("-", "").replace(".", "").isdigit():
         return {"mensaje": "El NIT debe contener solo numeros, puntos o guion"}, 400
 
     if buscar_usuario_por_usuario(usuario):
         return {"mensaje": "El usuario o correo ya se encuentra registrado"}, 400
+
+    if buscar_usuario_por_correo(correo):
+        return {"mensaje": "El correo ya se encuentra registrado"}, 400
 
     if buscar_usuario_por_documento(numero_documento):
         return {"mensaje": "El numero de documento ya se encuentra registrado"}, 400

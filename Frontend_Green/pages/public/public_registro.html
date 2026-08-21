@@ -404,6 +404,9 @@
                 <div class="col-md-6">
                   <label class="form-label">Correo electrónico</label>
                   <input id="correo" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                  <div id="mensaje-correo" class="invalid-feedback">
+                    Ingresa un correo válido y disponible.
+                  </div>
                 </div>
 
                 <div class="col-md-6">
@@ -455,7 +458,7 @@
 
                 <div class="col-12">
                   <label class="form-label">Nombre de usuario</label>
-                  <input id="usuario" class="form-control" type="text" placeholder="anyeli123" minlength="5" required />
+                  <input id="usuario" class="form-control" type="text" placeholder="anyeli123" minlength="5" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}" title="Mínimo 5 caracteres, solo letras y números." required />
                   <div id="mensaje-usuario" class="invalid-feedback">
                     El usuario debe tener mínimo 5 caracteres.
                   </div>

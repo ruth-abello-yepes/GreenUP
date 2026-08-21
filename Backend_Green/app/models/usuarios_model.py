@@ -482,7 +482,12 @@ def buscar_usuario_por_correo(correo):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    sql = "SELECT * FROM usuarios WHERE correo = %s"
+    sql = """
+    SELECT *
+    FROM usuarios
+    WHERE LOWER(TRIM(correo)) = LOWER(TRIM(%s))
+    LIMIT 1
+    """
     cursor.execute(sql, (correo,))
     usuario = cursor.fetchone()
 

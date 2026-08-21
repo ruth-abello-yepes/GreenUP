@@ -1551,14 +1551,14 @@ async function cargarReportes(filtros = {}) {
 
     <!-- EXPORTACIONES: usan la tabla filtrada que esta viendo el administrador. -->
     <div class="toolbar d-flex flex-wrap align-items-center">
-      <button class="primary-button btn btn-success" type="button" onclick="exportarTablaCSV('reporte_reciclaje_greenup.csv')">
+      <button class="primary-button btn btn-success" type="button" onclick="descargarReporteAdmin('csv')">
         <span class="material-symbols-outlined">download</span> Exportar CSV
       </button>
-      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaExcel('reporte_reciclaje_greenup.xls')">
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="descargarReporteAdmin('excel')">
         <span class="material-symbols-outlined">grid_on</span> Exportar Excel
       </button>
-      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="window.print()">
-        <span class="material-symbols-outlined">print</span> Imprimir PDF
+      <button class="ghost-button btn btn-outline-secondary" type="button" onclick="descargarReporteAdmin('pdf')">
+        <span class="material-symbols-outlined">picture_as_pdf</span> Descargar PDF
       </button>
       <button class="ghost-button btn btn-outline-secondary" type="button" onclick="cargarReportes()">
         <span class="material-symbols-outlined">sync</span> Actualizar
@@ -1625,6 +1625,37 @@ async function aplicarFiltrosReporteAdmin(evento) {
 
 async function limpiarFiltrosReporteAdmin() {
   await cargarReportes({});
+}
+
+async function descargarReporteAdmin(formato) {
+  /*
+    DESCARGA REAL DEL REPORTE:
+    Pide el archivo al backend para que PDF y Excel salgan desde Supabase,
+    no desde datos escritos manualmente en el HTML.
+  */
+  const filtros = leerFiltrosReporteAdmin();
+  const query = construirQueryReporte({ ...filtros, formato });
+  const extension = formato === "excel" ? "xlsx" : formato;
+
+  try {
+    const respuesta = await fetch(`${ADMIN_API_BASE}/reportes/reciclaje${query}`, {
+      headers: headersAdmin(),
+    });
+
+    if (!respuesta.ok) {
+      const error = await respuesta.json().catch(() => ({}));
+      throw new Error(error.mensaje || "No fue posible descargar el reporte.");
+    }
+
+    const archivo = await respuesta.blob();
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(archivo);
+    enlace.download = `reporte_reciclaje_greenup.${extension}`;
+    enlace.click();
+    URL.revokeObjectURL(enlace.href);
+  } catch (error) {
+    mostrarToast("Reporte", error.message || "No fue posible generar el archivo.");
+  }
 }
 
 async function cargarNovedades() {

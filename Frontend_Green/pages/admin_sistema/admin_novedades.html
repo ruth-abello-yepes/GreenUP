@@ -134,8 +134,8 @@
       <span class="brand-name">Green<strong>Up</strong></span>
     </div>
     <div class="topbar-actions">
-      <!-- BOTON NOTIFICACIONES: solicita permiso para mostrar avisos del sistema. -->
-      <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="pedirPermisoNotificaciones()">
+      <!-- BOTON NOTIFICACIONES: abre el panel con las alertas guardadas del sistema. -->
+      <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="mostrarPanelNotificacionesAdmin()">
         <span class="material-symbols-outlined">notifications</span>
       </button>
       <!-- MENU ADMIN: despliega opciones de cuenta sin ocupar espacio en pantalla. -->
@@ -151,7 +151,7 @@
           <li class="dropdown-header">Cuenta administrador</li>
           <li><a class="dropdown-item" href="admin_perfil.html"><span class="material-symbols-outlined">person</span> Perfil</a></li>
           <li><a class="dropdown-item" href="admin_configuracion.html"><span class="material-symbols-outlined">settings</span> Configuracion</a></li>
-          <li><button class="dropdown-item" type="button" onclick="pedirPermisoNotificaciones()"><span class="material-symbols-outlined">notifications</span> Notificaciones</button></li>
+          <li><button class="dropdown-item" type="button" onclick="mostrarPanelNotificacionesAdmin()"><span class="material-symbols-outlined">notifications</span> Notificaciones</button></li>
           <li><hr class="dropdown-divider"></li>
           <li><button class="dropdown-item text-danger" type="button" onclick="cerrarSesionAdminSistema()"><span class="material-symbols-outlined">logout</span> Cerrar sesion</button></li>
         </ul>

@@ -4,6 +4,33 @@
  */
 
 /**
+ * Escapa texto antes de escribirlo en HTML para evitar contenido extraño.
+ */
+function escaparNotificacion(valor) {
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+/**
+ * Convierte fechas de Supabase en un texto corto para el panel.
+ */
+function formatearFechaNotificacion(valor) {
+    if (!valor) return "Ahora";
+    const fecha = new Date(valor);
+    if (Number.isNaN(fecha.getTime())) return "Ahora";
+    return fecha.toLocaleString("es-CO", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
+/**
  * Crea el panel flotante de notificaciones para ciudadano.
  */
 function asegurarPanelNotificacionesCiudadano() {
@@ -11,28 +38,143 @@ function asegurarPanelNotificacionesCiudadano() {
 
     const panel = document.createElement("section");
     panel.id = "greenup-panel-notificaciones";
-    panel.className = "card border-0 shadow position-fixed";
+    panel.className = "greenup-notifications-menu";
+    panel.setAttribute("aria-hidden", "true");
+    panel.setAttribute("aria-label", "Panel de notificaciones");
     panel.style.width = "min(360px, calc(100vw - 24px))";
     panel.style.top = "84px";
     panel.style.right = "12px";
     panel.style.zIndex = "1080";
-    panel.style.borderRadius = "20px";
     panel.style.display = "none";
     panel.innerHTML = `
-        <div class="card-body p-3">
-            <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="notifications-header">
+            <div>
+                <h2>Notificaciones</h2>
+                <p>Actividad reciente de tu cuenta</p>
+            </div>
+            <span class="notifications-badge" id="greenup-badge-notificaciones-panel">0</span>
+        </div>
+        <div id="greenup-lista-notificaciones" class="notifications-list">
+            <article class="notification-item empty">
+                <span class="material-symbols-outlined">hourglass_empty</span>
                 <div>
-                    <h2 class="h6 mb-1">Notificaciones</h2>
-                    <p class="small text-secondary mb-0">Actividad reciente de tu cuenta</p>
+                    <strong>Cargando notificaciones</strong>
+                    <p>Estamos consultando tus alertas guardadas.</p>
                 </div>
-                <span class="badge rounded-pill text-bg-success" id="greenup-badge-notificaciones-panel">0</span>
-            </div>
-            <div id="greenup-lista-notificaciones" class="d-grid gap-2">
-                <div class="alert alert-light border mb-0">Cargando notificaciones...</div>
-            </div>
+            </article>
         </div>
     `;
     document.body.appendChild(panel);
+    asegurarEstilosNotificacionesCiudadano();
+}
+
+/**
+ * Agrega estilos propios del panel ciudadano sin depender de cada HTML.
+ */
+function asegurarEstilosNotificacionesCiudadano() {
+    if (document.getElementById("greenup-notificaciones-style")) return;
+
+    const estilos = document.createElement("style");
+    estilos.id = "greenup-notificaciones-style";
+    estilos.textContent = `
+        .greenup-notifications-menu {
+            background: #ffffff;
+            border: 1px solid #d9eadf;
+            border-radius: 20px;
+            box-shadow: 0 22px 50px rgba(0, 61, 108, .18);
+            padding: 16px;
+        }
+
+        .greenup-notifications-menu .notifications-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid #e5efe9;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+        }
+
+        .greenup-notifications-menu h2 {
+            color: #0f172a;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .greenup-notifications-menu p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        .greenup-notifications-menu .notifications-badge {
+            align-items: center;
+            background: #087a2e;
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-flex;
+            font-weight: 800;
+            height: 30px;
+            justify-content: center;
+            min-width: 30px;
+            padding: 0 10px;
+        }
+
+        .greenup-notifications-menu .notifications-list {
+            display: grid;
+            gap: 10px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .greenup-notifications-menu .notification-item {
+            align-items: flex-start;
+            background: #f8fbf9;
+            border: 1px solid #dfece5;
+            border-radius: 16px;
+            color: #0f172a;
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .greenup-notifications-menu button.notification-item {
+            cursor: pointer;
+        }
+
+        .greenup-notifications-menu .notification-item.unread {
+            background: #eefbf2;
+            border-color: #10a64a;
+        }
+
+        .greenup-notifications-menu .notification-item.empty {
+            align-items: center;
+            border-style: dashed;
+            justify-content: center;
+            min-height: 150px;
+            text-align: center;
+        }
+
+        .greenup-notifications-menu .material-symbols-outlined {
+            color: #087a2e;
+            flex: 0 0 auto;
+        }
+
+        .greenup-notifications-menu strong {
+            display: block;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .greenup-notifications-menu small {
+            color: #64748b;
+            display: block;
+            margin-top: 8px;
+        }
+    `;
+    document.head.appendChild(estilos);
 }
 
 /**
@@ -49,7 +191,9 @@ function obtenerBotonNotificacionesCiudadano() {
 function alternarPanelNotificacionesCiudadano() {
     asegurarPanelNotificacionesCiudadano();
     const panel = document.getElementById("greenup-panel-notificaciones");
-    panel.style.display = panel.style.display === "none" ? "block" : "none";
+    const abrir = panel.style.display === "none";
+    panel.style.display = abrir ? "block" : "none";
+    panel.setAttribute("aria-hidden", String(!abrir));
 }
 
 /**
@@ -71,15 +215,26 @@ async function cargarPanelNotificacionesCiudadano() {
         if (indicador) indicador.hidden = noLeidas === 0;
 
         if (!notificaciones.length) {
-            lista.innerHTML = `<div class="border rounded-4 p-3 text-secondary bg-light">No tienes notificaciones nuevas.</div>`;
+            lista.innerHTML = `
+                <article class="notification-item empty">
+                    <span class="material-symbols-outlined">notifications_off</span>
+                    <div>
+                        <strong>Sin notificaciones</strong>
+                        <p>No tienes alertas nuevas para tu cuenta.</p>
+                    </div>
+                </article>
+            `;
             return;
         }
 
         lista.innerHTML = notificaciones.map((item) => `
-            <button type="button" class="btn btn-light text-start border rounded-4 p-3 ${item.leida ? "" : "border-success"}" data-notificacion-id="${item.id_notificacion}">
-                <strong class="d-block mb-1">${item.titulo}</strong>
-                <span class="small text-secondary d-block mb-2">${item.mensaje}</span>
-                <small class="text-secondary">${new Date(item.fecha_hora).toLocaleString("es-CO")}</small>
+            <button type="button" class="notification-item ${item.leida ? "" : "unread"}" data-notificacion-id="${item.id_notificacion}">
+                <span class="material-symbols-outlined">${item.leida ? "notifications" : "notifications_active"}</span>
+                <div>
+                    <strong>${escaparNotificacion(item.titulo)}</strong>
+                    <p>${escaparNotificacion(item.mensaje)}</p>
+                    <small>${escaparNotificacion(formatearFechaNotificacion(item.fecha_hora || item.fecha))}</small>
+                </div>
             </button>
         `).join("");
 
@@ -91,7 +246,15 @@ async function cargarPanelNotificacionesCiudadano() {
             });
         });
     } catch (error) {
-        lista.innerHTML = `<div class="border rounded-4 p-3 text-secondary bg-light">Tus notificaciones aparecerán aquí cuando estén disponibles.</div>`;
+        lista.innerHTML = `
+            <article class="notification-item empty">
+                <span class="material-symbols-outlined">wifi_off</span>
+                <div>
+                    <strong>No se pudieron cargar</strong>
+                    <p>Verifica que el backend esté activo e inténtalo de nuevo.</p>
+                </div>
+            </article>
+        `;
     }
 }
 
@@ -168,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const boton = obtenerBotonNotificacionesCiudadano();
     if (boton) {
+        cargarPanelNotificacionesCiudadano();
         boton.addEventListener("click", async (evento) => {
             evento.preventDefault();
             alternarPanelNotificacionesCiudadano();

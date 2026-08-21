@@ -60,10 +60,10 @@ function crearNavegacionInferiorCiudadano() {
     const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
     const rutas = [
         {
-            href: "ciudadano_mapa.html",
-            icono: "recycling",
-            texto: "Recicladoras",
-            activos: ["ciudadano_mapa.html"],
+            href: "ciudadano_noticias.html",
+            icono: "newspaper",
+            texto: "Noticias",
+            activos: ["ciudadano_noticias.html"],
         },
         {
             href: "ciudadano_estadisticas.html",
@@ -139,6 +139,109 @@ function crearNavegacionInferiorCiudadano() {
     });
 
     document.body.appendChild(navegacion);
+}
+
+/**
+ * Crea un menú pequeño para el botón hamburguesa en móvil.
+ * Este menú reemplaza la barra lateral antigua y muestra rutas reales.
+ */
+function crearMenuHamburguesaCiudadano() {
+    const botonMenu = document.querySelector(
+        '.navbar-toggler[data-bs-target="#mobileMenuSidebar"], .navbar-toggler[data-bs-target="#mobileOffcanvas"]'
+    );
+
+    if (!botonMenu || document.getElementById("ciudadano-hamburger-panel")) {
+        return;
+    }
+
+    const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
+    const rutasMenu = [
+        { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
+        { href: "ciudadano_noticias.html", icono: "newspaper", texto: "Noticias" },
+        { href: "ciudadano_mapa.html", icono: "recycling", texto: "Recicladoras" },
+        { href: "ciudadano_estadisticas.html", icono: "trending_up", texto: "Estadísticas" },
+        { href: "ciudadano_educacion.html", icono: "menu_book", texto: "Aprende" },
+        { href: "ciudadano_registrar_reciclaje.html", icono: "add_circle", texto: "Registrar reciclaje", requiereSesion: true },
+        { href: "ciudadano_ajustes.html", icono: "account_circle", texto: "Tu Perfil" },
+    ];
+
+    botonMenu.removeAttribute("data-bs-toggle");
+    botonMenu.removeAttribute("data-bs-target");
+    botonMenu.setAttribute("aria-label", "Abrir menú ciudadano");
+    botonMenu.setAttribute("aria-expanded", "false");
+
+    const panel = document.createElement("section");
+    panel.id = "ciudadano-hamburger-panel";
+    panel.className = "ciudadano-hamburger-panel";
+    panel.setAttribute("aria-label", "Menú ciudadano");
+    panel.hidden = true;
+
+    panel.innerHTML = `
+        <div class="ciudadano-hamburger-panel__head">
+            <strong>GreenUp</strong>
+            <span>Menú ciudadano</span>
+        </div>
+        <div class="ciudadano-hamburger-panel__links">
+            ${rutasMenu.map((ruta) => {
+                const activo = ruta.href === archivoActual ? " is-active" : "";
+                return `
+                    <a class="ciudadano-hamburger-panel__link${activo}" href="${ruta.href}" data-requiere-sesion="${ruta.requiereSesion ? "true" : "false"}">
+                        <span class="material-symbols-outlined">${ruta.icono}</span>
+                        <span>${ruta.texto}</span>
+                    </a>
+                `;
+            }).join("")}
+            <button class="ciudadano-hamburger-panel__logout" type="button">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Cerrar sesión</span>
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(panel);
+
+    botonMenu.addEventListener("click", (evento) => {
+        evento.preventDefault();
+        const abrir = panel.hidden;
+        panel.hidden = !abrir;
+        botonMenu.setAttribute("aria-expanded", String(abrir));
+    });
+
+    panel.querySelectorAll("[data-requiere-sesion='true']").forEach((enlace) => {
+        enlace.addEventListener("click", (evento) => {
+            const token = localStorage.getItem("token");
+            const usuarioGuardado = localStorage.getItem("usuario");
+
+            if (!token || !usuarioGuardado) {
+                evento.preventDefault();
+                window.location.href = "../public/public_login.html";
+            }
+        });
+    });
+
+    panel.querySelector(".ciudadano-hamburger-panel__logout")?.addEventListener("click", (evento) => {
+        if (typeof confirmarCerrarSesion === "function") {
+            confirmarCerrarSesion(evento);
+            return;
+        }
+
+        if (typeof cerrarSesion === "function" && confirm("¿Seguro que quieres cerrar sesión?")) {
+            cerrarSesion();
+        }
+    });
+
+    document.addEventListener("click", (evento) => {
+        if (panel.hidden) {
+            return;
+        }
+
+        if (panel.contains(evento.target) || botonMenu.contains(evento.target)) {
+            return;
+        }
+
+        panel.hidden = true;
+        botonMenu.setAttribute("aria-expanded", "false");
+    });
 }
 
 /**
@@ -302,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     corregirEnlacesCiudadano();
     completarNavegacionCiudadano();
     crearNavegacionInferiorCiudadano();
+    crearMenuHamburguesaCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
     corregirFooterCiudadano();

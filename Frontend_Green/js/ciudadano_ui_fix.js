@@ -4,6 +4,20 @@
  */
 
 /**
+ * Carga el archivo CSS propio del ciudadano si la pantalla no lo importó.
+ */
+function asegurarCssCiudadano() {
+    if (document.querySelector('link[href*="ciudadano.css"]')) {
+        return;
+    }
+
+    const enlaceCss = document.createElement("link");
+    enlaceCss.rel = "stylesheet";
+    enlaceCss.href = "../../css/ciudadano.css";
+    document.head.appendChild(enlaceCss);
+}
+
+/**
  * Reescribe rutas antiguas del ciudadano hacia las pantallas actuales.
  */
 function corregirEnlacesCiudadano() {
@@ -23,6 +37,108 @@ function corregirEnlacesCiudadano() {
             enlace.setAttribute("href", mapaRutas[href]);
         }
     });
+}
+
+/**
+ * Indica si una opción de la barra inferior corresponde a la pantalla actual.
+ * @param {string} archivoActual Nombre del archivo abierto.
+ * @param {string[]} archivosPermitidos Archivos que activan la opción.
+ * @returns {boolean} Verdadero cuando la opción debe verse activa.
+ */
+function esRutaCiudadanoActiva(archivoActual, archivosPermitidos) {
+    return archivosPermitidos.includes(archivoActual);
+}
+
+/**
+ * Crea la navegación inferior del ciudadano para celular y tablet.
+ */
+function crearNavegacionInferiorCiudadano() {
+    if (document.getElementById("ciudadano-bottom-nav")) {
+        return;
+    }
+
+    const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
+    const rutas = [
+        {
+            href: "ciudadano_mapa.html",
+            icono: "recycling",
+            texto: "Recicladoras",
+            activos: ["ciudadano_mapa.html"],
+        },
+        {
+            href: "ciudadano_estadisticas.html",
+            icono: "trending_up",
+            texto: "Estadísticas",
+            activos: ["ciudadano_estadisticas.html"],
+        },
+        {
+            href: "ciudadano_registrar_reciclaje.html",
+            icono: "add",
+            texto: "Reciclar",
+            activos: ["ciudadano_registrar_reciclaje.html"],
+            principal: true,
+            requiereSesion: true,
+        },
+        {
+            href: "ciudadano_educacion.html",
+            icono: "menu_book",
+            texto: "Aprende",
+            activos: ["ciudadano_educacion.html", "ciudadano_noticias.html"],
+        },
+        {
+            href: "ciudadano_ajustes.html",
+            icono: "account_circle",
+            texto: "Tu Perfil",
+            activos: ["ciudadano_ajustes.html", "ajustes_cuenta.html"],
+        },
+    ];
+
+    const navegacion = document.createElement("nav");
+    navegacion.id = "ciudadano-bottom-nav";
+    navegacion.className = "ciudadano-bottom-nav";
+    navegacion.setAttribute("aria-label", "Navegación inferior del ciudadano");
+
+    rutas.forEach((ruta) => {
+        const enlace = document.createElement("a");
+        const activa = esRutaCiudadanoActiva(archivoActual, ruta.activos);
+        enlace.href = ruta.href;
+        enlace.className = `ciudadano-bottom-nav__link${ruta.principal ? " ciudadano-bottom-nav__link--primary" : ""}${activa ? " is-active" : ""}`;
+        enlace.setAttribute("aria-label", ruta.texto);
+
+        if (activa) {
+            enlace.setAttribute("aria-current", "page");
+        }
+
+        if (ruta.requiereSesion) {
+            enlace.addEventListener("click", (evento) => {
+                const token = localStorage.getItem("token");
+                const usuarioGuardado = localStorage.getItem("usuario");
+
+                if (!token || !usuarioGuardado) {
+                    evento.preventDefault();
+                    window.location.href = "../public/public_login.html";
+                }
+            });
+        }
+
+        if (ruta.principal) {
+            enlace.innerHTML = `
+                <span class="ciudadano-bottom-nav__main-icon">
+                    <span class="material-symbols-outlined">${ruta.icono}</span>
+                </span>
+                <span>${ruta.texto}</span>
+            `;
+        } else {
+            enlace.innerHTML = `
+                <span class="material-symbols-outlined">${ruta.icono}</span>
+                <span>${ruta.texto}</span>
+            `;
+        }
+
+        navegacion.appendChild(enlace);
+    });
+
+    document.body.appendChild(navegacion);
 }
 
 /**
@@ -181,9 +297,11 @@ function redirigirAjustesAntiguos() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    asegurarCssCiudadano();
     redirigirAjustesAntiguos();
     corregirEnlacesCiudadano();
     completarNavegacionCiudadano();
+    crearNavegacionInferiorCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
     corregirFooterCiudadano();

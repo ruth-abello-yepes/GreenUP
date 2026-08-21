@@ -1,0 +1,186 @@
+/* ============================================================
+   NAVEGACION INFERIOR RESPONSIVE DEL CIUDADANO
+   Este bloque se aplica en celulares y tablets.
+   Mantiene el estilo de GreenUp y evita usar barra lateral.
+   ============================================================ */
+
+/* La barra inferior queda oculta en computador. */
+.ciudadano-bottom-nav {
+  display: none;
+}
+
+/* Los enlaces internos se preparan para recibir icono y texto. */
+.ciudadano-bottom-nav__link {
+  color: #003d6c;
+  text-decoration: none;
+}
+
+/* El icono central de reciclar tiene más peso visual. */
+.ciudadano-bottom-nav__link--primary {
+  color: #087a2e;
+}
+
+/* El enlace activo indica en qué apartado se encuentra el usuario. */
+.ciudadano-bottom-nav__link.is-active {
+  color: #087a2e;
+}
+
+/* En celular y tablet se muestra la barra inferior. */
+@media (max-width: 991.98px) {
+  /* Se deja espacio abajo para que el contenido no quede tapado. */
+  body {
+    padding-bottom: 104px;
+  }
+
+  /* Se oculta el botón hamburguesa porque ya no se usará barra lateral. */
+  .navbar-toggler[data-bs-target="#mobileMenuSidebar"],
+  .navbar-toggler[data-bs-target="#mobileOffcanvas"] {
+    display: none !important;
+  }
+
+  /* Se ocultan las barras laterales móviles heredadas. */
+  #mobileMenuSidebar,
+  #mobileOffcanvas {
+    display: none !important;
+  }
+
+  /* Se oculta el menú horizontal de escritorio en tablet. */
+  nav.navbar .container-fluid > .d-none.d-md-flex,
+  nav.navbar .navbar-collapse.d-md-flex {
+    display: none !important;
+  }
+
+  /* Contenedor general de la navegación inferior. */
+  .ciudadano-bottom-nav {
+    align-items: end;
+    background: #ffffff;
+    border: 1px solid rgba(8, 122, 46, 0.22);
+    border-bottom: 0;
+    border-radius: 28px 28px 0 0;
+    bottom: 0;
+    box-shadow: 0 -16px 38px rgba(0, 61, 108, 0.18);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+    left: 50%;
+    max-width: 760px;
+    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+    position: fixed;
+    transform: translateX(-50%);
+    width: min(100%, 760px);
+    z-index: 2100;
+  }
+
+  /* Cada opción tiene icono arriba y texto abajo. */
+  .ciudadano-bottom-nav__link {
+    align-items: center;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.78rem;
+    font-weight: 800;
+    gap: 4px;
+    justify-content: center;
+    min-height: 72px;
+    padding: 8px 4px;
+    text-align: center;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  /* Efecto visual accesible al tocar o navegar con teclado. */
+  .ciudadano-bottom-nav__link:hover,
+  .ciudadano-bottom-nav__link:focus-visible {
+    background: #eefbf2;
+    color: #087a2e;
+    outline: none;
+  }
+
+  /* Iconos de las opciones normales. */
+  .ciudadano-bottom-nav__link .material-symbols-outlined {
+    color: currentColor;
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  /* Estado activo de una opción normal. */
+  .ciudadano-bottom-nav__link.is-active {
+    background: #eefbf2;
+    box-shadow: inset 0 0 0 1px rgba(8, 122, 46, 0.16);
+  }
+
+  /* Botón central de reciclar. */
+  .ciudadano-bottom-nav__link--primary {
+    margin-top: -30px;
+    min-height: 96px;
+  }
+
+  /* Círculo grande del botón central. */
+  .ciudadano-bottom-nav__main-icon {
+    align-items: center;
+    background: #dff4e5;
+    border: 5px solid #296c1f;
+    border-radius: 999px;
+    box-shadow: 0 10px 22px rgba(8, 122, 46, 0.25);
+    display: inline-flex;
+    height: 72px;
+    justify-content: center;
+    width: 72px;
+  }
+
+  /* Icono + del botón central. */
+  .ciudadano-bottom-nav__main-icon .material-symbols-outlined {
+    color: #2f8f2f;
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  /* Activo especial para la opción central. */
+  .ciudadano-bottom-nav__link--primary.is-active .ciudadano-bottom-nav__main-icon {
+    background: #c9f0d5;
+    border-color: #087a2e;
+  }
+
+  /* Se evita duplicar el botón flotante + cuando ya existe la barra inferior. */
+  #greenup-reciclaje-float {
+    display: none !important;
+  }
+
+  /* WhatsApp queda por encima de la barra inferior. */
+  #greenup-whatsapp-float {
+    bottom: calc(108px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* El panel de notificaciones no debe quedar debajo de la barra. */
+  #greenup-panel-notificaciones {
+    max-height: calc(100vh - 190px);
+  }
+}
+
+/* Ajuste para celulares pequeños. */
+@media (max-width: 430px) {
+  .ciudadano-bottom-nav {
+    border-radius: 22px 22px 0 0;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .ciudadano-bottom-nav__link {
+    font-size: 0.68rem;
+    min-height: 66px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .ciudadano-bottom-nav__link .material-symbols-outlined {
+    font-size: 1.75rem;
+  }
+
+  .ciudadano-bottom-nav__main-icon {
+    height: 64px;
+    width: 64px;
+  }
+
+  .ciudadano-bottom-nav__main-icon .material-symbols-outlined {
+    font-size: 2.65rem;
+  }
+}

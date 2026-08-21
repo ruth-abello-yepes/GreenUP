@@ -68,6 +68,28 @@ def registrar_recicladora(id_usuario, nit_empresa, nombre_empresa, direccion_emp
 
     cursor.close()
     conexion.close()
+
+
+def buscar_recicladora_por_nit(nit_empresa):
+    """
+    Busca si el NIT ya pertenece a una recicladora registrada.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute(
+        """
+        SELECT id_recicladora, nit_empresa, nombre_empresa
+        FROM recicladoras
+        WHERE nit_empresa = %s
+        LIMIT 1
+        """,
+        (nit_empresa,),
+    )
+    recicladora = cursor.fetchone()
+    cursor.close()
+    conexion.close()
+    return recicladora
 def asociar_punto_a_recicladora(id_usuario, id_punto):
     conexion = obtener_conexion()
     cursor = conexion.cursor()

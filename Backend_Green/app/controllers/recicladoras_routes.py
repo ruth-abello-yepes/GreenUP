@@ -107,7 +107,7 @@ def ruta_registrar_dueno_recicladora():
         description: Faltan datos obligatorios
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_registrar_dueno_recicladora(datos)
 

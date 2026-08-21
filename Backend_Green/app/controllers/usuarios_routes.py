@@ -181,7 +181,7 @@ def ruta_registrar_usuario():
         description: Faltan datos obligatorios
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_registrar_usuario(datos)
 
@@ -319,7 +319,7 @@ def ruta_actualizar_usuario(id_usuario):
         description: Faltan datos obligatorios
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_actualizar_usuario(id_usuario, datos)
 
@@ -363,7 +363,7 @@ def ruta_cambiar_estado_usuario(id_usuario):
     description: El administrador cambia el estado de una cuenta existente.
     """
 
-    datos = request.get_json()
+    datos = request.get_json() or {}
 
     respuesta, estado = servicio_cambiar_estado_usuario(id_usuario, datos)
 

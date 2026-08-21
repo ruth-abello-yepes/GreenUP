@@ -13,6 +13,8 @@ from app.models.usuarios_model import (
     actualizar_usuario,
     inhabilitar_usuario,
     cambiar_estado_usuario,
+    buscar_usuario_por_documento,
+    buscar_usuario_por_usuario,
     obtener_perfil_usuario,
     buscar_usuario_por_correo_o_usuario_excluyendo_id,
     actualizar_perfil_usuario,
@@ -26,6 +28,12 @@ from app.common.security import (
     verificar_contrasena
 )
 from app.models.notificaciones_model import crear_notificacion
+
+
+def _correo_valido(correo):
+    """Valida un correo con una regla sencilla y entendible."""
+
+    return bool(correo and "@" in correo and "." in correo)
 
 
 def servicio_registrar_usuario(datos):
@@ -71,8 +79,15 @@ def servicio_registrar_usuario(datos):
     if not correo:
         return {"mensaje": "El correo es obligatorio"}, 400
 
+    correo = correo.strip().lower()
+
+    if not _correo_valido(correo):
+        return {"mensaje": "El correo no tiene un formato valido"}, 400
+
     if not usuario:
         return {"mensaje": "El usuario es obligatorio"}, 400
+
+    usuario = usuario.strip()
 
     if len(usuario) < 5:
         return {"mensaje": "El usuario debe tener minimo 5 caracteres"}, 400
@@ -84,6 +99,12 @@ def servicio_registrar_usuario(datos):
 
     if not numero_documento:
         return {"mensaje": "El numero de documento es obligatorio"}, 400
+
+    if buscar_usuario_por_usuario(usuario):
+        return {"mensaje": "El usuario o correo ya se encuentra registrado"}, 400
+
+    if buscar_usuario_por_documento(numero_documento):
+        return {"mensaje": "El numero de documento ya se encuentra registrado"}, 400
 
     if not id_tipo_documento:
         return {"mensaje": "El tipo de documento es obligatorio"}, 400

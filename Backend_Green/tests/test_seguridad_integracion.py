@@ -142,6 +142,38 @@ class SeguridadIntegracionTest(unittest.TestCase):
 
         self.assertEqual(existentes, restricciones)
 
+    def test_indices_unicos_normalizados_existen(self):
+        """Comprueba unicidad sin importar mayusculas, minusculas o espacios."""
+
+        indices = {
+            "uq_usuarios_correo_normalizado_greenup",
+            "uq_usuarios_usuario_normalizado_greenup",
+            "uq_usuarios_documento_normalizado_greenup",
+            "uq_recicladoras_nit_normalizado_greenup",
+        }
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT indexname
+                FROM pg_indexes
+                WHERE schemaname = 'public'
+                  AND indexname = ANY(%s)
+                """,
+                (list(indices),),
+            )
+            existentes = {fila["indexname"] for fila in cursor.fetchall()}
+
+        self.assertEqual(existentes, indices)
+
+    def test_registro_ciudadano_rechaza_cuerpo_vacio(self):
+        """Evita errores internos cuando el registro llega sin datos."""
+
+        respuesta = self.cliente.post("/api/usuarios/registro", json={})
+
+        self.assertEqual(respuesta.status_code, 400)
+        self.assertIn("nombres", respuesta.get_json()["mensaje"].lower())
+
     def test_reciclaje_tiene_candados_de_cantidad_y_puntos(self):
         """Revisa checks para evitar cantidades invalidas y puntos negativos."""
 
@@ -223,6 +255,26 @@ class SeguridadIntegracionTest(unittest.TestCase):
         respuesta, estado = servicio_reporte_reciclaje({"id_usuario": "-1"})
         self.assertEqual(estado, 400)
         self.assertIn("id_usuario", respuesta["mensaje"])
+
+    def test_storage_greenup_configurado(self):
+        """Verifica buckets y limites basicos de Supabase Storage."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT id, public, file_size_limit, allowed_mime_types
+                FROM storage.buckets
+                WHERE id IN ('greenup-perfiles', 'greenup-documentos-recicladoras')
+                ORDER BY id
+                """
+            )
+            buckets = {fila["id"]: fila for fila in cursor.fetchall()}
+
+        self.assertEqual(set(buckets), {"greenup-perfiles", "greenup-documentos-recicladoras"})
+        self.assertTrue(buckets["greenup-perfiles"]["public"])
+        self.assertFalse(buckets["greenup-documentos-recicladoras"]["public"])
+        self.assertLessEqual(buckets["greenup-perfiles"]["file_size_limit"], 2097152)
+        self.assertLessEqual(buckets["greenup-documentos-recicladoras"]["file_size_limit"], 10485760)
 
 
 if __name__ == "__main__":

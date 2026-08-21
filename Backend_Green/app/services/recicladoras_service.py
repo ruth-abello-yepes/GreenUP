@@ -7,10 +7,12 @@ import os
 import googlemaps
 
 from app.models.usuarios_model import registrar_usuario
+from app.models.usuarios_model import buscar_usuario_por_documento, buscar_usuario_por_usuario
 from app.models.recicladoras_model import (
     actualizar_perfil_recicladora,
     actualizar_punto_recicladora,
     asociar_punto_a_recicladora,
+    buscar_recicladora_por_nit,
     buscar_recicladora_por_usuario,
     cambiar_estado_punto_recicladora,
     cambiar_estado_registro_recicladora,
@@ -28,6 +30,14 @@ from app.models.ubicaciones_model import crear_ubicacion
 from app.models.novedades_model import crear_novedad
 from app.models.notificaciones_model import crear_notificacion
 from app.common.security import cifrar_contrasena, validar_contrasena_segura
+
+
+def _correo_valido(correo):
+    """Valida un correo con una regla sencilla y entendible."""
+
+    return bool(correo and "@" in correo and "." in correo)
+
+
 def _geocodificar_direccion(direccion):
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key or not direccion:
@@ -61,8 +71,8 @@ def servicio_registrar_dueno_recicladora(datos):
 
     nombres = datos.get("nombres") or datos.get("nombre_empresa")
     apellidos = datos.get("apellidos") or "Empresa"
-    correo = datos.get("correo")
-    usuario = datos.get("usuario")
+    correo = (datos.get("correo") or "").strip().lower()
+    usuario = (datos.get("usuario") or "").strip()
     contrasena = datos.get("contrasena")
     numero_documento = datos.get("numero_documento")
     celular = datos.get("celular")
@@ -90,6 +100,9 @@ def servicio_registrar_dueno_recicladora(datos):
 
     if not correo:
         return {"mensaje": "El correo es obligatorio"}, 400
+
+    if not _correo_valido(correo):
+        return {"mensaje": "El correo no tiene un formato valido"}, 400
 
     if not usuario:
         return {"mensaje": "El usuario es obligatorio"}, 400
@@ -119,6 +132,15 @@ def servicio_registrar_dueno_recicladora(datos):
 
     if not str(nit_empresa).replace("-", "").replace(".", "").isdigit():
         return {"mensaje": "El NIT debe contener solo numeros, puntos o guion"}, 400
+
+    if buscar_usuario_por_usuario(usuario):
+        return {"mensaje": "El usuario o correo ya se encuentra registrado"}, 400
+
+    if buscar_usuario_por_documento(numero_documento):
+        return {"mensaje": "El numero de documento ya se encuentra registrado"}, 400
+
+    if buscar_recicladora_por_nit(nit_empresa):
+        return {"mensaje": "El NIT ya pertenece a una recicladora registrada"}, 400
 
     if not camara_comercio:
         return {"mensaje": "Debes cargar o registrar la camara de comercio"}, 400

@@ -223,6 +223,27 @@ def buscar_usuario_por_usuario(usuario):
     return usuario_encontrado
 
 
+def buscar_usuario_por_documento(numero_documento):
+    """
+    Busca un usuario por documento.
+
+    Se usa antes del registro para devolver un mensaje claro cuando alguien
+    intenta crear una cuenta con una cedula o documento ya registrado.
+    """
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    sql = "SELECT * FROM usuarios WHERE numero_documento = %s"
+    cursor.execute(sql, (numero_documento,))
+    usuario_encontrado = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario_encontrado
+
+
 def actualizar_usuario(id_usuario, nombres, apellidos, correo, usuario, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado):
     """
     Actualiza los datos de un usuario.

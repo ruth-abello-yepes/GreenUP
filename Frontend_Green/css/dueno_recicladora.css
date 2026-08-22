@@ -1953,3 +1953,9 @@ body.recicladora-theme-dark .profile-photo-help {
     display: none;
   }
 }
+
+/* Navegación y controles flotantes tipo app móvil retirados en recicladora. */
+.mobile-bottom-nav,
+.map-floating-controls {
+  display: none !important;
+}

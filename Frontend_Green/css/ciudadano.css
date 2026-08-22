@@ -4,9 +4,9 @@
    Mantiene el estilo de GreenUp y evita usar barra lateral.
    ============================================================ */
 
-/* La barra inferior queda oculta en computador. */
+/* La barra inferior tipo app móvil queda desactivada en todo el rol ciudadano. */
 .ciudadano-bottom-nav {
-  display: none;
+  display: none !important;
 }
 
 /* Los enlaces internos se preparan para recibir icono y texto. */
@@ -32,9 +32,9 @@
 
 /* En celular y tablet se muestra la barra inferior. */
 @media (max-width: 991.98px) {
-  /* Se deja espacio abajo para que el contenido no quede tapado. */
+  /* Ya no se reserva espacio para barras inferiores tipo app móvil. */
   body {
-    padding-bottom: 104px;
+    padding-bottom: 0 !important;
   }
 
   /* Se ocultan las barras laterales móviles heredadas. */
@@ -51,23 +51,7 @@
 
   /* Contenedor general de la navegación inferior. */
   .ciudadano-bottom-nav {
-    align-items: end;
-    background: #ffffff;
-    border: 1px solid rgba(8, 122, 46, 0.22);
-    border-bottom: 0;
-    border-radius: 28px 28px 0 0;
-    bottom: 0;
-    box-shadow: 0 -16px 38px rgba(0, 61, 108, 0.18);
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 2px;
-    left: 50%;
-    max-width: 760px;
-    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-    position: fixed;
-    transform: translateX(-50%);
-    width: min(100%, 760px);
-    z-index: 2100;
+    display: none !important;
   }
 
   /* Cada opción tiene icono arriba y texto abajo. */
@@ -144,9 +128,9 @@
     display: none !important;
   }
 
-  /* WhatsApp queda por encima de la barra inferior. */
+  /* Se ocultan los flotantes tipo app móvil. */
   #greenup-whatsapp-float {
-    bottom: calc(108px + env(safe-area-inset-bottom)) !important;
+    display: none !important;
   }
 
   /* El panel de notificaciones no debe quedar debajo de la barra. */

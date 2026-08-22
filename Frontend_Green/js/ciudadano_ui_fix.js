@@ -648,7 +648,6 @@ document.addEventListener("DOMContentLoaded", () => {
     redirigirAjustesAntiguos();
     corregirEnlacesCiudadano();
     completarNavegacionCiudadano();
-    crearNavegacionInferiorCiudadano();
     crearMenuHamburguesaCiudadano();
     normalizarNavegacionAprendeCiudadano();
     cerrarOffcanvasViejoCiudadano();

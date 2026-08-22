@@ -343,51 +343,8 @@ function prepararAccionesSoporteGreenUp() {
         }
     });
 
-    if (!document.getElementById("greenup-whatsapp-float")) {
-        const boton = document.createElement("a");
-        boton.id = "greenup-whatsapp-float";
-        boton.href = "https://wa.me/573185810461?text=Hola%20GreenUp,%20necesito%20soporte";
-        boton.target = "_blank";
-        boton.rel = "noopener noreferrer";
-        boton.className = "btn btn-success rounded-circle shadow position-fixed d-inline-flex align-items-center justify-content-center";
-        boton.style.width = "58px";
-        boton.style.height = "58px";
-        boton.style.right = "18px";
-        boton.style.bottom = "18px";
-        boton.style.zIndex = "1080";
-        boton.title = "Escribir por WhatsApp";
-        boton.innerHTML = '<span class="material-symbols-outlined">support_agent</span>';
-        document.body.appendChild(boton);
-    }
-
-    if (!document.getElementById("greenup-reciclaje-float")) {
-        const botonRegistro = document.createElement("button");
-        botonRegistro.id = "greenup-reciclaje-float";
-        botonRegistro.type = "button";
-        botonRegistro.className = "btn btn-success rounded-circle shadow position-fixed d-inline-flex align-items-center justify-content-center";
-        botonRegistro.style.width = "58px";
-        botonRegistro.style.height = "58px";
-        botonRegistro.style.right = "18px";
-        botonRegistro.style.bottom = "88px";
-        botonRegistro.style.zIndex = "1080";
-        botonRegistro.title = "Registrar reciclaje";
-        botonRegistro.setAttribute("aria-label", "Registrar reciclaje");
-        botonRegistro.innerHTML = '<span class="material-symbols-outlined">add</span>';
-
-        botonRegistro.addEventListener("click", () => {
-            const token = localStorage.getItem("token");
-            const usuarioGuardado = localStorage.getItem("usuario");
-
-            if (!token || !usuarioGuardado) {
-                window.location.href = "../public/public_login.html";
-                return;
-            }
-
-            window.location.href = "ciudadano_registrar_reciclaje.html";
-        });
-
-        document.body.appendChild(botonRegistro);
-    }
+    document.getElementById("greenup-whatsapp-float")?.remove();
+    document.getElementById("greenup-reciclaje-float")?.remove();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -2155,3 +2155,9 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   margin: 0;
   color: #64748b;
 }
+
+/* Navegación y controles flotantes tipo app móvil retirados en administrador. */
+.mobile-bottom-nav,
+.map-floating-controls {
+  display: none !important;
+}

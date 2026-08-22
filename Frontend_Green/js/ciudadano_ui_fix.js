@@ -324,12 +324,13 @@ function completarNavegacionCiudadano() {
         "nav.navbar .container-fluid > .d-none.d-md-flex"
     );
     if (navegacionEscritorio) {
+        navegacionEscritorio.innerHTML = "";
         rutasPrincipales.forEach((ruta) => {
-            if (tieneRuta(navegacionEscritorio, ruta.href)) return;
-
             const enlace = document.createElement("a");
+            const rutaActual = ruta.href === archivoActual;
             enlace.href = ruta.href;
-            enlace.className = "nav-link text-secondary d-flex align-items-center gap-1";
+            enlace.className = `nav-link ${rutaActual ? "active-custom h-100" : "text-secondary"} d-flex align-items-center gap-1`;
+            if (rutaActual) enlace.setAttribute("aria-current", "page");
             enlace.innerHTML = `<span class="material-symbols-outlined fs-5">${ruta.icono}</span> ${ruta.texto}`;
             navegacionEscritorio.appendChild(enlace);
         });

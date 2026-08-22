@@ -2,6 +2,7 @@
 ## Controlador HTTP: recibe peticiones, valida datos basicos y delega en servicios.
 
 from flask import Blueprint, g, jsonify, request
+from psycopg2 import DatabaseError, OperationalError
 
 from app.middlewares.auth_middleware import login_requerido
 from app.middlewares.roles_middleware import rol_requerido
@@ -25,7 +26,17 @@ def ruta_listar_noticias_ambientales():
     except (TypeError, ValueError):
         return jsonify({"mensaje": "La paginación no es válida"}), 400
 
-    respuesta, estado = servicio_listar_noticias_ambientales(busqueda, pagina, por_pagina)
+    try:
+        respuesta, estado = servicio_listar_noticias_ambientales(busqueda, pagina, por_pagina)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos en noticias ambientales GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase.",
+            "noticias": [],
+            "paginacion": {"pagina": pagina, "por_pagina": por_pagina, "total": 0, "total_paginas": 0},
+            "sincronizacion": {"estado": "error", "mensaje": "Base de datos no disponible", "configurada": False},
+        }), 503
+
     salida = jsonify(respuesta)
     salida.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
     return salida, estado

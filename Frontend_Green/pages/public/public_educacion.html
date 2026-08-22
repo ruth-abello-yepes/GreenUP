@@ -185,10 +185,88 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .news-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 18px;
+            background-color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .news-card .img-wrapper {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .news-card .img-wrapper img,
+        .featured-news-card .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-news-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 24px;
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0, 61, 108, 0.08);
+        }
+
+        .featured-news-card .img-wrapper {
+            min-height: 320px;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #paginacion-noticias .page-item.active .page-link {
+            background-color: var(--gu-primary);
+            color: white;
+        }
+
+        @media (max-width: 575.98px) {
+            main {
+                margin-top: 84px !important;
+            }
+
+            .card-highlight {
+                min-height: 560px;
+            }
+
+            .card-highlight-overlay {
+                padding: 1.25rem;
+            }
+
+            .card-highlight-overlay h2 {
+                font-size: 1.75rem;
+                line-height: 1.15;
+            }
+
+            .card-highlight-overlay .lead {
+                font-size: 0.98rem;
+                line-height: 1.45;
+            }
+
+            .card-highlight-overlay .d-flex.align-items-center.justify-content-between {
+                align-items: flex-start !important;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
     </style>
 </head>
 
-<body>
+<body data-news-mode="public">
 
     <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2">
         <div class="container-fluid px-4">
@@ -208,11 +286,6 @@
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center text-secondary" href="public_inicio.html">
                             <span class="material-symbols-outlined me-1">home</span> Inicio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center text-secondary" href="public_noticias.html">
-                            <span class="material-symbols-outlined me-1">newspaper</span> Noticias
                         </a>
                     </li>
                     <li class="nav-item">
@@ -260,11 +333,6 @@
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_inicio.html">
                         <span class="material-symbols-outlined me-2">home</span> Inicio
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_noticias.html">
-                        <span class="material-symbols-outlined me-2">newspaper</span> Noticias
                     </a>
                 </li>
                 <li class="nav-item">
@@ -434,6 +502,60 @@
 
         </section>
 
+        <section id="noticias" class="pt-5 mt-5 border-top fade-up" style="transition-delay: 0.25s;">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+                <div>
+                    <span class="badge bg-gu-secondary rounded-pill px-3 py-2 mb-2">Educación / Noticias</span>
+                    <h2 class="fw-bold text-gu-primary mb-2">Noticias ambientales de Colombia</h2>
+                    <p class="text-secondary mb-0">
+                        Noticias reales sobre reciclaje, residuos, biodiversidad y medio ambiente, conectadas a la API
+                        usada por GreenUp.
+                    </p>
+                </div>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white" style="max-width: 360px;">
+                    <span class="input-group-text bg-white border-0">
+                        <span class="material-symbols-outlined fs-6 text-muted">search</span>
+                    </span>
+                    <input id="buscar-noticias" type="search" class="form-control border-0 shadow-none bg-white"
+                        placeholder="Buscar noticias..." aria-label="Buscar noticias">
+                </div>
+            </div>
+
+            <div id="estado-noticias" class="alert alert-info mb-4" role="status">
+                Consultando noticias ambientales de Colombia...
+            </div>
+
+            <section id="noticia-destacada" class="mb-5" style="display: none;">
+                <article class="featured-news-card">
+                    <div class="row g-0 align-items-stretch">
+                        <div class="col-lg-7">
+                            <div class="img-wrapper">
+                                <img id="noticia-destacada-imagen" src="" alt="Noticia ambiental destacada">
+                            </div>
+                        </div>
+                        <div class="col-lg-5 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                            <span id="noticia-destacada-fuente"
+                                class="text-gu-secondary fw-bold text-uppercase small mb-3"></span>
+                            <h3 id="noticia-destacada-titulo" class="fw-bold text-gu-primary mb-3"></h3>
+                            <p id="noticia-destacada-descripcion" class="text-secondary mb-4"></p>
+                            <a id="noticia-destacada-enlace" class="btn btn-gu-primary align-self-start px-4 py-2"
+                                href="#" target="_blank" rel="noopener noreferrer">
+                                Leer noticia completa
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <div id="noticias-grid" class="row g-4" style="display: none;"></div>
+
+            <nav aria-label="Navegación de noticias" class="mt-5 d-flex justify-content-center" hidden>
+                <ul id="paginacion-noticias" class="pagination shadow-sm"></ul>
+            </nav>
+
+            <p id="atribucion-noticias" class="small text-muted text-center mt-4" hidden></p>
+        </section>
+
         <section
             class="bg-gu-dark text-white rounded-4 p-4 p-md-5 text-center position-relative overflow-hidden fade-up shadow-lg mb-5"
             style="border-radius: 40px !important;">
@@ -505,9 +627,9 @@
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-6">
-                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
+                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Educación</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="public_noticias.html" class="text-white-50 text-decoration-none hover-white">Boletín
+                        <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Boletín
                                 Ambiental</a></li>
                         <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
                         <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
@@ -572,6 +694,8 @@
             });
         });
     </script>
+    <script src="../../js/api.js?v=20260821"></script>
+    <script src="../../js/noticias.js?v=20260821-public-educacion"></script>
     <script src="../../js/public_ui_fix.js?v=20260821"></script>
 </body>
 

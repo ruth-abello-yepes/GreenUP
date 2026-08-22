@@ -18,7 +18,7 @@ function normalizarEnlacePublico(enlace) {
     { claves: ["hablar con un experto", "contáctanos", "contactanos", "contacto", "soporte"], href: "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp" },
     { claves: ["misión", "mision", "visión", "vision", "nuestro equipo", "equipo"], href: "public_sobre_nosotros.html" },
     { claves: ["impacto", "estadísticas", "estadisticas"], href: "public_estadisticas.html" },
-    { claves: ["eventos", "eco-blog", "novedades", "boletín", "boletin"], href: "public_noticias.html" },
+    { claves: ["eventos", "eco-blog", "novedades", "boletín", "boletin"], href: "public_educacion.html#noticias" },
     { claves: ["educación", "educacion", "aprende"], href: "public_educacion.html" },
     { claves: ["mapa", "puntos"], href: "public_mapa.html" },
     { claves: ["privacidad"], href: "public_sobre_nosotros.html#privacidad" },

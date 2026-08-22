@@ -155,7 +155,7 @@
                     <span class="material-symbols-outlined text-gu-primary">menu</span>
                 </button>
 
-                <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
                     <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
@@ -254,7 +254,7 @@
     <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
 
         <div class="d-flex align-items-center gap-3 mb-4 fade-up">
-            <a href="#"
+            <a href="ciudadano_mapa.html"
                 class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 shadow-sm hover-bg-light">
                 <span class="material-symbols-outlined text-gu-primary">arrow_back</span>
             </a>
@@ -351,7 +351,7 @@
                     <div>
                         <h5 class="fw-bold text-dark mb-1">¡Gracias por tu colaboración!</h5>
                         <p class="text-secondary small mb-0">Cada reporte ayuda a la comunidad de GreenUp a gestionar
-                            mejor los residuos. Recibirás <b>50 puntos eco</b> por este reporte validado.</p>
+                            mejor los residuos y mantener actualizados los puntos ecológicos.</p>
                     </div>
                 </div>
 
@@ -370,8 +370,8 @@
                         <span class="fs-4 fw-bold"><span style="color: #065591;">Green</span><span
                                 style="color: #4CAF50;">Up</span></span>
                     </div>
-                    <p class="text-white-50 small mb-4">Impulsando la sostenibilidad global a través de la inteligencia
-                        artificial y la comunidad.</p>
+                    <p class="text-white-50 small mb-4">Impulsando la sostenibilidad local a través del reciclaje, la
+                        participación ciudadana y la comunidad.</p>
                     <div class="d-flex gap-2">
                         <a href="#" class="btn btn-outline-light btn-sm rounded-3 border-secondary text-white-50"><span
                                 class="material-symbols-outlined fs-6">language</span></a>
@@ -471,11 +471,18 @@
                 // Recolectar datos
                 const formData = new FormData(form);
                 const rawData = Object.fromEntries(formData.entries());
-                const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+                const token = localStorage.getItem('token');
                 const puntoTexto = (rawData.punto_reciclaje || '').trim();
                 const idPunto = Number(puntoTexto);
+
+                if (!token) {
+                    showFeedback('Tu sesión expiró. Inicia sesión nuevamente para reportar una novedad.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                    return;
+                }
+
                 const data = {
-                    id_usuario: usuario.id_usuario,
                     id_punto: Number.isFinite(idPunto) && idPunto > 0 ? idPunto : null,
                     titulo: rawData.tipo_novedad,
                     motivo: rawData.tipo_novedad,
@@ -485,27 +492,18 @@
                 };
 
                 try {
-                    // 2. Conexión con Flask
-                    const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : 'https://greenup-hoxj.onrender.com') + '/novedades', {
-                    const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : 'https://greenup-hoxj.onrender.com') + '/novedades', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {})
-                        },
-                        body: JSON.stringify(data)
-                    });
+                    // 2. Conexión con Flask usando la función global del proyecto.
+                    const response = await peticionSegura('/novedades', 'POST', data);
 
                     // 3. Respuesta real del backend
                     if (response.ok) {
                         showFeedback('¡Reporte enviado con éxito! Un administrador revisará la novedad a la brevedad.', 'success');
                         form.reset();
                     } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.mensaje || 'Server error');
+                        throw new Error(response.datos?.mensaje || 'No fue posible enviar el reporte.');
                     }
                 } catch (error) {
-                    showFeedback('Hubo un problema al enviar el reporte. Por favor, intenta de nuevo.', 'error');
+                    showFeedback(error.message || 'Hubo un problema al enviar el reporte. Por favor, intenta de nuevo.', 'error');
                 } finally {
                     // Restaurar botón
                     submitBtn.disabled = false;

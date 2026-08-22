@@ -6,6 +6,7 @@ from io import BytesIO, StringIO
 
 import pandas as pd
 from flask import Blueprint, Response, g, jsonify, request, send_file
+from psycopg2 import DatabaseError, OperationalError
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
@@ -109,7 +110,13 @@ def ruta_registrar_dueno_recicladora():
 
     datos = request.get_json() or {}
 
-    respuesta, estado = servicio_registrar_dueno_recicladora(datos)
+    try:
+        respuesta, estado = servicio_registrar_dueno_recicladora(datos)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos en registro recicladora GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 @recicladoras_bp.route("/listar", methods=["GET"])

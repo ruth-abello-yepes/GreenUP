@@ -10,6 +10,7 @@
 # GET  /api/usuarios/ciudadanos    -> Admin lista solo ciudadanos
 
 from flask import Blueprint, request, jsonify, g
+from psycopg2 import DatabaseError, OperationalError
 
 from app.services.usuarios_service import (
     servicio_registrar_usuario,
@@ -184,7 +185,13 @@ def ruta_registrar_usuario():
 
     datos = request.get_json() or {}
 
-    respuesta, estado = servicio_registrar_usuario(datos)
+    try:
+        respuesta, estado = servicio_registrar_usuario(datos)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos en registro GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 
@@ -199,7 +206,13 @@ def ruta_validar_registro():
     """
 
     datos = request.get_json() or {}
-    respuesta, estado = servicio_validar_disponibilidad_registro(datos)
+    try:
+        respuesta, estado = servicio_validar_disponibilidad_registro(datos)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos al validar registro GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 

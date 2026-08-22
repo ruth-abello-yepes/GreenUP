@@ -21,6 +21,7 @@ POST /api/recuperar-contrasena/restablecer
 """
 
 from flask import Blueprint, g, request, jsonify
+from psycopg2 import DatabaseError, OperationalError
 
 from app.services.auth_service import (
     cambiar_contrasena_desde_perfil,
@@ -75,7 +76,13 @@ def ruta_login():
 
     datos = request.get_json() or {}
 
-    respuesta, estado = servicio_login(datos)
+    try:
+        respuesta, estado = servicio_login(datos)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos en login GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 
@@ -122,7 +129,13 @@ def ruta_login_admin():
 
     datos = request.get_json() or {}
 
-    respuesta, estado = servicio_login_admin(datos)
+    try:
+        respuesta, estado = servicio_login_admin(datos)
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos en login admin GreenUP: {error}")
+        return jsonify({
+            "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 

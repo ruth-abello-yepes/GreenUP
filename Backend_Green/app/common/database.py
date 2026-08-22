@@ -11,6 +11,7 @@ def obtener_conexion():
             DATABASE_URL,
             cursor_factory=RealDictCursor,
             sslmode="require",
+            connect_timeout=10,
         )
 
     faltantes = [
@@ -37,6 +38,7 @@ def obtener_conexion():
         password=DB_PASSWORD,
         dbname=DB_NAME,
         sslmode="require",
+        connect_timeout=10,
         cursor_factory=RealDictCursor  # Para que las consultas devuelvan diccionarios JSON compatibles con Flask
     )
     return conexion

@@ -122,8 +122,7 @@ def crear_app():
             "mensaje": "Backend GreenUp funcionando correctamente"
         }
 
-    @app.route("/health/db")
-    def salud_base_datos():
+    def _comprobar_base_datos():
         """
         Verifica conexión real con PostgreSQL/Supabase sin exponer credenciales.
         Sirve para confirmar rápidamente Render + base de datos.
@@ -138,10 +137,31 @@ def crear_app():
             cursor.fetchone()
             cursor.close()
             conexion.close()
-            return jsonify({"ok": True, "mensaje": "Base de datos conectada"}), 200
+            return True, "Base de datos conectada", 200
         except Exception as error:
             print(f"Error de conexión a base de datos GreenUP: {error}")
-            return jsonify({"ok": False, "mensaje": "Base de datos no disponible"}), 503
+            return False, "Base de datos no disponible", 503
+
+    @app.route("/health")
+    def salud_general():
+        """
+        Diagnóstico general para despliegue.
+        No expone variables, claves, usuarios ni contraseñas.
+        """
+
+        base_ok, mensaje_base, estado_base = _comprobar_base_datos()
+        estado_http = 200 if base_ok else 503
+        return jsonify({
+            "backend": "ok",
+            "database": "ok" if base_ok else "error",
+            "ok": base_ok,
+            "mensaje": "GreenUp operativo" if base_ok else mensaje_base,
+        }), estado_http
+
+    @app.route("/health/db")
+    def salud_base_datos():
+        base_ok, mensaje_base, estado_base = _comprobar_base_datos()
+        return jsonify({"ok": base_ok, "mensaje": mensaje_base}), estado_base
 
     @app.errorhandler(404)
     def error_no_encontrado(error):

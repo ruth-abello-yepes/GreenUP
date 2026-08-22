@@ -11,6 +11,15 @@ from app.services.estadisticas_service import EstadisticasService
 estadisticas_bp = Blueprint("estadisticas", __name__)
 
 
+@estadisticas_bp.route("/api/public/inicio", methods=["GET"])
+def obtener_metricas_inicio_publico():
+    """Devuelve indicadores reales para la portada publica."""
+    try:
+        return jsonify(EstadisticasService.metricas_inicio_publico()), 200
+    except Exception:
+        return jsonify({"mensaje": "No fue posible cargar los indicadores publicos"}), 500
+
+
 @estadisticas_bp.route("/api/estadisticas/ciudadano/inicio", methods=["GET"])
 @login_requerido
 @rol_requerido([3])

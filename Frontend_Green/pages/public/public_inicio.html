@@ -104,9 +104,22 @@
             border-top-right-radius: 24px;
         }
 
-        .hover-white:hover {
+    .hover-white:hover {
             color: #fff !important;
         }
+
+    .footer-brand-text {
+      letter-spacing: -0.04em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    .footer-brand-text .brand-green {
+      color: #f8fafc;
+    }
+
+    .footer-brand-text .brand-up {
+      color: var(--gu-accent);
+    }
 
   </style>
 </head>
@@ -223,7 +236,7 @@
             <div class="d-flex flex-wrap gap-3">
               <a href="public_registro.html"
                 class="btn btn-light text-gu-primary rounded-4 px-4 py-3 fw-bold">Registrate ahora</a>
-              <a href="#" class="btn btn-outline-light rounded-4 px-4 py-3 fw-bold d-flex align-items-center">
+              <a href="public_estadisticas.html" class="btn btn-outline-light rounded-4 px-4 py-3 fw-bold d-flex align-items-center">
                 Ver impacto <span class="material-symbols-outlined ms-2">play_circle</span>
               </a>
             </div>
@@ -244,9 +257,8 @@
           <div class="card h-100 border-0 bg-primary bg-opacity-10 rounded-4 p-5">
             <div class="card-body">
               <span class="material-symbols-outlined text-gu-primary display-4 mb-3">groups</span>
-              <h2 class="display-5 fw-bold text-dark">12,500+</h2>
-              <p class="text-secondary mb-0 fs-5">Eco-Líderes activos transformando sus ciudades cada día a través de la
-                red GreenUp.</p>
+              <h2 class="display-5 fw-bold text-dark" id="kpi-total-usuarios">0</h2>
+              <p class="text-secondary mb-0 fs-5">Usuarios registrados actualmente en la plataforma GreenUp.</p>
             </div>
           </div>
         </div>
@@ -254,8 +266,8 @@
           <div class="card h-100 border-0 rounded-4 p-4" style="background-color: var(--gu-accent);">
             <div class="card-body">
               <span class="material-symbols-outlined text-gu-secondary display-4 mb-3">delete_sweep</span>
-              <h3 class="fw-bold text-gu-secondary fs-2">450 Ton</h3>
-              <p class="text-gu-secondary mb-0">Plásticos desviados de océanos este mes.</p>
+              <h3 class="fw-bold text-gu-secondary fs-2" id="kpi-kg-reciclados">0 kg</h3>
+              <p class="text-gu-secondary mb-0">Material reciclable confirmado en registros reales.</p>
             </div>
           </div>
         </div>
@@ -263,8 +275,8 @@
           <div class="card h-100 border-0 bg-gu-primary text-white rounded-4 p-4">
             <div class="card-body">
               <span class="material-symbols-outlined text-white display-4 mb-3">co2</span>
-              <h3 class="fw-bold fs-2">-30% CO2</h3>
-              <p class="text-white-50 mb-0">Reducción promedio de huella por usuario.</p>
+              <h3 class="fw-bold fs-2" id="kpi-puntos-ecologicos">0</h3>
+              <p class="text-white-50 mb-0">Puntos ecológicos activos disponibles para la comunidad.</p>
             </div>
           </div>
         </div>
@@ -296,8 +308,8 @@
               <span class="material-symbols-outlined fs-2">celebration</span>
             </div>
             <h4 class="fw-bold mb-3">Gamificación Ética</h4>
-            <p class="text-secondary">Gana Eco-Points por cada acción positiva y canjéalos por beneficios en nuestra red
-              de partners sostenibles.</p>
+            <p class="text-secondary">Registra acciones ambientales, consulta tu avance y aprende hábitos sostenibles
+              sin mostrar beneficios o puntos que aún no están activos.</p>
           </div>
           <div class="col-md-4">
             <div
@@ -329,7 +341,7 @@
               <h5 class="card-title fw-bold">Gestión Corporativa</h5>
               <p class="card-text text-secondary mb-4">Plataforma integral para empresas que buscan certificar su
                 neutralidad de carbono y gestionar excedentes industriales.</p>
-              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+              <a href="public_sobre_nosotros.html" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
                 Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
               </a>
             </div>
@@ -348,7 +360,7 @@
               <h5 class="card-title fw-bold">App de Usuario</h5>
               <p class="card-text text-secondary mb-4">Herramientas diarias para ciudadanos: mapas de reciclaje,
                 educación ambiental y seguimiento de impacto personal.</p>
-              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+              <a href="public_registro.html" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
                 Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
               </a>
             </div>
@@ -366,7 +378,7 @@
               <h5 class="card-title fw-bold">Asesoría Estratégica</h5>
               <p class="card-text text-secondary mb-4">Analizamos tus procesos actuales para implementar soluciones de
                 economía circular basadas en datos reales.</p>
-              <a href="#" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
+              <a href="public_sobre_nosotros.html" class="text-gu-primary fw-bold text-decoration-none mt-auto d-flex align-items-center">
                 Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
               </a>
             </div>
@@ -380,12 +392,11 @@
         style="border-radius: 32px !important;">
         <div class="position-relative z-3 py-5">
           <h2 class="display-5 fw-bold text-white mb-4">¿Listo para hacer la diferencia?</h2>
-          <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 700px;">Únete a miles de personas y empresas que
-            ya están construyendo el futuro verde. El momento de actuar es ahora.</p>
+          <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 700px;">Únete a GreenUp y empieza a registrar,
+            aprender y ubicar puntos ecológicos con información real del proyecto.</p>
           <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
-            <a href="#" class="btn btn-light btn-lg rounded-4 fw-bold px-5 py-3 text-gu-primary">Crear cuenta
+            <a href="public_registro.html" class="btn btn-light btn-lg rounded-4 fw-bold px-5 py-3 text-gu-primary">Crear cuenta
               gratuita</a>
-            <a href="#" class="btn btn-outline-light btn-lg rounded-4 fw-bold px-5 py-3">Hablar con un experto</a>
           </div>
         </div>
       </div>
@@ -397,9 +408,9 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-3 col-md-6">
-                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
+                    <div class="d-flex align-items-center fw-bold fs-4 mb-3 footer-brand-text">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs" alt="Logo" width="32" height="32" class="me-2">
-                        <span class="text-gu-primary bg-white px-1 rounded-start-1" style="margin-right: -2px;">Green</span><span class="text-gu-secondary bg-white px-1 rounded-end-1">Up</span>
+                        <span class="brand-green">Green</span><span class="brand-up">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos limpios y economía circular en Valledupar.
@@ -420,10 +431,10 @@
                 <div class="col-lg-3 col-md-6 col-6">
                     <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
+                        <li><a href="public_estadisticas.html" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
                     </ul>
                 </div>
 
@@ -431,19 +442,19 @@
                     <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
                         <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
+                        <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
+                        <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
+                        <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-6">
                     <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
+                        <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
                     </ul>
                 </div>
             </div>
@@ -462,6 +473,8 @@
     </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/public_inicio.js"></script>
   <script>
     // Animación de entrada al hacer scroll (Reemplaza la lógica previa de Tailwind)
     const observerOptions = { threshold: 0.1 };

@@ -383,3 +383,56 @@ class EstadisticasModel:
         finally:
             cursor.close()
             conexion.close()
+
+    @staticmethod
+    def obtener_metricas_inicio_publico():
+        """
+        Devuelve indicadores reales y seguros para la pagina publica de inicio.
+
+        Esta consulta no expone nombres, correos ni ranking de usuarios; solo
+        totales generales que ya se pueden mostrar antes de iniciar sesion.
+        """
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+
+        try:
+            cursor.execute(
+                """
+                SELECT
+                    COUNT(*)::int AS total_usuarios,
+                    COUNT(*) FILTER (WHERE id_rol = 3 AND id_estado = 1)::int AS total_ciudadanos
+                FROM usuarios
+                """
+            )
+            usuarios = cursor.fetchone() or {}
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)::int AS total
+                FROM puntos_reciclaje
+                WHERE id_estado = 1
+                """
+            )
+            puntos = cursor.fetchone() or {}
+
+            cursor.execute(
+                f"""
+                SELECT
+                    COUNT(*)::int AS total_reciclajes,
+                    COALESCE(SUM(cantidad), 0)::float AS total_kg
+                FROM registrar_reciclaje
+                WHERE {ESTADO_CONFIRMADO_SQL}
+                """
+            )
+            reciclajes = cursor.fetchone() or {}
+
+            return {
+                "total_usuarios": usuarios.get("total_usuarios", 0),
+                "total_ciudadanos": usuarios.get("total_ciudadanos", 0),
+                "total_puntos_ecologicos": puntos.get("total", 0),
+                "total_reciclajes_confirmados": reciclajes.get("total_reciclajes", 0),
+                "total_kg_confirmados": reciclajes.get("total_kg", 0),
+            }
+        finally:
+            cursor.close()
+            conexion.close()

@@ -104,3 +104,17 @@ class EstadisticasService:
             "ranking_usuarios": resumen.get("ranking_usuarios", []) if resumen else [],
             "evolucion_mensual": resumen.get("evolucion_mensual", []) if resumen else [],
         }
+
+    @staticmethod
+    def metricas_inicio_publico():
+        """
+        Prepara los indicadores publicos de la portada sin datos personales.
+        """
+        metricas = EstadisticasModel.obtener_metricas_inicio_publico()
+        return {
+            "total_usuarios": metricas.get("total_usuarios", 0) if metricas else 0,
+            "total_ciudadanos": metricas.get("total_ciudadanos", 0) if metricas else 0,
+            "total_puntos_ecologicos": metricas.get("total_puntos_ecologicos", 0) if metricas else 0,
+            "total_reciclajes_confirmados": metricas.get("total_reciclajes_confirmados", 0) if metricas else 0,
+            "total_kg_confirmados": metricas.get("total_kg_confirmados", 0) if metricas else 0,
+        }

@@ -380,7 +380,23 @@ function pintarEstructuraBase() {
     </aside>
 
     <header class="app-topbar">
-      <div class="mobile-brand">${renderBrand()}</div>
+      <div class="mobile-brand">
+        ${renderBrand()}
+        <button class="role-menu-toggle" type="button" aria-label="Abrir menu administrador" aria-controls="adminRoleMenu" aria-expanded="false">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <section class="role-nav-menu" id="adminRoleMenu" aria-label="Menu principal administrador">
+          ${renderNavGroup("Principal", adminPrimaryNav, actual)}
+          ${renderNavGroup("Sistema", adminSystemNav, actual)}
+          ${renderNavGroup("Contenido", adminContentNav, actual)}
+          <div class="sidebar-actions">
+            <button class="logout-link btn" type="button" onclick="cerrarSesionAdminSistema()">
+              <span class="material-symbols-outlined">logout</span>
+              Cerrar sesion
+            </button>
+          </div>
+        </section>
+      </div>
       <div class="topbar-actions">
         <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="mostrarPanelNotificacionesAdmin()">
           <span class="material-symbols-outlined">notifications</span>
@@ -454,6 +470,7 @@ function pintarEstructuraBase() {
   const buscadorAdmin = document.getElementById("admin-search");
   if (buscadorAdmin) buscadorAdmin.addEventListener("input", filtrarTablaActual);
   prepararNavbarAdmin();
+  prepararMenuSuperiorAdmin();
 }
 
 function prepararNavbarAdmin() {
@@ -492,6 +509,30 @@ function prepararNavbarAdmin() {
     enlace.addEventListener("click", () => {
       sessionStorage.setItem("greenup_admin_sidebar_scroll", String(sidebar.scrollTop));
     });
+  });
+}
+
+function prepararMenuSuperiorAdmin() {
+  const boton = document.querySelector(".role-menu-toggle");
+  const menu = document.getElementById("adminRoleMenu");
+  if (!boton || !menu) return;
+
+  boton.addEventListener("click", () => {
+    const abierto = menu.classList.toggle("open");
+    boton.setAttribute("aria-expanded", String(abierto));
+  });
+
+  menu.addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) {
+      menu.classList.remove("open");
+      boton.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".mobile-brand")) return;
+    menu.classList.remove("open");
+    boton.setAttribute("aria-expanded", "false");
   });
 }
 

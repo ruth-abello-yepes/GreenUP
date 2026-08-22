@@ -652,6 +652,65 @@ function bindNotificationsMenu() {
   });
 }
 
+function crearMenuSuperiorRecicladora() {
+  const contenedorMarca = document.querySelector(".app-topbar .mobile-brand");
+  const sidebar = document.querySelector(".app-sidebar");
+  if (!contenedorMarca || !sidebar || document.getElementById("recicladoraRoleMenu")) return;
+
+  const boton = document.createElement("button");
+  boton.type = "button";
+  boton.className = "role-menu-toggle";
+  boton.setAttribute("aria-label", "Abrir menu de recicladora");
+  boton.setAttribute("aria-controls", "recicladoraRoleMenu");
+  boton.setAttribute("aria-expanded", "false");
+  boton.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+
+  const menu = document.createElement("nav");
+  menu.id = "recicladoraRoleMenu";
+  menu.className = "role-nav-menu";
+  menu.setAttribute("aria-label", "Menu principal recicladora");
+
+  sidebar.querySelectorAll(".sidebar-nav .sidebar-link").forEach((enlace) => {
+    const copia = enlace.cloneNode(true);
+    copia.classList.add("role-menu-link");
+    menu.appendChild(copia);
+  });
+
+  const separador = document.createElement("hr");
+  separador.className = "my-2";
+  menu.appendChild(separador);
+
+  const cerrar = document.createElement("button");
+  cerrar.type = "button";
+  cerrar.className = "logout-link role-menu-link";
+  cerrar.innerHTML = '<span class="material-symbols-outlined">logout</span><span>Cerrar sesion</span>';
+  cerrar.addEventListener("click", () => {
+    if (typeof cerrarSesion === "function") cerrarSesion();
+  });
+  menu.appendChild(cerrar);
+
+  boton.addEventListener("click", () => {
+    const abierto = menu.classList.toggle("open");
+    boton.setAttribute("aria-expanded", String(abierto));
+  });
+
+  menu.addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) {
+      menu.classList.remove("open");
+      boton.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".mobile-brand")) return;
+    menu.classList.remove("open");
+    boton.setAttribute("aria-expanded", "false");
+  });
+
+  contenedorMarca.appendChild(boton);
+  contenedorMarca.appendChild(menu);
+}
+
 function quitarTemaOscuroRecicladora() {
   document.body.classList.remove("recicladora-theme-dark");
   localStorage.removeItem("recicladora_tema");
@@ -1060,6 +1119,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   bindUserMenu();
   bindNotificationsMenu();
+  crearMenuSuperiorRecicladora();
   quitarTemaOscuroRecicladora();
   bindModalForms();
   bindProfilePhotoInput();

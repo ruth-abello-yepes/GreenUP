@@ -259,6 +259,64 @@ body.recicladora-theme-dark .app-topbar {
 
 .mobile-brand {
   display: none;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.role-menu-toggle {
+  width: 44px;
+  height: 44px;
+  display: none;
+  place-items: center;
+  border: 1px solid var(--greenup-border);
+  border-radius: 13px;
+  background: #ffffff;
+  color: var(--greenup-green-dark);
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(15, 111, 42, 0.08);
+}
+
+.role-menu-toggle:hover,
+.role-menu-toggle:focus-visible,
+.role-menu-toggle[aria-expanded="true"] {
+  background: var(--greenup-mint);
+  color: var(--greenup-green);
+  outline: none;
+}
+
+.role-nav-menu {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+  z-index: 80;
+  width: min(330px, calc(100vw - 28px));
+  max-height: calc(100vh - 112px);
+  display: none;
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid var(--greenup-border);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 24px 48px rgba(6, 85, 145, 0.16);
+}
+
+.role-nav-menu.open {
+  display: grid;
+  gap: 8px;
+}
+
+.role-nav-menu .sidebar-link,
+.role-nav-menu .logout-link {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 13px;
+}
+
+body.recicladora-theme-dark .role-menu-toggle,
+body.recicladora-theme-dark .role-nav-menu {
+  background: var(--greenup-panel);
+  border-color: var(--greenup-border);
+  color: var(--greenup-green-dark);
 }
 
 .topbar-search {
@@ -1730,6 +1788,10 @@ body.recicladora-theme-dark .profile-photo-help {
 
   .mobile-brand {
     display: flex;
+  }
+
+  .role-menu-toggle {
+    display: inline-grid;
   }
 
   .mobile-brand .brand-logo {

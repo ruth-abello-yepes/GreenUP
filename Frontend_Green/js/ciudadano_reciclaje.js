@@ -114,8 +114,12 @@
     if (!estado.registros.length) {
       cuerpo.innerHTML = `
         <tr>
-          <td colspan="6" class="text-center py-4 text-secondary">
-            Aún no tienes registros. Cuando envíes tu primera entrega aparecerá aquí.
+          <td colspan="6" class="historial-empty text-center py-5 text-secondary">
+            <div class="d-flex flex-column align-items-center gap-2">
+              <span class="material-symbols-outlined text-gu-primary fs-1">inventory_2</span>
+              <strong class="text-gu-primary">Aún no tienes registros</strong>
+              <span>Cuando envíes tu primera entrega aparecerá aquí.</span>
+            </div>
           </td>
         </tr>
       `;

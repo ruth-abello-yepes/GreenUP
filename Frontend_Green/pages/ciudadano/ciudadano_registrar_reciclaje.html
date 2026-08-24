@@ -36,6 +36,61 @@
             box-shadow: 0 16px 40px rgba(0, 61, 108, 0.06);
         }
 
+        .registro-form-card {
+            max-width: 520px;
+        }
+
+        .registro-card-head {
+            gap: 16px;
+        }
+
+        .registro-card-head .badge {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.25;
+            max-width: 190px;
+        }
+
+        .estado-inicial-box {
+            min-height: 52px;
+            border: 1px solid #dce4ec;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.85rem 1rem;
+            font-weight: 600;
+        }
+
+        .estado-inicial-box .material-symbols-outlined {
+            color: #d97706;
+            font-size: 1.25rem;
+        }
+
+        .historial-card {
+            min-height: 520px;
+        }
+
+        .historial-table {
+            min-width: 720px;
+        }
+
+        .historial-table thead th {
+            color: #111827;
+            font-size: 0.92rem;
+            white-space: nowrap;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .historial-empty {
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fbfdff;
+        }
+
         .hero-panel {
             background: linear-gradient(135deg, rgba(0, 61, 108, 0.96), rgba(41, 108, 31, 0.96));
             color: #fff;
@@ -82,6 +137,18 @@
             .gu-card > .d-flex.justify-content-between.align-items-start {
                 flex-direction: column;
                 gap: 12px;
+            }
+
+            .registro-form-card {
+                max-width: none;
+            }
+
+            .registro-card-head .badge {
+                max-width: 100%;
+            }
+
+            .historial-card {
+                min-height: auto;
             }
 
             #puntos-disponibles {
@@ -190,8 +257,8 @@
 
         <section class="row g-4">
             <div class="col-lg-5">
-                <article class="gu-card p-4 p-lg-5 h-100">
-                    <div class="d-flex justify-content-between align-items-start mb-4">
+                <article class="gu-card registro-form-card p-4 p-lg-5 h-100">
+                    <div class="registro-card-head d-flex flex-wrap justify-content-between align-items-start mb-4">
                         <div>
                             <h2 class="h3 fw-bold text-gu-primary mb-1">Nuevo registro</h2>
                             <p class="text-secondary mb-0">Este formulario envía la entrega a la recicladora para validación.</p>
@@ -221,7 +288,10 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Estado inicial</label>
-                            <input class="form-control bg-light" type="text" value="Pendiente de confirmación" disabled>
+                            <div class="estado-inicial-box" aria-label="Estado inicial pendiente de confirmación">
+                                <span class="material-symbols-outlined">schedule</span>
+                                <span>Pendiente</span>
+                            </div>
                         </div>
 
                         <div class="col-12">
@@ -239,7 +309,7 @@
             </div>
 
             <div class="col-lg-7">
-                <article class="gu-card p-4 p-lg-5 h-100">
+                <article class="gu-card historial-card p-4 p-lg-5 h-100">
                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
                         <div>
                             <h2 class="h3 fw-bold text-gu-primary mb-1">Historial del ciudadano</h2>
@@ -258,7 +328,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table align-middle">
+                        <table class="table historial-table align-middle">
                             <thead>
                                 <tr>
                                     <th>Registro</th>

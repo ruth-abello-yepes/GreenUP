@@ -3,7 +3,8 @@
 
 BEGIN;
 
--- Fotos de perfil: bucket publico, solo imagenes, maximo 2 MB.
+-- Fotos de perfil: bucket privado, solo imagenes, maximo 2 MB.
+-- No se deja publico para evitar listado amplio de objetos desde clientes anonimos.
 INSERT INTO storage.buckets (
     id,
     name,
@@ -14,7 +15,7 @@ INSERT INTO storage.buckets (
 VALUES (
     'greenup-perfiles',
     'greenup-perfiles',
-    true,
+    false,
     2097152,
     ARRAY['image/jpeg', 'image/png', 'image/webp']::text[]
 )
@@ -43,13 +44,8 @@ SET public = EXCLUDED.public,
     file_size_limit = EXCLUDED.file_size_limit,
     allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- Lectura publica de fotos de perfil.
+-- Se elimina la lectura publica amplia de fotos de perfil.
 DROP POLICY IF EXISTS greenup_perfiles_lectura_publica ON storage.objects;
-CREATE POLICY greenup_perfiles_lectura_publica
-ON storage.objects
-FOR SELECT
-TO anon, authenticated
-USING (bucket_id = 'greenup-perfiles');
 
 -- Cada usuario autenticado puede gestionar su propia carpeta en perfiles.
 DROP POLICY IF EXISTS greenup_perfiles_usuario_gestiona_carpeta ON storage.objects;

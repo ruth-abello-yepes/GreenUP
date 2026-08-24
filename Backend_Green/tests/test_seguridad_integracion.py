@@ -574,10 +574,32 @@ class SeguridadIntegracionTest(unittest.TestCase):
             buckets = {fila["id"]: fila for fila in cursor.fetchall()}
 
         self.assertEqual(set(buckets), {"greenup-perfiles", "greenup-documentos-recicladoras"})
-        self.assertTrue(buckets["greenup-perfiles"]["public"])
+        self.assertFalse(buckets["greenup-perfiles"]["public"])
         self.assertFalse(buckets["greenup-documentos-recicladoras"]["public"])
         self.assertLessEqual(buckets["greenup-perfiles"]["file_size_limit"], 2097152)
         self.assertLessEqual(buckets["greenup-documentos-recicladoras"]["file_size_limit"], 10485760)
+
+    def test_funcion_rls_auto_enable_no_es_publica(self):
+        """Evita que la funcion SECURITY DEFINER de RLS sea ejecutable desde roles publicos."""
+
+        with self.conexion.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT r.rolname
+                FROM pg_proc p
+                JOIN pg_namespace n ON n.oid = p.pronamespace
+                JOIN aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) permisos
+                    ON permisos.privilege_type = 'EXECUTE'
+                JOIN pg_roles r ON r.oid = permisos.grantee
+                WHERE n.nspname = 'public'
+                  AND p.proname = 'rls_auto_enable'
+                  AND r.rolname IN ('anon', 'authenticated', 'public')
+                ORDER BY r.rolname
+                """
+            )
+            roles_publicos = [fila["rolname"] for fila in cursor.fetchall()]
+
+        self.assertEqual(roles_publicos, [])
 
 
 if __name__ == "__main__":

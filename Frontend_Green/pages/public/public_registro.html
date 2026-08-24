@@ -335,6 +335,90 @@
       color: var(--azul);
     }
 
+    @media (min-width: 768px) {
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
+      .layout-registro,
+      .layout-registro > .row,
+      .panel-lateral,
+      .formulario-contenedor {
+        min-height: 100vh;
+        height: 100vh;
+      }
+
+      .panel-lateral {
+        padding: 34px 48px;
+      }
+
+      .marca h1 {
+        font-size: 34px;
+        margin-bottom: 14px;
+      }
+
+      .marca p {
+        font-size: 16px;
+        line-height: 1.45;
+      }
+
+      .tarjeta-impacto {
+        padding: 18px 20px;
+      }
+
+      .tarjeta-impacto p {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .formulario-contenedor {
+        padding: 18px 34px;
+      }
+
+      .formulario-tarjeta {
+        padding: 26px 36px;
+        max-height: calc(100vh - 36px);
+      }
+
+      .titulo {
+        font-size: 32px;
+      }
+
+      .subtitulo {
+        margin-bottom: 16px;
+      }
+
+      .formulario-tarjeta .mb-4 {
+        margin-bottom: 1rem !important;
+      }
+
+      #seccion-1 .row {
+        --bs-gutter-y: 0.75rem;
+      }
+
+      .form-label {
+        margin-bottom: 6px;
+      }
+
+      .form-control,
+      .form-select {
+        padding: 10px 14px;
+      }
+
+      .d-grid.mt-4 {
+        margin-top: 1rem !important;
+      }
+
+      form > .text-center.mt-4 {
+        margin-top: 1rem !important;
+      }
+    }
+
     @media (max-width: 767px) {
       .formulario-contenedor {
         padding: 18px;

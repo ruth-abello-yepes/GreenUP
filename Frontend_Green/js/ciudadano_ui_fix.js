@@ -253,13 +253,13 @@ function crearMenuHamburguesaCiudadano() {
         });
     });
 
-    panel.querySelector(".ciudadano-hamburger-panel__logout")?.addEventListener("click", (evento) => {
+    panel.querySelector(".ciudadano-hamburger-panel__logout")?.addEventListener("click", async (evento) => {
         if (typeof confirmarCerrarSesion === "function") {
             confirmarCerrarSesion(evento);
             return;
         }
 
-        if (typeof cerrarSesion === "function" && confirm("¿Seguro que quieres cerrar sesión?")) {
+        if (typeof cerrarSesion === "function" && await window.greenupConfirm("¿Seguro que quieres cerrar sesión?", "Cerrar sesión")) {
             cerrarSesion();
         }
     });

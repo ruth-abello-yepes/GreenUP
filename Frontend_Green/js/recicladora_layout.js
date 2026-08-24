@@ -211,7 +211,7 @@ function nombreEstadoVisibilidad(idEstado) {
 async function alternarContenidoEducativoRecicladora(idContenido, idEstadoActual) {
   const idEstado = Number(idEstadoActual) === 1 ? 2 : 1;
   const accion = idEstado === 1 ? "publicar" : "ocultar";
-  if (!confirm(`¿Quieres ${accion} este recurso educativo?`)) return;
+  if (!(await window.greenupConfirm(`¿Quieres ${accion} este recurso educativo?`, "Contenido educativo"))) return;
 
   await fetchJson(`/contenido/${idContenido}/estado`, {
     method: "PUT",
@@ -223,7 +223,7 @@ async function alternarContenidoEducativoRecicladora(idContenido, idEstadoActual
 async function alternarNovedadRecicladora(idNovedad, idEstadoActual) {
   const idEstado = Number(idEstadoActual) === 1 ? 2 : 1;
   const accion = idEstado === 1 ? "activar" : "ocultar";
-  if (!confirm(`¿Quieres ${accion} esta novedad?`)) return;
+  if (!(await window.greenupConfirm(`¿Quieres ${accion} esta novedad?`, "Novedades"))) return;
 
   await fetchJson(`/api/recicladoras/novedades/${idNovedad}`, {
     method: "PUT",
@@ -329,7 +329,7 @@ function renderRegistrosRecicladoraTable(registros) {
   tbody.querySelectorAll(".registro-confirmar").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = Number(button.dataset.id);
-      const confirmar = window.confirm("¿Confirmar este reciclaje como entrega realizada?");
+      const confirmar = await window.greenupConfirm("¿Confirmar este reciclaje como entrega realizada?", "Confirmar entrega");
       if (!confirmar) return;
       try {
         await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
@@ -347,7 +347,7 @@ function renderRegistrosRecicladoraTable(registros) {
   tbody.querySelectorAll(".registro-rechazar").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = Number(button.dataset.id);
-      const motivo = window.prompt("Escribe el motivo del rechazo:");
+      const motivo = await window.greenupPrompt("Escribe el motivo del rechazo:", "", "Rechazar entrega");
       if (motivo === null) return;
       try {
         await fetchJson(`/api/recicladoras/registros/${id}/estado`, {

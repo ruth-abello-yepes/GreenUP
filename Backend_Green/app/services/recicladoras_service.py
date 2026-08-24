@@ -81,16 +81,9 @@ def servicio_registrar_dueno_recicladora(datos):
 
     datos = datos or {}
 
-    nombres = _texto_limpio(datos, "nombres", "nombre_empresa") or None
-    apellidos = _texto_limpio(datos, "apellidos") or "Empresa"
     correo = _texto_limpio(datos, "correo", "email").lower()
-    usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username")
     contrasena = datos.get("contrasena")
-    numero_documento = _documento_limpio(_texto_limpio(datos, "numero_documento", "documento", "cedula", "cc"))
-    celular = _texto_limpio(datos, "celular", "telefono")
     foto_perfil = datos.get("foto_perfil", "")
-
-    id_tipo_documento = datos.get("id_tipo_documento") or datos.get("tipo_documento")
 
     nit_empresa = _texto_limpio(datos, "nit_empresa", "nit")
     nombre_empresa = _texto_limpio(datos, "nombre_empresa")
@@ -104,34 +97,16 @@ def servicio_registrar_dueno_recicladora(datos):
     hora_fin = datos.get("hora_fin")
     dias_no_trabaja = datos.get("dias_no_trabaja")
 
-    if not nombres:
-        return {"mensaje": "Los nombres son obligatorios"}, 400
-
-    if not apellidos:
-        return {"mensaje": "Los apellidos son obligatorios"}, 400
-
     if not correo:
         return {"mensaje": "El correo es obligatorio"}, 400
 
     if not _correo_valido(correo):
         return {"mensaje": "El correo no tiene un formato valido"}, 400
 
-    if not usuario:
-        return {"mensaje": "El usuario es obligatorio"}, 400
-
     contrasena_segura, mensaje_contrasena = validar_contrasena_segura(contrasena)
 
     if not contrasena_segura:
         return {"mensaje": mensaje_contrasena}, 400
-
-    if not numero_documento:
-        return {"mensaje": "El numero de documento es obligatorio"}, 400
-
-    if len(numero_documento) < 5:
-        return {"mensaje": "El numero de documento debe tener minimo 5 digitos"}, 400
-
-    if not id_tipo_documento:
-        return {"mensaje": "El tipo de documento es obligatorio"}, 400
 
     if not nit_empresa:
         return {"mensaje": "El NIT de la empresa es obligatorio"}, 400
@@ -141,6 +116,13 @@ def servicio_registrar_dueno_recicladora(datos):
 
     if not direccion_empresa:
         return {"mensaje": "La direccion de la empresa es obligatoria"}, 400
+
+    usuario = _texto_limpio(datos, "usuario", "nombre_usuario", "username") or nombre_empresa
+    nombres = nombre_empresa
+    apellidos = "Empresa"
+    numero_documento = _documento_limpio(nit_empresa)
+    celular = telefono_empresa
+    id_tipo_documento = datos.get("id_tipo_documento") or datos.get("tipo_documento") or 1
 
     if not _usuario_valido(usuario):
         return {"mensaje": "El usuario debe tener minimo 5 caracteres y usar solo letras, numeros, espacios, punto, guion o guion bajo"}, 400
@@ -155,7 +137,7 @@ def servicio_registrar_dueno_recicladora(datos):
         return {"mensaje": "El correo ya se encuentra registrado"}, 400
 
     if buscar_usuario_por_documento(numero_documento):
-        return {"mensaje": "El numero de documento ya se encuentra registrado"}, 400
+        return {"mensaje": "El NIT ya se encuentra registrado como cuenta de recicladora"}, 400
 
     if buscar_recicladora_por_nit(nit_empresa):
         return {"mensaje": "El NIT ya pertenece a una recicladora registrada"}, 400
@@ -221,7 +203,7 @@ def servicio_registrar_dueno_recicladora(datos):
         datos.get("latitud"),
         datos.get("longitud"),
         telefono_empresa,
-        f"{nombres} {apellidos}",
+        nombre_empresa,
         id_estado
     )
     asociar_punto_a_recicladora(id_usuario_creado, id_punto_creado)

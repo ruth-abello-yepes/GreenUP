@@ -616,7 +616,7 @@ function prepararCerrarSesionDispositivo() {
  * @returns {Promise<void>} No retorna datos porque redirige o muestra alerta.
  */
 async function eliminarCuentaCiudadano() {
-  const confirmacion = confirm("Esta accion inactivara tu cuenta. ¿Deseas continuar?");
+  const confirmacion = await window.greenupConfirm("Esta accion inactivara tu cuenta. ¿Deseas continuar?", "Inactivar cuenta");
 
   if (!confirmacion) {
     return;

@@ -883,7 +883,7 @@ async function validarCamaraComercio(idUsuario, estadoCamara) {
   const mensaje = estadoCamara === "validado"
     ? "Antes de aprobar confirma:\n\n1. Abriste el documento.\n2. El NIT coincide con el registrado.\n3. El nombre o razón social coincide.\n4. El documento parece una Cámara de Comercio válida.\n5. Si tienes duda, consultaste el NIT en RUES.\n\n¿Deseas aprobar esta recicladora?"
     : `¿Deseas ${accion} la Cámara de Comercio de esta recicladora? La cuenta quedará inactiva.`;
-  if (!confirm(mensaje)) return;
+  if (!(await window.greenupConfirm(mensaje, "Validar recicladora"))) return;
   await apiAdmin(`/api/recicladoras/${idUsuario}/validacion`, {
     method: "PUT",
     body: JSON.stringify({ estado_camara_comercio: estadoCamara }),
@@ -1071,7 +1071,7 @@ async function editarCrud(nombre, id) {
       payload[campo.id] = 1;
       continue;
     }
-    const nuevo = prompt(campo.label, actual[campo.id] ?? "");
+    const nuevo = await window.greenupPrompt(campo.label, actual[campo.id] ?? "", "Editar registro");
     if (nuevo === null) return;
     payload[campo.id] = normalizarValor(campo, nuevo);
   }
@@ -1112,7 +1112,7 @@ async function cambiarEstadoCrud(nombre, id, idEstado) {
     }
   }
   const accion = Number(idEstado) === 1 ? "activar" : "inactivar";
-  if (!confirm(`Deseas ${accion} este registro?`)) return;
+  if (!(await window.greenupConfirm(`¿Deseas ${accion} este registro?`, "Actualizar estado"))) return;
 
   if (config.estado) {
     await apiAdmin(config.estado.replace(":id", id), {
@@ -2847,8 +2847,8 @@ function exportarTablaExcel(nombreArchivo) {
   URL.revokeObjectURL(enlace.href);
 }
 
-function cerrarSesionAdminSistema() {
-  const confirmarSalida = confirm("Seguro que deseas cerrar la sesion del administrador?");
+async function cerrarSesionAdminSistema() {
+  const confirmarSalida = await window.greenupConfirm("¿Seguro que deseas cerrar la sesion del administrador?", "Cerrar sesión");
   if (!confirmarSalida) return;
   localStorage.removeItem("usuario");
   sessionStorage.removeItem("greenup_admin_sesion_activa");

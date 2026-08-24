@@ -362,8 +362,8 @@
         <div class="tarjeta-impacto">
           <h3>Registro según tu rol</h3>
           <p>
-            Si eres ciudadano, pediremos tus datos básicos. Si eres punto
-            ecológico, también agregaremos la información de tu empresa.
+            Si eres ciudadano, pediremos tus datos básicos. Si eres recicladora,
+            pediremos únicamente la información de la empresa.
           </p>
         </div>
       </aside>
@@ -429,7 +429,7 @@
                   <select id="tipo_registro" class="form-select" onchange="mostrarCamposEmpresa()" required>
                     <option value="ciudadano">Ciudadano</option>
                     <option value="recicladora">
-                      Dueño de punto ecológico
+                      Recicladora / punto ecológico
                     </option>
                   </select>
                 </div>
@@ -466,10 +466,10 @@
               </div>
 
               <div id="campos-empresa" class="caja-empresa d-none">
-                <h5>Datos del punto ecológico</h5>
+                <h5>Datos de la recicladora</h5>
                 <p>
-                  Estos datos solo se solicitan cuando el registro es para una
-                  recicladora.
+                  Estos datos pertenecen a la empresa. No pedimos documento de
+                  identidad de una persona.
                 </p>
 
                 <div class="row g-3">
@@ -534,8 +534,7 @@
                   <div class="col-12">
                     <label class="form-label">Cámara de comercio</label>
                     <input id="camara_comercio" class="form-control" type="file" accept=".pdf,.jpg,.jpeg,.png" />
-                    <small class="text-muted">Puedes subir PDF, JPG o PNG. Por ahora se guarda el
-                      nombre del archivo.</small>
+                    <small class="text-muted">Puedes subir PDF, JPG o PNG. El administrador revisará el documento antes de activar la cuenta.</small>
                   </div>
                 </div>
               </div>
@@ -606,7 +605,7 @@
       </main>
     </div>
   </div>
-
+  <script src="../../js/modal_alerts.js?v=20260824"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/registro.js"></script>
   <script>
@@ -627,7 +626,7 @@
       panel.style.backgroundImage = `linear-gradient(160deg, rgba(11, 37, 69, 0.95), rgba(31, 143, 95, 0.9)), url("${fondosRegistro[indiceRegistro]}")`;
     }, 3500);
   </script>
-    <script src="../../js/public_ui_fix.js?v=20260821"></script>
+  <script src="../../js/public_ui_fix.js?v=20260821"></script>
 </body>
 
 </html>

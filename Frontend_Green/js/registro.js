@@ -12,7 +12,7 @@ let pasoActual = 1;
 const totalPasos = 3;
 const MENSAJE_CONTRASENA_SEGURA =
   "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.";
-const MENSAJE_USUARIO_CORTO = "El usuario debe tener mínimo 5 caracteres y solo letras o números.";
+const MENSAJE_USUARIO_CORTO = "El usuario debe tener mínimo 5 caracteres y usar letras, números, espacios, punto, guion o guion bajo.";
 const MENSAJE_DOCUMENTO_INVALIDO = "La cédula o documento debe tener mínimo 5 números.";
 const registroEstado = {
   materiales: [],
@@ -143,8 +143,41 @@ function alternarVisibilidadContrasena(idCampo, boton) {
 function mostrarCamposEmpresa() {
   const tipoRegistro = document.getElementById("tipo_registro").value;
   const camposEmpresa = document.getElementById("campos-empresa");
+  const esRecicladora = tipoRegistro === "recicladora";
+  const campoNombres = document.getElementById("nombres");
+  const campoApellidos = document.getElementById("apellidos");
+  const campoCorreo = document.getElementById("correo");
+  const campoCelular = document.getElementById("celular");
+  const campoGenero = document.getElementById("genero");
+  const campoDocumento = document.getElementById("numero_documento");
+  const campoTipoDocumento = document.getElementById("id_tipo_documento");
+  const campoUsuario = document.getElementById("usuario");
 
-  if (tipoRegistro === "recicladora") {
+  [
+    campoNombres?.closest(".col-md-6"),
+    campoApellidos?.closest(".col-md-6"),
+    campoCelular?.closest(".col-md-6"),
+    campoGenero?.closest(".col-md-6"),
+    campoDocumento?.closest(".col-md-6"),
+    campoTipoDocumento?.closest(".col-md-6"),
+    campoUsuario?.closest(".col-12"),
+  ].forEach((elemento) => elemento?.classList.toggle("d-none", esRecicladora));
+
+  [campoNombres, campoApellidos, campoCelular, campoGenero, campoDocumento, campoTipoDocumento, campoUsuario]
+    .forEach((campo) => {
+      if (!campo) return;
+      if (esRecicladora) {
+        campo.removeAttribute("required");
+      } else {
+        campo.setAttribute("required", "required");
+      }
+    });
+
+  if (campoCorreo) {
+    campoCorreo.placeholder = esRecicladora ? "empresa@ejemplo.com" : "correo@ejemplo.com";
+  }
+
+  if (esRecicladora) {
     camposEmpresa.classList.remove("d-none");
     cargarMaterialesRegistroRecicladora();
   } else {
@@ -168,7 +201,7 @@ function limpiarDocumentoRegistro(documento) {
  * @returns {boolean} true cuando el usuario tiene 5 o mas caracteres.
  */
 function validarUsuarioRegistro(usuario) {
-  return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}$/.test(String(usuario || "").trim());
+  return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9._ -]{5,}$/.test(String(usuario || "").trim());
 }
 
 /**
@@ -213,13 +246,25 @@ function mostrarErrorRegistro(idCampo, idMensaje, texto) {
 async function validarPasoDocumentoUsuario() {
   limpiarMensajesRegistro();
 
+  const tipoRegistro = document.getElementById("tipo_registro")?.value || "ciudadano";
   const correo = document.getElementById("correo")?.value.trim() || "";
-  const numeroDocumento = limpiarDocumentoRegistro(document.getElementById("numero_documento")?.value);
-  const usuario = document.getElementById("usuario")?.value.trim() || "";
+  const nombreEmpresa = document.getElementById("nombre_empresa")?.value.trim() || "";
+  const nitEmpresa = document.getElementById("nit_empresa")?.value.trim() || "";
+  const numeroDocumento = tipoRegistro === "recicladora"
+    ? limpiarDocumentoRegistro(nitEmpresa)
+    : limpiarDocumentoRegistro(document.getElementById("numero_documento")?.value);
+  const usuario = tipoRegistro === "recicladora"
+    ? nombreEmpresa
+    : (document.getElementById("usuario")?.value.trim() || "");
   let puedeContinuar = true;
 
+  if (tipoRegistro === "recicladora" && !nombreEmpresa) {
+    mostrarErrorRegistro("nombre_empresa", "mensaje-usuario", "El nombre de la empresa es obligatorio.");
+    puedeContinuar = false;
+  }
+
   if (numeroDocumento.length < 5) {
-    mostrarErrorRegistro("numero_documento", "mensaje-documento", MENSAJE_DOCUMENTO_INVALIDO);
+    mostrarErrorRegistro(tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento", "mensaje-documento", tipoRegistro === "recicladora" ? "El NIT debe tener mínimo 5 números." : MENSAJE_DOCUMENTO_INVALIDO);
     puedeContinuar = false;
   }
 
@@ -262,7 +307,7 @@ async function validarPasoDocumentoUsuario() {
     }
 
     if (datos.documento_registrado) {
-      mostrarErrorRegistro("numero_documento", "mensaje-documento", "Cédula ya registrada.");
+      mostrarErrorRegistro(tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento", "mensaje-documento", tipoRegistro === "recicladora" ? "NIT ya registrado." : "Cédula ya registrada.");
       puedeContinuar = false;
     }
 
@@ -426,14 +471,17 @@ function actualizarVistaPasos() {
 async function registrarCuenta() {
   const tipoRegistro = document.getElementById("tipo_registro").value;
 
-  const nombres = document.getElementById("nombres").value;
-  const apellidos = document.getElementById("apellidos").value;
+  const nombreEmpresa = document.getElementById("nombre_empresa")?.value.trim() || "";
+  const nombres = tipoRegistro === "recicladora" ? nombreEmpresa : document.getElementById("nombres").value;
+  const apellidos = tipoRegistro === "recicladora" ? "Empresa" : document.getElementById("apellidos").value;
   const correo = document.getElementById("correo").value;
   const celular = document.getElementById("celular").value;
   const genero = document.getElementById("genero").value;
-  const idTipoDocumento = document.getElementById("id_tipo_documento").value;
-  const numeroDocumento = limpiarDocumentoRegistro(document.getElementById("numero_documento").value);
-  const usuario = document.getElementById("usuario").value.trim();
+  const idTipoDocumento = tipoRegistro === "recicladora" ? 1 : document.getElementById("id_tipo_documento").value;
+  const numeroDocumento = tipoRegistro === "recicladora"
+    ? limpiarDocumentoRegistro(document.getElementById("nit_empresa").value)
+    : limpiarDocumentoRegistro(document.getElementById("numero_documento").value);
+  const usuario = tipoRegistro === "recicladora" ? nombreEmpresa : document.getElementById("usuario").value.trim();
   const contrasena = document.getElementById("contrasena").value;
   const confirmarContrasena = document.getElementById("confirmar_contrasena").value;
   const terminos = document.getElementById("terminos").checked;
@@ -515,7 +563,7 @@ async function registrarCuenta() {
     datosEnviar = {
       ...datosBase,
       nit_empresa: document.getElementById("nit_empresa").value,
-      nombre_empresa: document.getElementById("nombre_empresa").value,
+      nombre_empresa: nombreEmpresa,
       direccion_empresa: document.getElementById("direccion_empresa").value,
       telefono_empresa: document.getElementById("telefono_empresa").value,
       camara_comercio: camaraComercio,

@@ -173,7 +173,7 @@ function crearModalCerrarSesion() {
  * @param {Event} evento - Evento click recibido desde el boton o enlace.
  * @returns {boolean} Siempre retorna false para evitar navegacion del enlace.
  */
-function confirmarCerrarSesion(evento) {
+async function confirmarCerrarSesion(evento) {
   // Evitamos que el enlace con href="#" mueva la pagina hacia arriba.
   if (evento) {
     evento.preventDefault();
@@ -188,7 +188,7 @@ function confirmarCerrarSesion(evento) {
   }
 
   // Respaldo simple por si alguna pagina no cargo Bootstrap.
-  if (confirm("¿Estas seguro que quieres salir?")) {
+  if (await window.greenupConfirm("¿Estas seguro que quieres salir?", "Cerrar sesión")) {
     cerrarSesion();
   }
 

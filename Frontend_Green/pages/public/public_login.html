@@ -14,6 +14,7 @@
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/auth_carousel.css?v=20260824" />
 
   <style>
     /* ===== VARIABLES GLOBALES DE COLOR ===== */
@@ -623,13 +624,9 @@
        COLUMNA DERECHA: Hero Visual — START
        Solo visible en pantallas lg+.
        Contiene: imagen de fondo, overlay degradado, texto inspirador,
-       avatares de comunidad y tarjeta flotante de impacto CO2.
+       carrusel ambiental automático sin controles manuales.
        ============================================================ -->
-    <div class="hero-col d-none d-lg-block" style="width:50%;">
-
-      <!-- Imagen de fondo -->
-      <img class="hero-img" id="loginHeroImage" alt="Sostenibilidad"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDElT_oscI5c48pbSED-PUmZBwmonaFm-1teBZ_L5UbYlj2tV50xbUlxkp-hunrDqdf4A8h936CTTr-48EjlGCETlpsTTCXQp0Zz0ARYwaYpktH1gM9xtTWVlP8g5r9J8B2GTiKi89y9tlIVqUeckUaD3keYhXnO3bNQme6OwwrA67RbCujLg-1BhUAW38gK7z8zKXTvmj3RUzEPrXaM9uUTyNa-ey1NQlfKprqnG47UW5M7o-QWgOCNGxnMJc43ULUI1cIHQnFTAE" />
+    <div class="hero-col d-none d-lg-block" style="width:50%;" data-auth-carousel>
 
       <!-- Overlay degradado -->
       <div class="hero-overlay"></div>
@@ -648,7 +645,7 @@
           Cada acción cuenta para el mañana.
         </h2>
         <p class="mb-5" style="font-size:18px;color:rgba(255,255,255,0.9);max-width:420px;">
-          Únete a la comunidad líder en transformación ecológica impulsada por inteligencia artificial.
+          Conecta tus acciones ambientales con una comunidad que aprende, separa y recicla mejor cada día.
         </p>
 
         <!-- Avatares + etiqueta de comunidad -->
@@ -663,22 +660,22 @@
             <img
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOW93RJ9ymOukMgZ-9Al8qVcjl5r4kkYwWC0VtFvMYkfI_a9FZrUvcfLR8olSNtTalT2-87_kCmJ16ITaUfFVNLJusyaVn4Zdi6OWM3WMCaaZOINZ5HzaKbMr04rN8NV5HJB2Y0iyT4Eg3y5ZqHgeM8uq26ZXdh80IzMvRF3uyM72fTKDDlZa3DEbp81OukzR6Zhd9yfCicDxGZU20KPojYw3OJYA5FyYKGyrn26q2iLommbQJRdtL5jndm_8nRunDeEKeo3yI3BU"
               alt="Avatar" />
-            <div class="avatar-count">+2k</div>
+            <div class="avatar-count">Eco</div>
           </div>
-          <span style="font-size:12px;font-weight:600;color:#fff;">Eco-Líderes activos hoy</span>
+          <span style="font-size:12px;font-weight:600;color:#fff;">Comunidad GreenUp</span>
         </div>
 
       </div><!-- /hero-content -->
 
-      <!-- Tarjeta flotante de impacto CO2 (xl+) -->
+      <!-- Tarjeta flotante descriptiva (xl+) -->
       <div class="floating-card d-none d-xl-block" id="floatingCard">
         <div class="d-flex align-items-center gap-3">
           <div class="co2-icon-wrap">
             <span class="material-symbols-outlined" style="color:var(--color-secondary-fixed);">co2</span>
           </div>
           <div>
-            <p style="font-size:12px;color:rgba(255,255,255,0.6);margin:0;">Impacto Mensual</p>
-            <p class="fw-bold text-white mb-0" style="font-size:20px;">-2.4t CO2</p>
+            <p style="font-size:12px;color:rgba(255,255,255,0.6);margin:0;">Impacto real</p>
+            <p class="fw-bold text-white mb-0" style="font-size:20px;">Según registros</p>
           </div>
         </div>
       </div>
@@ -740,24 +737,9 @@
       card.style.transform = `translate(${x}px, ${y}px)`;
     });
 
-    const imagenesLogin = [
-      "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1200&q=80"
-    ];
-
-    let indiceLogin = 0;
-    setInterval(() => {
-      const imagen = document.getElementById('loginHeroImage');
-      if (!imagen) return;
-      indiceLogin = (indiceLogin + 1) % imagenesLogin.length;
-      imagen.src = imagenesLogin[indiceLogin];
-    }, 3500);
   </script>
   <script src="../../js/api.js"></script>
+  <script src="../../js/auth_carousel.js?v=20260824"></script>
   <script src="../../js/auth.js"></script>
   <script src="../../js/public_ui_fix.js?v=20260821"></script>
 </body>

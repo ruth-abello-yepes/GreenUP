@@ -1,0 +1,209 @@
+/* Carrusel visual reutilizable para pantallas de acceso de GreenUp. */
+
+.greenup-auth-carousel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.greenup-auth-slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 900ms ease, transform 1800ms ease;
+  z-index: 0;
+}
+
+.greenup-auth-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.greenup-auth-carousel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(145deg, rgba(0, 61, 108, 0.82), rgba(31, 143, 95, 0.58)),
+    radial-gradient(circle at 18% 22%, rgba(157, 242, 184, 0.28), transparent 28%);
+}
+
+.greenup-auth-carousel::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  z-index: 2;
+  background: linear-gradient(180deg, transparent, rgba(5, 15, 30, 0.72));
+}
+
+.greenup-auth-carousel > :not(.greenup-auth-slide):not(.greenup-auth-dots):not(.greenup-auth-caption):not(.greenup-auth-mini-strip):not(.hero-overlay) {
+  position: relative;
+  z-index: 4;
+}
+
+.greenup-auth-dots {
+  position: absolute;
+  left: 48px;
+  bottom: 34px;
+  display: flex;
+  gap: 8px;
+  z-index: 6;
+}
+
+.greenup-auth-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  transition: width 250ms ease, background-color 250ms ease;
+}
+
+.greenup-auth-dots span.is-active {
+  width: 28px;
+  background: #9df2b8;
+}
+
+.greenup-auth-caption {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  bottom: 72px;
+  z-index: 5;
+  color: #ffffff;
+  pointer-events: none;
+}
+
+.greenup-auth-caption .intro-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+  color: #d9ffe8;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.greenup-auth-caption h2 {
+  max-width: 520px;
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: clamp(2rem, 3.2vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1.08;
+  text-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.greenup-auth-caption p {
+  max-width: 470px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.greenup-auth-mini-strip {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  top: 42px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.greenup-auth-mini-strip article {
+  margin: 0;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: none;
+  backdrop-filter: blur(14px);
+}
+
+.greenup-auth-mini-strip strong {
+  display: block;
+  color: #ffffff;
+  font-size: 0.83rem;
+}
+
+.greenup-auth-mini-strip span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.73rem;
+}
+
+.auth-split-simple {
+  max-width: 1060px !important;
+  gap: 0;
+}
+
+.auth-split-simple .login-tarjeta {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 430px;
+  max-width: 430px;
+  border-radius: 22px 0 0 22px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-simple-carousel {
+  width: min(48vw, 520px);
+  min-height: 520px;
+  border-radius: 0 22px 22px 0;
+}
+
+.public-hero-carousel {
+  min-height: 500px;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0, 35, 65, 0.22);
+}
+
+.public-hero-carousel .greenup-auth-caption {
+  bottom: 86px;
+}
+
+.public-hero-carousel .greenup-auth-mini-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.public-hero-carousel .greenup-auth-mini-strip article:nth-child(3) {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .greenup-auth-mini-strip,
+  .greenup-auth-caption,
+  .greenup-auth-dots {
+    display: none;
+  }
+
+  .auth-split-simple {
+    max-width: 430px !important;
+  }
+
+  .auth-split-simple .login-tarjeta {
+    border-radius: 22px;
+    min-height: auto;
+  }
+
+  .auth-simple-carousel {
+    display: none;
+  }
+}

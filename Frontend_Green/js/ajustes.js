@@ -521,6 +521,9 @@ function prepararBotonAvatar() {
         vistaAvatar.innerHTML = "";
       }
 
+      // Disparamos un evento para que cargar_usuario.js actualice la barra superior inmediatamente
+      window.dispatchEvent(new Event("avatarActualizado"));
+
       mostrarAlertaAjustes("success", "Avatar actualizado en este navegador.");
     });
 

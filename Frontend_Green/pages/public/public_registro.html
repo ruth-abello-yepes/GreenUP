@@ -32,15 +32,17 @@
       font-family: "Inter", sans-serif;
       background-color: var(--fondo);
       color: #1f2937;
+      overflow-x: hidden;
     }
 
     .layout-registro {
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .panel-lateral {
       min-height: 100vh;
-      padding: 48px;
+      padding: clamp(30px, 4vw, 52px);
       color: white;
       background:
         linear-gradient(160deg,
@@ -59,35 +61,37 @@
     .panel-lateral::after {
       content: "";
       position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background-color: rgba(157, 242, 184, 0.18);
-      right: -80px;
-      top: 80px;
+      inset: auto 0 0 0;
+      width: 100%;
+      height: 42%;
+      border-radius: 0;
+      background: linear-gradient(180deg, transparent, rgba(5, 15, 30, 0.72));
+      z-index: 2;
+      pointer-events: none;
     }
 
     .marca {
       position: relative;
-      z-index: 2;
+      z-index: 4;
     }
 
     .marca h1 {
-      font-size: 36px;
+      font-size: clamp(34px, 4vw, 50px);
       font-weight: 900;
       margin-bottom: 18px;
+      line-height: 1;
     }
 
     .marca p {
       max-width: 360px;
-      font-size: 17px;
+      font-size: clamp(16px, 1.5vw, 20px);
       line-height: 1.6;
       opacity: 0.95;
     }
 
     .tarjeta-impacto {
       position: relative;
-      z-index: 2;
+      z-index: 4;
       background-color: rgba(255, 255, 255, 0.14);
       border: 1px solid rgba(255, 255, 255, 0.22);
       border-radius: 20px;
@@ -113,12 +117,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 34px;
+      padding: clamp(26px, 4vw, 64px);
+      min-width: 0;
     }
 
     .formulario-tarjeta {
       width: 100%;
-      max-width: 760px;
+      max-width: 880px;
       background-color: white;
       border: 1px solid var(--borde);
       border-radius: 22px;
@@ -127,6 +132,27 @@
       position: relative;
       overflow: hidden;
       animation: aparecer 0.4s ease;
+    }
+
+    @media (min-width: 768px) {
+      .layout-registro > .row {
+        display: grid;
+        grid-template-columns: minmax(320px, 35vw) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .layout-registro .panel-lateral,
+      .layout-registro .formulario-contenedor {
+        width: 100%;
+        max-width: none;
+        flex: none;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .layout-registro > .row {
+        grid-template-columns: minmax(360px, 34vw) minmax(0, 1fr);
+      }
     }
 
     .formulario-tarjeta::before {
@@ -394,17 +420,17 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label">Nombres</label>
-                  <input id="nombres" class="form-control" type="text" placeholder="Ej. Anyeli" required />
+                  <input id="nombres" class="form-control" type="text" placeholder="Ej. Alex" required />
                 </div>
 
                 <div class="col-md-6">
                   <label class="form-label">Apellidos</label>
-                  <input id="apellidos" class="form-control" type="text" placeholder="Ej. Chico" required />
+                  <input id="apellidos" class="form-control" type="text" placeholder="Ej. Verde" required />
                 </div>
 
                 <div class="col-md-6">
                   <label class="form-label">Correo electrónico</label>
-                  <input id="correo" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                  <input id="correo" class="form-control" type="email" placeholder="contacto@ejemplo.com" required />
                   <div id="mensaje-correo" class="invalid-feedback">
                     Ingresa un correo válido y disponible.
                   </div>
@@ -412,7 +438,7 @@
 
                 <div class="col-md-6">
                   <label class="form-label">Celular</label>
-                  <input id="celular" class="form-control" type="tel" placeholder="3001234567" />
+                  <input id="celular" class="form-control" type="tel" placeholder="3180000000" />
                 </div>
 
                 <div class="col-md-6">

@@ -174,7 +174,7 @@ function mostrarCamposEmpresa() {
     });
 
   if (campoCorreo) {
-    campoCorreo.placeholder = esRecicladora ? "empresa@ejemplo.com" : "correo@ejemplo.com";
+    campoCorreo.placeholder = esRecicladora ? "empresa@ejemplo.com" : "contacto@ejemplo.com";
   }
 
   if (esRecicladora) {

@@ -65,10 +65,10 @@ def _documento_limpio(numero_documento):
 def _usuario_valido(usuario):
     """
     Valida el nombre de usuario pedido por la interfaz:
-    minimo 5 caracteres y solo letras o numeros.
+    minimo 5 caracteres y solo letras, numeros, espacios, punto, guion o guion bajo.
     """
 
-    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}", str(usuario or "").strip()))
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9._ -]{5,}", str(usuario or "").strip()))
 
 
 def servicio_registrar_usuario(datos):
@@ -125,7 +125,7 @@ def servicio_registrar_usuario(datos):
         return {"mensaje": "El usuario es obligatorio"}, 400
 
     if not _usuario_valido(usuario):
-        return {"mensaje": "El usuario debe tener minimo 5 caracteres y solo letras o numeros"}, 400
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres y usar solo letras, numeros, espacios, punto, guion o guion bajo"}, 400
 
     contrasena_segura, mensaje_contrasena = validar_contrasena_segura(contrasena)
 
@@ -203,7 +203,7 @@ def servicio_validar_disponibilidad_registro(datos):
     mensaje = "Datos disponibles"
 
     if not usuario_valido:
-        mensaje = "El usuario debe tener minimo 5 caracteres y solo letras o numeros"
+        mensaje = "El usuario debe tener minimo 5 caracteres y usar solo letras, numeros, espacios, punto, guion o guion bajo"
 
     if not correo_valido:
         mensaje = "El correo no tiene un formato valido"

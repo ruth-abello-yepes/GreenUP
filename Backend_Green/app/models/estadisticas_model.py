@@ -123,12 +123,10 @@ class EstadisticasModel:
                 f"""
                 WITH reciclaje AS (
                     SELECT
-                        COALESCE(SUM(puntos_obtenidos), 0)::int AS puntos_reciclaje,
+                        0::int AS puntos_reciclaje,
                         COALESCE(SUM(cantidad), 0)::float AS total_kg,
                         COUNT(*)::int AS total_entregas,
-                        COALESCE(SUM(puntos_obtenidos) FILTER (
-                            WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
-                        ), 0)::int AS puntos_reciclaje_mes,
+                        0::int AS puntos_reciclaje_mes,
                         COALESCE(SUM(cantidad) FILTER (
                             WHERE fecha_hora >= DATE_TRUNC('month', CURRENT_DATE)
                         ), 0)::float AS kg_mes,
@@ -171,7 +169,7 @@ class EstadisticasModel:
                 f"""
                 SELECT
                     TO_CHAR(mes, 'YYYY-MM') AS mes,
-                    COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)::int AS puntos
+                    COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS kg
                 FROM GENERATE_SERIES(
                     DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months',
                     DATE_TRUNC('month', CURRENT_DATE),
@@ -199,7 +197,7 @@ class EstadisticasModel:
                             NULLIF(TRIM(usuarios.apellidos), '')
                         ) AS nombre,
                         usuarios.foto_perfil,
-                        COALESCE(SUM(registrar_reciclaje.puntos_obtenidos), 0)::int AS total_puntos,
+                        0::int AS total_puntos,
                         COALESCE(SUM(registrar_reciclaje.cantidad), 0)::float AS total_kg
                     FROM usuarios
                     LEFT JOIN registrar_reciclaje
@@ -213,11 +211,11 @@ class EstadisticasModel:
                     SELECT
                         *,
                         ROW_NUMBER() OVER (
-                            ORDER BY total_puntos DESC, total_kg DESC, id_usuario
+                            ORDER BY total_kg DESC, id_usuario
                         )::int AS posicion
                     FROM totales
                 )
-                SELECT id_usuario, nombre, foto_perfil, total_puntos, posicion
+                SELECT id_usuario, nombre, foto_perfil, total_puntos, total_kg, posicion
                 FROM ranking
                 WHERE posicion <= 5 OR id_usuario = %s
                 ORDER BY posicion

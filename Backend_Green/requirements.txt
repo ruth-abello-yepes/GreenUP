@@ -6,7 +6,6 @@ Flask-Mail # Permite enviar correos desde Flask, se usa en recuperacion de contr
 python-dotenv # Permite leer variables del archivo .env
 Werkzeug # Sirve para cifrar y verificar contrasenas
 PyJWT # Sirve para crear y validar tokens de inicio de sesion
-googlemaps # Libreria para trabajar con Google Maps desde Python
 pandas # Sirve para manejar datos y preparar reportes
 openpyxl # Sirve para exportar reportes en Excel
 reportlab # Sirve para exportar reportes en PDF

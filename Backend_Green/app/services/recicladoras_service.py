@@ -2,10 +2,7 @@
 ## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
 
 
-import os
 import re
-
-import googlemaps
 
 from app.models.usuarios_model import registrar_usuario
 from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_por_documento, buscar_usuario_por_usuario
@@ -60,26 +57,11 @@ def _documento_limpio(numero_documento):
 
 
 def _usuario_valido(usuario):
-    """Valida minimo 5 caracteres y solo letras o numeros."""
+    """Valida minimo 5 caracteres y caracteres seguros para usuario visible."""
 
-    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}", str(usuario or "").strip()))
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9._ -]{5,}", str(usuario or "").strip()))
 
 
-def _geocodificar_direccion(direccion):
-    api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-    if not api_key or not direccion:
-        return None, None
-
-    try:
-        cliente = googlemaps.Client(key=api_key)
-        resultados = cliente.geocode(f"{direccion}, Valledupar, Cesar, Colombia")
-        if not resultados:
-            return None, None
-        ubicacion = resultados[0]["geometry"]["location"]
-        return ubicacion.get("lat"), ubicacion.get("lng")
-    except Exception as error:
-        print(f"No se pudo geocodificar la direccion: {error}")
-        return None, None
 def servicio_registrar_dueno_recicladora(datos):
     """
     Registra un dueno de punto ecologico.
@@ -160,7 +142,7 @@ def servicio_registrar_dueno_recicladora(datos):
         return {"mensaje": "La direccion de la empresa es obligatoria"}, 400
 
     if not _usuario_valido(usuario):
-        return {"mensaje": "El usuario debe tener minimo 5 caracteres y solo letras o numeros"}, 400
+        return {"mensaje": "El usuario debe tener minimo 5 caracteres y usar solo letras, numeros, espacios, punto, guion o guion bajo"}, 400
 
     if not str(nit_empresa).replace("-", "").replace(".", "").isdigit():
         return {"mensaje": "El NIT debe contener solo numeros, puntos o guion"}, 400
@@ -304,11 +286,8 @@ def servicio_obtener_punto_recicladora(id_usuario):
 def servicio_actualizar_punto_recicladora(id_usuario, datos):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
     direccion = datos.get("direccion") or datos.get("direccion_empresa")
-    if direccion and not datos.get("latitud") and not datos.get("longitud"):
-        latitud, longitud = _geocodificar_direccion(direccion)
-        if latitud and longitud:
-            datos["latitud"] = latitud
-            datos["longitud"] = longitud
+    # GreenUP usa Leaflet/OpenStreetMap en frontend. No geocodificamos con servicios externos.
+    # Si la interfaz no envia coordenadas, se actualiza la direccion sin inventar lat/lng.
 
     actualizado = actualizar_punto_recicladora(id_usuario, datos)
     if not actualizado:
@@ -348,8 +327,8 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
 
     Reglas importantes:
     - Solo se puede procesar si esta pendiente.
-    - Los Ecopuntos se calculan en backend, no desde el navegador.
-    - Un rechazo siempre queda con cero puntos.
+    - Por ahora no se otorgan puntos ni recompensas.
+    - Confirmar o rechazar deja puntos en cero.
     """
 
     id_estado = datos.get("id_estado")
@@ -385,18 +364,11 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
             "estado": estado_actual or id_estado_actual,
         }, 409
 
-    puntos_obtenidos = 0
     motivo_rechazo = datos.get("motivo_rechazo")
-
-    if id_estado == 2:
-        puntos_por_kg = float(registro.get("puntos_por_kg") or datos.get("puntos_por_kg") or 0)
-        puntos_obtenidos = int(round((float(registro.get("cantidad") or 0) * puntos_por_kg), 0))
+    puntos_obtenidos = 0
 
     if id_estado == 3 and not motivo_rechazo:
         motivo_rechazo = "La recicladora rechazo la entrega durante la validacion."
-
-    if id_estado == 3:
-        puntos_obtenidos = 0
 
     actualizado = cambiar_estado_registro_recicladora(
         id_usuario,
@@ -411,7 +383,7 @@ def servicio_cambiar_estado_registro_recicladora(id_usuario, id_registro, datos)
     if id_estado == 2:
         crear_notificacion(
             "Reciclaje confirmado",
-            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada y sumaste {puntos_obtenidos} Ecopuntos.",
+            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada. Ya cuenta en tu historial de material recuperado.",
             registro.get("id_usuario"),
             None,
         )

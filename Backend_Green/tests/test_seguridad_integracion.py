@@ -342,6 +342,20 @@ class SeguridadIntegracionTest(unittest.TestCase):
         self.assertEqual(respuesta.status_code, 400)
         self.assertIn("nombres", respuesta.get_json()["mensaje"].lower())
 
+    def test_login_usuario_inexistente_no_devuelve_error_interno(self):
+        """Un login con usuario inexistente debe responder claro, no 500."""
+
+        respuesta = self.cliente.post(
+            "/api/login",
+            json={
+                "usuario": "usuario_inexistente_qa_greenup",
+                "contrasena": "ClaveTemporal2026!",
+            },
+        )
+
+        self.assertEqual(respuesta.status_code, 404)
+        self.assertIn("usuario", respuesta.get_json()["mensaje"].lower())
+
     def test_registro_ciudadano_rechaza_usuario_menor_a_cinco(self):
         """El registro publico no acepta nombres de usuario demasiado cortos."""
 

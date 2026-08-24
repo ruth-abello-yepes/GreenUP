@@ -17,6 +17,7 @@ def servicio_crear_material(data):
     """
     Valida y crea un material.
     """
+    data = data or {}
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
     unidad = data.get("unidad", "kg")
@@ -25,6 +26,17 @@ def servicio_crear_material(data):
 
     if not nombre:
         return {"mensaje": "El nombre es obligatorio"}, 400
+
+    if puntos_por_kg is None:
+        puntos_por_kg = 0
+
+    try:
+        puntos_por_kg = int(puntos_por_kg)
+    except (TypeError, ValueError):
+        return {"mensaje": "Los puntos por kg deben ser un numero valido"}, 400
+
+    if puntos_por_kg < 0:
+        return {"mensaje": "Los puntos por kg no pueden ser negativos"}, 400
 
     crear_material(nombre, descripcion, unidad, puntos_por_kg, id_tipo_residuo)
 
@@ -55,6 +67,7 @@ def servicio_editar_material(id_material, data):
     """
     Valida y edita un material.
     """
+    data = data or {}
     material = buscar_material(id_material)
 
     if not material:
@@ -68,6 +81,17 @@ def servicio_editar_material(id_material, data):
 
     if not nombre:
         return {"mensaje": "El nombre es obligatorio"}, 400
+
+    if puntos_por_kg is None:
+        puntos_por_kg = 0
+
+    try:
+        puntos_por_kg = int(puntos_por_kg)
+    except (TypeError, ValueError):
+        return {"mensaje": "Los puntos por kg deben ser un numero valido"}, 400
+
+    if puntos_por_kg < 0:
+        return {"mensaje": "Los puntos por kg no pueden ser negativos"}, 400
 
     editar_material(
         id_material,
@@ -85,6 +109,7 @@ def servicio_cambiar_estado(id_material, data):
     """
     Cambia el estado del material.
     """
+    data = data or {}
     material = buscar_material(id_material)
 
     if not material:

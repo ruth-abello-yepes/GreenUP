@@ -93,7 +93,9 @@
       `;
     }
     if (resumen) {
-      resumen.textContent = `${estado.puntos.length} punto(s) listos para confirmar entregas`;
+      resumen.textContent = estado.puntos.length === 1
+        ? "1 punto ecológico disponible"
+        : `${estado.puntos.length} puntos ecológicos disponibles`;
     }
   }
 

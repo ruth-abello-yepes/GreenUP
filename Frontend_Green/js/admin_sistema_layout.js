@@ -79,7 +79,7 @@ const adminPages = {
   },
   materiales: {
     title: 'Materiales <strong>reciclables</strong>',
-    subtitle: "Gestiona el catalogo de materiales, unidades y puntos por kilogramo.",
+    subtitle: "Gestiona el catalogo de materiales reciclables y sus unidades de medicion.",
     eyebrow: "Catalogos ambientales",
   },
   residuos: {
@@ -220,9 +220,29 @@ document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 async function iniciarAdminSistema() {
   if (!protegerAdminSistema()) return;
   quitarModoOscuroAdminSistema();
+  normalizarEnlacesBaseAdminSistema();
   pintarEstructuraBase();
   await cargarModuloAdmin();
   iniciarMonitoreoAdmin();
+}
+
+function normalizarEnlacesBaseAdminSistema() {
+  /*
+    Algunas plantillas HTML antiguas conservan enlaces "#".
+    El layout dinamico dibuja la interfaz real, pero esta normalizacion evita
+    que un clic temprano deje botones como Perfil o Configuracion sin destino.
+  */
+  const rutas = {
+    "perfil": "admin_perfil.html",
+    "configuracion": "admin_configuracion.html",
+    "configuración": "admin_configuracion.html",
+  };
+
+  document.querySelectorAll('a[href="#"], a:not([href])').forEach((enlace) => {
+    const texto = (enlace.textContent || "").trim().toLowerCase();
+    const destino = Object.entries(rutas).find(([clave]) => texto.includes(clave))?.[1];
+    if (destino) enlace.href = destino;
+  });
 }
 
 function moduloActual() {
@@ -712,7 +732,7 @@ async function cargarUsuarios() {
     ...recicladoras.map((u) => ({ ...u, tipo_admin: "Recicladora" })),
   ];
 
-  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Puntos juego", "Noticias leidas", "Estado"];
+  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Noticias leidas", "Estado"];
   adminTableData = filas.map((u) => ({
     raw: u,
     values: [
@@ -721,7 +741,6 @@ async function cargarUsuarios() {
       limpiar(u.usuario),
       limpiar(u.correo),
       limpiar(u.numero_documento),
-      limpiar(Number(u.puntos_juego) || 0),
       limpiar(Number(u.noticias_juego) || 0),
       estadoHtml(u.id_estado),
     ],
@@ -734,7 +753,7 @@ async function cargarUsuarios() {
       <div class="card-title-row">
         <div>
           <h2>Tabla de usuarios registrados</h2>
-          <p>El administrador gestiona estados y también revisa el avance del juego educativo por noticias.</p>
+          <p>El administrador gestiona estados y revisa el avance educativo por noticias.</p>
         </div>
         <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
           <span class="material-symbols-outlined">download</span> Exportar
@@ -866,15 +885,15 @@ const crudConfig = {
     actualizar: "/materiales/",
     estado: "/materiales/:id/estado",
     id: "id_tipo_material",
-    columnas: ["ID", "Nombre", "Unidad", "Puntos/kg", "Residuo", "Estado"],
+    columnas: ["ID", "Nombre", "Unidad", "Residuo", "Estado"],
     campos: [
       { id: "nombre", label: "Nombre" },
       { id: "unidad", label: "Unidad", value: "kg" },
-      { id: "puntos_por_kg", label: "Puntos por kg", type: "number" },
+      { id: "puntos_por_kg", label: "Valor interno por kg", type: "hidden", value: "0" },
       { id: "id_tipo_residuo", label: "ID tipo residuo", type: "number" },
       { id: "descripcion", label: "Descripcion", type: "textarea", full: true },
     ],
-    map: (r) => [r.id_tipo_material, r.nombre, r.unidad, r.puntos_por_kg, r.id_tipo_residuo, estadoHtml(r.id_estado)],
+    map: (r) => [r.id_tipo_material, r.nombre, r.unidad, r.id_tipo_residuo, estadoHtml(r.id_estado)],
   },
   residuos: {
     titulo: "Tipos de residuo",
@@ -1736,8 +1755,8 @@ async function cargarNovedades() {
       <article class="data-card card col-12">
         <div class="card-title-row">
           <div>
-            <h2>Puntaje del juego por noticias</h2>
-            <p>Seguimiento a los puntos obtenidos por los ciudadanos.</p>
+            <h2>Lecturas y juegos de noticias</h2>
+            <p>Seguimiento educativo sin recompensas ni puntos activos.</p>
           </div>
         </div>
         <div id="tabla-puntajes-juego-admin">${renderEmpty("leaderboard", "Cargando puntajes...", "Espera un momento.")}</div>
@@ -1835,11 +1854,10 @@ async function cargarPuntajesJuegoAdmin() {
       return;
     }
     contenedor.innerHTML = tablaDatos(
-      ["Ciudadano", "Usuario", "Puntos", "Noticias completadas", "Ultima actualizacion"],
+      ["Ciudadano", "Usuario", "Noticias completadas", "Ultima actualizacion"],
       datos.map((item) => [
         item.ciudadano,
         item.usuario,
-        item.puntos_total,
         item.noticias_completadas,
         formatearFechaAdmin(item.ultima_actualizacion),
       ]),
@@ -2404,6 +2422,9 @@ function renderFormModal(modalId, titulo, subtitulo, formId, campos, accion, tex
 function renderField(campo) {
   const clase = campo.full ? "full form-label" : "form-label";
   const eventoCambio = campo.onChange ? ` onchange="${campo.onChange}"` : "";
+  if (campo.type === "hidden") {
+    return `<input id="${campo.id}" type="hidden" value="${campo.value || ""}">`;
+  }
   if (campo.type === "textarea") {
     return `<label class="${clase}">${campo.label}<textarea id="${campo.id}" class="form-control"></textarea></label>`;
   }

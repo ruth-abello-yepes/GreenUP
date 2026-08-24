@@ -12,21 +12,13 @@ Importante: las rutas no usan un prefijo unico. Algunas empiezan con `/api` y ot
 
 ## Headers para rutas protegidas
 
-Las rutas protegidas por `@login_requerido` y `@rol_requerido` esperan:
+Las rutas protegidas por `@login_requerido` y `@rol_requerido` esperan un JWT:
 
 ```http
-id_usuario: 1
-id_rol: 1
+Authorization: Bearer <token>
 ```
 
-Tambien se aceptan los nombres con guion:
-
-```http
-id-usuario: 1
-id-rol: 1
-```
-
-Rol administrador:
+El rol no se debe enviar manualmente desde el navegador. El backend lo lee desde el token firmado. Rol administrador:
 
 ```text
 id_rol = 1
@@ -253,7 +245,7 @@ Cambiar estado:
 }
 ```
 
-Nota tecnica: `servicio_crear_material(data)` actualmente usa variables `datos` y `dataos`; debe corregirse a `data` para que la creacion funcione.
+Nota tecnica: `puntos_por_kg` se valida en backend para evitar valores negativos o no numericos.
 
 ## Tipos de residuo
 

@@ -22,8 +22,6 @@ from app.services.materiales_service import (
     servicio_editar_material,
     servicio_cambiar_estado
 )
-from app.middlewares.auth_middleware import login_requerido
-from app.middlewares.roles_middleware import rol_requerido
 
 
 materiales_bp = Blueprint("materiales", __name__)

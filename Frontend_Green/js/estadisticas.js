@@ -38,10 +38,10 @@ function formatearUltimaEntrega(fechaIso) {
 }
 
 function pintarResumen(datos) {
-    actualizarTexto("total-puntos", formateadorNumero.format(datos.total_puntos || 0));
+    actualizarTexto("total-puntos", formateadorNumero.format(datos.kg_mes || 0));
     actualizarTexto("total-kgs", formateadorNumero.format(datos.total_kg || 0));
     actualizarTexto("total-entregas", formateadorNumero.format(datos.total_entregas || 0));
-    actualizarTexto("puntos-mes", `${formateadorNumero.format(datos.puntos_mes || 0)} pts este mes`);
+    actualizarTexto("puntos-mes", "Material confirmado este mes");
     actualizarTexto("kgs-mes", `${formateadorNumero.format(datos.kg_mes || 0)} kg este mes`);
     actualizarTexto("ultima-entrega", formatearUltimaEntrega(datos.ultima_entrega));
 }
@@ -105,8 +105,8 @@ function crearGraficaEvolucion(evolucion = []) {
         data: {
             labels: evolucion.map(item => etiquetaMes(item.mes)),
             datasets: [{
-                label: "Eco-Puntos",
-                data: evolucion.map(item => Number(item.puntos)),
+                label: "Kg recuperados",
+                data: evolucion.map(item => Number(item.kg)),
                 borderColor: "#003d6c",
                 backgroundColor: gradiente,
                 fill: true,
@@ -177,11 +177,11 @@ function crearRanking(ranking = []) {
         const nombre = document.createElement("p");
         nombre.className = `fw-bold mb-0 small ${item.es_usuario_actual ? "text-gu-secondary" : "text-dark"}`;
         nombre.textContent = `${item.nombre}${item.es_usuario_actual ? " (Tú)" : ""}`;
-        const puntos = document.createElement("p");
-        puntos.className = "text-muted small mb-0";
-        puntos.style.fontSize = "0.75rem";
-        puntos.textContent = `${formateadorNumero.format(item.total_puntos || 0)} pts`;
-        datos.append(nombre, puntos);
+        const impacto = document.createElement("p");
+        impacto.className = "text-muted small mb-0";
+        impacto.style.fontSize = "0.75rem";
+        impacto.textContent = `${formateadorNumero.format(item.total_kg || 0)} kg recuperados`;
+        datos.append(nombre, impacto);
 
         fila.append(posicion, avatar, datos);
         if (item.posicion <= 3) {

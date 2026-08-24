@@ -6,6 +6,7 @@
 function normalizarEnlacePublico(enlace) {
   const texto = (enlace.textContent || "").trim().toLowerCase();
   const clases = enlace.className || "";
+  const icono = (enlace.querySelector(".material-symbols-outlined")?.textContent || "").trim().toLowerCase();
 
   if (texto.startsWith("leer más") || texto.startsWith("leer mas") || texto.startsWith("saber más") || texto.startsWith("saber mas")) {
     enlace.href = "public_registro.html";
@@ -16,14 +17,16 @@ function normalizarEnlacePublico(enlace) {
     { claves: ["crear cuenta", "registrarse", "empieza", "empezar ahora"], href: "public_registro.html" },
     { claves: ["iniciar sesión", "iniciar sesion", "login"], href: "public_login.html" },
     { claves: ["hablar con un experto", "contáctanos", "contactanos", "contacto", "soporte"], href: "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp" },
-    { claves: ["misión", "mision", "visión", "vision", "nuestro equipo", "equipo"], href: "public_sobre_nosotros.html" },
-    { claves: ["impacto", "estadísticas", "estadisticas"], href: "public_estadisticas.html" },
+    { claves: ["misión", "mision", "visión", "vision"], href: "public_sobre_nosotros.html#mision" },
+    { claves: ["nuestro equipo", "equipo"], href: "public_sobre_nosotros.html#equipo" },
+    { claves: ["impacto"], href: "public_sobre_nosotros.html#impacto" },
+    { claves: ["estadísticas", "estadisticas"], href: "public_estadisticas.html" },
     { claves: ["eventos", "eco-blog", "novedades", "boletín", "boletin"], href: "public_educacion.html#noticias" },
     { claves: ["educación", "educacion", "aprende"], href: "public_educacion.html" },
     { claves: ["mapa", "puntos"], href: "public_mapa.html" },
-    { claves: ["privacidad"], href: "public_sobre_nosotros.html#privacidad" },
-    { claves: ["términos", "terminos", "uso"], href: "public_sobre_nosotros.html#terminos" },
-    { claves: ["cookies"], href: "public_sobre_nosotros.html#cookies" },
+    { claves: ["privacidad"], href: "public_sobre_nosotros.html#legal" },
+    { claves: ["términos", "terminos", "uso"], href: "public_sobre_nosotros.html#legal" },
+    { claves: ["cookies"], href: "public_sobre_nosotros.html#legal" },
     { claves: ["carreras", "vacantes"], href: "mailto:greenup213@gmail.com?subject=Quiero%20hacer%20parte%20de%20GreenUp" },
   ];
 
@@ -34,9 +37,38 @@ function normalizarEnlacePublico(enlace) {
   }
 
   if (clases.includes("rounded-circle") || texto.length === 0) {
-    enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20quiero%20conocer%20m%C3%A1s";
-    enlace.target = "_blank";
-    enlace.rel = "noopener noreferrer";
+    if (icono === "mail") {
+      enlace.href = "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp";
+      return;
+    }
+
+    if (icono === "public") {
+      enlace.href = "public_sobre_nosotros.html";
+      return;
+    }
+
+    if (icono === "share") {
+      enlace.href = window.location.href;
+      enlace.addEventListener("click", async (evento) => {
+        evento.preventDefault();
+        const datosCompartir = {
+          title: "GreenUp",
+          text: "Conoce GreenUp, una plataforma para mejorar el reciclaje y el cuidado ambiental en Valledupar.",
+          url: window.location.origin + "/pages/public/public_inicio.html",
+        };
+
+        if (navigator.share) {
+          await navigator.share(datosCompartir);
+          return;
+        }
+
+        await navigator.clipboard?.writeText(datosCompartir.url);
+        alert("Enlace de GreenUp copiado para compartir.");
+      });
+      return;
+    }
+
+    enlace.href = "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp";
     return;
   }
 

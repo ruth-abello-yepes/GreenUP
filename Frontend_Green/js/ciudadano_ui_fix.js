@@ -447,7 +447,34 @@ function corregirFooterCiudadano() {
 
     document.querySelectorAll("footer a").forEach((enlace) => {
         const texto = (enlace.textContent || "").trim().toLowerCase();
+        const icono = enlace.querySelector(".material-symbols-outlined")?.textContent?.trim().toLowerCase() || "";
         if ((enlace.getAttribute("href") || "") === "#") {
+            if (icono === "mail") {
+                enlace.href = "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp";
+                return;
+            }
+            if (icono === "public") {
+                enlace.href = "../public/public_sobre_nosotros.html";
+                return;
+            }
+            if (icono === "share") {
+                enlace.href = window.location.href;
+                enlace.addEventListener("click", async (evento) => {
+                    evento.preventDefault();
+                    const url = window.location.origin + "/pages/public/public_inicio.html";
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: "GreenUp",
+                            text: "Conoce GreenUp, una plataforma para reciclar mejor y ubicar puntos ecológicos.",
+                            url,
+                        });
+                        return;
+                    }
+                    await navigator.clipboard?.writeText(url);
+                    alert("Enlace de GreenUp copiado para compartir.");
+                });
+                return;
+            }
             const destino = Object.entries(rutasFooter).find(([clave]) => texto.includes(clave))?.[1];
             enlace.href = destino || "mailto:greenup213@gmail.com?subject=GreenUp";
         }
@@ -462,9 +489,10 @@ function corregirFooterCiudadano() {
     });
 
     document.querySelectorAll("[data-greenup-whatsapp]").forEach((enlace) => {
-        enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20necesito%20ayuda";
+        enlace.href = "https://wa.me/573185810461?text=Hola%20GreenUp,%20necesito%20soporte";
         enlace.target = "_blank";
         enlace.rel = "noopener noreferrer";
+        enlace.textContent = enlace.textContent || "WhatsApp GreenUp";
     });
 
     document.querySelectorAll("button, a").forEach((elemento) => {
@@ -507,10 +535,27 @@ function conectarEnlacesVaciosCiudadano() {
             return;
         }
 
-        if (icono === "share" || icono === "public") {
-            enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20quiero%20conocer%20m%C3%A1s";
-            enlace.target = "_blank";
-            enlace.rel = "noopener noreferrer";
+        if (icono === "share") {
+            enlace.href = window.location.href;
+            enlace.addEventListener("click", async (evento) => {
+                evento.preventDefault();
+                const url = window.location.origin + "/pages/public/public_inicio.html";
+                if (navigator.share) {
+                    await navigator.share({
+                        title: "GreenUp",
+                        text: "Conoce GreenUp, una plataforma para reciclar mejor y ubicar puntos ecológicos.",
+                        url,
+                    });
+                    return;
+                }
+                await navigator.clipboard?.writeText(url);
+                alert("Enlace de GreenUp copiado para compartir.");
+            });
+            return;
+        }
+
+        if (icono === "public") {
+            enlace.href = "../public/public_sobre_nosotros.html";
             return;
         }
 

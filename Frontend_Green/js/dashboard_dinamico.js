@@ -20,14 +20,13 @@ function mostrarEstadoInicio(mensaje = "") {
 }
 
 function pintarResumenInicio(datos) {
-    const puntos = Number(datos.total_puntos) || 0;
     const kg = Number(datos.total_kg) || 0;
     const entregas = Number(datos.total_entregas) || 0;
     const posicion = Number(datos.posicion_ranking) || 0;
     const ciudadanos = Number(datos.total_ciudadanos) || 0;
 
-    asignarTextoInicio("puntos-totales-display", formatoNumeroInicio.format(puntos));
-    asignarTextoInicio("puntos-mes-display", `${formatoNumeroInicio.format(datos.puntos_mes || 0)} pts este mes`);
+    asignarTextoInicio("puntos-totales-display", formatoNumeroInicio.format(entregas));
+    asignarTextoInicio("puntos-mes-display", `${formatoNumeroInicio.format(datos.kg_mes || 0)} kg este mes`);
     asignarTextoInicio("kg-total-display", formatoNumeroInicio.format(kg));
     asignarTextoInicio("kg-mes-display", `${formatoNumeroInicio.format(datos.kg_mes || 0)} kg este mes`);
     asignarTextoInicio(
@@ -50,10 +49,9 @@ function pintarResumenInicio(datos) {
         );
     }
 
-    const siguienteNivel = Math.max(1000, (Math.floor(puntos / 1000) + 1) * 1000);
-    const puntosNivelActual = puntos % 1000;
-    const progreso = Math.min(100, (puntosNivelActual / 1000) * 100);
-    const faltantes = siguienteNivel - puntos;
+    const metaKg = Math.max(10, (Math.floor(kg / 10) + 1) * 10);
+    const progreso = Math.min(100, ((kg % 10) / 10) * 100);
+    const faltantes = Math.max(0, metaKg - kg);
     const barra = document.getElementById("progreso-puntos");
     if (barra) {
         barra.style.width = `${progreso}%`;
@@ -61,7 +59,7 @@ function pintarResumenInicio(datos) {
     }
     asignarTextoInicio(
         "proximo-nivel",
-        `Próximo nivel: ${formatoNumeroInicio.format(siguienteNivel)} pts (${formatoNumeroInicio.format(faltantes)} restantes)`
+        `Meta sugerida: ${formatoNumeroInicio.format(metaKg)} kg (${formatoNumeroInicio.format(faltantes)} kg restantes)`
     );
 }
 

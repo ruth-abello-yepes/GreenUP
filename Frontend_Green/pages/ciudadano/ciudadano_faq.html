@@ -269,13 +269,13 @@
                     class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-white-50">search</span>
                 <input type="text" id="searchInput"
                     class="form-control form-control-lg rounded-pill ps-5 search-box py-3"
-                    placeholder="Busca una pregunta (ej. Puntos, Plásticos...)">
-                <a href="#"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 text-danger"
-                    onclick="confirmarCerrarSesion(event); return false;">
-                    <span class="material-symbols-outlined">logout</span> Cerrar Sesion
-                </a>
+                    placeholder="Busca una pregunta (ej. Reciclaje, Plásticos...)">
             </div>
+            <a href="#"
+                class="btn btn-light text-danger fw-semibold rounded-pill px-4 py-2 mt-3 d-inline-flex align-items-center justify-content-center gap-2"
+                onclick="confirmarCerrarSesion(event); return false;">
+                <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+            </a>
         </div>
     </header>
 
@@ -285,8 +285,8 @@
 
             <section class="mb-5 fade-up faq-category">
                 <div class="d-flex align-items-center gap-2 mb-4">
-                    <span class="fs-3">🪙</span>
-                    <h3 class="fw-bold text-gu-primary mb-0">Billetera Ecológica y Eco-Puntos</h3>
+                    <span class="fs-3">♻️</span>
+                    <h3 class="fw-bold text-gu-primary mb-0">Seguimiento de reciclajes</h3>
                 </div>
 
                 <div class="accordion" id="accordionWallet">
@@ -295,16 +295,16 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseW1">
-                                ¿Qué son los Eco-Puntos y cómo puedo ganarlos?
+                                ¿Qué pasa cuando registro una entrega?
                             </button>
                         </h2>
                         <div id="collapseW1" class="accordion-collapse collapse" data-bs-parent="#accordionWallet">
                             <div class="accordion-body">
-                                <div class="alert alert-success d-inline-block py-2 mb-3">Los Eco-Puntos son la moneda
-                                    virtual de GreenUp.</div>
-                                <p class="mb-0">La única forma de ganarlos es entregando materiales reciclables
-                                    (plástico, orgánicos, etc.) en nuestros puntos físicos autorizados en Valledupar. El
-                                    sistema calculará tus puntos basándose en los kilogramos que entregues.</p>
+                                <div class="alert alert-success d-inline-block py-2 mb-3">GreenUp guarda el registro
+                                    para que puedas consultar tu actividad ambiental.</div>
+                                <p class="mb-0">Por ahora las entregas no generan puntos ni recompensas. El sistema
+                                    registra el material, la cantidad y el punto ecológico para llevar seguimiento real
+                                    de tus reciclajes.</p>
                             </div>
                         </div>
                     </div>
@@ -313,13 +313,14 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseW2">
-                                ¿Para qué sirven los puntos que acumulo?
+                                ¿Por qué ya no aparecen puntos?
                             </button>
                         </h2>
                         <div id="collapseW2" class="accordion-collapse collapse" data-bs-parent="#accordionWallet">
                             <div class="accordion-body">
-                                <p class="mb-0">Los puntos acumulados en tu Billetera Ecológica reflejan tu nivel como
-                                    "Eco-Líder" en nuestro ranking y miden tu impacto ambiental real en la ciudad.</p>
+                                <p class="mb-0">Porque GreenUp todavía no tiene convenios activos para canjear
+                                    beneficios. Preferimos mostrar información real de reciclaje antes que prometer
+                                    recompensas que aún no están disponibles.</p>
                             </div>
                         </div>
                     </div>
@@ -427,9 +428,9 @@
                         </h2>
                         <div id="collapseE1" class="accordion-collapse collapse" data-bs-parent="#accordionEdu">
                             <div class="accordion-body">
-                                <p class="mb-0">Sí, para sumar Eco-Puntos a tu perfil, el encargado del Punto de
-                                    Reciclaje validará los kilogramos que entregues y registrará la transacción en el
-                                    sistema usando tu número de documento.</p>
+                                <p class="mb-0">Sí, si quieres que la entrega quede en tu historial. La recicladora
+                                    revisa la información y confirma el registro para que aparezca como actividad válida
+                                    dentro de GreenUp.</p>
                             </div>
                         </div>
                     </div>

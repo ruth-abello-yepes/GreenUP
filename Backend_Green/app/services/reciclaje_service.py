@@ -169,14 +169,8 @@ def servicio_cambiar_estado_reciclaje(id_registro, data):
     if estado_actual in ("confirmado", "rechazado") or int(registro.get("id_estado") or 0) in (2, 3):
         return {"mensaje": "Este reciclaje ya fue procesado y no puede cambiar otra vez"}, 409
 
-    puntos_obtenidos = 0
     motivo_rechazo = data.get("motivo_rechazo")
-
-    if id_estado == 2:
-        puntos_obtenidos = int(round(
-            float(registro.get("cantidad") or 0) * float(registro.get("puntos_por_kg") or 0),
-            0,
-        ))
+    puntos_obtenidos = 0
 
     if id_estado == 3 and not motivo_rechazo:
         motivo_rechazo = "El administrador rechazo el reciclaje durante la validacion."
@@ -195,7 +189,7 @@ def servicio_cambiar_estado_reciclaje(id_registro, data):
     if id_estado == 2:
         crear_notificacion(
             "Reciclaje confirmado",
-            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada y sumaste {puntos_obtenidos} Ecopuntos.",
+            f"Tu entrega de {registro.get('material') or 'material reciclable'} fue confirmada. Ya cuenta en tu historial de material recuperado.",
             registro.get("id_usuario"),
             None,
         )

@@ -1,6 +1,6 @@
 # Backend GreenUP
 
-Backend de GreenUP construido con Flask y MySQL. Expone endpoints para registro e inicio de sesion, administracion de usuarios, roles, tipos de documento, recicladoras, materiales, tipos de residuo, reciclaje, contenido educativo, novedades, preguntas frecuentes, estadisticas y reportes.
+Backend de GreenUP construido con Flask y PostgreSQL/Supabase. Expone endpoints para registro e inicio de sesion, administracion de usuarios, roles, tipos de documento, recicladoras, materiales, tipos de residuo, reciclaje, contenido educativo, novedades, preguntas frecuentes, estadisticas y reportes.
 
 ## Tabla de contenido
 
@@ -24,12 +24,11 @@ Backend de GreenUP construido con Flask y MySQL. Expone endpoints para registro 
 | Flask | Framework principal de la API |
 | flask-cors | Permite peticiones desde frontend/app movil |
 | flasgger | Genera documentacion Swagger |
-| mysql-connector-python | Conexion directa a MySQL |
+| psycopg2-binary | Conexion directa a PostgreSQL/Supabase |
 | python-dotenv | Carga variables desde `.env` |
 | Werkzeug | Cifrado y verificacion de contrasenas |
-| PyJWT | Dependencia disponible para tokens, aunque el middleware actual usa headers |
+| PyJWT | Crea y valida tokens de inicio de sesion |
 | pandas, openpyxl, reportlab | Preparacion/exportacion de reportes |
-| googlemaps | Integracion potencial con mapas |
 
 ## Estructura del proyecto
 
@@ -46,14 +45,14 @@ Backend_Green/
     __init__.py                   # Crea la app y registra blueprints
     common/
       config.py                   # Lee variables de entorno
-      database.py                 # Crea conexiones MySQL
+      database.py                 # Crea conexiones PostgreSQL/Supabase
       security.py                 # Valida, cifra y verifica contrasenas
       swagger.py                  # Configura Flasgger
     controllers/                  # Rutas HTTP y documentacion Swagger por endpoint
     services/                     # Reglas de negocio y validaciones
     models/                       # Consultas SQL directas
     middlewares/
-      auth_middleware.py          # Exige headers de sesion
+      auth_middleware.py          # Valida JWT y deja compatibilidad local controlada
       roles_middleware.py         # Valida roles permitidos
   docs/
     API.md                        # Catalogo de endpoints, headers y cuerpos JSON
@@ -72,18 +71,21 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Edita `.env` con las credenciales reales de MySQL.
+Edita `.env` con las credenciales reales de PostgreSQL/Supabase.
 
 ## Variables de entorno
 
 | Variable | Descripcion | Ejemplo |
 | --- | --- | --- |
-| `DB_HOST` | Host de MySQL | `127.0.0.1` |
-| `DB_PORT` | Puerto de MySQL | `3306` |
-| `DB_USER` | Usuario de MySQL | `root` |
-| `DB_PASSWORD` | Contrasena de MySQL | `servidor_123` |
-| `DB_NAME` | Base de datos usada por la API | `greenup` |
+| `DATABASE_URL` / `SUPABASE_DB_URL` | URL completa de PostgreSQL/Supabase | `postgresql://...` |
+| `DB_HOST` | Host de PostgreSQL/Supabase | `aws-0-us-east-1.pooler.supabase.com` |
+| `DB_PORT` | Puerto de PostgreSQL/Supabase | `6543` |
+| `DB_USER` | Usuario de PostgreSQL/Supabase | `postgres.xxxxx` |
+| `DB_PASSWORD` | Contrasena de PostgreSQL/Supabase | `********` |
+| `DB_NAME` | Base de datos usada por la API | `postgres` |
 | `ADMIN_ACCESS_CODE` | Codigo extra requerido para login de administrador | `GREENUP-ADMIN-2026` |
+| `JWT_SECRET_KEY` | Clave para firmar tokens JWT | `cambia-esto-en-produccion` |
+| `CORS_ORIGINS` | Origenes permitidos separados por coma | `https://greenupgrup.netlify.app,http://127.0.0.1:5502` |
 
 ## Base de datos
 
@@ -93,12 +95,12 @@ El script principal es:
 Data/greenup.sql
 ```
 
-Ese archivo crea la base de datos `greenup`, las tablas principales y datos iniciales.
+Ese archivo describe las tablas principales y datos iniciales. En produccion la base usada es PostgreSQL/Supabase.
 
-Para cargarlo en MySQL:
+Para cargarlo en una base PostgreSQL local o en Supabase, usa el editor SQL de Supabase o `psql`:
 
 ```powershell
-mysql -u root -p < Data\greenup.sql
+psql "postgresql://usuario:password@host:puerto/postgres" -f Data\greenup.sql
 ```
 
 Tablas principales:
@@ -181,19 +183,13 @@ Las rutas protegidas usan los decoradores:
 - `@login_requerido`
 - `@rol_requerido([...])`
 
-El middleware actual no valida JWT. Espera que el frontend envie estos headers:
+El login devuelve un JWT. Las rutas protegidas esperan el token en:
 
 ```http
-id_usuario: 1
-id_rol: 1
+Authorization: Bearer <token>
 ```
 
-Tambien acepta:
-
-```http
-id-usuario: 1
-id-rol: 1
-```
+El backend no acepta `id_usuario`/`id_rol` enviados manualmente por headers porque esos valores se pueden falsificar.
 
 ## Mapa rapido de endpoints
 
@@ -225,7 +221,7 @@ Peticion HTTP
   -> controller
       -> service
           -> model
-              -> MySQL
+              -> PostgreSQL/Supabase
 ```
 
 - Los `controllers` reciben la peticion, leen `request.get_json()` y devuelven `jsonify`.
@@ -248,6 +244,6 @@ Mas detalle en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 - `Data/greenup.sql` es el script principal recomendado.
 - `Data/datos_iniciales.sql` parece antiguo: usa tablas como `usuario`, `punto_reciclaje` y `reciclaje`, pero el esquema actual usa `usuarios`, `puntos_reciclaje` y `registrar_reciclaje`.
-- `app/controllers/materiales_routes.py` contiene el bloque de rutas duplicado. Funciona porque al final queda registrado el segundo blueprint, pero conviene limpiar la duplicacion.
-- `app/services/materiales_service.py` tiene un error en `servicio_crear_material(data)`: usa `datos` y `dataos` en lugar de `data`. Esa ruta puede fallar al crear materiales hasta que se corrija.
-- El middleware de autenticacion confia en headers enviados por el cliente. Para produccion conviene migrar a JWT o sesiones firmadas.
+- La conexion a Supabase usa SSL y puede configurarse con `DATABASE_URL`/`SUPABASE_DB_URL` o variables `DB_*`.
+- El middleware valida JWT y no acepta roles enviados manualmente desde el navegador.
+- Las politicas RLS de Supabase deben aplicarse con cuidado si se decide consumir tablas directamente desde Supabase Auth/Data API.

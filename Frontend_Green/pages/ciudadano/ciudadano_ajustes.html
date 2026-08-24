@@ -272,34 +272,37 @@
                                 </div>
                             </div>
 
-                            <form class="ajustes-form">
+                            <form id="form-perfil" class="ajustes-form">
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Nombres</label>
-                                        <input type="text" class="form-control" placeholder="Ej. Juan Carlos" required>
+                                        <input id="nombres" name="nombres" type="text" class="form-control"
+                                            placeholder="Tus nombres" autocomplete="given-name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Apellidos</label>
-                                        <input type="text" class="form-control" placeholder="Ej. Pérez" required>
+                                        <input id="apellidos" name="apellidos" type="text" class="form-control"
+                                            placeholder="Tus apellidos" autocomplete="family-name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Nombre de
                                             Usuario</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light text-muted">@</span>
-                                            <input type="text" class="form-control" placeholder="juanperez_eco"
-                                                required>
+                                            <input id="usuario" name="usuario" type="text" class="form-control"
+                                                placeholder="Tu usuario" autocomplete="username" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Celular</label>
-                                        <input type="tel" class="form-control" placeholder="300 000 0000" required>
+                                        <input id="celular" name="celular" type="tel" class="form-control"
+                                            placeholder="Tu celular" autocomplete="tel" required>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label small fw-semibold text-secondary">Correo
                                             Electrónico</label>
-                                        <input type="email" class="form-control" placeholder="juan.perez@correo.com"
-                                            required>
+                                        <input id="correo" name="correo" type="email" class="form-control"
+                                            placeholder="Tu correo electrónico" autocomplete="email" required>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-end">
@@ -318,7 +321,7 @@
                             <div class="d-flex flex-column gap-4">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="fw-bold mb-1">Nuevos Eco-Puntos</h6>
+                                        <h6 class="fw-bold mb-1">Nuevos registros aprobados</h6>
                                         <p class="small text-secondary mb-0">Recibir alertas cuando tu reciclaje sea
                                             aprobado.</p>
                                     </div>
@@ -356,23 +359,26 @@
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Privacidad y Seguridad</h4>
 
-                            <form class="ajustes-form mb-5">
+                            <form id="form-password" class="ajustes-form mb-5">
                                 <h6 class="fw-bold mb-3">Cambiar Contraseña</h6>
                                 <div class="row g-3 mb-3">
                                     <div class="col-12">
                                         <label class="form-label small fw-semibold text-secondary">Contraseña
                                             Actual</label>
-                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                        <input id="password_actual" name="password_actual" type="password"
+                                            class="form-control" placeholder="••••••••" autocomplete="current-password" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Nueva
                                             Contraseña</label>
-                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                        <input id="nueva_password" name="nueva_password" type="password"
+                                            class="form-control" placeholder="••••••••" autocomplete="new-password" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary">Confirmar Nueva
                                             Contraseña</label>
-                                        <input type="password" class="form-control" placeholder="••••••••" required>
+                                        <input id="confirmar_password" name="confirmar_password" type="password"
+                                            class="form-control" placeholder="••••••••" autocomplete="new-password" required>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-end">
@@ -453,27 +459,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const forms = document.querySelectorAll('.ajustes-form');
-            forms.forEach(form => {
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault();
-
-                    const btn = this.querySelector('.btn-guardar');
-                    if (!btn) return;
-
-                    const originalText = btn.innerHTML;
-
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...';
-                    btn.disabled = true;
-
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        mostrarToast('✅ ¡Cambios guardados con éxito!');
-                    }, 1000);
-                });
-            });
-
             const switches = document.querySelectorAll('.switch-ajuste');
             switches.forEach(sw => {
                 sw.addEventListener('change', function () {
@@ -523,6 +508,7 @@
 
     <script src="../../js/cargar_usuario.js"></script>
     <script src="../../js/api.js"></script>
+    <script src="../../js/ajustes.js"></script>
     <script src="../../js/notificaciones_panel.js"></script>
     <script src="../../js/ciudadano_ui_fix.js"></script>
     <script src="../../js/auth.js"></script>

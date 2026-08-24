@@ -269,8 +269,8 @@ def marcar_respuesta_moderada(id_respuesta):
         conexion.close()
 
 
-def sumar_puntos_respuesta_foro(id_usuario, puntos=5):
-    """Suma puntos al ciudadano cuando responde un tema del foro."""
+def sumar_puntos_respuesta_foro(id_usuario, puntos=0):
+    """Registra actividad del foro sin sumar puntos ni recompensas."""
 
     asegurar_tablas_comunidad()
     conexion = obtener_conexion()
@@ -283,10 +283,10 @@ def sumar_puntos_respuesta_foro(id_usuario, puntos=5):
             )
             VALUES (%s, %s, 0, CURRENT_TIMESTAMP)
             ON CONFLICT (id_usuario) DO UPDATE SET
-                puntos_total = ciudadano_puntos_juego.puntos_total + %s,
+                puntos_total = ciudadano_puntos_juego.puntos_total,
                 ultima_actualizacion = CURRENT_TIMESTAMP
             """,
-            (id_usuario, puntos, puntos),
+            (id_usuario, 0, 0),
         )
         conexion.commit()
     finally:

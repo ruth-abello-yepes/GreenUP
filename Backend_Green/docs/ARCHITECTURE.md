@@ -1,6 +1,6 @@
 # Arquitectura del Backend GreenUP
 
-Este documento explica como esta organizado el codigo y como fluye una peticion desde Flask hasta MySQL.
+Este documento explica como esta organizado el codigo y como fluye una peticion desde Flask hasta PostgreSQL/Supabase.
 
 ## Resumen
 
@@ -13,7 +13,7 @@ main.py
           -> services
               -> models
                   -> common/database.py
-                      -> MySQL
+                      -> PostgreSQL/Supabase
 ```
 
 ## Entrada de la aplicacion
@@ -64,8 +64,8 @@ Blueprints registrados:
 
 | Archivo | Responsabilidad |
 | --- | --- |
-| `config.py` | Carga `.env` con `load_dotenv()` y expone variables de MySQL |
-| `database.py` | Abre conexiones con `mysql.connector.connect()` |
+| `config.py` | Carga `.env` con `load_dotenv()` y expone variables de PostgreSQL/Supabase |
+| `database.py` | Abre conexiones con `psycopg2.connect()` |
 | `security.py` | Valida contrasenas seguras, cifra hashes y verifica hashes |
 | `swagger.py` | Inicializa Flasgger y datos basicos de la API |
 
@@ -90,28 +90,20 @@ Blueprints registrados:
 
 Archivo: `app/middlewares/auth_middleware.py`
 
-Lee headers:
+Valida el JWT enviado por el frontend en:
 
 ```http
-id_usuario
-id_rol
+Authorization: Bearer <token>
 ```
 
-o:
-
-```http
-id-usuario
-id-rol
-```
-
-Si faltan, devuelve `401`.
-
-Si existen, guarda en `flask.g`:
+Si el token es valido, guarda en `flask.g`:
 
 ```python
 g.id_usuario
 g.id_rol
 ```
+
+Si falta la autenticacion valida, devuelve `401`.
 
 ### `rol_requerido`
 
@@ -196,12 +188,12 @@ Responsabilidades:
 
 | Funcion | Archivo | Uso |
 | --- | --- | --- |
-| `obtener_conexion()` | `common/database.py` | Abre conexion MySQL |
+| `obtener_conexion()` | `common/database.py` | Abre conexion PostgreSQL/Supabase |
 | `configurar_swagger(app)` | `common/swagger.py` | Configura Flasgger |
 | `validar_contrasena_segura(contrasena)` | `common/security.py` | Valida reglas de contrasena |
 | `cifrar_contrasena(contrasena)` | `common/security.py` | Genera hash |
 | `verificar_contrasena(contrasena, hash)` | `common/security.py` | Verifica hash |
-| `login_requerido(funcion)` | `middlewares/auth_middleware.py` | Protege rutas por headers |
+| `login_requerido(funcion)` | `middlewares/auth_middleware.py` | Protege rutas con JWT |
 | `rol_requerido(roles_permitidos)` | `middlewares/roles_middleware.py` | Protege rutas por rol |
 
 ### Services destacados
@@ -284,11 +276,9 @@ Ejemplos:
 Estas notas no cambian el comportamiento actual, pero ayudan a mantener el backend:
 
 1. `Data/datos_iniciales.sql` parece antiguo y no coincide con el esquema actual.
-2. `app/controllers/materiales_routes.py` tiene el bloque completo duplicado.
-3. `app/services/materiales_service.py` tiene una referencia incorrecta a `datos` y `dataos` dentro de `servicio_crear_material(data)`.
-4. Algunas rutas usan prefijo `/api`, otras no. Se recomienda unificar a futuro para facilitar frontend y documentacion.
-5. `PyJWT` esta instalado, pero el middleware actual no usa tokens: usa headers simples enviados por el cliente.
-6. Las rutas protegidas actuales son principalmente las administrativas de usuarios y recicladoras.
+2. Algunas rutas usan prefijo `/api`, otras no. Se recomienda unificar a futuro para facilitar frontend y documentacion.
+3. Las politicas RLS de Supabase protegen accesos por Supabase Data API; el backend Flask sigue validando permisos con JWT y roles.
+4. Si se adopta Supabase Auth de forma directa, se debe enlazar `usuarios.auth_user_id` con `auth.users.id`.
 
 ## Verificacion rapida
 

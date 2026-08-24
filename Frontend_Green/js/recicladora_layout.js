@@ -252,7 +252,7 @@ function renderMaterialsTable(materiales) {
         <td>${escapeHtml(`#MAT-${item.id_tipo_material}`)}</td>
         <td>${escapeHtml(item.nombre || "Material")}</td>
         <td>${escapeHtml(item.descripcion || "")}</td>
-        <td>${escapeHtml(`${item.puntos_por_kg || 0} / ${item.unidad || "kg"}`)}</td>
+        <td>${escapeHtml(item.unidad || "kg")}</td>
         <td><span class="status-pill status-${aceptado ? "success" : "danger"}">${aceptado ? "Aceptado" : "Inactivo"}</span></td>
         <td>
           <span class="action-group">
@@ -329,7 +329,7 @@ function renderRegistrosRecicladoraTable(registros) {
   tbody.querySelectorAll(".registro-confirmar").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = Number(button.dataset.id);
-      const confirmar = window.confirm("¿Confirmar este reciclaje y sumar puntos al ciudadano?");
+      const confirmar = window.confirm("¿Confirmar este reciclaje como entrega realizada?");
       if (!confirmar) return;
       try {
         await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
@@ -428,7 +428,7 @@ async function refreshCurrentPage() {
       `#MAT-${item.id_tipo_material}`,
       item.nombre || "Material",
       item.descripcion || "",
-      `${item.puntos_por_kg || 0} / ${item.unidad || "kg"}`,
+      item.unidad || "kg",
       item.aceptado ? "Aceptado" : "Inactivo",
     ]), "materiales_recicladora.csv");
   }
@@ -991,24 +991,51 @@ function bindReportExports() {
 
 function normalizarFooterRecicladora() {
   const enlaces = {
-    "privacidad": "../public/public_sobre_nosotros.html#privacidad",
-    "términos": "../public/public_sobre_nosotros.html#terminos",
-    "terminos": "../public/public_sobre_nosotros.html#terminos",
-    "cookies": "../public/public_sobre_nosotros.html#cookies",
+    "privacidad": "../public/public_sobre_nosotros.html#legal",
+    "términos": "../public/public_sobre_nosotros.html#legal",
+    "terminos": "../public/public_sobre_nosotros.html#legal",
+    "cookies": "../public/public_sobre_nosotros.html#legal",
     "contacto": "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp",
     "soporte": "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp",
-    "eco-blog": "../public/public_noticias.html",
+    "eco-blog": "../public/public_educacion.html#noticias",
     "novedades": "recicladora_novedades.html",
     "eventos": "recicladora_novedades.html",
-    "misión": "../public/public_sobre_nosotros.html",
-    "mision": "../public/public_sobre_nosotros.html",
-    "impacto": "../public/public_estadisticas.html",
-    "equipo": "../public/public_sobre_nosotros.html",
+    "misión": "../public/public_sobre_nosotros.html#mision",
+    "mision": "../public/public_sobre_nosotros.html#mision",
+    "impacto": "../public/public_sobre_nosotros.html#impacto",
+    "equipo": "../public/public_sobre_nosotros.html#equipo",
     "carreras": "mailto:greenup213@gmail.com?subject=Quiero%20hacer%20parte%20de%20GreenUp",
   };
 
   document.querySelectorAll("footer a[href='#'], footer a:not([href])").forEach((enlace) => {
     const texto = (enlace.textContent || "").trim().toLowerCase();
+    const icono = enlace.querySelector(".material-symbols-outlined")?.textContent?.trim().toLowerCase() || "";
+    if (icono === "mail") {
+      enlace.href = "mailto:greenup213@gmail.com?subject=Contacto%20GreenUp";
+      return;
+    }
+    if (icono === "public") {
+      enlace.href = "../public/public_sobre_nosotros.html";
+      return;
+    }
+    if (icono === "share") {
+      enlace.href = window.location.href;
+      enlace.addEventListener("click", async (evento) => {
+        evento.preventDefault();
+        const url = window.location.origin + "/pages/public/public_inicio.html";
+        if (navigator.share) {
+          await navigator.share({
+            title: "GreenUp",
+            text: "Conoce GreenUp, una plataforma para reciclar mejor y ubicar puntos ecológicos.",
+            url,
+          });
+          return;
+        }
+        await navigator.clipboard?.writeText(url);
+        alert("Enlace de GreenUp copiado para compartir.");
+      });
+      return;
+    }
     const destino = Object.entries(enlaces).find(([clave]) => texto.includes(clave))?.[1];
     enlace.href = destino || "mailto:greenup213@gmail.com?subject=GreenUp";
   });
@@ -1017,7 +1044,7 @@ function normalizarFooterRecicladora() {
     enlace.href = "mailto:greenup213@gmail.com?subject=Soporte%20GreenUp";
   });
   document.querySelectorAll("[data-greenup-whatsapp]").forEach((enlace) => {
-    enlace.href = "https://wa.me/573001234567?text=Hola%20GreenUp,%20necesito%20ayuda";
+    enlace.href = "https://wa.me/573185810461?text=Hola%20GreenUp,%20necesito%20soporte";
     enlace.target = "_blank";
     enlace.rel = "noopener noreferrer";
   });

@@ -370,14 +370,15 @@
             style="background-color: var(--gu-primary-container); color: white;">
             <div class="row align-items-center position-relative z-10">
                 <div class="col-lg-8">
-                    <h1 class="display-5 fw-bold mb-4 leading-tight">Aprende a separar tus residuos, cuida Valledupar y
-                        gana recompensas por tu impacto</h1>
-                    <p class="lead mb-4 text-white-50">Transforma tu conocimiento en acciones concretas por el medio
-                        ambiente. Únete a la red ciudadana más grande del Cesar.</p>
-                    <button class="btn btn-lg rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow"
+                    <h1 class="display-5 fw-bold mb-4 leading-tight">Aprende a separar tus residuos y cuida Valledupar
+                        con acciones simples</h1>
+                    <p class="lead mb-4 text-white-50">Encuentra guías claras, noticias ambientales reales y consejos
+                        prácticos para reciclar mejor en casa, en el barrio o en tu negocio.</p>
+                    <a href="public_registro.html"
+                        class="btn btn-lg rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow"
                         style="background-color: var(--gu-accent); color: var(--gu-secondary);">
                         Crea tu cuenta gratis <span class="material-symbols-outlined">arrow_forward</span>
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="position-absolute rounded-circle"
@@ -400,21 +401,21 @@
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-filter active rounded-pill px-4 fw-medium">Todos</button>
+                <button class="btn btn-filter active rounded-pill px-4 fw-medium" data-filter="todos">Todos</button>
                 <button
-                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Plásticos</button>
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light" data-filter="plasticos">Plásticos</button>
                 <button
-                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Orgánicos</button>
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light" data-filter="organicos">Orgánicos</button>
                 <button
-                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Electrónicos</button>
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light" data-filter="electronicos">Electrónicos</button>
                 <button
-                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light">Peligrosos</button>
+                    class="btn btn-outline-secondary btn-filter rounded-pill px-4 fw-medium border-0 bg-light" data-filter="peligrosos">Peligrosos</button>
             </div>
         </section>
 
         <section class="row g-4 mb-5 fade-up" style="transition-delay: 0.2s;">
 
-            <div class="col-lg-8">
+            <div class="col-lg-8 reciclaje-card" data-category="plasticos">
                 <article class="gu-card h-100 card-highlight d-flex flex-column justify-content-end">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlSO5RwafaQ61FjKkemap5K2pvbT-RQHehDicKpsyJLMI8yVomNaxNWtgYYo_fOrbrpMHymMTyGoPHe7tgaD8mJwj4Et0dgN_QHk2FCzgruqFLf0feHY8QHqWFy1ZttWx1TwOgW2kVozAeAKZHRl8hmB-IjjHkLtz4tydnLJRkOYdSw-hDYJAtNsg34y9g6roPPooTaxMMsdhroX5LVW-uIJ2BbubGCNHEW4A9rWY7McIglB3j7vg"
                         alt="Jardín tropical">
@@ -430,13 +431,13 @@
                                 <span class="material-symbols-outlined fs-5">timer</span>
                                 <span class="fw-medium small">8 min de lectura</span>
                             </div>
-                            <button class="btn btn-light text-gu-primary fw-bold rounded-pill px-4">Leer más</button>
+                            <a href="public_registro.html" class="btn btn-light text-gu-primary fw-bold rounded-pill px-4">Leer más</a>
                         </div>
                     </div>
                 </article>
             </div>
 
-            <div class="col-lg-4">
+            <div class="col-lg-4 reciclaje-card" data-category="todos">
                 <article class="gu-card glass-card h-100 p-4 d-flex flex-column">
                     <div class="mb-4 overflow-hidden rounded-3" style="aspect-ratio: 1/1;">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTfgzKWPAbp86SwCmPazkc9SJljiupawEnf9otB1SMoEBaAGglu7SENgh8UlsRAgbonJUqXQiGthoaVDzIYA7nMyzNnv7IUmfz7JUnTgbH5U7j2AgERiHdfAjuiVCD8uD_Sd5iib5JWMW_aDWMEF153o5YZqtLhql-ghDqcR2poaYIZCj-HAC5EtGKrGaaIp2QxClbQJQKfhh954ScrfspSGEOWJAFXh_try6j5wnWhrB8AX_O958N"
@@ -449,7 +450,7 @@
                 </article>
             </div>
 
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 reciclaje-card" data-category="electronicos">
                 <article class="gu-card d-flex flex-column h-100">
                     <div class="card-img-wrapper">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3_6MPmyCB3hzC4IBdtElXY1JSyuOXvjoFWzj4FExNTO0oUObhJKWE8DDGQ0Ogx8S7b516AfIbrvQrNzbnSTFDBwpXlqGP_eTG5g1YglVVBf3sRarIPaJkVjQ8Y40WO294jkvQrJUrZ4iXJ-sZEc7IVL4OFIXhrr7QVZaz9S1W3Ca5q1ZM8Oa2oCMdnc1zi20lP0JyPCNKWWm4nqQlsx6-3bGtur7F1IXh5o01xDzMFscHHAEwj_U2"
@@ -459,14 +460,14 @@
                         <h5 class="fw-bold mb-2">Residuos Electrónicos</h5>
                         <p class="text-secondary small mb-4 flex-grow-1">Puntos de recolección para pilas y dispositivos
                             en centros comerciales de la ciudad.</p>
-                        <a href="#"
+                        <a href="public_registro.html"
                             class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
                             más</a>
                     </div>
                 </article>
             </div>
 
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 reciclaje-card" data-category="organicos">
                 <article class="gu-card d-flex flex-column h-100">
                     <div class="card-img-wrapper">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZWvd8VctA0u-SoflX4X5fKj9uLTL0dNgNt4gaZmf9yptxfdOK-WfW6_QBs1QmwqkgpnFjVApC1CDKto6CZiAHZLIYMSVehY1gl8muM-mskQAQUu_yeMi-v2Gj48I073TFEa15-QWhh8YHNCDP1osN7aZiH-7kvGUC7mlabMiQSAjnYDhxJcNmjR5VSu_2pNyi-ACc6oXrS2C4_11wkD91YgOiDPJ6U8Ea8ukW21g_Bv3jChzNCioN"
@@ -476,14 +477,14 @@
                         <h5 class="fw-bold mb-2">Compostaje Casero</h5>
                         <p class="text-secondary small mb-4 flex-grow-1">Convierte tus restos de comida en abono para
                             tus plantas de forma sencilla y sin olores.</p>
-                        <a href="#"
+                        <a href="public_registro.html"
                             class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
                             más</a>
                     </div>
                 </article>
             </div>
 
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 reciclaje-card" data-category="peligrosos">
                 <article class="gu-card d-flex flex-column h-100">
                     <div class="card-img-wrapper">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUE5ik3-L18LaOsP0WjwCDSLv9flJGwL0xegfjLXFQQNX1oB-1TB4fAgGO91dvR65G1oXkHv-YWT4EnG1p2s97n4JeKG0f8gkHb9b7Dz4a_mb1AHWJjBDdq7U1HcSG9wBYNN0gASu39-_019f8O77qoBa7hX2vDXWIrCOba3CT0S9HeLdOxLhpfJcYdY0cGkiD4neMdKDc_aFOVG7yFCOOCMJ02vZwQ62IriWMunZgXLkBYuXixHzu"
@@ -493,7 +494,7 @@
                         <h5 class="fw-bold mb-2">Residuos Peligrosos</h5>
                         <p class="text-secondary small mb-4 flex-grow-1">Manejo correcto de aceites usados, medicamentos
                             vencidos y químicos domésticos.</p>
-                        <a href="#"
+                        <a href="public_registro.html"
                             class="text-gu-primary fw-bold text-decoration-none text-center hover-primary-text mt-auto w-100 py-2">Leer
                             más</a>
                     </div>
@@ -565,14 +566,14 @@
             </div>
             <div class="position-relative z-10 py-4 mx-auto" style="max-width: 800px;">
                 <h2 class="display-5 fw-bold mb-4">¿Listo para ser un Eco-Líder?</h2>
-                <p class="lead text-white-50 mb-5">Únete a cientos de ciudadanos en Valledupar. Recicla, acumula puntos
-                    y canjéalos por beneficios locales en comercios aliados.</p>
+                <p class="lead text-white-50 mb-5">Únete a GreenUp para aprender, registrar tus reciclajes y encontrar
+                    información ambiental útil para tu día a día.</p>
                 <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
                     <a href="public_registro.html" class="btn btn-lg rounded-pill fw-bold px-5 py-3 shadow-sm"
                         style="background-color: var(--gu-accent); color: var(--gu-secondary);">
                         Registrarse Ahora
                     </a>
-                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-5 py-3 border-2">
+                    <a href="public_sobre_nosotros.html" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-5 py-3 border-2">
                         Saber más
                     </a>
                 </div>
@@ -678,6 +679,7 @@
 
             // Interactividad de los Chips de Filtro
             const filterBtns = document.querySelectorAll('.btn-filter');
+            const tarjetasReciclaje = document.querySelectorAll('.reciclaje-card');
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     // Remover clase activa de todos
@@ -688,6 +690,13 @@
                     // Añadir clase activa al clickeado
                     btn.classList.remove('btn-outline-secondary', 'bg-light', 'text-dark');
                     btn.classList.add('active', 'btn-gu-primary', 'text-white');
+
+                    const filtro = btn.dataset.filter || 'todos';
+                    tarjetasReciclaje.forEach(tarjeta => {
+                        const categoria = tarjeta.dataset.category || '';
+                        const mostrar = filtro === 'todos' || categoria === filtro;
+                        tarjeta.classList.toggle('d-none', !mostrar);
+                    });
                 });
             });
         });

@@ -711,10 +711,37 @@ function crearMenuSuperiorRecicladora() {
   contenedorMarca.appendChild(menu);
 }
 
+function obtenerTemaRecicladora() {
+  const tema = localStorage.getItem("recicladora_tema") || "claro";
+  return tema === "oscuro" ? "oscuro" : "claro";
+}
+
+function aplicarTemaRecicladora() {
+  const tema = obtenerTemaRecicladora();
+  document.body.classList.toggle("recicladora-theme-dark", tema === "oscuro");
+  document.body.classList.toggle("recicladora-theme-light", tema !== "oscuro");
+  document.querySelectorAll(".theme-toggle .material-symbols-outlined, [data-recicladora-theme-icon]").forEach((icono) => {
+    icono.textContent = tema === "oscuro" ? "light_mode" : "dark_mode";
+  });
+}
+
+function cambiarTemaRecicladora(modo) {
+  const tema = modo === "oscuro" ? "oscuro" : "claro";
+  localStorage.setItem("recicladora_tema", tema);
+  aplicarTemaRecicladora();
+  alert(tema === "oscuro" ? "Tema oscuro activo." : "Tema claro activo.");
+}
+
+function alternarTemaRecicladora() {
+  cambiarTemaRecicladora(obtenerTemaRecicladora() === "oscuro" ? "claro" : "oscuro");
+}
+
 function quitarTemaOscuroRecicladora() {
-  document.body.classList.remove("recicladora-theme-dark");
-  localStorage.removeItem("recicladora_tema");
-  document.querySelectorAll(".theme-toggle").forEach((button) => button.remove());
+  /*
+    Nombre heredado: antes eliminaba el modo oscuro al cargar la pantalla.
+    Ahora respeta la preferencia guardada para que el selector de tema funcione.
+  */
+  aplicarTemaRecicladora();
 }
 function abrirModal(id) {
   const modal = document.getElementById(id);

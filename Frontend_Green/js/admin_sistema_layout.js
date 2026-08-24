@@ -288,10 +288,13 @@ function obtenerAdminActual() {
 function obtenerTemaAdminSistema() {
   /*
     TEMA GLOBAL DEL ADMIN:
-    El panel del administrador queda fijo en modo claro para mantener una
-    interfaz uniforme en todas las pantallas.
+    Lee la preferencia guardada para que el modo oscuro funcione en todas
+    las pantallas del administrador, no solo en el perfil.
   */
-  return "claro";
+  const tema = localStorage.getItem("greenup_admin_tema")
+    || localStorage.getItem("greenup_admin_perfil_modo")
+    || "claro";
+  return tema === "oscuro" ? "oscuro" : "claro";
 }
 
 function aplicarTemaAdminSistema() {
@@ -300,31 +303,35 @@ function aplicarTemaAdminSistema() {
     Estas clases cambian navbar, fondo, tarjetas, tablas, formularios y mapa.
   */
   const tema = obtenerTemaAdminSistema();
-  localStorage.setItem("greenup_admin_tema", "claro");
-  localStorage.setItem("greenup_admin_perfil_modo", "claro");
   document.body.classList.remove("admin-theme-dark", "admin-theme-light");
   document.body.classList.add(tema === "oscuro" ? "admin-theme-dark" : "admin-theme-light");
 }
 
 function quitarModoOscuroAdminSistema() {
-  localStorage.setItem("greenup_admin_tema", "claro");
-  localStorage.setItem("greenup_admin_perfil_modo", "claro");
-  document.body.classList.remove("admin-theme-dark");
-  document.body.classList.add("admin-theme-light");
+  /*
+    Nombre heredado: antes forzaba el modo claro. Ahora solo sincroniza
+    la clase del body con la preferencia real del usuario.
+  */
+  aplicarTemaAdminSistema();
 }
 
 function cambiarTemaAdminSistema(modo) {
   /*
     CAMBIO MANUAL DE TEMA:
-    Se conserva la funcion para no romper botones antiguos, pero siempre deja
-    el administrador en modo claro.
+    Guarda y aplica la preferencia seleccionada.
   */
-  localStorage.setItem("greenup_admin_tema", "claro");
-  localStorage.setItem("greenup_admin_perfil_modo", "claro");
+  const tema = modo === "oscuro" ? "oscuro" : "claro";
+  localStorage.setItem("greenup_admin_tema", tema);
+  localStorage.setItem("greenup_admin_perfil_modo", tema);
   aplicarTemaAdminSistema();
   actualizarBotonTemaAdminSistema();
   if (moduloActual() === "perfil") cargarPerfil();
-  mostrarToast("Tema claro activo", "El panel administrador usa una apariencia clara y uniforme.");
+  mostrarToast(
+    tema === "oscuro" ? "Tema oscuro activo" : "Tema claro activo",
+    tema === "oscuro"
+      ? "El panel administrador cambió a una apariencia oscura."
+      : "El panel administrador cambió a una apariencia clara."
+  );
 }
 
 function alternarTemaAdminSistema() {

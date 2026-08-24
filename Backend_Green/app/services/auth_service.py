@@ -108,7 +108,8 @@ def servicio_login(datos):
         _registrar_fallo_login(usuario)
         return {"mensaje": "Usuario no encontrado"}, 404
 
-    if usuario_encontrado["id_estado"] != 1:
+    es_recicladora_pendiente = int(usuario_encontrado.get("id_rol") or 0) == 2 and int(usuario_encontrado.get("id_estado") or 0) == 2
+    if usuario_encontrado["id_estado"] != 1 and not es_recicladora_pendiente:
         return {"mensaje": "Usuario inactivo"}, 403
 
     contrasena_correcta = verificar_contrasena(

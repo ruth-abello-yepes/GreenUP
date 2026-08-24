@@ -915,6 +915,64 @@ function bindProfilePhotoInput() {
   });
 }
 
+function leerArchivoPerfilComoDataUrl(archivo) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+    reader.readAsDataURL(archivo);
+  });
+}
+
+function nombreDocumentoCamara(valor) {
+  if (!valor) return "";
+  try {
+    const doc = JSON.parse(valor);
+    return doc.nombre || "Documento cargado";
+  } catch (_) {
+    return /^https?:\/\//i.test(valor) || /^data:/i.test(valor) ? "Documento cargado" : valor;
+  }
+}
+
+function bindCamaraComercioInput() {
+  const input = document.getElementById("camaraComercioInput");
+  const hidden = document.getElementById("camaraComercioValue");
+  const label = document.getElementById("camaraComercioName");
+  if (!input || !hidden) return;
+
+  input.addEventListener("change", async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const tiposPermitidos = ["application/pdf", "image/jpeg", "image/png"];
+    if (!tiposPermitidos.includes(file.type)) {
+      alert("La Cámara de Comercio debe ser PDF, JPG o PNG.");
+      input.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("La Cámara de Comercio no debe superar 5 MB.");
+      input.value = "";
+      return;
+    }
+
+    try {
+      const contenido = await leerArchivoPerfilComoDataUrl(file);
+      hidden.value = JSON.stringify({
+        nombre: file.name,
+        tipo: file.type,
+        tamano: file.size,
+        contenido,
+      });
+      if (label) label.textContent = `${file.name} listo para guardar.`;
+    } catch (error) {
+      alert(error.message || "No se pudo preparar el documento.");
+      input.value = "";
+    }
+  });
+}
+
 async function hydrateProfilePhotoOnly() {
   if (!document.getElementById("profilePhotoValue")) return;
   try {
@@ -971,14 +1029,18 @@ function bindProfileSave() {
         method: "PUT",
         body: JSON.stringify(data),
       });
-      await fetchJson("/api/recicladoras/mi-punto", {
-        method: "PUT",
-        body: JSON.stringify({
-          nombre_empresa: data.nombre_empresa,
-          direccion_empresa: data.direccion_empresa,
-          telefono_empresa: data.telefono_empresa,
-        }),
-      });
+      try {
+        await fetchJson("/api/recicladoras/mi-punto", {
+          method: "PUT",
+          body: JSON.stringify({
+            nombre_empresa: data.nombre_empresa,
+            direccion_empresa: data.direccion_empresa,
+            telefono_empresa: data.telefono_empresa,
+          }),
+        });
+      } catch (errorPunto) {
+        console.warn("Perfil guardado sin actualizar punto ecologico:", errorPunto.message);
+      }
       alert("Perfil actualizado correctamente");
       const user = getUser();
       localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: data.foto_perfil || user.foto_perfil }));
@@ -1099,6 +1161,12 @@ async function hydrateRecicladoraProfile() {
       input.value = values[key] || "";
     });
 
+    const camaraLabel = document.getElementById("camaraComercioName");
+    const camaraNombre = nombreDocumentoCamara(profile.camara_comercio || "");
+    if (camaraLabel && camaraNombre) {
+      camaraLabel.textContent = `${camaraNombre} guardado. Puedes reemplazarlo si necesitas actualizarlo.`;
+    }
+
     if (profile.foto_perfil) {
       const user = getUser();
       localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: profile.foto_perfil }));
@@ -1177,6 +1245,7 @@ document.addEventListener("DOMContentLoaded", function () {
   quitarTemaOscuroRecicladora();
   bindModalForms();
   bindProfilePhotoInput();
+  bindCamaraComercioInput();
   bindProfilePhotoSave();
   bindGenericExportButtons();
   bindProfileSave();

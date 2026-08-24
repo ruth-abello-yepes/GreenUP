@@ -7,6 +7,7 @@ import re
 from app.common.database import obtener_conexion
 from app.models.usuarios_model import registrar_usuario
 from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_por_documento, buscar_usuario_por_usuario
+from app.models.usuarios_model import buscar_usuario_por_id
 from app.models.recicladoras_model import (
     actualizar_perfil_recicladora,
     actualizar_punto_recicladora,
@@ -336,7 +337,30 @@ def servicio_obtener_perfil_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
 
     if not recicladora:
-        return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+        usuario = buscar_usuario_por_id(id_usuario)
+        if not usuario or int(usuario.get("id_rol") or 0) != 2:
+            return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+        return {
+            "id_usuario": usuario.get("id_usuario"),
+            "nombres": usuario.get("nombres"),
+            "apellidos": usuario.get("apellidos"),
+            "correo": usuario.get("correo"),
+            "usuario": usuario.get("usuario"),
+            "numero_documento": usuario.get("numero_documento"),
+            "celular": usuario.get("celular"),
+            "fecha_registro": usuario.get("fecha_registro"),
+            "id_estado_usuario": usuario.get("id_estado"),
+            "id_recicladora": None,
+            "nit_empresa": usuario.get("numero_documento") or "",
+            "nombre_empresa": usuario.get("nombres") or usuario.get("usuario") or "",
+            "direccion_empresa": "",
+            "telefono_empresa": usuario.get("celular") or "",
+            "camara_comercio": "",
+            "horario_recicladora": "Horario por confirmar",
+            "estado_validacion_nit": "pendiente",
+            "estado_camara_comercio": "pendiente",
+            "registro_empresarial_incompleto": True,
+        }, 200
 
     return recicladora, 200
 def servicio_dashboard_recicladora(id_usuario):
@@ -348,7 +372,37 @@ def servicio_dashboard_recicladora(id_usuario):
 def servicio_actualizar_perfil_recicladora(id_usuario, datos):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
     if not recicladora:
-        return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+        usuario = buscar_usuario_por_id(id_usuario)
+        if not usuario or int(usuario.get("id_rol") or 0) != 2:
+            return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+
+        nit_empresa = _texto_limpio(datos, "nit_empresa", "nit") or usuario.get("numero_documento") or ""
+        nombre_empresa = _texto_limpio(datos, "nombre_empresa") or usuario.get("nombres") or usuario.get("usuario") or "Recicladora pendiente"
+        direccion_empresa = _texto_limpio(datos, "direccion_empresa", "direccion") or "Direccion por confirmar"
+        telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono") or usuario.get("celular") or ""
+        camara_comercio = datos.get("camara_comercio", "")
+
+        registrar_recicladora(
+            id_usuario,
+            nit_empresa,
+            nombre_empresa,
+            direccion_empresa,
+            telefono_empresa,
+            camara_comercio,
+            2,
+            {
+                "horario": datos.get("horario") or "Horario por confirmar",
+                "estado_validacion_nit": "pendiente",
+                "estado_camara_comercio": "pendiente",
+            },
+        )
+        crear_notificacion(
+            "Documento de recicladora pendiente",
+            f"La recicladora {nombre_empresa} actualizó su Cámara de Comercio. Revisa el documento para activar la cuenta.",
+            None,
+            1,
+        )
+        return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200
 
     actualizar_perfil_recicladora(id_usuario, datos)
     return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200

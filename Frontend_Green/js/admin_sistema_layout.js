@@ -802,7 +802,9 @@ function renderEstadoUsuario(usuario) {
   const estadoCamara = String(usuario.estado_camara_comercio || "pendiente").trim().toLowerCase();
   const camaraValidada = estadoCamara === "validado";
   const camaraRechazada = estadoCamara === "rechazado";
-  const puedeAprobar = usuario.tipo_admin === "Recicladora" && !camaraValidada;
+  const documentoCamara = obtenerDocumentoCamara(usuario);
+  const registroIncompleto = Boolean(usuario.registro_incompleto || usuario.registro_empresarial_incompleto || !usuario.id_recicladora);
+  const puedeAprobar = usuario.tipo_admin === "Recicladora" && !camaraValidada && documentoCamara.disponible && !registroIncompleto;
   const puedeRechazar = usuario.tipo_admin === "Recicladora" && !camaraValidada && !camaraRechazada;
   const accionesDocumento = usuario.tipo_admin === "Recicladora" ? `
     <button class="small-button btn btn-sm btn-outline-primary" type="button" onclick="abrirCamaraComercio(${usuario.id_usuario})">
@@ -811,6 +813,7 @@ function renderEstadoUsuario(usuario) {
     <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="consultarRecicladoraEnRues(${usuario.id_usuario})">
       Consultar RUES
     </button>
+    ${registroIncompleto ? '<span class="status-pill inactive">Registro incompleto</span>' : ""}
     ${camaraValidada ? '<span class="status-pill active">Validación completa</span>' : ""}
     ${camaraRechazada ? '<span class="status-pill inactive">Documento rechazado</span>' : ""}
     ${puedeAprobar ? `
@@ -864,7 +867,9 @@ function obtenerDocumentoCamara(usuario) {
 
 function renderDocumentoCamaraResumen(usuario) {
   if (usuario.tipo_admin !== "Recicladora") return '<span class="text-muted">No aplica</span>';
-  if (usuario.registro_incompleto) return '<span class="status-pill inactive">Registro incompleto</span>';
+  if (usuario.registro_incompleto || usuario.registro_empresarial_incompleto || !usuario.id_recicladora) {
+    return '<span class="status-pill inactive">Falta detalle empresarial</span>';
+  }
   const doc = obtenerDocumentoCamara(usuario);
   if (!doc.disponible && doc.soloNombre) {
     return `<span class="status-pill inactive">Solo nombre: ${limpiar(doc.nombre)}</span>`;

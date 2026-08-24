@@ -119,26 +119,30 @@ def listar_recicladoras():
         usuarios.fecha_registro,
         usuarios.id_estado,
         recicladoras.id_recicladora,
-        COALESCE(recicladoras.nit_empresa, usuarios.numero_documento) AS nit_empresa,
-        COALESCE(recicladoras.nombre_empresa, usuarios.nombres) AS nombre_empresa,
-        COALESCE(recicladoras.direccion_empresa, 'Direccion pendiente') AS direccion_empresa,
-        COALESCE(recicladoras.telefono_empresa, usuarios.celular) AS telefono_empresa,
+        COALESCE(NULLIF(recicladoras.nit_empresa, ''), usuarios.numero_documento) AS nit_empresa,
+        COALESCE(NULLIF(recicladoras.nombre_empresa, ''), usuarios.nombres, usuarios.usuario) AS nombre_empresa,
+        COALESCE(NULLIF(recicladoras.direccion_empresa, ''), 'Direccion pendiente') AS direccion_empresa,
+        COALESCE(NULLIF(recicladoras.telefono_empresa, ''), usuarios.celular) AS telefono_empresa,
         COALESCE(recicladoras.camara_comercio, '') AS camara_comercio,
-        COALESCE(recicladoras.horario, 'Horario pendiente') AS horario,
+        COALESCE(NULLIF(recicladoras.horario, ''), 'Horario pendiente') AS horario,
         recicladoras.dias_trabajo,
         recicladoras.hora_inicio,
         recicladoras.hora_fin,
         recicladoras.dias_no_trabaja,
-        COALESCE(recicladoras.estado_validacion_nit, 'pendiente') AS estado_validacion_nit,
-        COALESCE(recicladoras.estado_camara_comercio, 'pendiente') AS estado_camara_comercio,
+        COALESCE(NULLIF(recicladoras.estado_validacion_nit, ''), 'pendiente') AS estado_validacion_nit,
+        COALESCE(NULLIF(recicladoras.estado_camara_comercio, ''), 'pendiente') AS estado_camara_comercio,
         CASE
             WHEN recicladoras.id_recicladora IS NULL THEN TRUE
             ELSE FALSE
-        END AS registro_incompleto
+        END AS registro_incompleto,
+        CASE
+            WHEN recicladoras.id_recicladora IS NULL THEN TRUE
+            ELSE FALSE
+        END AS registro_empresarial_incompleto
     FROM usuarios
     LEFT JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
     WHERE usuarios.id_rol = 2
-    ORDER BY usuarios.id_usuario DESC
+    ORDER BY usuarios.fecha_registro DESC, usuarios.id_usuario DESC
     """)
     recicladoras = cursor.fetchall()
 

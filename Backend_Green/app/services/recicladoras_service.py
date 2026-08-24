@@ -4,6 +4,7 @@
 
 import re
 
+from app.common.database import obtener_conexion
 from app.models.usuarios_model import registrar_usuario
 from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_por_documento, buscar_usuario_por_usuario
 from app.models.recicladoras_model import (
@@ -63,6 +64,56 @@ def _usuario_valido(usuario):
     return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9._ -]{5,}", str(usuario or "").strip()))
 
 
+def _texto_desde_lista(valor):
+    """
+    Convierte listas del formulario en texto guardable.
+
+    Algunos navegadores envian los dias seleccionados como lista. La columna en
+    Supabase es texto, por eso se transforma a una frase separada por comas.
+    """
+
+    if isinstance(valor, list):
+        return ", ".join(str(item).strip() for item in valor if str(item).strip())
+
+    if valor is None:
+        return None
+
+    texto = str(valor).strip()
+    return texto or None
+
+
+def _limpiar_registro_recicladora_incompleto(id_usuario, id_punto=None):
+    """
+    Elimina datos creados a medias cuando falla el registro de una recicladora.
+
+    Asi evitamos que en Supabase aparezca el usuario, pero no aparezca su punto
+    ecologico en el administrador.
+    """
+
+    if not id_usuario:
+        return
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    try:
+        if id_punto:
+            cursor.execute("DELETE FROM punto_material WHERE id_punto = %s", (id_punto,))
+
+        cursor.execute("DELETE FROM recicladoras WHERE id_usuario = %s", (id_usuario,))
+
+        if id_punto:
+            cursor.execute("DELETE FROM puntos_reciclaje WHERE id_punto = %s", (id_punto,))
+
+        cursor.execute("DELETE FROM usuarios WHERE id_usuario = %s", (id_usuario,))
+        conexion.commit()
+    except Exception:
+        conexion.rollback()
+    finally:
+        cursor.close()
+        conexion.close()
+
+
 def servicio_registrar_dueno_recicladora(datos):
     """
     Registra un dueno de punto ecologico.
@@ -92,10 +143,10 @@ def servicio_registrar_dueno_recicladora(datos):
     camara_comercio = datos.get("camara_comercio", "")
     ids_materiales = datos.get("ids_materiales") or []
     horario = datos.get("horario")
-    dias_trabajo = datos.get("dias_trabajo")
+    dias_trabajo = _texto_desde_lista(datos.get("dias_trabajo"))
     hora_inicio = datos.get("hora_inicio")
     hora_fin = datos.get("hora_fin")
-    dias_no_trabaja = datos.get("dias_no_trabaja")
+    dias_no_trabaja = _texto_desde_lista(datos.get("dias_no_trabaja"))
 
     if not correo:
         return {"mensaje": "El correo es obligatorio"}, 400
@@ -178,43 +229,53 @@ def servicio_registrar_dueno_recicladora(datos):
         id_estado
     )
 
-    registrar_recicladora(
-        id_usuario_creado,
-        nit_empresa,
-        nombre_empresa,
-        direccion_empresa,
-        telefono_empresa,
-        camara_comercio,
-        id_estado,
-        {
-            "horario": horario or "Horario por confirmar",
-            "dias_trabajo": dias_trabajo,
-            "hora_inicio": hora_inicio or None,
-            "hora_fin": hora_fin or None,
-            "dias_no_trabaja": dias_no_trabaja,
-            "estado_validacion_nit": "pendiente",
-            "estado_camara_comercio": "pendiente",
-        },
-    )
-    id_punto_creado = crear_ubicacion(
-        nombre_empresa,
-        direccion_empresa,
-        horario or "Horario por confirmar",
-        datos.get("latitud"),
-        datos.get("longitud"),
-        telefono_empresa,
-        nombre_empresa,
-        id_estado
-    )
-    asociar_punto_a_recicladora(id_usuario_creado, id_punto_creado)
-    reemplazar_materiales_punto_recicladora(id_usuario_creado, ids_materiales_limpios)
+    id_punto_creado = None
 
-    crear_notificacion(
-        "Nueva recicladora registrada",
-        f"Se registró la recicladora {nombre_empresa}. Revisa su Cámara de Comercio para activar la cuenta.",
-        None,
-        1,
-    )
+    try:
+        registrar_recicladora(
+            id_usuario_creado,
+            nit_empresa,
+            nombre_empresa,
+            direccion_empresa,
+            telefono_empresa,
+            camara_comercio,
+            id_estado,
+            {
+                "horario": horario or "Horario por confirmar",
+                "dias_trabajo": dias_trabajo,
+                "hora_inicio": hora_inicio or None,
+                "hora_fin": hora_fin or None,
+                "dias_no_trabaja": dias_no_trabaja,
+                "estado_validacion_nit": "pendiente",
+                "estado_camara_comercio": "pendiente",
+            },
+        )
+        id_punto_creado = crear_ubicacion(
+            nombre_empresa,
+            direccion_empresa,
+            horario or "Horario por confirmar",
+            datos.get("latitud"),
+            datos.get("longitud"),
+            telefono_empresa,
+            nombre_empresa,
+            id_estado
+        )
+        asociar_punto_a_recicladora(id_usuario_creado, id_punto_creado)
+        materiales_guardados = reemplazar_materiales_punto_recicladora(id_usuario_creado, ids_materiales_limpios)
+
+        if not materiales_guardados:
+            raise RuntimeError("No se pudieron asociar los materiales al punto ecologico.")
+
+        crear_notificacion(
+            "Nueva recicladora registrada",
+            f"Se registró la recicladora {nombre_empresa}. Revisa su Cámara de Comercio para activar la cuenta.",
+            None,
+            1,
+        )
+    except Exception as error:
+        _limpiar_registro_recicladora_incompleto(id_usuario_creado, id_punto_creado)
+        print(f"Error completando registro de recicladora: {error}")
+        return {"mensaje": "No se pudo completar el registro de la recicladora. Intentalo de nuevo."}, 500
 
     return {
         "mensaje": "Registro recibido correctamente. La cuenta queda pendiente hasta que el administrador valide la Camara de Comercio.",

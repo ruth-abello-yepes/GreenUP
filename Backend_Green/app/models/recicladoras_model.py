@@ -140,6 +140,61 @@ def listar_recicladoras():
     cursor.close()
     conexion.close()
     return recicladoras
+
+
+def actualizar_validacion_recicladora(id_usuario, estado_camara_comercio):
+    """
+    Actualiza la validacion documental de una recicladora.
+
+    Al aprobar la Camara de Comercio, la cuenta, la recicladora y su punto
+    ecologico quedan activos. Al rechazarla o devolverla a pendiente, quedan
+    inactivos hasta nueva revision.
+    """
+
+    id_estado = 1 if estado_camara_comercio == "validado" else 2
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute(
+        """
+        UPDATE recicladoras
+        SET estado_camara_comercio = %s,
+            estado_validacion_nit = CASE
+                WHEN %s = 'validado' THEN 'validado'
+                WHEN %s = 'rechazado' THEN 'rechazado'
+                ELSE estado_validacion_nit
+            END,
+            id_estado = %s
+        WHERE id_usuario = %s
+        RETURNING id_recicladora, id_usuario, id_punto, nombre_empresa, camara_comercio
+        """,
+        (
+            estado_camara_comercio,
+            estado_camara_comercio,
+            estado_camara_comercio,
+            id_estado,
+            id_usuario,
+        ),
+    )
+    recicladora = cursor.fetchone()
+
+    if recicladora:
+        cursor.execute(
+            "UPDATE usuarios SET id_estado = %s WHERE id_usuario = %s",
+            (id_estado, id_usuario),
+        )
+        if recicladora.get("id_punto"):
+            cursor.execute(
+                "UPDATE puntos_reciclaje SET id_estado = %s WHERE id_punto = %s",
+                (id_estado, recicladora["id_punto"]),
+            )
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return recicladora
+
+
 def buscar_recicladora_por_usuario(id_usuario):
     conexion = obtener_conexion()
     cursor = conexion.cursor()

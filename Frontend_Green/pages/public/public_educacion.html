@@ -395,7 +395,7 @@
                 <div class="input-group shadow-sm rounded-pill overflow-hidden" style="max-width: 400px;">
                     <span class="input-group-text bg-white border-end-0"><span
                             class="material-symbols-outlined text-muted">search</span></span>
-                    <input type="text" class="form-control border-start-0 py-2 shadow-none"
+                    <input id="buscar-guias-reciclaje" type="search" class="form-control border-start-0 py-2 shadow-none"
                         placeholder="¿Qué quieres reciclar hoy?">
                 </div>
             </div>
@@ -413,7 +413,7 @@
             </div>
         </section>
 
-        <section class="row g-4 mb-5 fade-up" style="transition-delay: 0.2s;">
+        <section id="guias-reciclaje-grid" class="row g-4 mb-5 fade-up" style="transition-delay: 0.2s;">
 
             <div class="col-lg-8 reciclaje-card" data-category="plasticos">
                 <article class="gu-card h-100 card-highlight d-flex flex-column justify-content-end">
@@ -502,6 +502,9 @@
             </div>
 
         </section>
+        <div id="guias-sin-resultados" class="alert alert-light border text-center d-none mb-5">
+            No encontramos guías con esa búsqueda. Prueba con plástico, orgánico, electrónico, peligroso, papel o vidrio.
+        </div>
 
         <section id="noticias" class="pt-5 mt-5 border-top fade-up" style="transition-delay: 0.25s;">
             <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
@@ -677,9 +680,36 @@
             }, observerOptions);
             document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
+            const normalizarBusqueda = (valor) => String(valor || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+
             // Interactividad de los Chips de Filtro
             const filterBtns = document.querySelectorAll('.btn-filter');
             const tarjetasReciclaje = document.querySelectorAll('.reciclaje-card');
+            const buscadorGuias = document.getElementById('buscar-guias-reciclaje');
+            const mensajeSinResultados = document.getElementById('guias-sin-resultados');
+            let filtroActivo = 'todos';
+
+            const aplicarFiltroGuias = () => {
+                const busqueda = normalizarBusqueda(buscadorGuias?.value || '');
+                let visibles = 0;
+
+                tarjetasReciclaje.forEach(tarjeta => {
+                    const categoria = tarjeta.dataset.category || '';
+                    const texto = normalizarBusqueda(tarjeta.textContent);
+                    const coincideCategoria = filtroActivo === 'todos' || categoria === filtroActivo;
+                    const coincideBusqueda = !busqueda || texto.includes(busqueda) || normalizarBusqueda(categoria).includes(busqueda);
+                    const mostrar = coincideCategoria && coincideBusqueda;
+                    tarjeta.classList.toggle('d-none', !mostrar);
+                    if (mostrar) visibles += 1;
+                });
+
+                mensajeSinResultados?.classList.toggle('d-none', visibles > 0);
+            };
+
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     // Remover clase activa de todos
@@ -691,14 +721,12 @@
                     btn.classList.remove('btn-outline-secondary', 'bg-light', 'text-dark');
                     btn.classList.add('active', 'btn-gu-primary', 'text-white');
 
-                    const filtro = btn.dataset.filter || 'todos';
-                    tarjetasReciclaje.forEach(tarjeta => {
-                        const categoria = tarjeta.dataset.category || '';
-                        const mostrar = filtro === 'todos' || categoria === filtro;
-                        tarjeta.classList.toggle('d-none', !mostrar);
-                    });
+                    filtroActivo = btn.dataset.filter || 'todos';
+                    aplicarFiltroGuias();
                 });
             });
+
+            buscadorGuias?.addEventListener('input', aplicarFiltroGuias);
         });
     </script>
     <script src="../../js/api.js?v=20260821"></script>

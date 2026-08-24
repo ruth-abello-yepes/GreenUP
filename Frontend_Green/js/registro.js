@@ -18,6 +18,37 @@ const registroEstado = {
   materiales: [],
 };
 
+function leerArchivoComoDataUrl(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result);
+    lector.onerror = () => reject(new Error("No se pudo leer el archivo"));
+    lector.readAsDataURL(archivo);
+  });
+}
+
+async function prepararDocumentoCamaraComercio(archivo) {
+  if (!archivo) return "";
+
+  const tiposPermitidos = ["application/pdf", "image/jpeg", "image/png"];
+  if (!tiposPermitidos.includes(archivo.type)) {
+    throw new Error("La Cámara de Comercio debe ser PDF, JPG o PNG.");
+  }
+
+  const limiteMb = 5;
+  if (archivo.size > limiteMb * 1024 * 1024) {
+    throw new Error(`La Cámara de Comercio no debe superar ${limiteMb} MB.`);
+  }
+
+  const contenido = await leerArchivoComoDataUrl(archivo);
+  return JSON.stringify({
+    nombre: archivo.name,
+    tipo: archivo.type,
+    tamano: archivo.size,
+    contenido,
+  });
+}
+
 /**
  * Valida que una contraseña cumpla con los criterios de seguridad establecidos.
  * @function validarContrasenaSegura
@@ -468,7 +499,12 @@ async function registrarCuenta() {
     const idsMateriales = leerMaterialesSeleccionados();
 
     if (archivoCamara) {
-      camaraComercio = archivoCamara.name;
+      try {
+        camaraComercio = await prepararDocumentoCamaraComercio(archivoCamara);
+      } catch (error) {
+        alert(error.message || "No se pudo cargar la Cámara de Comercio.");
+        return;
+      }
     }
 
     if (!idsMateriales.length) {

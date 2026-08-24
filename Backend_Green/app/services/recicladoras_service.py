@@ -9,6 +9,7 @@ from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_
 from app.models.recicladoras_model import (
     actualizar_perfil_recicladora,
     actualizar_punto_recicladora,
+    actualizar_validacion_recicladora,
     asociar_punto_a_recicladora,
     buscar_recicladora_por_nit,
     buscar_recicladora_por_usuario,
@@ -179,7 +180,7 @@ def servicio_registrar_dueno_recicladora(datos):
         horario = f"{hora_inicio} - {hora_fin}"
     contrasena_cifrada = cifrar_contrasena(contrasena)
     id_rol = 2
-    id_estado = 1
+    id_estado = 2
 
     id_usuario_creado = registrar_usuario(
         nombres,
@@ -228,22 +229,54 @@ def servicio_registrar_dueno_recicladora(datos):
 
     crear_notificacion(
         "Nueva recicladora registrada",
-        f"Se registró la recicladora {nombre_empresa} y su punto ecológico quedó disponible para seguimiento.",
+        f"Se registró la recicladora {nombre_empresa}. Revisa su Cámara de Comercio para activar la cuenta.",
         None,
         1,
     )
-    crear_notificacion(
-        "Nuevo punto ecológico disponible",
-        f"Ya puedes consultar en el mapa el nuevo punto ecológico de {nombre_empresa}.",
-        None,
-        3,
-    )
 
     return {
-        "mensaje": "Dueno de punto ecologico registrado correctamente",
+        "mensaje": "Registro recibido correctamente. La cuenta queda pendiente hasta que el administrador valide la Camara de Comercio.",
         "id_usuario": id_usuario_creado,
         "id_punto": id_punto_creado
     }, 201
+
+
+def servicio_validar_documento_recicladora(id_usuario, datos):
+    estado_camara = str((datos or {}).get("estado_camara_comercio") or "").strip().lower()
+    if estado_camara not in ("validado", "rechazado", "pendiente"):
+        return {"mensaje": "El estado debe ser validado, rechazado o pendiente"}, 400
+
+    recicladora = actualizar_validacion_recicladora(id_usuario, estado_camara)
+    if not recicladora:
+        return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+
+    if estado_camara == "validado":
+        crear_notificacion(
+            "Recicladora validada",
+            f"La recicladora {recicladora.get('nombre_empresa') or ''} fue validada y ya puede operar en GreenUp.",
+            id_usuario,
+            None,
+        )
+        crear_notificacion(
+            "Nuevo punto ecológico disponible",
+            f"Ya puedes consultar en el mapa el punto ecológico de {recicladora.get('nombre_empresa') or 'una recicladora'}.",
+            None,
+            3,
+        )
+        return {"mensaje": "Camara de Comercio validada. La cuenta quedo activa.", "estado": estado_camara}, 200
+
+    if estado_camara == "rechazado":
+        crear_notificacion(
+            "Documento rechazado",
+            "Tu Cámara de Comercio fue rechazada. Revisa los datos y comunícate con soporte GreenUp.",
+            id_usuario,
+            None,
+        )
+        return {"mensaje": "Camara de Comercio rechazada. La cuenta quedo inactiva.", "estado": estado_camara}, 200
+
+    return {"mensaje": "Validacion devuelta a pendiente. La cuenta quedo inactiva.", "estado": estado_camara}, 200
+
+
 def servicio_listar_duenos_recicladora():
     """
     Lista todos los duenos de recicladora con sus datos de empresa.

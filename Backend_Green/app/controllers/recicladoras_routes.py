@@ -26,7 +26,8 @@ from app.services.recicladoras_service import (
     servicio_obtener_perfil_recicladora,
     servicio_obtener_punto_recicladora,
     servicio_registrar_dueno_recicladora,
-    servicio_responder_novedad_recicladora
+    servicio_responder_novedad_recicladora,
+    servicio_validar_documento_recicladora
 )
 
 from app.middlewares.auth_middleware import login_requerido
@@ -140,6 +141,17 @@ def ruta_listar_duenos_recicladora():
     respuesta, estado = servicio_listar_duenos_recicladora()
 
     return jsonify(respuesta), estado
+
+
+@recicladoras_bp.route("/<int:id_usuario>/validacion", methods=["PUT"])
+@login_requerido
+@rol_requerido([1])
+def ruta_validar_documento_recicladora(id_usuario):
+    datos = request.get_json() or {}
+    respuesta, estado = servicio_validar_documento_recicladora(id_usuario, datos)
+    return jsonify(respuesta), estado
+
+
 @recicladoras_bp.route("/perfil", methods=["GET"])
 @login_requerido
 @rol_requerido([2])

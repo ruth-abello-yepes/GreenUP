@@ -732,16 +732,17 @@ async function cargarUsuarios() {
     ...recicladoras.map((u) => ({ ...u, tipo_admin: "Recicladora" })),
   ];
 
-  adminTableColumns = ["Tipo", "Nombre", "Usuario", "Correo", "Documento", "Noticias leidas", "Estado"];
+  adminTableColumns = ["Tipo", "Nombre / Empresa", "Usuario", "Correo", "Documento / NIT", "Cámara Comercio", "Validación", "Estado"];
   adminTableData = filas.map((u) => ({
     raw: u,
     values: [
       `<span class="type-pill ${u.tipo_admin === "Recicladora" ? "blue" : "green"}">${u.tipo_admin}</span>`,
-      `${limpiar(u.nombres)} ${limpiar(u.apellidos)}`,
+      limpiar(u.tipo_admin === "Recicladora" ? (u.nombre_empresa || `${u.nombres || ""} ${u.apellidos || ""}`) : `${u.nombres || ""} ${u.apellidos || ""}`),
       limpiar(u.usuario),
       limpiar(u.correo),
-      limpiar(u.numero_documento),
-      limpiar(Number(u.noticias_juego) || 0),
+      limpiar(u.tipo_admin === "Recicladora" ? `${u.numero_documento || ""} / NIT ${u.nit_empresa || "sin NIT"}` : u.numero_documento),
+      renderDocumentoCamaraResumen(u),
+      renderEstadoValidacionCamara(u),
       estadoHtml(u.id_estado),
     ],
     actions: renderEstadoUsuario(u),
@@ -753,7 +754,7 @@ async function cargarUsuarios() {
       <div class="card-title-row">
         <div>
           <h2>Tabla de usuarios registrados</h2>
-          <p>El administrador gestiona estados y revisa el avance educativo por noticias.</p>
+          <p>El administrador gestiona estados y valida la Cámara de Comercio de las recicladoras.</p>
         </div>
         <button class="ghost-button btn btn-outline-secondary" type="button" onclick="exportarTablaCSV('usuarios_greenup.csv')">
           <span class="material-symbols-outlined">download</span> Exportar
@@ -791,11 +792,104 @@ function renderEstadoUsuario(usuario) {
   const siguiente = activo ? 2 : 1;
   const texto = activo ? "Inactivar" : "Activar";
   const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  const accionesDocumento = usuario.tipo_admin === "Recicladora" ? `
+    <button class="small-button btn btn-sm btn-outline-primary" type="button" onclick="abrirCamaraComercio(${usuario.id_usuario})">
+      Ver documento
+    </button>
+    <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="consultarRecicladoraEnRues(${usuario.id_usuario})">
+      Consultar RUES
+    </button>
+    <button class="small-button btn btn-sm btn-success" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'validado')">
+      Aprobar
+    </button>
+    <button class="small-button btn btn-sm btn-outline-danger" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'rechazado')">
+      Rechazar
+    </button>
+  ` : "";
   return `
+    ${accionesDocumento}
     <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoUsuario(${usuario.id_usuario}, ${siguiente})">
       ${texto}
     </button>
   `;
+}
+
+function consultarRecicladoraEnRues(idUsuario) {
+  const fila = adminTableData.find((row) => Number(row.raw?.id_usuario) === Number(idUsuario));
+  const recicladora = fila?.raw || {};
+  const nit = recicladora.nit_empresa || "NIT no registrado";
+  alert(`Consulta en RUES el NIT de la recicladora: ${nit}. Verifica que el nombre, NIT y estado coincidan antes de aprobar.`);
+  window.open("https://www.rues.org.co/", "_blank", "noopener,noreferrer");
+}
+
+function obtenerDocumentoCamara(usuario) {
+  const valor = usuario?.camara_comercio || "";
+  if (!valor) return { disponible: false, nombre: "Sin documento", contenido: "" };
+  try {
+    const doc = JSON.parse(valor);
+    return {
+      disponible: Boolean(doc.contenido),
+      nombre: doc.nombre || "Cámara de Comercio",
+      contenido: doc.contenido || "",
+      tipo: doc.tipo || "",
+    };
+  } catch (_) {
+    const esUrl = /^https?:\/\//i.test(valor) || /^data:/i.test(valor);
+    return {
+      disponible: esUrl,
+      nombre: esUrl ? "Documento cargado" : valor,
+      contenido: esUrl ? valor : "",
+      soloNombre: !esUrl,
+    };
+  }
+}
+
+function renderDocumentoCamaraResumen(usuario) {
+  if (usuario.tipo_admin !== "Recicladora") return '<span class="text-muted">No aplica</span>';
+  const doc = obtenerDocumentoCamara(usuario);
+  if (!doc.disponible && doc.soloNombre) {
+    return `<span class="status-pill inactive">Solo nombre: ${limpiar(doc.nombre)}</span>`;
+  }
+  if (!doc.disponible) {
+    return '<span class="status-pill inactive">Sin documento</span>';
+  }
+  return `<span class="status-pill active">${limpiar(doc.nombre)}</span>`;
+}
+
+function renderEstadoValidacionCamara(usuario) {
+  if (usuario.tipo_admin !== "Recicladora") return '<span class="text-muted">No aplica</span>';
+  const estado = String(usuario.estado_camara_comercio || "pendiente").toLowerCase();
+  const activo = estado === "validado";
+  const rechazado = estado === "rechazado";
+  const clase = activo ? "active" : "inactive";
+  const texto = activo ? "Validado" : (rechazado ? "Rechazado" : "Pendiente");
+  return `<span class="status-pill ${clase}">${texto}</span>`;
+}
+
+function abrirCamaraComercio(idUsuario) {
+  const fila = adminTableData.find((row) => Number(row.raw?.id_usuario) === Number(idUsuario));
+  const doc = obtenerDocumentoCamara(fila?.raw);
+  if (!doc.disponible) {
+    alert(doc.soloNombre
+      ? `Este registro antiguo solo guardó el nombre del archivo: ${doc.nombre}. Deben volver a cargar el documento real.`
+      : "Esta recicladora no tiene documento de Cámara de Comercio cargado.");
+    return;
+  }
+  window.open(doc.contenido, "_blank", "noopener,noreferrer");
+}
+
+async function validarCamaraComercio(idUsuario, estadoCamara) {
+  const accion = estadoCamara === "validado" ? "aprobar" : "rechazar";
+  const mensaje = estadoCamara === "validado"
+    ? "Antes de aprobar confirma:\n\n1. Abriste el documento.\n2. El NIT coincide con el registrado.\n3. El nombre o razón social coincide.\n4. El documento parece una Cámara de Comercio válida.\n5. Si tienes duda, consultaste el NIT en RUES.\n\n¿Deseas aprobar esta recicladora?"
+    : `¿Deseas ${accion} la Cámara de Comercio de esta recicladora? La cuenta quedará inactiva.`;
+  if (!confirm(mensaje)) return;
+  await apiAdmin(`/api/recicladoras/${idUsuario}/validacion`, {
+    method: "PUT",
+    body: JSON.stringify({ estado_camara_comercio: estadoCamara }),
+  });
+  mostrarToast("Validación actualizada", estadoCamara === "validado" ? "La recicladora quedó activa." : "La recicladora quedó inactiva.");
+  await cargarUsuarios();
 }
 
 async function cambiarEstadoUsuario(idUsuario, idEstado) {
@@ -2353,15 +2447,15 @@ function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
 }
 
 function filtrarTablaActual() {
-  const search = (document.getElementById("admin-search")?.value || "").toLowerCase();
+  const search = normalizarBusqueda(document.getElementById("admin-search")?.value || "");
   const tipo = document.getElementById("filtro-tipo-usuario")?.value || "";
   const estado = document.getElementById("filtro-estado")?.value || "";
 
   const filtrada = adminTableData.filter((row) => {
-    const texto = row.values.map((v) => String(v).replace(/<[^>]+>/g, "")).join(" ").toLowerCase();
+    const texto = normalizarBusqueda(row.values.map((v) => String(v).replace(/<[^>]+>/g, "")).join(" "));
     const cumpleBusqueda = !search || texto.includes(search);
-    const cumpleTipo = !tipo || texto.includes(tipo.toLowerCase());
-    const cumpleEstado = !estado || texto.includes(estado.toLowerCase());
+    const cumpleTipo = !tipo || texto.includes(normalizarBusqueda(tipo));
+    const cumpleEstado = !estado || texto.includes(normalizarBusqueda(estado));
     return cumpleBusqueda && cumpleTipo && cumpleEstado;
   });
 
@@ -2559,6 +2653,14 @@ function limpiar(valor) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function normalizarBusqueda(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 function limpiarHtmlPermitido(valor) {

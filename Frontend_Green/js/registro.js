@@ -390,11 +390,41 @@ function leerMaterialesSeleccionados() {
 }
 
 /**
+ * Valida solo los campos visibles del paso actual antes de avanzar.
+ * Evita que el usuario pase a otra pantalla con datos obligatorios vacíos.
+ * @returns {boolean} true si el paso actual está completo.
+ */
+function validarCamposVisiblesDelPaso() {
+  const seccion = document.getElementById("seccion-" + pasoActual);
+  if (!seccion) return true;
+
+  const campos = [...seccion.querySelectorAll("input, select, textarea")]
+    .filter((campo) => {
+      const estaOculto = campo.closest(".d-none") || campo.type === "hidden";
+      return !estaOculto && !campo.disabled;
+    });
+
+  for (const campo of campos) {
+    if (!campo.checkValidity()) {
+      campo.reportValidity();
+      campo.focus();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Avanza al siguiente paso en el formulario multistep.
  * Si se encuentra en el último paso, inicia el proceso de registro.
  * @function siguientePaso
  */
 async function siguientePaso() {
+  if (!validarCamposVisiblesDelPaso()) {
+    return;
+  }
+
   if (pasoActual === 2) {
     const pasoValido = await validarPasoDocumentoUsuario();
     if (!pasoValido) return;

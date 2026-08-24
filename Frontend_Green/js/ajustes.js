@@ -558,6 +558,28 @@ function prepararSuscripcionFooter() {
  *
  * @returns {void}
  */
+function activarPestanaNotificacionesAjustes() {
+  const botonPestana = document.getElementById("list-notificaciones-list");
+  const panel = document.getElementById("list-notificaciones");
+
+  if (!botonPestana || !panel) {
+    window.location.href = "ciudadano_ajustes.html#notificaciones";
+    return;
+  }
+
+  if (window.bootstrap?.Tab) {
+    bootstrap.Tab.getOrCreateInstance(botonPestana).show();
+  } else {
+    document.querySelectorAll("#list-tab .list-group-item").forEach((item) => item.classList.remove("active"));
+    document.querySelectorAll("#nav-tabContent .tab-pane").forEach((item) => item.classList.remove("show", "active"));
+    botonPestana.classList.add("active");
+    panel.classList.add("show", "active");
+  }
+
+  window.history.replaceState(null, "", "ciudadano_ajustes.html#notificaciones");
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function prepararBotonesGeneralesConfiguracion() {
   const botones = document.querySelectorAll("button, a.btn");
 
@@ -566,8 +588,9 @@ function prepararBotonesGeneralesConfiguracion() {
     const nombreIcono = icono ? icono.textContent.trim() : "";
 
     if (nombreIcono === "notifications") {
-      boton.addEventListener("click", () => {
-        window.location.href = "ciudadano_config_noti.html";
+      boton.addEventListener("click", (evento) => {
+        evento.preventDefault();
+        activarPestanaNotificacionesAjustes();
       });
     }
 
@@ -687,6 +710,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (formularioNotificaciones) {
     cargarNotificacionesGuardadas();
     formularioNotificaciones.addEventListener("submit", guardarNotificaciones);
+  }
+
+  if (window.location.hash === "#notificaciones") {
+    activarPestanaNotificacionesAjustes();
   }
 
   if (formularioPreferencias) {

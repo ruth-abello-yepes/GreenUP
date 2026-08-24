@@ -792,6 +792,11 @@ function renderEstadoUsuario(usuario) {
   const siguiente = activo ? 2 : 1;
   const texto = activo ? "Inactivar" : "Activar";
   const clase = activo ? "danger-button btn-outline-danger" : "btn-outline-secondary";
+  const estadoCamara = String(usuario.estado_camara_comercio || "pendiente").trim().toLowerCase();
+  const camaraValidada = estadoCamara === "validado";
+  const camaraRechazada = estadoCamara === "rechazado";
+  const puedeAprobar = usuario.tipo_admin === "Recicladora" && !camaraValidada;
+  const puedeRechazar = usuario.tipo_admin === "Recicladora" && !camaraValidada && !camaraRechazada;
   const accionesDocumento = usuario.tipo_admin === "Recicladora" ? `
     <button class="small-button btn btn-sm btn-outline-primary" type="button" onclick="abrirCamaraComercio(${usuario.id_usuario})">
       Ver documento
@@ -799,12 +804,18 @@ function renderEstadoUsuario(usuario) {
     <button class="small-button btn btn-sm btn-outline-secondary" type="button" onclick="consultarRecicladoraEnRues(${usuario.id_usuario})">
       Consultar RUES
     </button>
-    <button class="small-button btn btn-sm btn-success" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'validado')">
-      Aprobar
-    </button>
-    <button class="small-button btn btn-sm btn-outline-danger" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'rechazado')">
-      Rechazar
-    </button>
+    ${camaraValidada ? '<span class="status-pill active">Validación completa</span>' : ""}
+    ${camaraRechazada ? '<span class="status-pill inactive">Documento rechazado</span>' : ""}
+    ${puedeAprobar ? `
+      <button class="small-button btn btn-sm btn-success" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'validado')">
+        Aprobar
+      </button>
+    ` : ""}
+    ${puedeRechazar ? `
+      <button class="small-button btn btn-sm btn-outline-danger" type="button" onclick="validarCamaraComercio(${usuario.id_usuario}, 'rechazado')">
+        Rechazar
+      </button>
+    ` : ""}
   ` : "";
   return `
     ${accionesDocumento}

@@ -119,21 +119,26 @@ def listar_recicladoras():
         usuarios.fecha_registro,
         usuarios.id_estado,
         recicladoras.id_recicladora,
-        recicladoras.nit_empresa,
-        recicladoras.nombre_empresa,
-        recicladoras.direccion_empresa,
-        recicladoras.telefono_empresa,
-        recicladoras.camara_comercio,
-        recicladoras.horario,
+        COALESCE(recicladoras.nit_empresa, usuarios.numero_documento) AS nit_empresa,
+        COALESCE(recicladoras.nombre_empresa, usuarios.nombres) AS nombre_empresa,
+        COALESCE(recicladoras.direccion_empresa, 'Direccion pendiente') AS direccion_empresa,
+        COALESCE(recicladoras.telefono_empresa, usuarios.celular) AS telefono_empresa,
+        COALESCE(recicladoras.camara_comercio, '') AS camara_comercio,
+        COALESCE(recicladoras.horario, 'Horario pendiente') AS horario,
         recicladoras.dias_trabajo,
         recicladoras.hora_inicio,
         recicladoras.hora_fin,
         recicladoras.dias_no_trabaja,
-        recicladoras.estado_validacion_nit,
-        recicladoras.estado_camara_comercio
+        COALESCE(recicladoras.estado_validacion_nit, 'pendiente') AS estado_validacion_nit,
+        COALESCE(recicladoras.estado_camara_comercio, 'pendiente') AS estado_camara_comercio,
+        CASE
+            WHEN recicladoras.id_recicladora IS NULL THEN TRUE
+            ELSE FALSE
+        END AS registro_incompleto
     FROM usuarios
-    INNER JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
+    LEFT JOIN recicladoras ON usuarios.id_usuario = recicladoras.id_usuario
     WHERE usuarios.id_rol = 2
+    ORDER BY usuarios.id_usuario DESC
     """)
     recicladoras = cursor.fetchall()
 

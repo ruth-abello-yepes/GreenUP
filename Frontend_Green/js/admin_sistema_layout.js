@@ -864,6 +864,7 @@ function obtenerDocumentoCamara(usuario) {
 
 function renderDocumentoCamaraResumen(usuario) {
   if (usuario.tipo_admin !== "Recicladora") return '<span class="text-muted">No aplica</span>';
+  if (usuario.registro_incompleto) return '<span class="status-pill inactive">Registro incompleto</span>';
   const doc = obtenerDocumentoCamara(usuario);
   if (!doc.disponible && doc.soloNombre) {
     return `<span class="status-pill inactive">Solo nombre: ${limpiar(doc.nombre)}</span>`;
@@ -876,6 +877,7 @@ function renderDocumentoCamaraResumen(usuario) {
 
 function renderEstadoValidacionCamara(usuario) {
   if (usuario.tipo_admin !== "Recicladora") return '<span class="text-muted">No aplica</span>';
+  if (usuario.registro_incompleto) return '<span class="status-pill inactive">Pendiente por completar</span>';
   const estado = String(usuario.estado_camara_comercio || "pendiente").toLowerCase();
   const activo = estado === "validado";
   const rechazado = estado === "rechazado";
@@ -897,6 +899,11 @@ function abrirCamaraComercio(idUsuario) {
 }
 
 async function validarCamaraComercio(idUsuario, estadoCamara) {
+  const fila = adminTableData.find((row) => Number(row.raw?.id_usuario) === Number(idUsuario));
+  if (fila?.raw?.registro_incompleto) {
+    alert("Esta cuenta de recicladora aparece en usuarios, pero le faltan los datos empresariales. Debe completar el registro antes de aprobarla.");
+    return;
+  }
   const accion = estadoCamara === "validado" ? "aprobar" : "rechazar";
   const mensaje = estadoCamara === "validado"
     ? "Antes de aprobar confirma:\n\n1. Abriste el documento.\n2. El NIT coincide con el registrado.\n3. El nombre o razón social coincide.\n4. El documento parece una Cámara de Comercio válida.\n5. Si tienes duda, consultaste el NIT en RUES.\n\n¿Deseas aprobar esta recicladora?"

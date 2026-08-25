@@ -55,6 +55,9 @@ def crear_app():
         supports_credentials=False,
     )
 
+    # Permitir hasta 2 MB en el body (necesario para fotos de perfil en base64)
+    app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
     # Configuración del servidor de correo SMTP (Gmail)
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587

@@ -135,7 +135,8 @@ def servicio_login(datos):
             "nombres": usuario_encontrado["nombres"],
             "apellidos": usuario_encontrado["apellidos"],
             "usuario": usuario_encontrado["usuario"],
-            "id_rol": usuario_encontrado["id_rol"]
+            "id_rol": usuario_encontrado["id_rol"],
+            "foto_perfil": usuario_encontrado.get("foto_perfil")
         }
     }, 200
 
@@ -223,7 +224,8 @@ def servicio_login_admin(datos):
             "nombres": usuario_encontrado["nombres"],
             "apellidos": usuario_encontrado["apellidos"],
             "usuario": usuario_encontrado["usuario"],
-            "id_rol": usuario_encontrado["id_rol"]
+            "id_rol": usuario_encontrado["id_rol"],
+            "foto_perfil": usuario_encontrado.get("foto_perfil")
         }
     }, 200
 

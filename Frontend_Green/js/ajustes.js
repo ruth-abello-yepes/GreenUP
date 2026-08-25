@@ -159,6 +159,20 @@ function llenarFormularioPerfil(usuario) {
   document.getElementById("celular").value = usuario.celular || "";
   document.getElementById("usuario").value = usuario.usuario || "";
 
+  // Si la BD tiene foto de perfil, actualizar localStorage y la vista
+  if (usuario.foto_perfil) {
+    localStorage.setItem("greenup_avatar_ciudadano", usuario.foto_perfil);
+    const vistaAvatar = document.querySelector("#btnCambiarAvatar")?.closest(".d-flex")?.querySelector(".rounded-circle");
+    if (vistaAvatar) {
+      vistaAvatar.style.backgroundImage = `url("${usuario.foto_perfil}")`;
+      vistaAvatar.style.backgroundSize = "cover";
+      vistaAvatar.style.backgroundPosition = "center";
+      vistaAvatar.innerHTML = "";
+    }
+    // Disparar evento para que cargar_usuario.js lo pinte en el navbar superior
+    window.dispatchEvent(new Event("avatarActualizado"));
+  }
+
   actualizarNombreNavbar(usuario);
 }
 
@@ -205,7 +219,8 @@ function obtenerDatosPerfil() {
     apellidos: document.getElementById("apellidos").value.trim(),
     correo: document.getElementById("correo").value.trim(),
     celular: document.getElementById("celular").value.trim(),
-    usuario: document.getElementById("usuario").value.trim()
+    usuario: document.getElementById("usuario").value.trim(),
+    foto_perfil: localStorage.getItem("greenup_avatar_ciudadano") || null
   };
 }
 
@@ -509,22 +524,68 @@ function prepararBotonAvatar() {
       return;
     }
 
+    // Redimensionar y comprimir la imagen con Canvas antes de guardarla
     const lector = new FileReader();
 
     lector.addEventListener("load", () => {
-      localStorage.setItem("greenup_avatar_ciudadano", lector.result);
+      const imgOriginal = new Image();
 
-      if (vistaAvatar) {
-        vistaAvatar.style.backgroundImage = `url("${lector.result}")`;
-        vistaAvatar.style.backgroundSize = "cover";
-        vistaAvatar.style.backgroundPosition = "center";
-        vistaAvatar.innerHTML = "";
-      }
+      imgOriginal.addEventListener("load", async () => {
+        // Crear un canvas para redimensionar a maximo 200x200 px
+        const MAX_SIZE = 200;
+        let ancho = imgOriginal.width;
+        let alto = imgOriginal.height;
 
-      // Disparamos un evento para que cargar_usuario.js actualice la barra superior inmediatamente
-      window.dispatchEvent(new Event("avatarActualizado"));
+        if (ancho > alto) {
+          if (ancho > MAX_SIZE) { alto = Math.round(alto * MAX_SIZE / ancho); ancho = MAX_SIZE; }
+        } else {
+          if (alto > MAX_SIZE) { ancho = Math.round(ancho * MAX_SIZE / alto); alto = MAX_SIZE; }
+        }
 
-      mostrarAlertaAjustes("success", "Avatar actualizado en este navegador.");
+        const canvas = document.createElement("canvas");
+        canvas.width = ancho;
+        canvas.height = alto;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imgOriginal, 0, 0, ancho, alto);
+
+        // Convertir a JPEG comprimido (calidad 0.7) => mucho mas liviano
+        const fotoComprimida = canvas.toDataURL("image/jpeg", 0.7);
+
+        localStorage.setItem("greenup_avatar_ciudadano", fotoComprimida);
+
+        if (vistaAvatar) {
+          vistaAvatar.style.backgroundImage = `url("${fotoComprimida}")`;
+          vistaAvatar.style.backgroundSize = "cover";
+          vistaAvatar.style.backgroundPosition = "center";
+          vistaAvatar.innerHTML = "";
+        }
+
+        // Disparamos evento para el navbar
+        window.dispatchEvent(new Event("avatarActualizado"));
+
+        // Auto-guardado en la base de datos
+        try {
+          const datosActuales = obtenerDatosPerfil();
+          const respuesta = await fetch(`${API_URL}${ENDPOINT_PERFIL}`, {
+            method: "PUT",
+            headers: crearHeadersAjustes(),
+            body: JSON.stringify(datosActuales)
+          });
+          const resultado = await respuesta.json().catch(() => ({}));
+
+          if (respuesta.ok) {
+            mostrarAlertaAjustes("success", "Foto de perfil guardada correctamente.");
+          } else {
+            console.error("Error del backend al guardar avatar:", resultado);
+            mostrarAlertaAjustes("warning", resultado.mensaje || "No se pudo guardar la foto en el servidor.");
+          }
+        } catch (err) {
+          console.error("Error de red guardando avatar en BD:", err);
+          mostrarAlertaAjustes("danger", "Error de conexion al guardar la foto.");
+        }
+      });
+
+      imgOriginal.src = lector.result;
     });
 
     lector.readAsDataURL(archivo);

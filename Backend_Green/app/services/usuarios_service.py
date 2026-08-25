@@ -373,6 +373,7 @@ def servicio_actualizar_perfil_usuario(id_usuario, datos):
     correo = (datos.get("correo") or "").strip().lower()
     celular = (datos.get("celular") or "").strip()
     usuario = (datos.get("usuario") or "").strip()
+    foto_perfil = datos.get("foto_perfil")
 
     if not nombres:
         return {"mensaje": "Los nombres son obligatorios"}, 400
@@ -411,7 +412,8 @@ def servicio_actualizar_perfil_usuario(id_usuario, datos):
             apellidos,
             correo,
             celular,
-            usuario
+            usuario,
+            foto_perfil
         )
 
         usuario_actualizado = obtener_perfil_usuario(id_usuario)

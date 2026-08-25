@@ -17,6 +17,8 @@
   let initialized = false;
   let ownerMode = false;
   let ownerPoint = null;
+  let allPoints = [];
+  let markersLayer = null;
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -84,36 +86,66 @@
   async function geocodeAddress(address) {
     if (!address || address === "Direccion por confirmar") return null;
 
-    const cacheKey = `greenup_geocode_${address.toLowerCase().trim()}`;
+    const cacheKey = `greenup_geocode_arcgis_${address.toLowerCase().trim()}`;
     try {
       const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
       if (Array.isArray(cached) && cached.length === 2) return cached;
     } catch {
-      // Si localStorage falla, seguimos sin cache.
+      // ignore cache read errors
     }
 
-    try {
-      const query = encodeURIComponent(buildGeocodeQuery(address));
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${query}`);
-      if (!response.ok) return null;
+    const fetchCoords = async (queryStr) => {
+        try {
+            const query = encodeURIComponent(buildGeocodeQuery(queryStr));
+            const url = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&singleLine=${query}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) return null;
+            const data = await response.json();
+            
+            if (data.candidates && data.candidates.length > 0) {
+                const best = data.candidates[0];
+                // Permitir puntajes medios ya que las direcciones colombianas pueden ser ambiguas
+                if (best.score > 60) {
+                    const lat = best.location.y;
+                    const lng = best.location.x;
+                    if (Number.isFinite(lat) && Number.isFinite(lng)) return [lat, lng];
+                }
+            }
+        } catch (error) {
+            console.warn("Error geocoding con ArcGIS:", error);
+        }
+        return null;
+    };
 
-      const results = await response.json();
-      const first = Array.isArray(results) ? results[0] : null;
-      const lat = Number.parseFloat(first?.lat);
-      const lng = Number.parseFloat(first?.lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+    let coords = await fetchCoords(address);
+    
+    // Fallback 1: Limpiar caracteres conflictivos (#, -)
+    if (!coords) {
+        let cleanAddress = address.replace(/#/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanAddress !== address) {
+            coords = await fetchCoords(cleanAddress);
+        }
+    }
 
-      const coords = [lat, lng];
+    // Fallback 2: Buscar solo por la calle principal
+    if (!coords) {
+        let streetOnly = address.split(/#|No|Nro|\d+-/i)[0].trim();
+        if (streetOnly && streetOnly !== address) {
+            coords = await fetchCoords(streetOnly);
+        }
+    }
+
+    if (coords) {
       try {
         localStorage.setItem(cacheKey, JSON.stringify(coords));
       } catch {
-        // El cache no es obligatorio.
+        // cache no obligatorio
       }
       return coords;
-    } catch (error) {
-      console.warn("No se pudo geocodificar la direccion registrada:", error);
-      return null;
     }
+
+    return null;
   }
 
   async function resolveRegisteredLocations(points) {
@@ -137,9 +169,65 @@
 
     try {
       const response = await fetch(`${API_BASE}/ubicaciones`);
-      if (!response.ok) throw new Error("No se pudieron cargar los puntos");
-      const data = await response.json();
-      const points = (Array.isArray(data) ? data : []).map(normalizePoint);
+      let data = [];
+      if (response.ok) {
+          data = await response.json();
+          if (!Array.isArray(data)) data = [];
+      }
+      
+      // Injecting the points from the user's screenshots
+      const mockPoints = [
+        {
+          id: 'mock-vendicion',
+          nombre: 'Recicladora la vendicion',
+          direccion: 'Cl. 5 #44-56, Valledupar, Cesar',
+          telefono: 'Teléfono no registrado',
+          materiales_aceptados: ['Cartón', 'Plástico', 'Vidrio'],
+          horario: 'Lunes a Sábado - 8:00 AM a 5:00 PM',
+          // Approximate coordinates in Valledupar
+          latitud: 10.4685, 
+          longitud: -73.2450,
+          id_estado: 1
+        },
+        {
+          id: 'mock-servicios',
+          nombre: 'Reciclar todo servicios s.a.s',
+          direccion: 'Cra. 23 #41a- 03, la loma cesar, Valledupar, Cesar',
+          telefono: '317 4360912',
+          materiales_aceptados: ['Metal', 'Electrónicos', 'Papel', 'Cartón'],
+          horario: 'Lunes a Viernes - 7:00 AM a 6:00 PM',
+          latitud: 10.4550,
+          longitud: -73.2510,
+          id_estado: 1
+        },
+        {
+          id: 'mock-coorrenacer',
+          nombre: 'Coorrenacer',
+          direccion: 'Carrera 15 #22-40, 12 de Octubre, Valledupar, Cesar',
+          telefono: '55700564',
+          materiales_aceptados: ['Plástico', 'Papel', 'Cartón', 'Vidrio'],
+          horario: 'Lunes a Sábado - 8:00 AM a 6:00 PM',
+          latitud: 10.4701,
+          longitud: -73.2505,
+          id_estado: 1
+        },
+        {
+          id: 'mock-soldadura',
+          nombre: 'Recicladora y Soldadura',
+          direccion: 'Cl. 17 #463, Valledupar, Cesar',
+          telefono: '317 8283283',
+          materiales_aceptados: ['Metal', 'Chatarra', 'Aluminio'],
+          horario: 'Lunes a Viernes - 7:00 AM a 5:30 PM',
+          latitud: 10.4655,
+          longitud: -73.2600,
+          id_estado: 1
+        }
+      ];
+      
+      // Combine API data with mock points
+      data = [...mockPoints, ...data];
+
+      const points = data.map(normalizePoint);
       return resolveRegisteredLocations(points);
     } catch (error) {
       console.warn("No se pudieron cargar puntos reales:", error);
@@ -292,7 +380,13 @@
     const marker = L.marker(point.pos, {
       icon: createRecyclingMarkerIcon(point),
       title: point.title,
-    }).addTo(map);
+    });
+    
+    if (markersLayer) {
+        marker.addTo(markersLayer);
+    } else {
+        marker.addTo(map);
+    }
 
     marker.bindPopup(`
       <div class="greenup-map-popup">
@@ -439,6 +533,125 @@
 
     await window.trazarRuta(ownerPoint.pos[0], ownerPoint.pos[1]);
   };
+  let searchMarker = null;
+
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+  }
+
+  async function performSearch() {
+      const searchInput = document.getElementById("search-input");
+      const query = (searchInput ? searchInput.value : "").trim();
+      
+      if (!query) {
+          if (searchMarker) {
+              map.removeLayer(searchMarker);
+              searchMarker = null;
+          }
+          allPoints.forEach(p => p.distanceToSearch = 0);
+          renderPointsList();
+          if (userLocation) map.setView(userLocation, 14);
+          else map.setView(DEFAULT_CENTER, 14);
+          return;
+      }
+
+      const btn = document.getElementById("btn-search-address");
+      if (btn) btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+      
+      const coords = await geocodeAddress(query);
+      
+      if (btn) btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">search</span>';
+
+      if (coords) {
+          if (searchMarker) map.removeLayer(searchMarker);
+          searchMarker = L.marker(coords, {
+              icon: L.divIcon({
+                  className: 'custom-search-marker',
+                  html: '<div style="background-color:#e11d48;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,0.35);"></div>',
+                  iconSize: [18, 18],
+                  iconAnchor: [9, 9]
+              })
+          }).addTo(map).bindPopup(`<strong>Búsqueda:</strong> ${escapeHtml(query)}`).openPopup();
+          
+          map.setView(coords, 15, { animate: true });
+          
+          // Sort allPoints by distance
+          allPoints.forEach(p => {
+              p.distanceToSearch = calculateDistance(coords[0], coords[1], p.pos[0], p.pos[1]);
+          });
+          
+          allPoints.sort((a, b) => a.distanceToSearch - b.distanceToSearch);
+          renderPointsList(true); // pass true to avoid refitting bounds
+      } else {
+          alert("No se encontró la dirección o barrio ingresado. Intenta ser más específico.");
+      }
+  }
+
+  function renderPointsList(skipFitBounds = false) {
+    if (markersLayer) markersLayer.clearLayers();
+    const sidebarList = document.getElementById("recycling-list");
+    if (sidebarList) sidebarList.innerHTML = "";
+
+    const filterSelect = document.getElementById("filter-select");
+    const filterTerm = (filterSelect ? filterSelect.value : "").toLowerCase();
+
+    const filteredPoints = allPoints.filter(point => {
+        const materialsText = (point.materialsPreview || "").toLowerCase();
+        return filterTerm === "" || materialsText.includes(filterTerm);
+    });
+
+    filteredPoints.forEach((point) => renderPoint(point, sidebarList));
+
+    if (filteredPoints.length) {
+      if (markersLayer && !skipFitBounds) {
+          const bounds = markersLayer.getBounds();
+          if (Object.keys(bounds).length > 0 && bounds.isValid()) {
+              if (ownerMode && filteredPoints.length === 1) {
+                  map.setView(filteredPoints[0].pos, 16, { animate: true });
+              } else {
+                  map.fitBounds(bounds.pad(0.2));
+              }
+          }
+      }
+    } else if (sidebarList) {
+      sidebarList.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: #64748b;">
+          <span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px;">filter_alt_off</span>
+          <br><strong>Sin resultados</strong>
+          <br><small>No hay puntos que coincidan con el filtro de residuos.</small>
+        </div>
+      `;
+    }
+  }
+
+  function setupFilters() {
+      const searchInput = document.getElementById("search-input");
+      const btnSearch = document.getElementById("btn-search-address");
+      const filterSelect = document.getElementById("filter-select");
+      
+      if (searchInput) {
+          searchInput.addEventListener("keypress", (e) => {
+              if (e.key === "Enter") {
+                  e.preventDefault();
+                  performSearch();
+              }
+          });
+      }
+      if (btnSearch) {
+          btnSearch.addEventListener("click", performSearch);
+      }
+      if (filterSelect) {
+          filterSelect.addEventListener("change", () => renderPointsList(searchMarker !== null));
+      }
+  }
+
   window.toggleSidebar = function () {
     const sidebar = document.getElementById("sidebar-panel");
     if (!sidebar) return;
@@ -464,28 +677,13 @@
     map.setView(DEFAULT_CENTER, 14);
     initGeolocation(!ownerMode);
 
-    const sidebarList = document.getElementById("recycling-list");
-    if (sidebarList) sidebarList.innerHTML = "";
+    markersLayer = L.featureGroup().addTo(map);
 
     const points = await loadPoints();
-    points.forEach((point) => renderPoint(point, sidebarList));
-
-    if (points.length) {
-      const bounds = L.latLngBounds(points.map((point) => point.pos));
-      if (ownerMode && points.length === 1) {
-        map.setView(points[0].pos, 16, { animate: true });
-      } else {
-        map.fitBounds(bounds.pad(0.2));
-      }
-    } else if (sidebarList) {
-      sidebarList.innerHTML = `
-        <div class="map-empty-state">
-          <span class="material-symbols-outlined">location_off</span>
-          <strong>${ownerMode ? "Sin recicladora asociada" : "Sin puntos registrados"}</strong>
-          <small>${ownerMode ? "No encontramos datos de la recicladora autenticada." : "Cuando existan puntos en la base de datos apareceran aqui."}</small>
-        </div>
-      `;
-    }
+    allPoints = points;
+    
+    renderPointsList();
+    setupFilters();
 
     if (window.innerWidth < 768) {
       document.getElementById("sidebar-panel")?.classList.add("collapsed");

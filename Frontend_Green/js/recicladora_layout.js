@@ -1231,24 +1231,29 @@ function precargarPerfilRecicladoraLocal() {
 
 async function hydrateRecicladoraProfile() {
   try {
-    const [profileResult, pointResult] = await Promise.allSettled([
+    const [profileResult, pointResult, userResult] = await Promise.allSettled([
       fetchJson("/api/recicladoras/perfil"),
       fetchJson("/api/recicladoras/mi-punto"),
+      fetchJson("/api/usuarios/perfil"),
     ]);
     const profile = profileResult.status === "fulfilled" ? profileResult.value : {};
     const pointProfile = pointResult.status === "fulfilled" ? pointResult.value : {};
+    const userProfile = userResult.status === "fulfilled" ? userResult.value : {};
 
-    if (profileResult.status === "rejected" && pointResult.status === "rejected") {
-      throw profileResult.reason || pointResult.reason;
+    if (profileResult.status === "rejected" && pointResult.status === "rejected" && userResult.status === "rejected") {
+      throw profileResult.reason || pointResult.reason || userResult.reason;
     }
 
-    const mergedProfile = { ...pointProfile, ...profile };
+    const mergedProfile = { ...userProfile, ...pointProfile, ...profile };
     const values = {
       ...mergedProfile,
-      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || "",
+      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || mergedProfile.nombres || "",
+      nit_empresa: mergedProfile.nit_empresa || mergedProfile.numero_documento || "",
       direccion_empresa: mergedProfile.direccion_empresa || mergedProfile.direccion_punto || "",
       telefono_empresa: mergedProfile.telefono_empresa || mergedProfile.telefono_punto || mergedProfile.celular || "",
       administrador: `${mergedProfile.nombres || ""} ${mergedProfile.apellidos || ""}`.trim(),
+      correo: mergedProfile.correo || "",
+      usuario: mergedProfile.usuario || "",
       horario: mergedProfile.horario_recicladora || mergedProfile.horario || "Horario por confirmar",
     };
 

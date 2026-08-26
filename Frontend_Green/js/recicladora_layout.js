@@ -1048,8 +1048,19 @@ function bindProfileSave() {
     const data = {};
     document.querySelectorAll("[data-profile-field]").forEach((input) => {
       const key = input.getAttribute("data-profile-field");
-      if (key !== "administrador" && key !== "usuario") data[key] = input.value.trim();
+      data[key] = input.value.trim();
     });
+
+    if (data.administrador) {
+      const partesNombre = data.administrador.split(/\s+/).filter(Boolean);
+      data.nombres = partesNombre.shift() || data.administrador;
+      data.apellidos = partesNombre.join(" ") || "Responsable";
+    }
+
+    if (data.usuario && data.usuario.length < 5) {
+      alert("El usuario debe tener minimo 5 caracteres.");
+      return;
+    }
 
     try {
       await fetchJson("/api/recicladoras/perfil", {
@@ -1070,7 +1081,14 @@ function bindProfileSave() {
       }
       alert("Perfil actualizado correctamente");
       const user = getUser();
-      localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: data.foto_perfil || user.foto_perfil }));
+      localStorage.setItem("usuario", JSON.stringify({
+        ...user,
+        nombres: data.nombres || user.nombres,
+        apellidos: data.apellidos || user.apellidos,
+        correo: data.correo || user.correo,
+        usuario: data.usuario || user.usuario,
+        foto_perfil: data.foto_perfil || user.foto_perfil,
+      }));
       updateProfilePhotoUI(data.foto_perfil || user.foto_perfil || "");
       hydrateRecicladoraProfile();
       refreshCurrentPage();

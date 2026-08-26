@@ -296,6 +296,7 @@ def actualizar_perfil_recicladora(id_usuario, datos):
         SET nombres = COALESCE(%s, nombres),
             apellidos = COALESCE(%s, apellidos),
             correo = COALESCE(%s, correo),
+            usuario = COALESCE(%s, usuario),
             celular = COALESCE(%s, celular),
             foto_perfil = COALESCE(%s, foto_perfil)
         WHERE id_usuario = %s
@@ -304,6 +305,7 @@ def actualizar_perfil_recicladora(id_usuario, datos):
             datos.get("nombres"),
             datos.get("apellidos"),
             datos.get("correo"),
+            datos.get("usuario"),
             datos.get("celular"),
             datos.get("foto_perfil"),
             id_usuario,

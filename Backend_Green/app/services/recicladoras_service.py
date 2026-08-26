@@ -370,16 +370,54 @@ def servicio_dashboard_recicladora(id_usuario):
 
     return obtener_dashboard_recicladora(id_usuario), 200
 def servicio_actualizar_perfil_recicladora(id_usuario, datos):
+    datos = datos or {}
+    usuario_actual = buscar_usuario_por_id(id_usuario)
+
+    if not usuario_actual:
+        return {"mensaje": "No se encontro el usuario autenticado"}, 404
+
+    administrador = _texto_limpio(datos, "administrador")
+    if administrador and not datos.get("nombres"):
+        partes_nombre = administrador.split()
+        datos["nombres"] = partes_nombre[0] if partes_nombre else administrador
+        datos["apellidos"] = " ".join(partes_nombre[1:]) or "Responsable"
+
+    nuevo_usuario = _texto_limpio(datos, "usuario")
+    nuevo_correo = _texto_limpio(datos, "correo").lower()
+
+    if nuevo_usuario:
+        if not _usuario_valido(nuevo_usuario):
+            return {"mensaje": "El usuario debe tener minimo 5 caracteres y usar solo letras, numeros, espacios, punto, guion o guion bajo"}, 400
+
+        usuario_repetido = buscar_usuario_por_usuario(nuevo_usuario)
+        if usuario_repetido and int(usuario_repetido.get("id_usuario") or 0) != int(id_usuario):
+            return {"mensaje": "El nombre de usuario ya pertenece a otra cuenta"}, 400
+
+        datos["usuario"] = nuevo_usuario
+
+    if nuevo_correo:
+        if not _correo_valido(nuevo_correo):
+            return {"mensaje": "El correo no tiene un formato valido"}, 400
+
+        correo_repetido = buscar_usuario_por_correo(nuevo_correo)
+        if correo_repetido and int(correo_repetido.get("id_usuario") or 0) != int(id_usuario):
+            return {"mensaje": "El correo ya pertenece a otra cuenta"}, 400
+
+        datos["correo"] = nuevo_correo
+
+    telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono")
+    if telefono_empresa and not datos.get("celular"):
+        datos["celular"] = telefono_empresa
+
     recicladora = buscar_recicladora_por_usuario(id_usuario)
     if not recicladora:
-        usuario = buscar_usuario_por_id(id_usuario)
-        if not usuario or int(usuario.get("id_rol") or 0) != 2:
+        if int(usuario_actual.get("id_rol") or 0) != 2:
             return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
 
-        nit_empresa = _texto_limpio(datos, "nit_empresa", "nit") or usuario.get("numero_documento") or ""
-        nombre_empresa = _texto_limpio(datos, "nombre_empresa") or usuario.get("nombres") or usuario.get("usuario") or "Recicladora pendiente"
+        nit_empresa = _texto_limpio(datos, "nit_empresa", "nit") or usuario_actual.get("numero_documento") or ""
+        nombre_empresa = _texto_limpio(datos, "nombre_empresa") or usuario_actual.get("nombres") or usuario_actual.get("usuario") or "Recicladora pendiente"
         direccion_empresa = _texto_limpio(datos, "direccion_empresa", "direccion") or "Direccion por confirmar"
-        telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono") or usuario.get("celular") or ""
+        telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono") or usuario_actual.get("celular") or ""
         camara_comercio = datos.get("camara_comercio", "")
 
         registrar_recicladora(

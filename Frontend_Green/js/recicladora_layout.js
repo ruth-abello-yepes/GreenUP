@@ -404,6 +404,7 @@ function updateOwnPointPage(profile, current) {
   const phone = profile.telefono_empresa || "Telefono por confirmar";
   const address = profile.direccion_empresa || "Direccion por confirmar";
   const name = profile.nombre_empresa || "Mi recicladora";
+  const schedule = profile.horario_recicladora || profile.horario || "Horario por confirmar";
   const tableTitle = current === "recicladora_puntos_reciclaje.html" ? "Datos de mi punto" : "Datos de mi recicladora";
 
   setText('[data-summary-label="Mi punto"]', name);
@@ -411,8 +412,9 @@ function updateOwnPointPage(profile, current) {
   setText('[data-summary-label="Estado"]', status);
   setText('[data-own-point-status="Ubicacion"]', address);
   setText('[data-own-point-status="Contacto"]', phone);
+  setText('[data-own-point-status="Horario"]', schedule);
   setText('[data-own-point-status="Estado"]', status);
-  rowsToTable(tableTitle, [[name, address, phone, responsible, status]]);
+  rowsToTable(tableTitle, [[name, address, phone, schedule, responsible, status]]);
 }
 async function refreshCurrentPage() {
   const current = getCurrentFile();
@@ -595,6 +597,7 @@ async function refreshCurrentPage() {
 }
 
 function startAutoRefresh() {
+  if (getCurrentFile() === "recicladora_perfil.html") return;
   refreshCurrentPage().catch((error) => console.warn(error.message));
   window.setInterval(() => refreshCurrentPage().catch((error) => console.warn(error.message)), REFRESH_INTERVAL_MS);
 }
@@ -1199,6 +1202,31 @@ function iniciarCambioContrasenaDesdePerfil() {
   window.location.href = "../public/public_recuperar_contrasena.html";
 }
 
+function pintarCamposPerfilRecicladora(values = {}) {
+  document.querySelectorAll("[data-profile-field]").forEach((input) => {
+    const key = input.getAttribute("data-profile-field");
+    const value = values[key];
+    if (value !== undefined && value !== null && value !== "") {
+      input.value = value;
+    } else if (input.value === "Cargando...") {
+      input.value = "";
+    }
+  });
+}
+
+function precargarPerfilRecicladoraLocal() {
+  const user = getUser();
+  if (!user || !document.querySelector("[data-profile-field]")) return;
+
+  pintarCamposPerfilRecicladora({
+    administrador: `${user.nombres || ""} ${user.apellidos || ""}`.trim() || user.usuario || "",
+    correo: user.correo || "",
+    usuario: user.usuario || "",
+    telefono_empresa: user.celular || "",
+    foto_perfil: user.foto_perfil || "",
+  });
+}
+
 async function hydrateRecicladoraProfile() {
   try {
     const profile = await fetchJson("/api/recicladoras/perfil");
@@ -1208,10 +1236,7 @@ async function hydrateRecicladoraProfile() {
       horario: profile.horario_recicladora || profile.horario || "",
     };
 
-    document.querySelectorAll("[data-profile-field]").forEach((input) => {
-      const key = input.getAttribute("data-profile-field");
-      input.value = values[key] || "";
-    });
+    pintarCamposPerfilRecicladora(values);
 
     const camaraLabel = document.getElementById("camaraComercioName");
     const camaraNombre = nombreDocumentoCamara(profile.camara_comercio || "");
@@ -1306,6 +1331,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const current = getCurrentFile();
   if (current === "recicladora_perfil.html") {
+    precargarPerfilRecicladoraLocal();
     hydrateRecicladoraProfile();
   }
   if (current === "recicladora_configuracion.html") {

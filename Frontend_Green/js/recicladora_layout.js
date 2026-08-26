@@ -1202,13 +1202,15 @@ function iniciarCambioContrasenaDesdePerfil() {
   window.location.href = "../public/public_recuperar_contrasena.html";
 }
 
-function pintarCamposPerfilRecicladora(values = {}) {
+function pintarCamposPerfilRecicladora(values = {}, options = {}) {
+  const limpiarPendientes = options.limpiarPendientes === true;
+
   document.querySelectorAll("[data-profile-field]").forEach((input) => {
     const key = input.getAttribute("data-profile-field");
     const value = values[key];
     if (value !== undefined && value !== null && value !== "") {
       input.value = value;
-    } else if (input.value === "Cargando...") {
+    } else if (limpiarPendientes && input.value === "Cargando...") {
       input.value = "";
     }
   });
@@ -1230,34 +1232,48 @@ function precargarPerfilRecicladoraLocal() {
 async function hydrateRecicladoraProfile() {
   try {
     const profile = await fetchJson("/api/recicladoras/perfil");
+    let pointProfile = {};
+
+    if (!profile.nombre_empresa || !profile.direccion_empresa || !profile.horario_recicladora) {
+      try {
+        pointProfile = await fetchJson("/api/recicladoras/mi-punto");
+      } catch (pointError) {
+        console.warn("Perfil cargado sin datos adicionales del punto:", pointError.message);
+      }
+    }
+
+    const mergedProfile = { ...pointProfile, ...profile };
     const values = {
-      ...profile,
-      administrador: `${profile.nombres || ""} ${profile.apellidos || ""}`.trim(),
-      horario: profile.horario_recicladora || profile.horario || "",
+      ...mergedProfile,
+      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || "",
+      direccion_empresa: mergedProfile.direccion_empresa || mergedProfile.direccion_punto || "",
+      telefono_empresa: mergedProfile.telefono_empresa || mergedProfile.telefono_punto || mergedProfile.celular || "",
+      administrador: `${mergedProfile.nombres || ""} ${mergedProfile.apellidos || ""}`.trim(),
+      horario: mergedProfile.horario_recicladora || mergedProfile.horario || "Horario por confirmar",
     };
 
-    pintarCamposPerfilRecicladora(values);
+    pintarCamposPerfilRecicladora(values, { limpiarPendientes: true });
 
     const camaraLabel = document.getElementById("camaraComercioName");
-    const camaraNombre = nombreDocumentoCamara(profile.camara_comercio || "");
+    const camaraNombre = nombreDocumentoCamara(mergedProfile.camara_comercio || "");
     if (camaraLabel && camaraNombre) {
       camaraLabel.textContent = `${camaraNombre} guardado. Puedes reemplazarlo si necesitas actualizarlo.`;
     }
 
-    if (profile.foto_perfil) {
+    if (mergedProfile.foto_perfil) {
       const user = getUser();
-      localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: profile.foto_perfil }));
+      localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: mergedProfile.foto_perfil }));
     }
-    updateProfilePhotoUI(profile.foto_perfil || "");
+    updateProfilePhotoUI(mergedProfile.foto_perfil || "");
 
     const title = document.querySelector(".page-title");
-    if (title && profile.nombre_empresa) {
-      title.innerHTML = `Perfil de <strong>${escapeHtml(profile.nombre_empresa)}</strong>`;
+    if (title && values.nombre_empresa) {
+      title.innerHTML = `Perfil de <strong>${escapeHtml(values.nombre_empresa)}</strong>`;
     }
 
     const subtitle = document.querySelector(".page-subtitle");
-    if (subtitle && profile.direccion_empresa) {
-      subtitle.textContent = `Datos cargados desde la base de datos para ${profile.direccion_empresa}.`;
+    if (subtitle && values.direccion_empresa) {
+      subtitle.textContent = `Datos cargados desde la base de datos para ${values.direccion_empresa}.`;
     }
   } catch (error) {
     console.error("Error cargando perfil de recicladora:", error);

@@ -14,6 +14,7 @@ from app.models.recicladoras_model import (
     actualizar_validacion_recicladora,
     asociar_punto_a_recicladora,
     buscar_recicladora_por_nit,
+    buscar_punto_por_usuario_recicladora,
     buscar_recicladora_por_usuario,
     cambiar_estado_punto_recicladora,
     cambiar_estado_registro_recicladora,
@@ -337,6 +338,10 @@ def servicio_obtener_perfil_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
 
     if not recicladora:
+        punto = buscar_punto_por_usuario_recicladora(id_usuario)
+        if punto:
+            return punto, 200
+
         usuario = buscar_usuario_por_id(id_usuario)
         if not usuario or int(usuario.get("id_rol") or 0) != 2:
             return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
@@ -447,6 +452,9 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
 def servicio_obtener_punto_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
     if not recicladora:
+        punto = buscar_punto_por_usuario_recicladora(id_usuario)
+        if punto:
+            return punto, 200
         return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
     if not recicladora.get("id_punto"):
         return {"mensaje": "Esta recicladora aun no tiene punto ecologico asociado"}, 404

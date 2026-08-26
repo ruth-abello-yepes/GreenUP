@@ -300,6 +300,66 @@ def buscar_recicladora_por_usuario(id_usuario):
     cursor.close()
     conexion.close()
     return recicladora
+
+
+def buscar_punto_por_usuario_recicladora(id_usuario):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            usuarios.id_usuario,
+            usuarios.nombres,
+            usuarios.apellidos,
+            usuarios.correo,
+            usuarios.usuario,
+            usuarios.numero_documento,
+            usuarios.celular,
+            usuarios.fecha_registro,
+            usuarios.id_estado AS id_estado_usuario,
+            NULL AS id_recicladora,
+            usuarios.numero_documento AS nit_empresa,
+            puntos_reciclaje.nombre AS nombre_empresa,
+            puntos_reciclaje.direccion AS direccion_empresa,
+            COALESCE(NULLIF(puntos_reciclaje.telefono, ''), usuarios.celular) AS telefono_empresa,
+            '' AS camara_comercio,
+            puntos_reciclaje.horario AS horario_recicladora,
+            NULL AS dias_trabajo,
+            NULL AS hora_inicio,
+            NULL AS hora_fin,
+            NULL AS dias_no_trabaja,
+            'pendiente' AS estado_validacion_nit,
+            'pendiente' AS estado_camara_comercio,
+            puntos_reciclaje.id_estado AS id_estado_recicladora,
+            puntos_reciclaje.id_punto,
+            puntos_reciclaje.nombre AS nombre_punto,
+            puntos_reciclaje.direccion AS direccion_punto,
+            puntos_reciclaje.horario,
+            puntos_reciclaje.latitud,
+            puntos_reciclaje.longitud,
+            puntos_reciclaje.telefono AS telefono_punto,
+            puntos_reciclaje.responsable,
+            puntos_reciclaje.id_estado AS id_estado_punto
+        FROM usuarios
+        INNER JOIN puntos_reciclaje
+            ON NULLIF(TRIM(puntos_reciclaje.telefono), '') = NULLIF(TRIM(usuarios.celular), '')
+            OR LOWER(TRIM(puntos_reciclaje.responsable)) = LOWER(TRIM(CONCAT(usuarios.nombres, ' ', usuarios.apellidos)))
+            OR LOWER(TRIM(puntos_reciclaje.responsable)) = LOWER(TRIM(usuarios.nombres))
+        WHERE usuarios.id_usuario = %s
+          AND usuarios.id_rol = 2
+        ORDER BY puntos_reciclaje.id_punto DESC
+        LIMIT 1
+        """,
+        (id_usuario,),
+    )
+    punto = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+    return punto
+
+
 def actualizar_perfil_recicladora(id_usuario, datos):
     conexion = obtener_conexion()
     cursor = conexion.cursor()

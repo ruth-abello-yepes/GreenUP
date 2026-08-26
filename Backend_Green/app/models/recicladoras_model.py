@@ -175,7 +175,7 @@ def actualizar_validacion_recicladora(id_usuario, estado_camara_comercio):
             END,
             id_estado = %s
         WHERE id_usuario = %s
-        RETURNING id_recicladora, id_usuario, id_punto, nombre_empresa, camara_comercio
+        RETURNING id_recicladora, id_usuario, id_punto, nombre_empresa, direccion_empresa, telefono_empresa, camara_comercio
         """,
         (
             estado_camara_comercio,
@@ -194,8 +194,30 @@ def actualizar_validacion_recicladora(id_usuario, estado_camara_comercio):
         )
         if recicladora.get("id_punto"):
             cursor.execute(
-                "UPDATE puntos_reciclaje SET id_estado = %s WHERE id_punto = %s",
-                (id_estado, recicladora["id_punto"]),
+                """
+                UPDATE puntos_reciclaje
+                SET id_estado = %s,
+                    nombre = COALESCE(NULLIF(nombre, ''), %s),
+                    direccion = CASE
+                        WHEN direccion IS NULL
+                          OR TRIM(direccion) = ''
+                          OR LOWER(direccion) LIKE '%%pendiente%%'
+                          OR LOWER(direccion) LIKE '%%por confirmar%%'
+                        THEN COALESCE(NULLIF(%s, ''), direccion)
+                        ELSE direccion
+                    END,
+                    telefono = COALESCE(NULLIF(telefono, ''), %s),
+                    responsable = COALESCE(NULLIF(responsable, ''), %s)
+                WHERE id_punto = %s
+                """,
+                (
+                    id_estado,
+                    recicladora.get("nombre_empresa"),
+                    recicladora.get("direccion_empresa"),
+                    recicladora.get("telefono_empresa"),
+                    recicladora.get("nombre_empresa"),
+                    recicladora["id_punto"],
+                ),
             )
 
     conexion.commit()
@@ -722,13 +744,14 @@ def obtener_dashboard_recicladora(id_usuario):
 
     cursor.execute("""
         SELECT
-            COALESCE(SUM(cantidad), 0)::float AS material_recuperado_kg,
-            COUNT(*)::int AS cargas_activas,
-            COUNT(DISTINCT id_usuario)::int AS recicladores,
-            0::int AS alertas
+            COALESCE(SUM(cantidad) FILTER (WHERE LOWER(COALESCE(estado, '')) = 'confirmado'), 0)::float AS material_recuperado_kg,
+            COUNT(*) FILTER (WHERE LOWER(COALESCE(estado, '')) = 'confirmado')::int AS cargas_activas,
+            COUNT(DISTINCT id_usuario) FILTER (WHERE LOWER(COALESCE(estado, '')) = 'confirmado')::int AS recicladores,
+            COUNT(*) FILTER (
+                WHERE LOWER(COALESCE(estado, '')) NOT IN ('confirmado', 'rechazado')
+            )::int AS alertas
         FROM registrar_reciclaje
-        WHERE LOWER(COALESCE(estado, '')) = 'confirmado'
-          AND id_punto = %s
+        WHERE id_punto = %s
     """, (id_punto,))
     resumen = cursor.fetchone()
 
@@ -773,8 +796,7 @@ def obtener_dashboard_recicladora(id_usuario):
         LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
         LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
         LEFT JOIN puntos_reciclaje ON registrar_reciclaje.id_punto = puntos_reciclaje.id_punto
-        WHERE LOWER(COALESCE(registrar_reciclaje.estado, '')) = 'confirmado'
-          AND registrar_reciclaje.id_punto = %s
+        WHERE registrar_reciclaje.id_punto = %s
         ORDER BY registrar_reciclaje.fecha_hora DESC
         LIMIT 5
     """, (id_punto,))

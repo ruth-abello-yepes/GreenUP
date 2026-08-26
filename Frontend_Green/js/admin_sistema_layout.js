@@ -923,12 +923,20 @@ async function validarCamaraComercio(idUsuario, estadoCamara) {
 }
 
 async function cambiarEstadoUsuario(idUsuario, idEstado) {
-  await apiAdmin(`/api/usuarios/estado/${idUsuario}`, {
-    method: "PUT",
-    body: JSON.stringify({ id_estado: idEstado }),
-  });
-  mostrarToast("Usuario actualizado", "El estado de la cuenta cambio correctamente.");
-  await cargarUsuarios();
+  const activar = Number(idEstado) === 1;
+  const accion = activar ? "activar" : "inactivar";
+  if (!(await window.greenupConfirm(`¿Deseas ${accion} esta cuenta?`, `${activar ? "Activar" : "Inactivar"} usuario`))) return;
+
+  try {
+    await apiAdmin(`/api/usuarios/estado/${idUsuario}`, {
+      method: "PUT",
+      body: JSON.stringify({ id_estado: idEstado }),
+    });
+    mostrarToast("Usuario actualizado", `La cuenta quedó ${activar ? "activa" : "inactiva"}.`);
+    await cargarUsuarios();
+  } catch (error) {
+    await window.greenupAlert(error.message || "No fue posible cambiar el estado del usuario.", "No se pudo actualizar");
+  }
 }
 
 const documentosPosiblesAdmin = [
@@ -1605,8 +1613,8 @@ async function cargarReciclaje() {
   adminTableColumns = ["ID", "Cantidad", "Usuario", "Material", "Punto", "Fecha", "Estado"];
   adminTableData = datos.map((r) => ({
     raw: r,
-    values: [r.id_registro, r.cantidad, r.id_usuario, r.id_tipo_material, r.id_punto, limpiar(r.fecha_hora), estadoHtml(r.id_estado)],
-    actions: renderEstadoReciclaje(r),
+    values: [r.id_registro, r.cantidad, r.id_usuario, r.id_tipo_material, r.id_punto, limpiar(r.fecha_hora), estadoReciclajeHtml(r)],
+    actions: '<span class="text-muted">La recicladora valida la entrega</span>',
   }));
   document.getElementById("admin-content").innerHTML = renderTableCard("Registros de reciclaje", "Datos reportados en el sistema.", "reciclaje_greenup.csv");
   pintarTablaActual();
@@ -1675,7 +1683,7 @@ async function cargarReportes(filtros = {}) {
       limpiar(fila.residuo || "Sin residuo"),
       limpiar(fila.punto || "Sin punto"),
       limpiar(fila.cantidad),
-      estadoHtml(fila.id_estado),
+      estadoReciclajeHtml(fila),
     ],
     actions: "",
   }));
@@ -2456,7 +2464,7 @@ function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
   const tieneAcciones = data.some((row) => row.actions);
   contenedor.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table table table-hover align-middle">
+      <table class="admin-table table table-hover align-middle ${tieneAcciones ? "has-actions" : ""}">
         <thead>
           <tr>
             ${adminTableColumns.map((col) => `<th>${limpiar(col)}</th>`).join("")}
@@ -2658,6 +2666,18 @@ function renderEmpty(icon, title, text) {
 function estadoHtml(idEstado) {
   const activo = Number(idEstado) === 1;
   return `<span class="status-pill ${activo ? "active" : "inactive"}">${activo ? "Activo" : "Inactivo"}</span>`;
+}
+
+function estadoReciclajeHtml(registro) {
+  const textoGuardado = String(registro?.estado || "").trim().toLowerCase();
+  const idEstado = Number(registro?.id_estado);
+  const estado = textoGuardado.includes("confirm") || idEstado === 2
+    ? { texto: "Confirmado", clase: "active" }
+    : textoGuardado.includes("rechaz") || idEstado === 3
+      ? { texto: "Rechazado", clase: "inactive" }
+      : { texto: "Pendiente de validación", clase: "pending" };
+
+  return `<span class="status-pill ${estado.clase}">${estado.texto}</span>`;
 }
 
 function nombreRol(idRol) {

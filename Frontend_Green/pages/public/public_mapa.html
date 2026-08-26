@@ -11,6 +11,7 @@
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         /* Variables de Marca GreenUp */
@@ -109,75 +110,261 @@
         /* --- ESTILOS ESPECÍFICOS PARA EL MAPA PÚBLICO --- */
         .map-section {
             position: relative;
-            min-height: 85vh;
-            /* Ocupa casi toda la pantalla */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: calc(100vh - 70px);
             overflow: hidden;
             margin-top: 70px;
-            /* Compensa la navbar fija */
+            padding: 18px 16px;
         }
 
-        /* Contenedor del fondo con Parallax */
-        .parallax-bg {
+        .map-section::before {
+            content: "";
             position: absolute;
             inset: 0;
-            background-size: cover;
-            background-position: center;
-            filter: blur(8px) grayscale(0.2);
-            /* Efecto borroso */
-            opacity: 0.5;
-            transform: scale(1.1);
-            /* Evita bordes blancos al moverse */
-            transition: transform 0.1s ease-out;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(169, 242, 149, .22), transparent 28%),
+                radial-gradient(circle at 85% 30%, rgba(0, 61, 108, .14), transparent 30%),
+                linear-gradient(135deg, #f8fff7 0%, #f8f9ff 48%, #eef8f0 100%);
             z-index: 0;
         }
 
-        /* Gradiente radial para enfocar el centro */
-        .map-overlay {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, transparent 0%, rgba(248, 249, 255, 0.7) 100%);
+        .map-preview-shell {
+            position: relative;
+            z-index: 2;
+            max-width: 1480px;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(280px, .88fr) minmax(360px, 1.25fr);
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .map-copy-card,
+        .map-real-card {
+            background: rgba(255, 255, 255, .94);
+            border: 1px solid rgba(15, 23, 42, .08);
+            border-radius: 28px;
+            box-shadow: 0 22px 55px rgba(0, 61, 108, .12);
+        }
+
+        .map-copy-card {
+            padding: clamp(20px, 2.4vw, 34px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .map-real-card {
+            min-height: 0;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: 1fr auto;
+        }
+
+        #eco-map {
+            min-height: 0;
+            height: 100%;
+            width: 100%;
             z-index: 1;
         }
 
-        /* Panel Glassmorphism Central */
-        .glass-panel {
-            position: relative;
-            z-index: 20;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(193, 199, 209, 0.4);
-            box-shadow: 0 20px 40px -10px rgba(0, 61, 108, 0.1);
+        .map-preview-footer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: #e5edf1;
+            border-top: 1px solid #dbe5eb;
         }
 
-        /* Animaciones */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s ease-out;
+        .map-preview-stat {
+            background: #fff;
+            padding: 10px 12px;
+            text-align: center;
         }
 
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .map-preview-stat strong {
+            display: block;
+            color: var(--gu-secondary);
+            font-size: 1.45rem;
+            line-height: 1;
         }
 
-        .bounce-slow {
-            animation: bounce 3s infinite;
+        .map-preview-stat span {
+            color: #5f6b7a;
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
         }
 
-        @keyframes bounce {
+        .preview-note {
+            background: #eef8f0;
+            border: 1px solid #cbe8d0;
+            color: #174d22;
+            border-radius: 18px;
+            padding: 10px 14px;
+            font-size: .88rem;
+        }
 
-            0%,
-            100% {
-                transform: translateY(-5%);
+        .greenup-public-popup .leaflet-popup-content-wrapper {
+            border-radius: 16px;
+        }
+
+        .greenup-public-popup .leaflet-popup-content {
+            width: auto !important;
+            max-width: calc(100vw - 72px);
+            margin: 11px 14px;
+        }
+
+        .greenup-map-popup {
+            min-width: 0;
+        }
+
+        .greenup-map-popup h6 {
+            font-weight: 800;
+            font-size: 1rem;
+            line-height: 1.2;
+            margin: 0 22px 10px 0;
+        }
+
+        .greenup-public-point-name h6 {
+            max-width: 205px;
+            margin: 0 18px 0 0;
+            font-size: .92rem;
+            line-height: 1.2;
+        }
+
+        .point-info-row {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            margin: 6px 0;
+            font-size: .78rem;
+            line-height: 1.25;
+        }
+
+        .point-info-row .material-symbols-outlined {
+            color: var(--gu-secondary);
+            flex: 0 0 auto;
+            font-size: 16px;
+        }
+
+        .greenup-map-popup button,
+        .greenup-map-popup a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+            padding: 7px 10px;
+            border: 0;
+            border-radius: 999px;
+            color: #fff;
+            font-size: .8rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        @media (min-width: 901px) {
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
             }
 
-            50% {
-                transform: translateY(0);
+            main {
+                min-height: 0;
+            }
+
+            .map-copy-card > div:first-child {
+                width: 48px !important;
+                height: 48px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .map-copy-card > div:first-child .material-symbols-outlined {
+                font-size: 27px !important;
+            }
+
+            .map-copy-card .badge {
+                margin-bottom: 8px !important;
+                padding: 6px 11px !important;
+            }
+
+            .map-copy-card h1 {
+                margin-bottom: 10px !important;
+                font-size: clamp(1.75rem, 2.25vw, 2.25rem);
+                line-height: 1.12;
+            }
+
+            .map-copy-card > p {
+                margin-bottom: 10px !important;
+                font-size: clamp(.88rem, 1.05vw, 1rem) !important;
+                line-height: 1.42;
+            }
+
+            .map-copy-card .preview-note {
+                margin-bottom: 10px !important;
+            }
+
+            .map-copy-card .btn-lg {
+                min-width: 0;
+                padding: 9px 14px !important;
+                font-size: .88rem;
+                white-space: nowrap;
+            }
+
+            .map-preview-shell {
+                grid-template-columns: minmax(330px, 405px) minmax(0, 1fr);
+                gap: 18px;
+            }
+
+            .map-copy-card,
+            .map-real-card {
+                border-radius: 22px;
+            }
+
+            .map-copy-card {
+                padding: clamp(20px, 2vw, 28px);
+            }
+
+            .map-preview-stat {
+                padding: 8px 10px;
+            }
+
+            .map-preview-stat strong {
+                font-size: 1.2rem;
+            }
+
+            .map-preview-stat span {
+                font-size: .69rem;
+            }
+
+            body > footer {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .map-section {
+                height: auto;
+                min-height: calc(100vh - 70px);
+                overflow: visible;
+                padding: 20px 14px;
+            }
+
+            .map-preview-shell {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .map-real-card {
+                min-height: 520px;
+            }
+
+            #eco-map {
+                min-height: 410px;
             }
         }
     </style>
@@ -285,58 +472,52 @@
 
     <main class="flex-grow-1">
 
-        <section class="map-section px-3">
-            <div id="map-container" class="parallax-bg"
-                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBFtadPx-08kbMiKGn5KP38pfH0r8I1629mZSSd_gfeskeY5C_DKicUXsaThm_3EsYejc2TU_bLgdLDNHgCWqV3rHeW2e0DT_nhynf1MrXRX-aC9kSor-q5S09SDHxJoC-7Ty5IS-uL0z6yqRpAPw9xaVpYO6tnvmJdJGvqP4QRGaUH9hKr7Lq0jkntHFV0FKHgT-k6B0V6Uugw6Wi2yXIWCueZ2YeUV1WqBk9GfXhW_hbPhjwaImWc');">
-            </div>
-            <div class="map-overlay"></div>
-
-            <div class="glass-panel rounded-4 p-4 p-md-5 text-center fade-up" style="max-width: 800px; width: 100%;">
-
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bounce-slow mb-4"
-                    style="width: 80px; height: 80px; background-color: var(--gu-accent); color: var(--gu-secondary);">
-                    <span class="material-symbols-outlined icon-fill" style="font-size: 40px;">location_on</span>
-                </div>
-
-                <h1 class="display-5 fw-bold text-gu-primary mb-4">¡Descubre dónde reciclar en Valledupar!</h1>
-                <p class="fs-5 text-secondary mb-5" style="max-width: 650px; margin: 0 auto;">
-                    El mapa interactivo es exclusivo para nuestra comunidad. Crea tu cuenta en <span
-                        class="fw-bold text-gu-secondary">GreenUp</span> para encontrar tus puntos ecológicos más
-                    cercanos mediante <span class="fst-italic">hexágonos inteligentes</span>, registrar tus entregas y
-                    ganar recompensas.
-                </p>
-
-                <div class="d-flex flex-column align-items-center gap-3">
-                    <a href="public_registro.html"
-                        class="btn btn-gu-secondary btn-lg px-5 py-3 d-flex align-items-center gap-2 shadow-sm w-100 w-sm-auto"
-                        style="max-width: 350px;">
-                        Crear mi cuenta gratis <span class="material-symbols-outlined">arrow_forward</span>
-                    </a>
-                    <a href="public_login.html" class="text-gu-primary fw-medium text-decoration-none mt-2"
-                        style="text-underline-offset: 4px;">
-                        <u>¿Ya tienes cuenta? Inicia sesión aquí</u>
-                    </a>
-                </div>
-
-                <div class="row mt-5 pt-4 border-top border-secondary border-opacity-25">
-                    <div class="col-4">
-                        <h3 class="fw-bold text-gu-secondary mb-0">150+</h3>
-                        <span class="small text-muted text-uppercase tracking-wider">Puntos</span>
+        <section class="map-section">
+            <div class="map-preview-shell">
+                <article class="map-copy-card">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-4"
+                        style="width: 72px; height: 72px; background-color: var(--gu-accent); color: var(--gu-secondary);">
+                        <span class="material-symbols-outlined icon-fill" style="font-size: 38px;">location_on</span>
                     </div>
-                    <div class="col-4 border-start border-end border-secondary border-opacity-25">
-                        <h3 class="fw-bold text-gu-secondary mb-0">2.4k</h3>
-                        <span class="small text-muted text-uppercase tracking-wider">Usuarios</span>
-                    </div>
-                    <div class="col-4">
-                        <h3 class="fw-bold text-gu-secondary mb-0">12t</h3>
-                        <span class="small text-muted text-uppercase tracking-wider">Reciclado</span>
-                    </div>
-                </div>
 
-            </div>
+                    <span class="badge rounded-pill bg-success align-self-start mb-3 px-3 py-2">Vista previa</span>
+                    <h1 class="display-5 fw-bold text-gu-primary mb-4">Encuentra puntos ecológicos en Valledupar</h1>
+                    <p class="fs-5 text-secondary mb-4">
+                        Puedes revisar una vista pública del mapa y conocer los puntos registrados. Para calcular rutas,
+                        registrar entregas o ver información completa, inicia sesión o crea tu cuenta GreenUp.
+                    </p>
 
-            <div class="position-absolute bottom-0 start-0 m-5 opacity-25 d-none d-lg-block" style="z-index: 10;">
-                <span class="material-symbols-outlined icon-fill text-success" style="font-size: 150px;">eco</span>
+                    <div class="preview-note mb-4">
+                        <strong>Guía rápida:</strong> toca un punto del mapa para conocer el nombre de la recicladora.
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        <a href="public_registro.html" class="btn btn-gu-secondary btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                            Crear cuenta <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                        <a href="public_login.html" class="btn btn-outline-success btn-lg rounded-pill px-4 py-3 fw-semibold">
+                            Iniciar sesión
+                        </a>
+                    </div>
+                </article>
+
+                <article class="map-real-card" aria-label="Vista previa pública del mapa de reciclaje">
+                    <div id="eco-map"></div>
+                    <div class="map-preview-footer">
+                        <div class="map-preview-stat">
+                            <strong id="public-map-total">--</strong>
+                            <span>Puntos</span>
+                        </div>
+                        <div class="map-preview-stat">
+                            <strong id="public-map-active">--</strong>
+                            <span>Activos</span>
+                        </div>
+                        <div class="map-preview-stat">
+                            <strong id="public-map-materials">--</strong>
+                            <span>Materiales</span>
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -423,28 +604,39 @@
     </footer>
   <script src="../../js/modal_alerts.js?v=20260824"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../../js/api.js"></script>
+  <script>
+        window.GREENUP_MAP_AUTO_INIT = false;
+    </script>
+  <script src="../../js/mapa.js?v=20260825"></script>
   <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Efecto Parallax en el mapa desenfocado
-            document.addEventListener('mousemove', (e) => {
-                const map = document.getElementById('map-container');
-                if (map) {
-                    const moveX = (e.clientX - window.innerWidth / 2) / 50;
-                    const moveY = (e.clientY - window.innerHeight / 2) / 50;
-                    map.style.transform = `scale(1.1) translate(${moveX}px, ${moveY}px)`;
-                }
+            window.scrollTo(0, 0);
+            const actualizarIndicadores = (points) => {
+                const active = points.filter((point) => !point.inactive).length;
+                const materials = new Set();
+
+                points.forEach((point) => {
+                    String(point.type || "")
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item && item !== "Materiales por confirmar")
+                        .forEach((item) => materials.add(item.toLowerCase()));
+                });
+
+                document.getElementById("public-map-total").textContent = points.length;
+                document.getElementById("public-map-active").textContent = active;
+                document.getElementById("public-map-materials").textContent = materials.size || "--";
+            };
+
+            window.addEventListener("greenup:map-points-loaded", (event) => {
+                actualizarIndicadores(event.detail?.points || []);
             });
 
-            // Animación de entrada
-            const observerOptions = { threshold: 0.1 };
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
-            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+            if (typeof window.initGreenupMap === "function") {
+                window.initGreenupMap({ publicPreview: true });
+            }
         });
     </script>
   <script src="../../js/public_ui_fix.js?v=20260821"></script>

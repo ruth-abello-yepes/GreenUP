@@ -337,10 +337,17 @@ def servicio_cambiar_estado_usuario(id_usuario, datos):
 
     id_estado = datos.get("id_estado")
 
-    if not id_estado:
+    try:
+        id_estado = int(id_estado)
+    except (TypeError, ValueError):
+        return {"mensaje": "El estado debe ser valido"}, 400
+
+    if id_estado not in (1, 2):
         return {"mensaje": "El estado es obligatorio"}, 400
 
-    cambiar_estado_usuario(id_usuario, id_estado)
+    actualizado = cambiar_estado_usuario(id_usuario, id_estado)
+    if not actualizado:
+        return {"mensaje": "Usuario no encontrado"}, 404
 
     return {"mensaje": "Estado del usuario actualizado correctamente"}, 200
 

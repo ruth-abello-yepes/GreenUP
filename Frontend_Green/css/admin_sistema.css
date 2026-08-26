@@ -965,6 +965,36 @@ body.admin-theme-dark .role-nav-menu {
   gap: 8px;
 }
 
+.admin-table.has-actions th:last-child,
+.admin-table.has-actions td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 3;
+  min-width: 126px;
+  background: #ffffff;
+  box-shadow: -10px 0 18px rgba(15, 23, 42, 0.07);
+}
+
+.admin-table.has-actions th:last-child {
+  z-index: 4;
+}
+
+.admin-table.has-actions tbody tr:hover td:last-child {
+  background: #fbfdfc;
+}
+
+.admin-table.has-actions td:last-child .row-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.admin-table.has-actions td:last-child .small-button {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
 .status-pill,
 .type-pill {
   display: inline-flex;

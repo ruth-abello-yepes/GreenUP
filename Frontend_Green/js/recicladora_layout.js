@@ -295,10 +295,12 @@ function renderRegistrosRecicladoraTable(registros) {
   }
 
   tbody.innerHTML = registros.map((item) => {
-    const estado = String(item.estado || "").toLowerCase();
-    const pendiente = estado === "pendiente";
-    const rechazado = estado === "rechazado";
-    const confirmado = estado === "confirmado";
+    const estadoGuardado = String(item.estado || "").toLowerCase();
+    const idEstado = Number(item.id_estado);
+    const rechazado = estadoGuardado.includes("rechaz") || idEstado === 3;
+    const confirmado = estadoGuardado.includes("confirm") || idEstado === 2;
+    const pendiente = !rechazado && !confirmado;
+    const estadoVisible = confirmado ? "Confirmado" : rechazado ? "Rechazado" : "Pendiente";
 
     return `
       <tr>
@@ -306,7 +308,7 @@ function renderRegistrosRecicladoraTable(registros) {
         <td>${escapeHtml(item.usuario || `Usuario ${item.id_usuario}`)}</td>
         <td>${escapeHtml(item.material || `Material ${item.id_tipo_material}`)}</td>
         <td>${formatKg(item.cantidad)}</td>
-        <td><span class="status-pill status-${statusClass(item.estado || "pendiente")}">${escapeHtml(item.estado || "pendiente")}</span></td>
+        <td><span class="status-pill status-${statusClass(estadoVisible)}">${estadoVisible}</span></td>
         <td>
           <span class="action-group">
             ${pendiente ? `
@@ -327,40 +329,42 @@ function renderRegistrosRecicladoraTable(registros) {
   }).join("");
 
   tbody.querySelectorAll(".registro-confirmar").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const id = Number(button.dataset.id);
-      const confirmar = await window.greenupConfirm("¿Confirmar este reciclaje como entrega realizada?", "Confirmar entrega");
-      if (!confirmar) return;
-      try {
-        await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
-          method: "PUT",
-          body: JSON.stringify({ id_estado: 2 }),
-        });
-        alert("Registro confirmado correctamente");
-        refreshCurrentPage();
-      } catch (error) {
-        alert(error.message);
-      }
-    });
+    button.addEventListener("click", () => confirmarRegistroRecicladora(Number(button.dataset.id)));
   });
 
   tbody.querySelectorAll(".registro-rechazar").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const id = Number(button.dataset.id);
-      const motivo = await window.greenupPrompt("Escribe el motivo del rechazo:", "", "Rechazar entrega");
-      if (motivo === null) return;
-      try {
-        await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
-          method: "PUT",
-          body: JSON.stringify({ id_estado: 3, motivo_rechazo: motivo.trim() || "Sin motivo adicional" }),
-        });
-        alert("Registro rechazado correctamente");
-        refreshCurrentPage();
-      } catch (error) {
-        alert(error.message);
-      }
-    });
+    button.addEventListener("click", () => rechazarRegistroRecicladora(Number(button.dataset.id)));
   });
+}
+
+async function confirmarRegistroRecicladora(id) {
+  const confirmar = await window.greenupConfirm("¿Confirmar este reciclaje como entrega realizada?", "Confirmar entrega");
+  if (!confirmar) return;
+  try {
+    await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
+      method: "PUT",
+      body: JSON.stringify({ id_estado: 2 }),
+    });
+    await window.greenupAlert("La entrega quedó confirmada correctamente.", "Reciclaje confirmado");
+    await refreshCurrentPage();
+  } catch (error) {
+    await window.greenupAlert(error.message, "No se pudo confirmar");
+  }
+}
+
+async function rechazarRegistroRecicladora(id) {
+  const motivo = await window.greenupPrompt("Escribe el motivo del rechazo:", "", "Rechazar entrega");
+  if (motivo === null) return;
+  try {
+    await fetchJson(`/api/recicladoras/registros/${id}/estado`, {
+      method: "PUT",
+      body: JSON.stringify({ id_estado: 3, motivo_rechazo: motivo.trim() || "Sin motivo adicional" }),
+    });
+    await window.greenupAlert("La entrega fue rechazada.", "Reciclaje rechazado");
+    await refreshCurrentPage();
+  } catch (error) {
+    await window.greenupAlert(error.message, "No se pudo rechazar");
+  }
 }
 function updateDashboard(data) {
   setText('[data-summary-label="Hoy"]', formatKg(data.material_recuperado_kg));
@@ -372,7 +376,7 @@ function updateDashboard(data) {
   setText('[data-metric-change="Material recuperado"]', data.material_recuperado_kg ? "Actualizado desde la base de datos" : "Sin registros");
   setText('[data-metric-change="Cargas activas"]', data.cargas_activas ? "Con actividad registrada" : "Sin actividad");
   setText('[data-metric-change="Recicladores"]', data.recicladores ? "Con registros confirmados" : "Sin actividad");
-  setText('[data-metric-change="Alertas"]', data.alertas ? "Revisar novedades" : "Sin alertas");
+  setText('[data-metric-change="Alertas"]', data.alertas ? "Entregas pendientes por validar" : "Sin entregas pendientes");
 
   const max = Math.max(...(data.actividad_semanal || []).map((item) => Number(item.cantidad) || 0), 0);
   (data.actividad_semanal || []).forEach((item) => {
@@ -385,7 +389,11 @@ function updateDashboard(data) {
     `${item.material} - ${formatKg(item.cantidad)}`,
     item.usuario,
     item.punto,
-    "Activo",
+    String(item.estado || "Pendiente").toLowerCase().includes("confirm")
+      ? "Confirmado"
+      : String(item.estado || "").toLowerCase().includes("rechaz")
+        ? "Rechazado"
+        : "Pendiente de validación",
   ]);
   rowsToTable("Operacion reciente", operaciones);
 }
@@ -435,24 +443,39 @@ async function refreshCurrentPage() {
 
   if (current === "recicladora_residuos.html" || current === "recicladora_registros_reciclaje.html") {
     const registros = await fetchJson("/api/recicladoras/registros");
-    const activos = registros.filter((item) => Number(item.id_estado) === 1);
-    const totalKg = activos.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
+    const pendientes = registros.filter((item) => {
+      const estado = String(item.estado || "").toLowerCase();
+      return !(estado.includes("confirm") || estado.includes("rechaz")) && Number(item.id_estado) === 1;
+    });
+    const totalKg = pendientes.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
 
     if (current === "recicladora_residuos.html") {
       setText('[data-summary-label="Procesados"]', formatKg(totalKg));
       setText('[data-summary-label="En transito"]', "0 cargas");
-      rowsToTable("Residuos registrados", activos.map((item) => [
-        `#GR-${item.id_registro}`,
-        `Material ${item.id_tipo_material}`,
-        formatKg(item.cantidad),
-        item.id_punto ? `Punto ${item.id_punto}` : "Punto sin asignar",
-        "Activo",
-      ]));
+      rowsToTable("Residuos registrados", pendientes.map((item) => ({
+        id: item.id_registro,
+        values: [
+          `#GR-${item.id_registro}`,
+          item.material || `Material ${item.id_tipo_material}`,
+          formatKg(item.cantidad),
+          item.punto || (item.id_punto ? `Punto ${item.id_punto}` : "Punto sin asignar"),
+          "Pendiente de validación",
+        ],
+      })), {
+        renderActions: (row) => `
+          <button class="btn-icon" type="button" title="Confirmar entrega" aria-label="Confirmar entrega" onclick="confirmarRegistroRecicladora(${Number(row.id)})">
+            <span class="material-symbols-outlined">task_alt</span>
+          </button>
+          <button class="btn-icon" type="button" title="Rechazar entrega" aria-label="Rechazar entrega" onclick="rechazarRegistroRecicladora(${Number(row.id)})">
+            <span class="material-symbols-outlined">cancel</span>
+          </button>
+        `,
+      });
     }
 
     if (current === "recicladora_registros_reciclaje.html") {
       setText('[data-summary-label="Registros"]', registros.length);
-      setText('[data-summary-label="Pendientes"]', registros.filter((item) => String(item.estado || "").toLowerCase() === "pendiente").length);
+      setText('[data-summary-label="Pendientes"]', pendientes.length);
       renderRegistrosRecicladoraTable(registros);
       setExportData(registros.map((item) => [
         `#RR-${item.id_registro}`,
@@ -551,7 +574,11 @@ async function refreshCurrentPage() {
       `Registro #${item.id_registro}`,
       item.fecha_hora || "",
       item.material || "Material",
-      item.estado || "Activo",
+      String(item.estado || "Pendiente").toLowerCase().includes("confirm")
+        ? "Confirmado"
+        : String(item.estado || "").toLowerCase().includes("rechaz")
+          ? "Rechazado"
+          : "Pendiente de validación",
     ]));
   }
 

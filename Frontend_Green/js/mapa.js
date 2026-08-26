@@ -16,6 +16,7 @@
   let userMarker = null;
   let initialized = false;
   let ownerMode = false;
+  let publicPreview = false;
   let ownerPoint = null;
   function escapeHtml(value) {
     return String(value ?? "")
@@ -294,15 +295,28 @@
       title: point.title,
     }).addTo(map);
 
-    marker.bindPopup(`
-      <div class="greenup-map-popup">
-        <h6 style="color:${point.color};">${escapeHtml(point.title)}</h6>
-        <div class="point-info-list">${renderInfoRows(point)}</div>
-        <button onclick="${ownerMode ? "mostrarRutaMiRecicladora()" : `trazarRuta(${point.pos[0]}, ${point.pos[1]})`}" style="background:${point.color};">
-          Como llegar
-        </button>
-      </div>
-    `);
+    if (publicPreview) {
+      marker.bindPopup(`
+        <div class="greenup-map-popup greenup-public-point-name">
+          <h6 style="color:${point.color};">${escapeHtml(point.title)}</h6>
+        </div>
+      `, {
+        maxWidth: 240,
+        minWidth: 150,
+        className: "greenup-public-popup",
+      });
+    } else {
+      marker.bindPopup(`
+        <div class="greenup-map-popup">
+          <h6 style="color:${point.color};">${escapeHtml(point.title)}</h6>
+          <div class="point-info-list">${renderInfoRows(point)}</div>
+          <button onclick="${ownerMode ? "mostrarRutaMiRecicladora()" : `trazarRuta(${point.pos[0]}, ${point.pos[1]})`}" style="background:${point.color};">Como llegar</button>
+        </div>
+      `, {
+        maxWidth: 320,
+        minWidth: 250,
+      });
+    }
 
     if (!sidebarList) return;
 
@@ -452,6 +466,7 @@
 
     initialized = true;
     ownerMode = options.scope === "recicladora" || options.onlyOwnRecyclingCenter === true;
+    publicPreview = options.publicPreview === true;
     map = L.map(mapElement, { zoomControl: false, attributionControl: false });
     window.greenupMap = map;
     window.map = map;
@@ -462,13 +477,17 @@
     }).addTo(map);
 
     map.setView(DEFAULT_CENTER, 14);
-    initGeolocation(!ownerMode);
+    if (!publicPreview) {
+      initGeolocation(!ownerMode);
+    }
 
     const sidebarList = document.getElementById("recycling-list");
     if (sidebarList) sidebarList.innerHTML = "";
 
     const points = await loadPoints();
     points.forEach((point) => renderPoint(point, sidebarList));
+    window.greenupMapPoints = points;
+    window.dispatchEvent(new CustomEvent("greenup:map-points-loaded", { detail: { points } }));
 
     if (points.length) {
       const bounds = L.latLngBounds(points.map((point) => point.pos));
@@ -496,7 +515,9 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("eco-map") && typeof L !== "undefined") {
-      window.initGreenupMap();
+      if (window.GREENUP_MAP_AUTO_INIT !== false) {
+        window.initGreenupMap(window.GREENUP_MAP_OPTIONS || {});
+      }
     }
   });
 })();

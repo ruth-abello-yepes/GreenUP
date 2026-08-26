@@ -89,7 +89,37 @@ def listar_ubicaciones():
 
     cursor.execute(f"""
         SELECT
-            puntos_reciclaje.*,
+            puntos_reciclaje.id_punto,
+            COALESCE(NULLIF(puntos_reciclaje.nombre, ''), NULLIF(recicladoras.nombre_empresa, ''), 'Punto de reciclaje') AS nombre,
+            COALESCE(
+                NULLIF(
+                    CASE
+                        WHEN LOWER(COALESCE(puntos_reciclaje.direccion, '')) LIKE '%%pendiente%%' THEN ''
+                        WHEN LOWER(COALESCE(puntos_reciclaje.direccion, '')) LIKE '%%por confirmar%%' THEN ''
+                        ELSE puntos_reciclaje.direccion
+                    END,
+                    ''
+                ),
+                NULLIF(recicladoras.direccion_empresa, ''),
+                'Direccion por confirmar'
+            ) AS direccion,
+            COALESCE(
+                NULLIF(
+                    CASE
+                        WHEN LOWER(COALESCE(puntos_reciclaje.horario, '')) LIKE '%%pendiente%%' THEN ''
+                        WHEN LOWER(COALESCE(puntos_reciclaje.horario, '')) LIKE '%%por confirmar%%' THEN ''
+                        ELSE puntos_reciclaje.horario
+                    END,
+                    ''
+                ),
+                NULLIF(recicladoras.horario, ''),
+                'Horario por confirmar'
+            ) AS horario,
+            puntos_reciclaje.latitud,
+            puntos_reciclaje.longitud,
+            COALESCE(NULLIF(puntos_reciclaje.telefono, ''), NULLIF(recicladoras.telefono_empresa, ''), '') AS telefono,
+            COALESCE(NULLIF(puntos_reciclaje.responsable, ''), NULLIF(recicladoras.nombre_empresa, ''), '') AS responsable,
+            puntos_reciclaje.id_estado,
             COALESCE(usuarios.correo, '') AS correo,
             COALESCE(
                 string_agg(DISTINCT tipo_material.nombre, ', ')
@@ -104,7 +134,21 @@ def listar_ubicaciones():
         {recicladora_join}
         LEFT JOIN usuarios
             ON usuarios.id_usuario = recicladoras.id_usuario
-        GROUP BY puntos_reciclaje.id_punto, usuarios.correo
+        GROUP BY
+            puntos_reciclaje.id_punto,
+            puntos_reciclaje.nombre,
+            puntos_reciclaje.direccion,
+            puntos_reciclaje.horario,
+            puntos_reciclaje.latitud,
+            puntos_reciclaje.longitud,
+            puntos_reciclaje.telefono,
+            puntos_reciclaje.responsable,
+            puntos_reciclaje.id_estado,
+            recicladoras.nombre_empresa,
+            recicladoras.direccion_empresa,
+            recicladoras.horario,
+            recicladoras.telefono_empresa,
+            usuarios.correo
         ORDER BY puntos_reciclaje.id_punto DESC
     """)
 

@@ -340,10 +340,13 @@ def cambiar_estado_usuario(id_usuario, id_estado):
     sql = "UPDATE usuarios SET id_estado = %s WHERE id_usuario = %s"
 
     cursor.execute(sql, (id_estado, id_usuario))
+    actualizado = cursor.rowcount > 0
     conexion.commit()
 
     cursor.close()
     conexion.close()
+
+    return actualizado
 
 
 def obtener_perfil_usuario(id_usuario):

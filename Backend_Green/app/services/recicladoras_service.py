@@ -336,9 +336,21 @@ def servicio_obtener_perfil_recicladora(id_usuario):
     """
 
     recicladora = buscar_recicladora_por_usuario(id_usuario)
+    punto = buscar_punto_por_usuario_recicladora(id_usuario)
+
+    if recicladora and punto:
+        recicladora["nombre_empresa"] = recicladora.get("nombre_empresa") or punto.get("nombre_empresa") or punto.get("nombre_punto")
+        recicladora["direccion_empresa"] = recicladora.get("direccion_empresa") or punto.get("direccion_empresa") or punto.get("direccion_punto")
+        recicladora["telefono_empresa"] = recicladora.get("telefono_empresa") or punto.get("telefono_empresa") or punto.get("telefono_punto")
+        recicladora["horario_recicladora"] = recicladora.get("horario_recicladora") or punto.get("horario_recicladora") or punto.get("horario")
+        recicladora["horario"] = recicladora.get("horario") or punto.get("horario") or punto.get("horario_recicladora")
+        recicladora["id_punto"] = recicladora.get("id_punto") or punto.get("id_punto")
+        recicladora["nombre_punto"] = recicladora.get("nombre_punto") or punto.get("nombre_punto")
+        recicladora["direccion_punto"] = recicladora.get("direccion_punto") or punto.get("direccion_punto")
+        recicladora["telefono_punto"] = recicladora.get("telefono_punto") or punto.get("telefono_punto")
+        recicladora["responsable"] = recicladora.get("responsable") or punto.get("responsable")
 
     if not recicladora:
-        punto = buscar_punto_por_usuario_recicladora(id_usuario)
         if punto:
             return punto, 200
 
@@ -451,8 +463,21 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
     return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200
 def servicio_obtener_punto_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
+    punto = buscar_punto_por_usuario_recicladora(id_usuario)
+
+    if recicladora and punto:
+        recicladora["nombre_empresa"] = recicladora.get("nombre_empresa") or punto.get("nombre_empresa") or punto.get("nombre_punto")
+        recicladora["direccion_empresa"] = recicladora.get("direccion_empresa") or punto.get("direccion_empresa") or punto.get("direccion_punto")
+        recicladora["telefono_empresa"] = recicladora.get("telefono_empresa") or punto.get("telefono_empresa") or punto.get("telefono_punto")
+        recicladora["horario_recicladora"] = recicladora.get("horario_recicladora") or punto.get("horario_recicladora") or punto.get("horario")
+        recicladora["horario"] = recicladora.get("horario") or punto.get("horario") or punto.get("horario_recicladora")
+        recicladora["id_punto"] = recicladora.get("id_punto") or punto.get("id_punto")
+        recicladora["nombre_punto"] = recicladora.get("nombre_punto") or punto.get("nombre_punto")
+        recicladora["direccion_punto"] = recicladora.get("direccion_punto") or punto.get("direccion_punto")
+        recicladora["telefono_punto"] = recicladora.get("telefono_punto") or punto.get("telefono_punto")
+        recicladora["responsable"] = recicladora.get("responsable") or punto.get("responsable")
+
     if not recicladora:
-        punto = buscar_punto_por_usuario_recicladora(id_usuario)
         if punto:
             return punto, 200
         return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404

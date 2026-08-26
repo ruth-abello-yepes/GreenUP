@@ -1229,6 +1229,49 @@ function precargarPerfilRecicladoraLocal() {
   });
 }
 
+function soloDigitosPerfil(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+function textoNormalizadoPerfil(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function valorPerfilUtil(value) {
+  const texto = String(value || "").trim();
+  if (!texto) return "";
+  if (/^(direccion|dirección|nombre|nit|telefono|teléfono).*$/i.test(texto)) return "";
+  if (/pendiente|por confirmar|cargando/i.test(texto)) return "";
+  return texto;
+}
+
+async function buscarPuntoPerfilPorUsuario(userProfile = {}) {
+  try {
+    const puntos = await fetchJson("/ubicaciones");
+    const lista = Array.isArray(puntos) ? puntos : [];
+    const telefonoUsuario = soloDigitosPerfil(userProfile.celular || userProfile.telefono_empresa || "");
+    const nombreCompleto = textoNormalizadoPerfil(`${userProfile.nombres || ""} ${userProfile.apellidos || ""}`);
+    const nombreSimple = textoNormalizadoPerfil(userProfile.nombres || "");
+
+    return lista.find((punto) => {
+      const telefonoPunto = soloDigitosPerfil(punto.telefono || punto.telefono_empresa || "");
+      const responsable = textoNormalizadoPerfil(punto.responsable || "");
+      return (
+        (telefonoUsuario && telefonoPunto && telefonoUsuario === telefonoPunto) ||
+        (nombreCompleto && responsable && responsable === nombreCompleto) ||
+        (nombreSimple && responsable && responsable === nombreSimple)
+      );
+    }) || {};
+  } catch (error) {
+    console.warn("Perfil cargado sin respaldo de ubicaciones:", error.message);
+    return {};
+  }
+}
+
 async function hydrateRecicladoraProfile() {
   try {
     const [profileResult, pointResult, userResult] = await Promise.allSettled([
@@ -1244,17 +1287,22 @@ async function hydrateRecicladoraProfile() {
       throw profileResult.reason || pointResult.reason || userResult.reason;
     }
 
-    const mergedProfile = { ...userProfile, ...pointProfile, ...profile };
+    const locationProfile = await buscarPuntoPerfilPorUsuario({ ...userProfile, ...pointProfile, ...profile });
+    const mergedProfile = { ...userProfile, ...locationProfile, ...pointProfile, ...profile };
+    const responsableUsuario = textoNormalizadoPerfil(userProfile.nombres || profile.nombres || "");
+    const empresaBackend = valorPerfilUtil(mergedProfile.nombre_empresa);
+    const empresaPunto = valorPerfilUtil(mergedProfile.nombre_punto || mergedProfile.nombre);
+    const empresaValida = textoNormalizadoPerfil(empresaBackend) === responsableUsuario ? "" : empresaBackend;
     const values = {
       ...mergedProfile,
-      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || "",
+      nombre_empresa: empresaValida || empresaPunto,
       nit_empresa: mergedProfile.nit_empresa || mergedProfile.numero_documento || "",
-      direccion_empresa: mergedProfile.direccion_empresa || mergedProfile.direccion_punto || "",
-      telefono_empresa: mergedProfile.telefono_empresa || mergedProfile.telefono_punto || mergedProfile.celular || "",
+      direccion_empresa: valorPerfilUtil(mergedProfile.direccion_empresa) || valorPerfilUtil(mergedProfile.direccion_punto) || valorPerfilUtil(mergedProfile.direccion),
+      telefono_empresa: valorPerfilUtil(mergedProfile.telefono_empresa) || valorPerfilUtil(mergedProfile.telefono_punto) || valorPerfilUtil(mergedProfile.telefono) || valorPerfilUtil(mergedProfile.celular),
       administrador: `${mergedProfile.nombres || ""} ${mergedProfile.apellidos || ""}`.trim(),
       correo: mergedProfile.correo || "",
       usuario: mergedProfile.usuario || "",
-      horario: mergedProfile.horario_recicladora || mergedProfile.horario || "Horario por confirmar",
+      horario: valorPerfilUtil(mergedProfile.horario_recicladora) || valorPerfilUtil(mergedProfile.horario) || "",
     };
 
     pintarCamposPerfilRecicladora(values, { limpiarPendientes: true });

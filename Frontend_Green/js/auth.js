@@ -33,6 +33,12 @@ async function iniciarSesion(evento) {
       // Se asume que Flask ahora nos devuelve: { "token": "ey...", "usuario": {...} }
       localStorage.setItem("usuario", JSON.stringify(respuesta.datos.usuario));
 
+      if (respuesta.datos.usuario.foto_perfil) {
+        localStorage.setItem("greenup_avatar_ciudadano", respuesta.datos.usuario.foto_perfil);
+      } else {
+        localStorage.removeItem("greenup_avatar_ciudadano");
+      }
+
       // Guardar el Token es vital para proteger futuras rutas
       if (respuesta.datos.token) {
         localStorage.setItem("token", respuesta.datos.token);
@@ -88,6 +94,7 @@ function cerrarSesion() {
 
   // Quitamos los datos del usuario guardados en el navegador.
   localStorage.removeItem("usuario");
+  localStorage.removeItem("greenup_avatar_ciudadano");
 
   // Redirigimos al login publico desde las paginas ubicadas dentro de pages.
   window.location.href = "../public/public_login.html";

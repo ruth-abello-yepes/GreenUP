@@ -421,6 +421,27 @@
                 </h5>
             </div>
 
+            <!-- BUSCADOR Y FILTROS -->
+            <div class="p-3 border-bottom bg-light">
+                <div class="mb-2 input-group">
+                    <input type="text" id="search-input" class="form-control" placeholder="Buscar dirección o barrio..." style="border-radius: 8px 0 0 8px;">
+                    <button class="btn text-white px-3" type="button" id="btn-search-address" style="background-color: var(--gu-primary); border-radius: 0 8px 8px 0;">
+                        <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">search</span>
+                    </button>
+                </div>
+                <div>
+                    <select id="filter-select" class="form-select form-select-sm" style="border-radius: 8px; color: #495057;">
+                        <option value="">Todos los residuos</option>
+                        <option value="plástico">Plástico</option>
+                        <option value="cartón">Cartón</option>
+                        <option value="vidrio">Vidrio</option>
+                        <option value="metal">Metal</option>
+                        <option value="papel">Papel</option>
+                        <option value="electrónicos">Electrónicos</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="flex-grow-1 overflow-y-auto p-3 hide-scrollbar" id="recycling-list">
                 <!-- Los items se agregan dinámicamente aquí por JS -->
             </div>

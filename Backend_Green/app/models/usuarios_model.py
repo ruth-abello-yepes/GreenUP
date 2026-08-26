@@ -367,7 +367,8 @@ def obtener_perfil_usuario(id_usuario):
            correo,
            celular,
            usuario,
-           id_rol
+           id_rol,
+           foto_perfil
     FROM usuarios
     WHERE id_usuario = %s
     """
@@ -414,7 +415,7 @@ def buscar_usuario_por_correo_o_usuario_excluyendo_id(correo, usuario, id_usuari
     return usuario_duplicado
 
 
-def actualizar_perfil_usuario(id_usuario, nombres, apellidos, correo, celular, usuario):
+def actualizar_perfil_usuario(id_usuario, nombres, apellidos, correo, celular, usuario, foto_perfil=None):
     """
     Actualiza solamente los datos permitidos desde ajustes de ciudadano.
 
@@ -432,11 +433,12 @@ def actualizar_perfil_usuario(id_usuario, nombres, apellidos, correo, celular, u
             apellidos = %s,
             correo = %s,
             celular = %s,
-            usuario = %s
+            usuario = %s,
+            foto_perfil = COALESCE(%s, foto_perfil)
         WHERE id_usuario = %s
         """
 
-        cursor.execute(sql, (nombres, apellidos, correo, celular, usuario, id_usuario))
+        cursor.execute(sql, (nombres, apellidos, correo, celular, usuario, foto_perfil, id_usuario))
         conexion.commit()
 
     except Exception:

@@ -1231,15 +1231,15 @@ function precargarPerfilRecicladoraLocal() {
 
 async function hydrateRecicladoraProfile() {
   try {
-    const profile = await fetchJson("/api/recicladoras/perfil");
-    let pointProfile = {};
+    const [profileResult, pointResult] = await Promise.allSettled([
+      fetchJson("/api/recicladoras/perfil"),
+      fetchJson("/api/recicladoras/mi-punto"),
+    ]);
+    const profile = profileResult.status === "fulfilled" ? profileResult.value : {};
+    const pointProfile = pointResult.status === "fulfilled" ? pointResult.value : {};
 
-    if (!profile.nombre_empresa || !profile.direccion_empresa || !profile.horario_recicladora) {
-      try {
-        pointProfile = await fetchJson("/api/recicladoras/mi-punto");
-      } catch (pointError) {
-        console.warn("Perfil cargado sin datos adicionales del punto:", pointError.message);
-      }
+    if (profileResult.status === "rejected" && pointResult.status === "rejected") {
+      throw profileResult.reason || pointResult.reason;
     }
 
     const mergedProfile = { ...pointProfile, ...profile };

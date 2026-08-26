@@ -1062,6 +1062,11 @@ function bindProfileSave() {
       return;
     }
 
+    if (!data.horario && (data.dias_trabajo || data.hora_inicio || data.hora_fin)) {
+      const rangoHoras = [data.hora_inicio, data.hora_fin].filter(Boolean).join(" - ");
+      data.horario = [data.dias_trabajo, rangoHoras].filter(Boolean).join(", ");
+    }
+
     try {
       await fetchJson("/api/recicladoras/perfil", {
         method: "PUT",
@@ -1074,6 +1079,7 @@ function bindProfileSave() {
             nombre_empresa: data.nombre_empresa,
             direccion_empresa: data.direccion_empresa,
             telefono_empresa: data.telefono_empresa,
+            horario: data.horario,
           }),
         });
       } catch (errorPunto) {
@@ -1199,6 +1205,7 @@ async function hydrateRecicladoraProfile() {
     const values = {
       ...profile,
       administrador: `${profile.nombres || ""} ${profile.apellidos || ""}`.trim(),
+      horario: profile.horario_recicladora || profile.horario || "",
     };
 
     document.querySelectorAll("[data-profile-field]").forEach((input) => {

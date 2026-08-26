@@ -352,7 +352,7 @@ def servicio_obtener_perfil_recicladora(id_usuario):
             "id_estado_usuario": usuario.get("id_estado"),
             "id_recicladora": None,
             "nit_empresa": usuario.get("numero_documento") or "",
-            "nombre_empresa": usuario.get("nombres") or usuario.get("usuario") or "",
+            "nombre_empresa": "",
             "direccion_empresa": "",
             "telefono_empresa": usuario.get("celular") or "",
             "camara_comercio": "",

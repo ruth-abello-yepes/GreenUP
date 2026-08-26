@@ -120,7 +120,7 @@ def listar_recicladoras():
         usuarios.id_estado,
         recicladoras.id_recicladora,
         COALESCE(NULLIF(recicladoras.nit_empresa, ''), usuarios.numero_documento) AS nit_empresa,
-        COALESCE(NULLIF(recicladoras.nombre_empresa, ''), usuarios.nombres, usuarios.usuario) AS nombre_empresa,
+        COALESCE(NULLIF(recicladoras.nombre_empresa, ''), '') AS nombre_empresa,
         COALESCE(NULLIF(recicladoras.direccion_empresa, ''), 'Direccion pendiente') AS direccion_empresa,
         COALESCE(NULLIF(recicladoras.telefono_empresa, ''), usuarios.celular) AS telefono_empresa,
         COALESCE(recicladoras.camara_comercio, '') AS camara_comercio,
@@ -232,7 +232,21 @@ def buscar_recicladora_por_usuario(id_usuario):
     tiene_id_punto = _tabla_tiene_columna(cursor, "recicladoras", "id_punto")
     id_punto_select = "recicladoras.id_punto," if tiene_id_punto else "puntos_reciclaje.id_punto,"
     id_punto_join = (
-        "LEFT JOIN puntos_reciclaje ON recicladoras.id_punto = puntos_reciclaje.id_punto"
+        """
+        LEFT JOIN puntos_reciclaje
+            ON recicladoras.id_punto = puntos_reciclaje.id_punto
+            OR (
+                recicladoras.id_punto IS NULL
+                AND (
+                    NULLIF(TRIM(puntos_reciclaje.telefono), '') IN (
+                        NULLIF(TRIM(recicladoras.telefono_empresa), ''),
+                        NULLIF(TRIM(usuarios.celular), '')
+                    )
+                    OR LOWER(TRIM(puntos_reciclaje.responsable)) = LOWER(TRIM(CONCAT(usuarios.nombres, ' ', usuarios.apellidos)))
+                    OR LOWER(TRIM(puntos_reciclaje.responsable)) = LOWER(TRIM(usuarios.nombres))
+                )
+            )
+        """
         if tiene_id_punto else
         """
         LEFT JOIN puntos_reciclaje
@@ -254,9 +268,9 @@ def buscar_recicladora_por_usuario(id_usuario):
         usuarios.id_estado AS id_estado_usuario,
         recicladoras.id_recicladora,
         recicladoras.nit_empresa,
-        recicladoras.nombre_empresa,
-        recicladoras.direccion_empresa,
-        recicladoras.telefono_empresa,
+        COALESCE(NULLIF(recicladoras.nombre_empresa, ''), NULLIF(puntos_reciclaje.nombre, '')) AS nombre_empresa,
+        COALESCE(NULLIF(recicladoras.direccion_empresa, ''), NULLIF(puntos_reciclaje.direccion, '')) AS direccion_empresa,
+        COALESCE(NULLIF(recicladoras.telefono_empresa, ''), NULLIF(puntos_reciclaje.telefono, ''), usuarios.celular) AS telefono_empresa,
         recicladoras.camara_comercio,
         recicladoras.horario AS horario_recicladora,
         recicladoras.dias_trabajo,

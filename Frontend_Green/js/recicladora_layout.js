@@ -1247,7 +1247,7 @@ async function hydrateRecicladoraProfile() {
     const mergedProfile = { ...userProfile, ...pointProfile, ...profile };
     const values = {
       ...mergedProfile,
-      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || mergedProfile.nombres || "",
+      nombre_empresa: mergedProfile.nombre_empresa || mergedProfile.nombre_punto || "",
       nit_empresa: mergedProfile.nit_empresa || mergedProfile.numero_documento || "",
       direccion_empresa: mergedProfile.direccion_empresa || mergedProfile.direccion_punto || "",
       telefono_empresa: mergedProfile.telefono_empresa || mergedProfile.telefono_punto || mergedProfile.celular || "",

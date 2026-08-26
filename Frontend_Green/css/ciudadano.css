@@ -30,6 +30,77 @@
   display: none;
 }
 
+/* Botón flotante para registrar reciclaje desde cualquier pantalla ciudadana. */
+.greenup-reciclaje-float {
+  align-items: center;
+  background: #0b7f34;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  bottom: 96px;
+  box-shadow: 0 14px 28px rgba(0, 61, 108, 0.24);
+  color: #ffffff;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  position: fixed;
+  right: 24px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  width: 58px;
+  z-index: 2400;
+}
+
+/* Icono del botón flotante. */
+.greenup-reciclaje-float .material-symbols-outlined {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Texto accesible del botón; visualmente se usa el tooltip. */
+.greenup-reciclaje-float__texto {
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Efecto al pasar el cursor o navegar con teclado. */
+.greenup-reciclaje-float:hover,
+.greenup-reciclaje-float:focus-visible {
+  background: #06652a;
+  box-shadow: 0 18px 34px rgba(0, 61, 108, 0.3);
+  color: #ffffff;
+  outline: none;
+  transform: translateY(-3px);
+}
+
+/* Tooltip que explica para qué sirve el botón. */
+.greenup-reciclaje-float::before {
+  background: #003d6c;
+  border-radius: 12px;
+  bottom: 50%;
+  color: #ffffff;
+  content: attr(data-tooltip);
+  font-size: 0.85rem;
+  font-weight: 800;
+  opacity: 0;
+  padding: 9px 12px;
+  pointer-events: none;
+  position: absolute;
+  right: calc(100% + 12px);
+  transform: translateY(50%) translateX(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Muestra el tooltip cuando el usuario pasa el cursor o enfoca el botón. */
+.greenup-reciclaje-float:hover::before,
+.greenup-reciclaje-float:focus-visible::before {
+  opacity: 1;
+  transform: translateY(50%) translateX(0);
+}
+
 /* En celular y tablet se muestra la barra inferior. */
 @media (max-width: 991.98px) {
   /* Ya no se reserva espacio para barras inferiores tipo app móvil. */
@@ -123,9 +194,12 @@
     border-color: #087a2e;
   }
 
-  /* Se evita duplicar el botón flotante + cuando ya existe la barra inferior. */
+  /* El botón flotante de reciclaje también se ve en celular y tablet. */
   #greenup-reciclaje-float {
-    display: none !important;
+    bottom: 94px;
+    height: 56px;
+    right: 18px;
+    width: 56px;
   }
 
   /* Se ocultan los flotantes tipo app móvil. */

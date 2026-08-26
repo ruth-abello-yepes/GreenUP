@@ -174,6 +174,41 @@ function crearNavegacionInferiorCiudadano() {
 }
 
 /**
+ * Crea el boton flotante de registro de reciclaje para todas las pantallas.
+ *
+ * El boton queda abajo a la derecha y muestra una ayuda visual al pasar el
+ * cursor encima. Si el ciudadano no ha iniciado sesion, se envia al login.
+ */
+function crearBotonFlotanteReciclajeCiudadano() {
+    if (document.getElementById("greenup-reciclaje-float")) {
+        return;
+    }
+
+    const boton = document.createElement("a");
+    boton.id = "greenup-reciclaje-float";
+    boton.className = "greenup-reciclaje-float";
+    boton.href = "ciudadano_registrar_reciclaje.html";
+    boton.setAttribute("aria-label", "Registrar reciclaje");
+    boton.setAttribute("data-tooltip", "Registrar reciclaje");
+    boton.innerHTML = `
+        <span class="material-symbols-outlined" aria-hidden="true">add</span>
+        <span class="greenup-reciclaje-float__texto">Registrar reciclaje</span>
+    `;
+
+    boton.addEventListener("click", (evento) => {
+        const token = localStorage.getItem("token");
+        const usuarioGuardado = localStorage.getItem("usuario");
+
+        if (!token || !usuarioGuardado) {
+            evento.preventDefault();
+            window.location.href = "../public/public_login.html";
+        }
+    });
+
+    document.body.appendChild(boton);
+}
+
+/**
  * Crea un menú pequeño para el botón hamburguesa en móvil.
  * Este menú reemplaza la barra lateral antigua y muestra rutas reales.
  */
@@ -695,6 +730,7 @@ document.addEventListener("DOMContentLoaded", () => {
     corregirEnlacesCiudadano();
     completarNavegacionCiudadano();
     crearMenuHamburguesaCiudadano();
+    crearBotonFlotanteReciclajeCiudadano();
     normalizarNavegacionAprendeCiudadano();
     cerrarOffcanvasViejoCiudadano();
     quitarModulosNoDeseadosCiudadano();

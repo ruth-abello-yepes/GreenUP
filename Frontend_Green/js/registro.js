@@ -143,6 +143,9 @@ function alternarVisibilidadContrasena(idCampo, boton) {
 function mostrarCamposEmpresa() {
   const tipoRegistro = document.getElementById("tipo_registro").value;
   const camposEmpresa = document.getElementById("campos-empresa");
+  const destinoEmpresa = tipoRegistro === "recicladora"
+    ? document.querySelector("#seccion-1 .row")
+    : document.querySelector("#seccion-2 .row");
   const esRecicladora = tipoRegistro === "recicladora";
   const campoNombres = document.getElementById("nombres");
   const campoApellidos = document.getElementById("apellidos");
@@ -152,6 +155,20 @@ function mostrarCamposEmpresa() {
   const campoDocumento = document.getElementById("numero_documento");
   const campoTipoDocumento = document.getElementById("id_tipo_documento");
   const campoUsuario = document.getElementById("usuario");
+  const camposEmpresaObligatorios = [
+    "nit_empresa",
+    "nombre_empresa",
+    "telefono_empresa",
+    "direccion_empresa",
+    "dias_trabajo",
+    "hora_inicio",
+    "hora_fin",
+    "camara_comercio",
+  ];
+
+  if (camposEmpresa && destinoEmpresa && camposEmpresa.parentElement !== destinoEmpresa) {
+    destinoEmpresa.appendChild(camposEmpresa);
+  }
 
   [
     campoNombres?.closest(".col-md-6"),
@@ -173,14 +190,24 @@ function mostrarCamposEmpresa() {
       }
     });
 
+  camposEmpresaObligatorios.forEach((idCampo) => {
+    const campo = document.getElementById(idCampo);
+    if (!campo) return;
+    if (esRecicladora) {
+      campo.setAttribute("required", "required");
+    } else {
+      campo.removeAttribute("required");
+    }
+  });
+
   if (campoCorreo) {
     campoCorreo.placeholder = esRecicladora ? "empresa@ejemplo.com" : "contacto@ejemplo.com";
   }
 
-  if (esRecicladora) {
+  if (esRecicladora && camposEmpresa) {
     camposEmpresa.classList.remove("d-none");
     cargarMaterialesRegistroRecicladora();
-  } else {
+  } else if (camposEmpresa) {
     camposEmpresa.classList.add("d-none");
   }
 }
@@ -209,8 +236,8 @@ function validarUsuarioRegistro(usuario) {
  * Se ejecuta antes de volver a validar para no dejar mensajes antiguos.
  */
 function limpiarMensajesRegistro() {
-  const campos = ["correo", "numero_documento", "usuario"];
-  const mensajes = ["mensaje-correo", "mensaje-documento", "mensaje-usuario"];
+  const campos = ["correo", "numero_documento", "usuario", "nit_empresa", "nombre_empresa"];
+  const mensajes = ["mensaje-correo", "mensaje-documento", "mensaje-usuario", "mensaje-nit", "mensaje-nombre-empresa"];
 
   campos.forEach((idCampo) => {
     document.getElementById(idCampo)?.classList.remove("is-invalid");
@@ -259,17 +286,25 @@ async function validarPasoDocumentoUsuario() {
   let puedeContinuar = true;
 
   if (tipoRegistro === "recicladora" && !nombreEmpresa) {
-    mostrarErrorRegistro("nombre_empresa", "mensaje-usuario", "El nombre de la empresa es obligatorio.");
+    mostrarErrorRegistro("nombre_empresa", "mensaje-nombre-empresa", "El nombre de la empresa es obligatorio.");
     puedeContinuar = false;
   }
 
   if (numeroDocumento.length < 5) {
-    mostrarErrorRegistro(tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento", "mensaje-documento", tipoRegistro === "recicladora" ? "El NIT debe tener mínimo 5 números." : MENSAJE_DOCUMENTO_INVALIDO);
+    mostrarErrorRegistro(
+      tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento",
+      tipoRegistro === "recicladora" ? "mensaje-nit" : "mensaje-documento",
+      tipoRegistro === "recicladora" ? "El NIT debe tener mínimo 5 números." : MENSAJE_DOCUMENTO_INVALIDO,
+    );
     puedeContinuar = false;
   }
 
   if (!validarUsuarioRegistro(usuario)) {
-    mostrarErrorRegistro("usuario", "mensaje-usuario", MENSAJE_USUARIO_CORTO);
+    mostrarErrorRegistro(
+      tipoRegistro === "recicladora" ? "nombre_empresa" : "usuario",
+      tipoRegistro === "recicladora" ? "mensaje-nombre-empresa" : "mensaje-usuario",
+      MENSAJE_USUARIO_CORTO,
+    );
     puedeContinuar = false;
   }
 
@@ -307,17 +342,29 @@ async function validarPasoDocumentoUsuario() {
     }
 
     if (datos.documento_registrado) {
-      mostrarErrorRegistro(tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento", "mensaje-documento", tipoRegistro === "recicladora" ? "NIT ya registrado." : "Cédula ya registrada.");
+      mostrarErrorRegistro(
+        tipoRegistro === "recicladora" ? "nit_empresa" : "numero_documento",
+        tipoRegistro === "recicladora" ? "mensaje-nit" : "mensaje-documento",
+        tipoRegistro === "recicladora" ? "NIT ya registrado." : "Cédula ya registrada.",
+      );
       puedeContinuar = false;
     }
 
     if (datos.usuario_registrado) {
-      mostrarErrorRegistro("usuario", "mensaje-usuario", "El usuario ya se encuentra registrado.");
+      mostrarErrorRegistro(
+        tipoRegistro === "recicladora" ? "nombre_empresa" : "usuario",
+        tipoRegistro === "recicladora" ? "mensaje-nombre-empresa" : "mensaje-usuario",
+        "El usuario ya se encuentra registrado.",
+      );
       puedeContinuar = false;
     }
 
     if (!datos.usuario_valido) {
-      mostrarErrorRegistro("usuario", "mensaje-usuario", MENSAJE_USUARIO_CORTO);
+      mostrarErrorRegistro(
+        tipoRegistro === "recicladora" ? "nombre_empresa" : "usuario",
+        tipoRegistro === "recicladora" ? "mensaje-nombre-empresa" : "mensaje-usuario",
+        MENSAJE_USUARIO_CORTO,
+      );
       puedeContinuar = false;
     }
 
@@ -425,6 +472,17 @@ async function siguientePaso() {
     return;
   }
 
+  if (document.getElementById("tipo_registro")?.value === "recicladora" && pasoActual === 1) {
+    const pasoValido = await validarPasoDocumentoUsuario();
+    if (!pasoValido) return;
+
+    document.getElementById("seccion-1").classList.add("d-none");
+    pasoActual = 3;
+    document.getElementById("seccion-3").classList.remove("d-none");
+    actualizarVistaPasos();
+    return;
+  }
+
   if (pasoActual === 2) {
     const pasoValido = await validarPasoDocumentoUsuario();
     if (!pasoValido) return;
@@ -447,6 +505,14 @@ async function siguientePaso() {
  * @function pasoAnterior
  */
 function pasoAnterior() {
+  if (document.getElementById("tipo_registro")?.value === "recicladora" && pasoActual === 3) {
+    document.getElementById("seccion-3").classList.add("d-none");
+    pasoActual = 1;
+    document.getElementById("seccion-1").classList.remove("d-none");
+    actualizarVistaPasos();
+    return;
+  }
+
   if (pasoActual > 1) {
     document.getElementById("seccion-" + pasoActual).classList.add("d-none");
     pasoActual = pasoActual - 1;
@@ -636,9 +702,11 @@ document.addEventListener("DOMContentLoaded", function () {
     campoContrasena.addEventListener("input", actualizarAyudaContrasena);
   }
 
-  // Pre-selecciona recicladora si viene desde un enlace específico
   if (tipoRegistro && parametros.get("tipo") === "recicladora") {
     tipoRegistro.value = "recicladora";
+  }
+
+  if (tipoRegistro) {
     mostrarCamposEmpresa();
   }
 });

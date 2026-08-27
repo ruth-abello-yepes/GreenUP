@@ -21,9 +21,11 @@ Roles:
 
 import os
 import random
+import smtplib
+import ssl
 from datetime import datetime, timedelta
+from email.message import EmailMessage
 from flask import current_app
-from flask_mail import Message
 import jwt
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
@@ -51,6 +53,37 @@ ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
 SEGUNDOS_EXPIRACION_RECUPERACION = 60
+
+
+def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
+    remitente = current_app.config.get("MAIL_DEFAULT_SENDER") or current_app.config.get("MAIL_USERNAME")
+    servidor = current_app.config.get("MAIL_SERVER") or "smtp.gmail.com"
+    puerto = int(current_app.config.get("MAIL_PORT") or 587)
+    usuario = current_app.config.get("MAIL_USERNAME")
+    password = current_app.config.get("MAIL_PASSWORD")
+    timeout = int(current_app.config.get("MAIL_TIMEOUT") or 20)
+
+    mensaje = EmailMessage()
+    mensaje["Subject"] = asunto
+    mensaje["From"] = remitente
+    mensaje["To"] = destinatario
+    mensaje.set_content(texto)
+    mensaje.add_alternative(html, subtype="html")
+
+    if current_app.config.get("MAIL_USE_SSL"):
+        contexto = ssl.create_default_context()
+        with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+            smtp.login(usuario, password)
+            smtp.send_message(mensaje)
+        return
+
+    with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
+        smtp.ehlo()
+        if current_app.config.get("MAIL_USE_TLS"):
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.ehlo()
+        smtp.login(usuario, password)
+        smtp.send_message(mensaje)
 
 
 def _crear_token(usuario):
@@ -260,18 +293,15 @@ def solicitar_codigo_recuperacion(datos):
         return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
 
     nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
-    msg = Message(
-        subject="Codigo para restablecer tu contrasena - GreenUP",
-        recipients=[correo]
-    )
-    msg.body = (
+    asunto = "Codigo para restablecer tu contrasena - GreenUP"
+    texto = (
         f"Sr(a) {nombre_usuario},\n\n"
         "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
         "Este codigo vence en 1 minuto. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
-    msg.html = f"""
+    html = f"""
     <div style="font-family:Arial,sans-serif;color:#102033;line-height:1.5">
       <h2 style="color:#003d6c;margin-bottom:8px">Restablecer contrasena GreenUP</h2>
       <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
@@ -283,13 +313,12 @@ def solicitar_codigo_recuperacion(datos):
     </div>
     """
     try:
-        from app import mail
-        mail.send(msg)
+        _enviar_codigo_por_smtp(correo, asunto, texto, html)
     except Exception as error:
         print(f"Error enviando correo de recuperacion GreenUP: {error}")
         return {
             "mensaje": "No se pudo enviar el correo. Revisa el correo remitente y la contrasena de aplicacion en Render.",
-            "detalle": "SMTP rechazo o no completo el envio"
+            "detalle": str(error)[:180]
         }, 502
 
     return {

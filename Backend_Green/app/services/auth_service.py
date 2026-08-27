@@ -21,6 +21,7 @@ Roles:
 
 import os
 import random
+import socket
 import smtplib
 import ssl
 from datetime import datetime, timedelta
@@ -55,6 +56,21 @@ INTENTOS_LOGIN = {}
 SEGUNDOS_EXPIRACION_RECUPERACION = 60
 
 
+def _resolver_smtp_por_ipv4(funcion_envio):
+    getaddrinfo_original = socket.getaddrinfo
+
+    def getaddrinfo_ipv4(*args, **kwargs):
+        resultados = getaddrinfo_original(*args, **kwargs)
+        resultados_ipv4 = [item for item in resultados if item[0] == socket.AF_INET]
+        return resultados_ipv4 or resultados
+
+    socket.getaddrinfo = getaddrinfo_ipv4
+    try:
+        funcion_envio()
+    finally:
+        socket.getaddrinfo = getaddrinfo_original
+
+
 def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
     remitente = current_app.config.get("MAIL_DEFAULT_SENDER") or current_app.config.get("MAIL_USERNAME")
     servidor = current_app.config.get("MAIL_SERVER") or "smtp.gmail.com"
@@ -70,20 +86,23 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
     mensaje.set_content(texto)
     mensaje.add_alternative(html, subtype="html")
 
-    if current_app.config.get("MAIL_USE_SSL"):
-        contexto = ssl.create_default_context()
-        with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+    def enviar():
+        if current_app.config.get("MAIL_USE_SSL"):
+            contexto = ssl.create_default_context()
+            with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+                smtp.login(usuario, password)
+                smtp.send_message(mensaje)
+            return
+
+        with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
+            smtp.ehlo()
+            if current_app.config.get("MAIL_USE_TLS"):
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.ehlo()
             smtp.login(usuario, password)
             smtp.send_message(mensaje)
-        return
 
-    with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
-        smtp.ehlo()
-        if current_app.config.get("MAIL_USE_TLS"):
-            smtp.starttls(context=ssl.create_default_context())
-            smtp.ehlo()
-        smtp.login(usuario, password)
-        smtp.send_message(mensaje)
+    _resolver_smtp_por_ipv4(enviar)
 
 
 def _crear_token(usuario):

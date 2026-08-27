@@ -159,8 +159,8 @@ function configurarSolicitudCodigo() {
     } catch (error) {
       console.error("Error solicitando codigo:", error);
       const mensaje = error.name === "AbortError"
-        ? "El servidor tardo demasiado en responder. Intenta nuevamente en unos segundos."
-        : "Error de conexion con el servidor. Verifica que el backend este activo.";
+        ? "No pudimos completar el envio. Intenta nuevamente."
+        : "No pudimos conectar con el servidor. Intenta nuevamente.";
       alert(mensaje);
     } finally {
       btnEnviar.disabled = false;

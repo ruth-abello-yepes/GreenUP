@@ -21,6 +21,7 @@ Roles:
 
 import os
 import random
+import threading
 from datetime import datetime, timedelta
 from flask import current_app
 from flask_mail import Message
@@ -50,6 +51,15 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
+
+
+def _enviar_correo_recuperacion_async(app, mensaje):
+    with app.app_context():
+        try:
+            from app import mail
+            mail.send(mensaje)
+        except Exception as error:
+            print(f"Error enviando correo de recuperacion GreenUP: {error}")
 
 
 def _crear_token(usuario):
@@ -244,51 +254,55 @@ def solicitar_codigo_recuperacion(datos):
             "mensaje": "No existe una cuenta registrada con ese correo electronico."
         }, 404
 
+    if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
+        return {
+            "mensaje": "El correo de recuperacion no esta configurado en el servidor. Agrega MAIL_USERNAME y MAIL_PASSWORD en Render.",
+            "detalle": "Faltan credenciales SMTP"
+        }, 500
+
     try:
-        from app import mail
-
-        if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
-            return {
-                "mensaje": "El correo de recuperacion no esta configurado en el servidor. Agrega MAIL_USERNAME y MAIL_PASSWORD en Render.",
-                "detalle": "Faltan credenciales SMTP"
-            }, 500
-
         codigo = str(random.randint(100000, 999999))
         expiracion = datetime.now() + timedelta(seconds=30)
-        nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
-        msg = Message(
-            subject="Codigo para restablecer tu contrasena - GreenUP",
-            recipients=[correo]
-        )
-        msg.body = (
-            f"Sr(a) {nombre_usuario},\n\n"
-            "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
-            f"Tu codigo de verificacion es: {codigo}\n\n"
-            "Este codigo vence en 30 segundos. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
-            "Equipo GreenUP"
-        )
-        msg.html = f"""
-        <div style="font-family:Arial,sans-serif;color:#102033;line-height:1.5">
-          <h2 style="color:#003d6c;margin-bottom:8px">Restablecer contrasena GreenUP</h2>
-          <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
-          <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
-          <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
-          <p style="margin-top:20px">Este codigo vence en <strong>30 segundos</strong>.</p>
-          <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-          <p style="color:#607080">Equipo GreenUP</p>
-        </div>
-        """
-        mail.send(msg)
         guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
-        return {
-            "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
-            "enviado": True,
-            "expira_en_segundos": 30
-        }, 200
+    except Exception as error:
+        print(f"Error guardando codigo de recuperacion: {error}")
+        return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
 
-    except Exception as e:
-        print(f"Error enviando correo: {e}")
-        return {"mensaje": "Error al enviar el correo electronico. Intente mas tarde."}, 500
+    nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
+    msg = Message(
+        subject="Codigo para restablecer tu contrasena - GreenUP",
+        recipients=[correo]
+    )
+    msg.body = (
+        f"Sr(a) {nombre_usuario},\n\n"
+        "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
+        f"Tu codigo de verificacion es: {codigo}\n\n"
+        "Este codigo vence en 30 segundos. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Equipo GreenUP"
+    )
+    msg.html = f"""
+    <div style="font-family:Arial,sans-serif;color:#102033;line-height:1.5">
+      <h2 style="color:#003d6c;margin-bottom:8px">Restablecer contrasena GreenUP</h2>
+      <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
+      <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
+      <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
+      <p style="margin-top:20px">Este codigo vence en <strong>30 segundos</strong>.</p>
+      <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+      <p style="color:#607080">Equipo GreenUP</p>
+    </div>
+    """
+    app = current_app._get_current_object()
+    threading.Thread(
+        target=_enviar_correo_recuperacion_async,
+        args=(app, msg),
+        daemon=True
+    ).start()
+
+    return {
+        "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
+        "enviado": True,
+        "expira_en_segundos": 30
+    }, 200
 
 
 def restablecer_contrasena(datos):

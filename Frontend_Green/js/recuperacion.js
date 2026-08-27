@@ -15,7 +15,16 @@ async function enviarRecuperacion(endpoint, datos) {
     });
 
     const texto = await respuesta.text();
-    const data = texto ? JSON.parse(texto) : {};
+    let data = {};
+    try {
+      data = texto ? JSON.parse(texto) : {};
+    } catch (error) {
+      data = {
+        mensaje: respuesta.ok
+          ? "Respuesta inesperada del servidor."
+          : "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
+      };
+    }
     return { ok: respuesta.ok, data };
   } finally {
     window.clearTimeout(timeout);
@@ -169,7 +178,11 @@ function configurarSolicitudCodigo() {
       const mensaje = error.name === "AbortError"
         ? "El correo esta tardando mas de lo esperado. Intenta nuevamente."
         : "No pudimos conectar con el servidor. Intenta nuevamente.";
-      alert(mensaje);
+      if (window.greenupAlert) {
+        window.greenupAlert(mensaje, "Recuperar contraseña");
+      } else {
+        alert(mensaje);
+      }
     } finally {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Enviar codigo de verificacion";

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_mail import Mail
 
@@ -49,12 +49,23 @@ def _origenes_cors_permitidos():
 
 def crear_app():
     app = Flask(__name__)
+    origenes_permitidos = _origenes_cors_permitidos()
 
     CORS(
         app,
-        resources={r"/*": {"origins": _origenes_cors_permitidos()}},
+        resources={r"/*": {"origins": origenes_permitidos}},
         supports_credentials=False,
     )
+
+    @app.after_request
+    def agregar_cors_a_todas_las_respuestas(respuesta):
+        origen = request.headers.get("Origin")
+        if origen in origenes_permitidos:
+            respuesta.headers["Access-Control-Allow-Origin"] = origen
+            respuesta.headers["Vary"] = "Origin"
+            respuesta.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            respuesta.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        return respuesta
 
     # Permitir hasta 2 MB en el body (necesario para fotos de perfil en base64)
     app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024

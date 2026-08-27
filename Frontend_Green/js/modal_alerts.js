@@ -21,24 +21,26 @@
         display: grid;
         place-items: center;
         padding: 20px;
-        background: rgba(6, 18, 31, .54);
+        background: rgba(5, 15, 28, .62);
         backdrop-filter: blur(4px);
       }
       .greenup-modal-card {
         width: min(520px, 100%);
         max-height: min(82vh, 680px);
         overflow: auto;
-        border: 1px solid rgba(19, 103, 52, .18);
-        border-radius: 24px;
-        background: #fffef7;
-        box-shadow: 0 28px 80px rgba(0, 0, 0, .22);
-        color: #121826;
+        border: 1px solid #cfe7d8;
+        border-radius: 22px;
+        background: #ffffff !important;
+        box-shadow: 0 28px 80px rgba(0, 0, 0, .28);
+        color: #102033 !important;
       }
       .greenup-modal-header {
         display: flex;
         gap: 14px;
         align-items: flex-start;
-        padding: 26px 26px 10px;
+        padding: 26px 26px 18px;
+        background: #f4fbf7;
+        border-bottom: 1px solid #dbeee4;
       }
       .greenup-modal-icon {
         flex: 0 0 auto;
@@ -47,20 +49,22 @@
         width: 44px;
         height: 44px;
         border-radius: 16px;
-        background: #e8f5ee;
-        color: #128246;
+        background: #0b7d3b;
+        color: #ffffff;
         font-weight: 900;
+        box-shadow: 0 8px 18px rgba(11, 125, 59, .24);
       }
       .greenup-modal-title {
         margin: 0;
         font: 800 1.25rem/1.25 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: #003e6b;
+        color: #003b6f !important;
       }
       .greenup-modal-message {
         margin: 8px 0 0;
         white-space: pre-line;
-        color: #4f5b6b;
+        color: #26384d !important;
         line-height: 1.55;
+        font-weight: 500;
       }
       .greenup-modal-body {
         padding: 8px 26px 0;
@@ -83,6 +87,7 @@
         justify-content: flex-end;
         gap: 12px;
         padding: 22px 26px 26px;
+        background: #ffffff;
       }
       .greenup-modal-button {
         min-height: 44px;
@@ -90,19 +95,28 @@
         border-radius: 999px;
         padding: 0 22px;
         background: #fff;
-        color: #003e6b;
+        color: #003b6f !important;
         font-weight: 800;
         cursor: pointer;
       }
       .greenup-modal-button.primary {
-        border-color: #128246;
-        background: #128246;
-        color: #fff;
+        border-color: #075c2e;
+        background: #0b7d3b !important;
+        color: #ffffff !important;
+        box-shadow: 0 10px 22px rgba(11, 125, 59, .22);
       }
       .greenup-modal-button.danger {
         border-color: #b42318;
-        background: #b42318;
-        color: #fff;
+        background: #b42318 !important;
+        color: #fff !important;
+      }
+      .greenup-modal-button:hover {
+        filter: brightness(.96);
+        transform: translateY(-1px);
+      }
+      .greenup-modal-button:focus-visible {
+        outline: 3px solid rgba(0, 91, 172, .28);
+        outline-offset: 3px;
       }
       @media (max-width: 520px) {
         .greenup-modal-backdrop { padding: 14px; }

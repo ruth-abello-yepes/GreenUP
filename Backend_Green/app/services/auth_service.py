@@ -22,6 +22,7 @@ Roles:
 import os
 import random
 from datetime import datetime, timedelta
+from flask import current_app
 from flask_mail import Message
 import jwt
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
@@ -244,14 +245,17 @@ def solicitar_codigo_recuperacion(datos):
             "expira_en_segundos": 30
         }, 200
 
-    codigo = str(random.randint(100000, 999999))
-    expiracion = datetime.now() + timedelta(seconds=30)
-
-    guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
-
     try:
         from app import mail
 
+        if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
+            return {
+                "mensaje": "El correo de recuperacion no esta configurado en el servidor. Agrega MAIL_USERNAME y MAIL_PASSWORD en Render.",
+                "detalle": "Faltan credenciales SMTP"
+            }, 500
+
+        codigo = str(random.randint(100000, 999999))
+        expiracion = datetime.now() + timedelta(seconds=30)
         nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
         msg = Message(
             subject="Codigo para restablecer tu contrasena - GreenUP",
@@ -276,6 +280,7 @@ def solicitar_codigo_recuperacion(datos):
         </div>
         """
         mail.send(msg)
+        guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
         return {
             "mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion.",
             "expira_en_segundos": 30

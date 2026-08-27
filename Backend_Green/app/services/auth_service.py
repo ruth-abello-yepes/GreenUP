@@ -280,7 +280,7 @@ def solicitar_codigo_recuperacion(datos):
 
     if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
         return {
-            "mensaje": "El correo de recuperacion no esta configurado en el servidor. Agrega MAIL_USERNAME y MAIL_PASSWORD en Render.",
+            "mensaje": "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
             "detalle": "Faltan credenciales SMTP"
         }, 500
 
@@ -317,7 +317,7 @@ def solicitar_codigo_recuperacion(datos):
     except Exception as error:
         print(f"Error enviando correo de recuperacion GreenUP: {error}")
         return {
-            "mensaje": "No se pudo enviar el correo. Revisa el correo remitente y la contrasena de aplicacion en Render.",
+            "mensaje": "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
             "detalle": str(error)[:180]
         }, 502
 

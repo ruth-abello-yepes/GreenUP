@@ -156,7 +156,14 @@ function configurarSolicitudCodigo() {
         return;
       }
 
-      alert(respuesta.data.mensaje || "No se pudo enviar el correo de verificacion.");
+      if (window.greenupAlert) {
+        window.greenupAlert(
+          respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.",
+          "Recuperar contraseña"
+        );
+      } else {
+        alert(respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.");
+      }
     } catch (error) {
       console.error("Error solicitando codigo:", error);
       const mensaje = error.name === "AbortError"

@@ -1,14 +1,25 @@
 const RECUPERACION_API = "https://greenup-hoxj.onrender.com/api/recuperar-contrasena";
+const RECUPERACION_TIMEOUT_MS = 45000;
+const RECUPERACION_EXPIRA_SEGUNDOS = 60;
 
 async function enviarRecuperacion(endpoint, datos) {
-  const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos),
-  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), RECUPERACION_TIMEOUT_MS);
 
-  const data = await respuesta.json();
-  return { ok: respuesta.ok, data };
+  try {
+    const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+      signal: controller.signal,
+    });
+
+    const texto = await respuesta.text();
+    const data = texto ? JSON.parse(texto) : {};
+    return { ok: respuesta.ok, data };
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 function getCorreoRecuperacion() {
@@ -21,6 +32,19 @@ function getCorreoPrellenado() {
 
 function getCodigoRecuperacion() {
   return localStorage.getItem("codigo_recuperacion") || "";
+}
+
+function guardarExpiracionCodigo(segundos = RECUPERACION_EXPIRA_SEGUNDOS) {
+  const expiraEn = Date.now() + Number(segundos || RECUPERACION_EXPIRA_SEGUNDOS) * 1000;
+  localStorage.setItem("codigo_recuperacion_expira", String(expiraEn));
+}
+
+function getExpiracionCodigo() {
+  return Number(localStorage.getItem("codigo_recuperacion_expira") || 0);
+}
+
+function limpiarExpiracionCodigo() {
+  localStorage.removeItem("codigo_recuperacion_expira");
 }
 
 function evaluarContrasena(contrasena) {
@@ -123,18 +147,29 @@ function configurarSolicitudCodigo() {
     try {
       const respuesta = await enviarRecuperacion("solicitar", { correo });
 
-      if (respuesta.ok) {
+      if (respuesta.ok && respuesta.data.enviado) {
         localStorage.setItem("correo_recuperacion", correo);
+        guardarExpiracionCodigo(respuesta.data.expira_en_segundos || RECUPERACION_EXPIRA_SEGUNDOS);
         localStorage.removeItem("correo_recuperacion_prellenado");
         localStorage.removeItem("codigo_recuperacion");
         window.location.href = "public_verificar_codigo.html";
         return;
       }
 
-      alert(respuesta.data.mensaje || "No se pudo enviar el correo de verificacion.");
+      if (window.greenupAlert) {
+        window.greenupAlert(
+          respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.",
+          "Recuperar contraseña"
+        );
+      } else {
+        alert(respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.");
+      }
     } catch (error) {
       console.error("Error solicitando codigo:", error);
-      alert("Error de conexion con el servidor. Verifica que Flask este ejecutandose.");
+      const mensaje = error.name === "AbortError"
+        ? "El correo esta tardando mas de lo esperado. Intenta nuevamente."
+        : "No pudimos conectar con el servidor. Intenta nuevamente.";
+      alert(mensaje);
     } finally {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Enviar codigo de verificacion";
@@ -171,6 +206,37 @@ function configurarOtp() {
   });
 }
 
+function iniciarContadorCodigo() {
+  const contador = document.getElementById("contadorCodigo");
+  if (!contador) return;
+
+  const texto = contador.querySelector("span:last-child") || contador;
+  let intervalo = null;
+
+  const actualizar = () => {
+    const restante = Math.max(0, Math.ceil((getExpiracionCodigo() - Date.now()) / 1000));
+    texto.textContent = restante > 0 ? `Vence en ${restante} s` : "Código vencido";
+    contador.classList.toggle("expired", restante <= 0);
+
+    document.querySelectorAll(".otp-input").forEach((input) => {
+      input.disabled = restante <= 0;
+    });
+
+    const boton = document.querySelector("#formVerificarCodigo button[type='submit']");
+    if (boton && restante <= 0) {
+      boton.disabled = true;
+      boton.innerHTML = 'Solicita un código nuevo <span class="material-symbols-outlined">refresh</span>';
+    }
+
+    if (restante <= 0 && intervalo) {
+      clearInterval(intervalo);
+    }
+  };
+
+  actualizar();
+  intervalo = window.setInterval(actualizar, 1000);
+}
+
 function configurarVerificacionCodigo() {
   const formVerificar = document.getElementById("formVerificarCodigo");
   if (!formVerificar) return;
@@ -187,8 +253,16 @@ function configurarVerificacionCodigo() {
     textoAyuda.textContent = `Escribe el codigo de 6 digitos que enviamos a ${correo}.`;
   }
 
+  iniciarContadorCodigo();
+
   formVerificar.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (getExpiracionCodigo() && Date.now() > getExpiracionCodigo()) {
+      alert("El codigo vencio. Solicita uno nuevo.");
+      window.location.href = "public_recuperar_contrasena.html";
+      return;
+    }
 
     const codigo = [...document.querySelectorAll(".otp-input")]
       .map((input) => input.value.trim())
@@ -204,6 +278,7 @@ function configurarVerificacionCodigo() {
 
       if (respuesta.ok) {
         localStorage.setItem("codigo_recuperacion", codigo);
+        limpiarExpiracionCodigo();
         window.location.href = "public_nueva_contrasena.html";
         return;
       }
@@ -265,6 +340,7 @@ function configurarNuevaContrasena() {
       if (respuesta.ok) {
         localStorage.removeItem("correo_recuperacion");
         localStorage.removeItem("codigo_recuperacion");
+        limpiarExpiracionCodigo();
         localStorage.removeItem("usuario");
         localStorage.removeItem("token");
         alert("Contrasena actualizada. Ya puedes iniciar sesion.");

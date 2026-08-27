@@ -21,8 +21,12 @@ Roles:
 
 import os
 import random
+import socket
+import smtplib
+import ssl
 from datetime import datetime, timedelta
-from flask_mail import Message
+from email.message import EmailMessage
+from flask import current_app
 import jwt
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
@@ -49,6 +53,56 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
+SEGUNDOS_EXPIRACION_RECUPERACION = 60
+
+
+def _resolver_smtp_por_ipv4(funcion_envio):
+    getaddrinfo_original = socket.getaddrinfo
+
+    def getaddrinfo_ipv4(*args, **kwargs):
+        resultados = getaddrinfo_original(*args, **kwargs)
+        resultados_ipv4 = [item for item in resultados if item[0] == socket.AF_INET]
+        return resultados_ipv4 or resultados
+
+    socket.getaddrinfo = getaddrinfo_ipv4
+    try:
+        funcion_envio()
+    finally:
+        socket.getaddrinfo = getaddrinfo_original
+
+
+def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
+    remitente = current_app.config.get("MAIL_DEFAULT_SENDER") or current_app.config.get("MAIL_USERNAME")
+    servidor = current_app.config.get("MAIL_SERVER") or "smtp.gmail.com"
+    puerto = int(current_app.config.get("MAIL_PORT") or 587)
+    usuario = current_app.config.get("MAIL_USERNAME")
+    password = current_app.config.get("MAIL_PASSWORD")
+    timeout = int(current_app.config.get("MAIL_TIMEOUT") or 20)
+
+    mensaje = EmailMessage()
+    mensaje["Subject"] = asunto
+    mensaje["From"] = remitente
+    mensaje["To"] = destinatario
+    mensaje.set_content(texto)
+    mensaje.add_alternative(html, subtype="html")
+
+    def enviar():
+        if current_app.config.get("MAIL_USE_SSL"):
+            contexto = ssl.create_default_context()
+            with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+                smtp.login(usuario, password)
+                smtp.send_message(mensaje)
+            return
+
+        with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
+            smtp.ehlo()
+            if current_app.config.get("MAIL_USE_TLS"):
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.ehlo()
+            smtp.login(usuario, password)
+            smtp.send_message(mensaje)
+
+    _resolver_smtp_por_ipv4(enviar)
 
 
 def _crear_token(usuario):
@@ -231,7 +285,7 @@ def servicio_login_admin(datos):
 
 
 def solicitar_codigo_recuperacion(datos):
-    correo = datos.get("correo")
+    correo = (datos.get("correo") or "").strip().lower()
 
     if not correo:
         return {"mensaje": "El correo electronico es obligatorio"}, 400
@@ -239,27 +293,58 @@ def solicitar_codigo_recuperacion(datos):
     usuario = buscar_usuario_por_correo(correo)
 
     if not usuario:
-        return {"mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion."}, 200
+        return {
+            "mensaje": "No existe una cuenta registrada con ese correo electronico."
+        }, 404
 
-    codigo = str(random.randint(100000, 999999))
-    expiracion = datetime.now() + timedelta(minutes=15)
-
-    guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
+    if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
+        return {
+            "mensaje": "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
+            "detalle": "Faltan credenciales SMTP"
+        }, 500
 
     try:
-        from app import mail
+        codigo = str(random.randint(100000, 999999))
+        expiracion = datetime.now() + timedelta(seconds=SEGUNDOS_EXPIRACION_RECUPERACION)
+        guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
+    except Exception as error:
+        print(f"Error guardando codigo de recuperacion: {error}")
+        return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
 
-        msg = Message(
-            subject="Codigo de Recuperacion de Contrasena - GreenUP",
-            recipients=[correo]
-        )
-        msg.body = f"Hola {usuario['nombres']},\n\nTu codigo de verificacion es: {codigo}\n\nEste codigo expira en 15 minutos."
-        mail.send(msg)
-        return {"mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion."}, 200
+    nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
+    asunto = "Codigo para restablecer tu contrasena - GreenUP"
+    texto = (
+        f"Sr(a) {nombre_usuario},\n\n"
+        "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
+        f"Tu codigo de verificacion es: {codigo}\n\n"
+        "Este codigo vence en 1 minuto. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Equipo GreenUP"
+    )
+    html = f"""
+    <div style="font-family:Arial,sans-serif;color:#102033;line-height:1.5">
+      <h2 style="color:#003d6c;margin-bottom:8px">Restablecer contrasena GreenUP</h2>
+      <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
+      <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
+      <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
+      <p style="margin-top:20px">Este codigo vence en <strong>1 minuto</strong>.</p>
+      <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+      <p style="color:#607080">Equipo GreenUP</p>
+    </div>
+    """
+    try:
+        _enviar_codigo_por_smtp(correo, asunto, texto, html)
+    except Exception as error:
+        print(f"Error enviando correo de recuperacion GreenUP: {error}")
+        return {
+            "mensaje": "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
+            "detalle": str(error)[:180]
+        }, 502
 
-    except Exception as e:
-        print(f"Error enviando correo: {e}")
-        return {"mensaje": "Error al enviar el correo electronico. Intente mas tarde."}, 500
+    return {
+        "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
+        "enviado": True,
+        "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
+    }, 200
 
 
 def restablecer_contrasena(datos):

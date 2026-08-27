@@ -1,5 +1,6 @@
 const RECUPERACION_API = "https://greenup-hoxj.onrender.com/api/recuperar-contrasena";
-const RECUPERACION_TIMEOUT_MS = 15000;
+const RECUPERACION_TIMEOUT_MS = 45000;
+const RECUPERACION_EXPIRA_SEGUNDOS = 60;
 
 async function enviarRecuperacion(endpoint, datos) {
   const controller = new AbortController();
@@ -33,8 +34,8 @@ function getCodigoRecuperacion() {
   return localStorage.getItem("codigo_recuperacion") || "";
 }
 
-function guardarExpiracionCodigo(segundos = 30) {
-  const expiraEn = Date.now() + Number(segundos || 30) * 1000;
+function guardarExpiracionCodigo(segundos = RECUPERACION_EXPIRA_SEGUNDOS) {
+  const expiraEn = Date.now() + Number(segundos || RECUPERACION_EXPIRA_SEGUNDOS) * 1000;
   localStorage.setItem("codigo_recuperacion_expira", String(expiraEn));
 }
 
@@ -148,7 +149,7 @@ function configurarSolicitudCodigo() {
 
       if (respuesta.ok && respuesta.data.enviado) {
         localStorage.setItem("correo_recuperacion", correo);
-        guardarExpiracionCodigo(respuesta.data.expira_en_segundos || 30);
+        guardarExpiracionCodigo(respuesta.data.expira_en_segundos || RECUPERACION_EXPIRA_SEGUNDOS);
         localStorage.removeItem("correo_recuperacion_prellenado");
         localStorage.removeItem("codigo_recuperacion");
         window.location.href = "public_verificar_codigo.html";
@@ -159,7 +160,7 @@ function configurarSolicitudCodigo() {
     } catch (error) {
       console.error("Error solicitando codigo:", error);
       const mensaje = error.name === "AbortError"
-        ? "No pudimos completar el envio. Intenta nuevamente."
+        ? "El correo esta tardando mas de lo esperado. Intenta nuevamente."
         : "No pudimos conectar con el servidor. Intenta nuevamente.";
       alert(mensaje);
     } finally {

@@ -64,9 +64,20 @@ def crear_app():
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_TIMEOUT'] = int(os.getenv('MAIL_TIMEOUT', '10'))
-    mail_username = os.getenv('MAIL_USERNAME') or os.getenv('SMTP_USERNAME') or os.getenv('EMAIL_USER')
-    mail_password = os.getenv('MAIL_PASSWORD') or os.getenv('SMTP_PASSWORD') or os.getenv('EMAIL_PASSWORD')
+    app.config['MAIL_TIMEOUT'] = int(os.getenv('MAIL_TIMEOUT', '20'))
+    mail_username = (
+        os.getenv('MAIL_USERNAME')
+        or os.getenv('SMTP_USERNAME')
+        or os.getenv('EMAIL_USER')
+        or os.getenv('GMAIL_USER')
+    )
+    mail_password = (
+        os.getenv('MAIL_PASSWORD')
+        or os.getenv('SMTP_PASSWORD')
+        or os.getenv('EMAIL_PASSWORD')
+        or os.getenv('GMAIL_APP_PASSWORD')
+        or os.getenv('GMAIL_PASSWORD')
+    )
     app.config['MAIL_USERNAME'] = mail_username
     app.config['MAIL_PASSWORD'] = mail_password
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER') or mail_username

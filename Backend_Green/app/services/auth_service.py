@@ -50,6 +50,7 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
+SEGUNDOS_EXPIRACION_RECUPERACION = 60
 
 
 def _crear_token(usuario):
@@ -252,7 +253,7 @@ def solicitar_codigo_recuperacion(datos):
 
     try:
         codigo = str(random.randint(100000, 999999))
-        expiracion = datetime.now() + timedelta(seconds=30)
+        expiracion = datetime.now() + timedelta(seconds=SEGUNDOS_EXPIRACION_RECUPERACION)
         guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
     except Exception as error:
         print(f"Error guardando codigo de recuperacion: {error}")
@@ -267,7 +268,7 @@ def solicitar_codigo_recuperacion(datos):
         f"Sr(a) {nombre_usuario},\n\n"
         "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
-        "Este codigo vence en 30 segundos. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Este codigo vence en 1 minuto. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
     msg.html = f"""
@@ -276,7 +277,7 @@ def solicitar_codigo_recuperacion(datos):
       <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
       <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
-      <p style="margin-top:20px">Este codigo vence en <strong>30 segundos</strong>.</p>
+      <p style="margin-top:20px">Este codigo vence en <strong>1 minuto</strong>.</p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
       <p style="color:#607080">Equipo GreenUP</p>
     </div>
@@ -287,14 +288,14 @@ def solicitar_codigo_recuperacion(datos):
     except Exception as error:
         print(f"Error enviando correo de recuperacion GreenUP: {error}")
         return {
-            "mensaje": "No se pudo enviar el correo. Revisa MAIL_USERNAME y MAIL_PASSWORD en Render.",
+            "mensaje": "No se pudo enviar el correo. Revisa el correo remitente y la contrasena de aplicacion en Render.",
             "detalle": "SMTP rechazo o no completo el envio"
         }, 502
 
     return {
         "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
         "enviado": True,
-        "expira_en_segundos": 30
+        "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
     }, 200
 
 

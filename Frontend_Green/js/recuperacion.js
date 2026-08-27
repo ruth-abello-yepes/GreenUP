@@ -23,6 +23,19 @@ function getCodigoRecuperacion() {
   return localStorage.getItem("codigo_recuperacion") || "";
 }
 
+function guardarExpiracionCodigo(segundos = 30) {
+  const expiraEn = Date.now() + Number(segundos || 30) * 1000;
+  localStorage.setItem("codigo_recuperacion_expira", String(expiraEn));
+}
+
+function getExpiracionCodigo() {
+  return Number(localStorage.getItem("codigo_recuperacion_expira") || 0);
+}
+
+function limpiarExpiracionCodigo() {
+  localStorage.removeItem("codigo_recuperacion_expira");
+}
+
 function evaluarContrasena(contrasena) {
   return {
     length: contrasena.length >= 8,
@@ -125,6 +138,7 @@ function configurarSolicitudCodigo() {
 
       if (respuesta.ok) {
         localStorage.setItem("correo_recuperacion", correo);
+        guardarExpiracionCodigo(respuesta.data.expira_en_segundos || 30);
         localStorage.removeItem("correo_recuperacion_prellenado");
         localStorage.removeItem("codigo_recuperacion");
         window.location.href = "public_verificar_codigo.html";
@@ -171,6 +185,37 @@ function configurarOtp() {
   });
 }
 
+function iniciarContadorCodigo() {
+  const contador = document.getElementById("contadorCodigo");
+  if (!contador) return;
+
+  const texto = contador.querySelector("span:last-child") || contador;
+  let intervalo = null;
+
+  const actualizar = () => {
+    const restante = Math.max(0, Math.ceil((getExpiracionCodigo() - Date.now()) / 1000));
+    texto.textContent = restante > 0 ? `Vence en ${restante} s` : "Código vencido";
+    contador.classList.toggle("expired", restante <= 0);
+
+    document.querySelectorAll(".otp-input").forEach((input) => {
+      input.disabled = restante <= 0;
+    });
+
+    const boton = document.querySelector("#formVerificarCodigo button[type='submit']");
+    if (boton && restante <= 0) {
+      boton.disabled = true;
+      boton.innerHTML = 'Solicita un código nuevo <span class="material-symbols-outlined">refresh</span>';
+    }
+
+    if (restante <= 0 && intervalo) {
+      clearInterval(intervalo);
+    }
+  };
+
+  actualizar();
+  intervalo = window.setInterval(actualizar, 1000);
+}
+
 function configurarVerificacionCodigo() {
   const formVerificar = document.getElementById("formVerificarCodigo");
   if (!formVerificar) return;
@@ -187,8 +232,16 @@ function configurarVerificacionCodigo() {
     textoAyuda.textContent = `Escribe el codigo de 6 digitos que enviamos a ${correo}.`;
   }
 
+  iniciarContadorCodigo();
+
   formVerificar.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (getExpiracionCodigo() && Date.now() > getExpiracionCodigo()) {
+      alert("El codigo vencio. Solicita uno nuevo.");
+      window.location.href = "public_recuperar_contrasena.html";
+      return;
+    }
 
     const codigo = [...document.querySelectorAll(".otp-input")]
       .map((input) => input.value.trim())
@@ -204,6 +257,7 @@ function configurarVerificacionCodigo() {
 
       if (respuesta.ok) {
         localStorage.setItem("codigo_recuperacion", codigo);
+        limpiarExpiracionCodigo();
         window.location.href = "public_nueva_contrasena.html";
         return;
       }
@@ -265,6 +319,7 @@ function configurarNuevaContrasena() {
       if (respuesta.ok) {
         localStorage.removeItem("correo_recuperacion");
         localStorage.removeItem("codigo_recuperacion");
+        limpiarExpiracionCodigo();
         localStorage.removeItem("usuario");
         localStorage.removeItem("token");
         alert("Contrasena actualizada. Ya puedes iniciar sesion.");

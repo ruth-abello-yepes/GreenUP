@@ -26,19 +26,19 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+            background: linear-gradient(180deg, #f5fbf7 0%, #ffffff 48%);
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 16px;
         }
 
         .login-card {
             width: 100%;
             max-width: 1120px;
-            height: calc(100vh - 20px);
-            max-height: calc(100vh - 20px);
+            min-height: min(680px, calc(100vh - 32px));
             background-color: var(--color-surface-lowest);
             border-radius: 24px;
             overflow: hidden;
@@ -64,19 +64,51 @@
             margin-bottom: 20px;
         }
 
-        /* Estilos del código OTP */
+        .recovery-title {
+            color: var(--color-primary);
+            font-size: clamp(2rem, 8vw, 3.2rem);
+            letter-spacing: 0;
+            line-height: 1.05;
+        }
+
+        .recovery-help {
+            color: var(--color-on-surface-variant);
+            font-size: clamp(1rem, 4vw, 1.18rem);
+            line-height: 1.5;
+        }
+
+        .timer-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #eaf5ef;
+            color: #0f6b2f;
+            font-weight: 800;
+            margin: 6px 0 14px;
+        }
+
+        .timer-box.expired {
+            background: #fdecec;
+            color: #b42318;
+        }
+
         .otp-container {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: clamp(6px, 2.4vw, 12px);
+            justify-content: stretch;
             margin: 25px 0;
         }
 
         .otp-input {
-            width: 50px;
-            height: 60px;
+            width: 100%;
+            min-width: 0;
+            aspect-ratio: 1 / 1.15;
+            max-height: 62px;
             text-align: center;
-            font-size: 24px;
+            font-size: clamp(20px, 7vw, 26px);
             font-weight: 700;
             background-color: var(--color-surface-bright);
             border: 2px solid var(--color-outline-variant);
@@ -124,6 +156,41 @@
             inset: 0;
             background: linear-gradient(135deg, rgba(0, 61, 108, 0.6) 0%, rgba(41, 108, 31, 0.4) 100%);
         }
+
+        @media (max-width: 767.98px) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .login-card {
+                min-height: auto;
+                border-radius: 20px;
+                box-shadow: none;
+            }
+
+            .form-col {
+                min-height: calc(100vh - 20px);
+                justify-content: flex-start;
+                padding: 24px 18px 30px;
+            }
+
+            .btn-back {
+                margin-bottom: 26px;
+                font-size: 15px;
+            }
+
+            .otp-container {
+                margin: 22px 0 20px;
+            }
+
+            .btn-login {
+                min-height: 58px;
+                font-size: 16px;
+                font-weight: 800;
+                border-radius: 16px;
+            }
+        }
     </style>
 </head>
 
@@ -137,10 +204,14 @@
             </a>
 
             <div class="mb-3">
-                <h1 class="fw-bold mb-2" style="font-size:32px;">Ingresa el código</h1>
-                <p style="font-size:15px;color:var(--color-on-surface-variant);">
+                <h1 class="recovery-title fw-bold mb-2">Ingresa el código</h1>
+                <p class="recovery-help">
                     Escribe el código de 6 dígitos que enviamos a tu correo electrónico.
                 </p>
+                <div id="contadorCodigo" class="timer-box" aria-live="polite">
+                    <span class="material-symbols-outlined">timer</span>
+                    <span>Vence en 30 s</span>
+                </div>
             </div>
 
             <form id="formVerificarCodigo">

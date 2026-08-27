@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from flask import current_app
 import jwt
+import requests
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
 from app.models.usuarios_model import (
@@ -106,6 +107,42 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
                 smtp.ehlo()
             smtp.login(usuario, password)
             smtp.send_message(mensaje)
+
+
+def _enviar_codigo_por_resend(destinatario, asunto, texto, html):
+    api_key = (os.getenv("RESEND_API_KEY") or "").strip()
+    if not api_key:
+        raise RuntimeError("RESEND_API_KEY no configurada")
+
+    remitente = (
+        os.getenv("RESEND_FROM_EMAIL")
+        or "GreenUP <onboarding@resend.dev>"
+    )
+    responder_a = (
+        os.getenv("RESEND_REPLY_TO")
+        or current_app.config.get("MAIL_DEFAULT_SENDER")
+        or current_app.config.get("MAIL_USERNAME")
+        or "greenup213@gmail.com"
+    )
+    respuesta = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": remitente,
+            "to": [destinatario],
+            "subject": asunto,
+            "text": texto,
+            "html": html,
+            "reply_to": responder_a,
+        },
+        timeout=10,
+    )
+
+    if respuesta.status_code >= 400:
+        raise RuntimeError(respuesta.text[:180])
 
 
 def _crear_token(usuario):
@@ -300,10 +337,13 @@ def solicitar_codigo_recuperacion(datos):
             "mensaje": "No existe una cuenta registrada con ese correo electronico."
         }, 404
 
-    if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get("MAIL_PASSWORD"):
+    usa_resend = bool((os.getenv("RESEND_API_KEY") or "").strip())
+    usa_smtp = bool(current_app.config.get("MAIL_USERNAME") and current_app.config.get("MAIL_PASSWORD"))
+
+    if not usa_resend and not usa_smtp:
         return {
             "mensaje": "En este momento no pudimos enviar el codigo. Intenta nuevamente mas tarde.",
-            "detalle": "Faltan credenciales SMTP"
+            "detalle": "Faltan credenciales de correo"
         }, 500
 
     try:
@@ -335,7 +375,10 @@ def solicitar_codigo_recuperacion(datos):
     </div>
     """
     try:
-        _enviar_codigo_por_smtp(correo, asunto, texto, html)
+        if usa_resend:
+            _enviar_codigo_por_resend(correo, asunto, texto, html)
+        else:
+            _enviar_codigo_por_smtp(correo, asunto, texto, html)
     except Exception as error:
         print(f"Error enviando correo de recuperacion GreenUP: {error}")
         return {

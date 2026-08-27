@@ -21,7 +21,6 @@ Roles:
 
 import os
 import random
-import threading
 from datetime import datetime, timedelta
 from flask import current_app
 from flask_mail import Message
@@ -51,15 +50,6 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
-
-
-def _enviar_correo_recuperacion_async(app, mensaje):
-    with app.app_context():
-        try:
-            from app import mail
-            mail.send(mensaje)
-        except Exception as error:
-            print(f"Error enviando correo de recuperacion GreenUP: {error}")
 
 
 def _crear_token(usuario):
@@ -291,12 +281,15 @@ def solicitar_codigo_recuperacion(datos):
       <p style="color:#607080">Equipo GreenUP</p>
     </div>
     """
-    app = current_app._get_current_object()
-    threading.Thread(
-        target=_enviar_correo_recuperacion_async,
-        args=(app, msg),
-        daemon=True
-    ).start()
+    try:
+        from app import mail
+        mail.send(msg)
+    except Exception as error:
+        print(f"Error enviando correo de recuperacion GreenUP: {error}")
+        return {
+            "mensaje": "No se pudo enviar el correo. Revisa MAIL_USERNAME y MAIL_PASSWORD en Render.",
+            "detalle": "SMTP rechazo o no completo el envio"
+        }, 502
 
     return {
         "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",

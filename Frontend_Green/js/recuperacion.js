@@ -136,7 +136,7 @@ function configurarSolicitudCodigo() {
     try {
       const respuesta = await enviarRecuperacion("solicitar", { correo });
 
-      if (respuesta.ok) {
+      if (respuesta.ok && respuesta.data.enviado) {
         localStorage.setItem("correo_recuperacion", correo);
         guardarExpiracionCodigo(respuesta.data.expira_en_segundos || 30);
         localStorage.removeItem("correo_recuperacion_prellenado");

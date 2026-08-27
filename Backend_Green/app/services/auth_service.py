@@ -241,9 +241,8 @@ def solicitar_codigo_recuperacion(datos):
 
     if not usuario:
         return {
-            "mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion.",
-            "expira_en_segundos": 30
-        }, 200
+            "mensaje": "No existe una cuenta registrada con ese correo electronico."
+        }, 404
 
     try:
         from app import mail
@@ -282,7 +281,8 @@ def solicitar_codigo_recuperacion(datos):
         mail.send(msg)
         guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
         return {
-            "mensaje": "Si el correo esta registrado, se ha enviado un codigo de verificacion.",
+            "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
+            "enviado": True,
             "expira_en_segundos": 30
         }, 200
 

@@ -21,8 +21,10 @@ Roles:
 
 import os
 import random
+import signal
 import smtplib
 import ssl
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from email.message import EmailMessage
 from flask import current_app
@@ -53,6 +55,25 @@ ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
 SEGUNDOS_EXPIRACION_RECUPERACION = 60
+SMTP_TIMEOUT_MAXIMO_SEGUNDOS = 8
+
+
+@contextmanager
+def _limitar_tiempo_smtp(segundos):
+    if not hasattr(signal, "SIGALRM"):
+        yield
+        return
+
+    def cortar_envio(_signum, _frame):
+        raise TimeoutError("El servidor de correo no respondio a tiempo")
+
+    handler_anterior = signal.signal(signal.SIGALRM, cortar_envio)
+    signal.alarm(segundos)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, handler_anterior)
 
 
 def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
@@ -61,7 +82,7 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
     puerto = int(current_app.config.get("MAIL_PORT") or 587)
     usuario = current_app.config.get("MAIL_USERNAME")
     password = current_app.config.get("MAIL_PASSWORD")
-    timeout = int(current_app.config.get("MAIL_TIMEOUT") or 20)
+    timeout = min(int(current_app.config.get("MAIL_TIMEOUT") or SMTP_TIMEOUT_MAXIMO_SEGUNDOS), SMTP_TIMEOUT_MAXIMO_SEGUNDOS)
 
     mensaje = EmailMessage()
     mensaje["Subject"] = asunto
@@ -70,20 +91,21 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
     mensaje.set_content(texto)
     mensaje.add_alternative(html, subtype="html")
 
-    if current_app.config.get("MAIL_USE_SSL"):
-        contexto = ssl.create_default_context()
-        with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+    with _limitar_tiempo_smtp(timeout):
+        if current_app.config.get("MAIL_USE_SSL") or puerto == 465:
+            contexto = ssl.create_default_context()
+            with smtplib.SMTP_SSL(servidor, puerto, timeout=timeout, context=contexto) as smtp:
+                smtp.login(usuario, password)
+                smtp.send_message(mensaje)
+            return
+
+        with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
+            smtp.ehlo()
+            if current_app.config.get("MAIL_USE_TLS"):
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.ehlo()
             smtp.login(usuario, password)
             smtp.send_message(mensaje)
-        return
-
-    with smtplib.SMTP(servidor, puerto, timeout=timeout) as smtp:
-        smtp.ehlo()
-        if current_app.config.get("MAIL_USE_TLS"):
-            smtp.starttls(context=ssl.create_default_context())
-            smtp.ehlo()
-        smtp.login(usuario, password)
-        smtp.send_message(mensaje)
 
 
 def _crear_token(usuario):

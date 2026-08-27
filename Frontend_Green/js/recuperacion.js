@@ -1,14 +1,24 @@
 const RECUPERACION_API = "https://greenup-hoxj.onrender.com/api/recuperar-contrasena";
+const RECUPERACION_TIMEOUT_MS = 15000;
 
 async function enviarRecuperacion(endpoint, datos) {
-  const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos),
-  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), RECUPERACION_TIMEOUT_MS);
 
-  const data = await respuesta.json();
-  return { ok: respuesta.ok, data };
+  try {
+    const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+      signal: controller.signal,
+    });
+
+    const texto = await respuesta.text();
+    const data = texto ? JSON.parse(texto) : {};
+    return { ok: respuesta.ok, data };
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 function getCorreoRecuperacion() {
@@ -148,7 +158,10 @@ function configurarSolicitudCodigo() {
       alert(respuesta.data.mensaje || "No se pudo enviar el correo de verificacion.");
     } catch (error) {
       console.error("Error solicitando codigo:", error);
-      alert("Error de conexion con el servidor. Verifica que Flask este ejecutandose.");
+      const mensaje = error.name === "AbortError"
+        ? "El servidor tardo demasiado en responder. Intenta nuevamente en unos segundos."
+        : "Error de conexion con el servidor. Verifica que el backend este activo.";
+      alert(mensaje);
     } finally {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Enviar codigo de verificacion";

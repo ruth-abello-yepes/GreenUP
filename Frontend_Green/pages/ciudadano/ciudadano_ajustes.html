@@ -12,109 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos del Menú Lateral (Tabs) */
-        .list-group-item {
-            border: none;
-            border-radius: 8px !important;
-            margin-bottom: 4px;
-            color: #64748b;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .list-group-item:hover {
-            background-color: #f1f5f9;
-            color: var(--gu-primary);
-        }
-
-        .list-group-item.active {
-            background-color: rgba(169, 242, 149, 0.3) !important;
-            color: var(--gu-secondary) !important;
-            font-weight: bold;
-        }
-
-        /* Estilos de Tarjetas */
-        .gu-card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-        }
-
-        /* Estilos del Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-ajustes">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-ajustes-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -125,7 +28,7 @@
                 </button>
 
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-ajustes-estilo-2">Green</span><span class="ciudadano-ajustes-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -152,8 +55,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-ajustes-estilo-4"></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -189,8 +91,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="mobileMenuSidebar">
         <div class="offcanvas-header border-bottom">
             <div class="d-flex align-items-center">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-ajustes-estilo-2">Green</span><span class="ciudadano-ajustes-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -220,9 +121,9 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;" id="toast-container"></div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3 ciudadano-ajustes-estilo-5" id="toast-container"></div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
+    <main class="flex-grow-1 container px-3 px-md-5 ciudadano-ajustes-estilo-6">
 
         <div class="mb-4">
             <h1 class="display-6 fw-bold text-gu-primary mb-1">Ajustes de Cuenta</h1>
@@ -259,17 +160,15 @@
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Información Personal</h4>
 
                             <div class="d-flex align-items-center gap-4 mb-4 pb-4 border-bottom">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border"
-                                    style="width: 80px; height: 80px;">
-                                    <span class="material-symbols-outlined text-secondary"
-                                        style="font-size: 40px;">account_circle</span>
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border ciudadano-ajustes-estilo-7">
+                                    <span class="material-symbols-outlined text-secondary ciudadano-ajustes-estilo-8">account_circle</span>
                                 </div>
                                 <div>
                                     <h6 class="fw-bold mb-1">Foto de Perfil</h6>
                                     <button type="button" id="btnCambiarAvatar"
                                         class="btn btn-outline-secondary btn-sm rounded-pill px-3">Cambiar
                                         Avatar</button>
-                                    <input type="file" id="inputAvatar" accept="image/*" style="display: none;">
+                                    <input class="ciudadano-ajustes-estilo-9" type="file" id="inputAvatar" accept="image/*">
                                 </div>
                             </div>
 
@@ -413,7 +312,7 @@
             <div class="row g-4">
                 <div class="col-lg-3 col-md-6">
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="ciudadano-ajustes-estilo-10">Green</span><span class="ciudadano-ajustes-estilo-11">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos

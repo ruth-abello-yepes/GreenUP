@@ -12,202 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos de Cards (Bento Grid) */
-        .gu-card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .gu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--gu-accent);
-        }
-
-        /* Estilos del Gráfico de Barras */
-        .chart-bar-container {
-            height: 160px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .chart-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            justify-content: flex-end;
-        }
-
-        .chart-bar {
-            width: 100%;
-            border-top-left-radius: 6px;
-            border-top-right-radius: 6px;
-            transition: background-color 0.3s;
-            position: relative;
-        }
-
-        .chart-bar:hover {
-            filter: brightness(0.85);
-            cursor: pointer;
-        }
-
-        .chart-label {
-            font-size: 0.75rem;
-            color: #727781;
-            font-weight: 500;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        .chart-tooltip {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #121c2a;
-            color: white;
-            font-size: 10px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .chart-bar:hover .chart-tooltip {
-            opacity: 1;
-        }
-
-        /* Estilos de Acceso Rápido (Imágenes) */
-        .img-preview-card {
-            height: 140px;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .img-preview-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .img-preview-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .img-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 1.25rem;
-            color: white;
-        }
-
-        /* Estilos Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: #fff !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-
-        /* Animaciones */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-inicio">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-inicio-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -220,7 +30,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-inicio-estilo-2">Green</span><span class="ciudadano-inicio-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -247,8 +57,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span id="indicador-notificaciones"
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;" hidden></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-inicio-estilo-4" hidden></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -285,16 +94,14 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-inicio-estilo-2">Green</span><span class="ciudadano-inicio-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush rounded-0 mt-2">
                 <a href="ciudadano_inicio.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success ciudadano-inicio-estilo-5">
                     <span class="material-symbols-outlined">home</span> Inicio
                 </a>
                 <a href="ciudadano_educacion.html#noticias"
@@ -322,13 +129,12 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1200px;">
+    <main class="flex-grow-1 container px-3 px-md-5 ciudadano-inicio-estilo-6">
 
         <header class="mb-5 fade-up">
             <h1 class="display-6 fw-bold text-gu-primary mb-2">¡Hola, <span
-                    class="nombre-usuario-display">Usuario</span>! <span style="color: #065591;">Green</span><span
-                    style="color: #4CAF50;">Up</span> 🌱</h1>
-            <p class="text-secondary fs-5" id="resumen-impacto" style="max-width: 700px;">Cargando tu impacto
+                    class="nombre-usuario-display">Usuario</span>! <span class="ciudadano-inicio-estilo-7">Green</span><span class="ciudadano-inicio-estilo-3">Up</span> 🌱</h1>
+            <p class="text-secondary fs-5 ciudadano-inicio-estilo-8" id="resumen-impacto">Cargando tu impacto
                 ambiental...</p>
         </header>
 
@@ -353,11 +159,10 @@
                     </h2>
 
                     <div class="mt-4 pt-2">
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-success" id="progreso-puntos" role="progressbar"
-                                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress ciudadano-inicio-estilo-9">
+                            <div class="progress-bar bg-success ciudadano-inicio-estilo-10" id="progreso-puntos" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <p class="text-muted small mt-2 mb-0" id="proximo-nivel" style="font-size: 0.75rem;">Calculando
+                        <p class="text-muted small mt-2 mb-0 ciudadano-inicio-estilo-11" id="proximo-nivel">Calculando
                             próximo nivel...</p>
                     </div>
                 </div>
@@ -365,8 +170,7 @@
 
             <!-- Tarjeta 2: Material recuperado -->
             <div class="col-lg-4 col-md-6 fade-up">
-                <div class="card gu-card h-100 p-4 border-0 border-start border-4"
-                    style="border-color: var(--gu-primary) !important;">
+                <div class="card gu-card h-100 p-4 border-0 border-start border-4 ciudadano-inicio-estilo-12">
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <span class="material-symbols-outlined text-gu-primary display-6">eco</span>
                         <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2"
@@ -381,8 +185,7 @@
                     </h2>
 
                     <div class="mt-4 pt-2">
-                        <span class="badge text-gu-primary px-3 py-2 rounded-3" id="entregas-total-display"
-                            style="background-color: rgba(6, 85, 145, 0.1);">Cargando entregas...</span>
+                        <span class="badge text-gu-primary px-3 py-2 rounded-3 ciudadano-inicio-estilo-13" id="entregas-total-display">Cargando entregas...</span>
                     </div>
                 </div>
             </div>
@@ -459,7 +262,7 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="ciudadano-inicio-estilo-14">Green</span><span class="ciudadano-inicio-estilo-15">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -467,18 +270,15 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-inicio-estilo-16">
                             <span class="material-symbols-outlined fs-6">share</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-inicio-estilo-16">
                             <span class="material-symbols-outlined fs-6">public</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-inicio-estilo-16">
                             <span class="material-symbols-outlined fs-6">mail</span>
                         </a>
                     </div>

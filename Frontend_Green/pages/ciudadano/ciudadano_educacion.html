@@ -12,228 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .text-gu-accent {
-            color: var(--gu-accent);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .bg-gu-accent {
-            background-color: var(--gu-accent);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        .icon-fill {
-            font-variation-settings: 'FILL' 1;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos de Tarjetas (Bento Grid) */
-        .gu-card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .gu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Degradado del Hero y Glass Card */
-        .eco-gradient {
-            background: linear-gradient(135deg, var(--gu-primary) 0%, var(--gu-secondary) 100%);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Imágenes de Tarjetas */
-        .img-wrapper {
-            height: 180px;
-            overflow: hidden;
-            position: relative;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-
-        .img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .gu-card:hover .img-wrapper img {
-            transform: scale(1.05);
-        }
-
-        /* Ocultar scrollbar en filtros horizontales */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Estilos del Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-
-        /* Animaciones Fade-up */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .btn-gu-primary {
-            color: #fff;
-            background-color: var(--gu-primary);
-            border-color: var(--gu-primary);
-        }
-
-        .btn-gu-primary:hover,
-        .btn-gu-primary:focus {
-            color: #fff;
-            background-color: #002f54;
-            border-color: #002f54;
-        }
-
-        .education-skeleton {
-            min-height: 210px;
-            background: linear-gradient(90deg, #eef1f5 25%, #f8f9fa 50%, #eef1f5 75%);
-            background-size: 200% 100%;
-            animation: education-loading 1.2s infinite;
-        }
-
-        .material-info {
-            border-left: 4px solid var(--gu-secondary);
-        }
-
-        .learn-section-tabs {
-            background: #ffffff;
-            border: 1px solid rgba(0, 61, 108, 0.08);
-            border-radius: 18px;
-            box-shadow: 0 10px 24px rgba(0, 61, 108, 0.06);
-            display: inline-flex;
-            gap: 8px;
-            padding: 8px;
-        }
-
-        .learn-section-tabs a {
-            align-items: center;
-            border-radius: 999px;
-            color: #475569;
-            display: inline-flex;
-            font-weight: 800;
-            gap: 8px;
-            padding: 10px 18px;
-            text-decoration: none;
-        }
-
-        .learn-section-tabs a:hover,
-        .learn-section-tabs a.is-active {
-            background: var(--gu-primary);
-            color: #ffffff;
-        }
-
-        #noticias .featured-card .img-wrapper {
-            height: 100%;
-            border-radius: 15px 0 0 15px;
-        }
-
-        @media (max-width: 767.98px) {
-            #noticias .featured-card .img-wrapper {
-                height: 250px;
-                border-radius: 15px 15px 0 0;
-            }
-        }
-
-        @keyframes education-loading {
-            to {
-                background-position: -200% 0;
-            }
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body data-news-mode="aprende">
+<body class="ciudadano-pagina-educacion" data-news-mode="aprende">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-educacion-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -246,7 +30,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-educacion-estilo-2">Green</span><span class="ciudadano-educacion-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -270,8 +54,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-educacion-estilo-4"></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -308,8 +91,7 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-educacion-estilo-2">Green</span><span class="ciudadano-educacion-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -328,8 +110,7 @@
                     <span class="material-symbols-outlined">bar_chart</span> Estadísticas
                 </a>
                 <a href="ciudadano_educacion.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success ciudadano-educacion-estilo-5">
                     <span class="material-symbols-outlined">school</span> Aprende
                 </a>
                 <a href="#"
@@ -341,7 +122,7 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container-fluid px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1600px;">
+    <main class="flex-grow-1 container-fluid px-3 px-md-5 ciudadano-educacion-estilo-6">
 
         <section
             class="eco-gradient text-white rounded-4 p-4 p-md-5 mb-5 position-relative shadow-sm fade-up overflow-hidden">
@@ -362,9 +143,8 @@
                         <h2 class="display-4 fw-bold text-white mb-0"><span id="lessons-completed-display">0</span>
                             <span class="fs-5 fw-normal text-white-50">lecciones</span></h2>
                         <p class="small text-gu-accent mb-3">Completadas por ti</p>
-                        <div class="progress mb-2 bg-white bg-opacity-25" style="height: 8px;">
-                            <div id="education-progress-bar" class="progress-bar bg-gu-accent rounded-pill"
-                                style="width: 0%"></div>
+                        <div class="progress mb-2 bg-white bg-opacity-25 ciudadano-educacion-estilo-7">
+                            <div id="education-progress-bar" class="progress-bar bg-gu-accent rounded-pill ciudadano-educacion-estilo-8"></div>
                         </div>
                         <p class="small text-white-50 mb-0 d-flex align-items-center gap-1">
                             <span class="material-symbols-outlined fs-6 text-gu-accent">verified_user</span>
@@ -373,8 +153,7 @@
                     </div>
                 </div>
             </div>
-            <div class="position-absolute bg-white bg-opacity-10 rounded-circle blur-3xl"
-                style="width: 300px; height: 300px; bottom: -100px; right: -50px; filter: blur(40px);"></div>
+            <div class="position-absolute bg-white bg-opacity-10 rounded-circle blur-3xl ciudadano-educacion-estilo-9"></div>
         </section>
 
         <div id="education-status" class="alert d-none mb-4" role="alert"></div>
@@ -423,7 +202,7 @@
         <div class="row g-5" id="contenidos-aprende">
             <div class="col-12">
 
-                <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
+                <section class="mb-5 fade-up ciudadano-educacion-estilo-10">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="fw-bold text-gu-primary mb-0">Lección Destacada</h4>
                         <a href="#education-content-grid" id="show-all-videos"
@@ -432,16 +211,14 @@
                     </div>
 
                     <div class="card gu-card border-0 overflow-hidden group">
-                        <div id="featured-media" class="position-relative bg-dark cursor-pointer overflow-hidden"
-                            style="aspect-ratio: 16/9;">
+                        <div id="featured-media" class="position-relative bg-dark cursor-pointer overflow-hidden ciudadano-educacion-estilo-11">
                             <img id="featured-image"
                                 src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"
                                 alt="Video cover"
                                 class="w-100 h-100 object-fit-cover opacity-75 transition-transform duration-500 hover:scale-105">
 
                             <div id="featured-play" class="position-absolute top-50 start-50 translate-middle">
-                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg transition-transform hover:scale-110"
-                                    style="width: 64px; height: 64px; cursor: pointer;">
+                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg transition-transform hover:scale-110 ciudadano-educacion-estilo-12">
                                     <span
                                         class="material-symbols-outlined text-gu-primary fs-1 icon-fill">play_arrow</span>
                                 </div>
@@ -459,14 +236,14 @@
                     </div>
                 </section>
 
-                <section class="mb-4 fade-up" style="transition-delay: 0.2s;">
+                <section class="mb-4 fade-up ciudadano-educacion-estilo-13">
                     <div id="education-filters" class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
                         <button class="btn btn-gu-primary px-4 py-2 rounded-pill fw-medium text-nowrap"
                             disabled>Cargando...</button>
                     </div>
                 </section>
 
-                <section id="education-content-grid" class="row g-4 fade-up" style="transition-delay: 0.3s;">
+                <section id="education-content-grid" class="row g-4 fade-up ciudadano-educacion-estilo-14">
                     <div class="col-md-4">
                         <div class="education-skeleton rounded-4"></div>
                     </div>
@@ -478,7 +255,7 @@
                     </div>
                 </section>
 
-                <section class="mt-5 fade-up" style="transition-delay: 0.35s;">
+                <section class="mt-5 fade-up ciudadano-educacion-estilo-15">
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <span class="material-symbols-outlined text-gu-secondary fs-3">recycling</span>
                         <div>
@@ -494,7 +271,7 @@
                 </section>
             </div>
 
-            <aside class="col-12 d-flex flex-column gap-5 fade-up" style="transition-delay: 0.4s;">
+            <aside class="col-12 d-flex flex-column gap-5 fade-up ciudadano-educacion-estilo-16">
 
                 <div class="card gu-card border-0 p-4 shadow-sm bg-light">
                     <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
@@ -503,7 +280,7 @@
                     </div>
 
                     <div id="education-challenges" class="d-flex flex-column gap-3">
-                        <div class="education-skeleton rounded-3" style="min-height: 150px;"></div>
+                        <div class="education-skeleton rounded-3 ciudadano-educacion-estilo-17"></div>
                     </div>
                 </div>
 
@@ -514,7 +291,7 @@
                     </div>
                     <ul id="education-resources" class="list-group list-group-flush">
                         <li class="list-group-item px-0">
-                            <div class="education-skeleton rounded-3" style="min-height: 120px;"></div>
+                            <div class="education-skeleton rounded-3 ciudadano-educacion-estilo-18"></div>
                         </li>
                     </ul>
                 </div>
@@ -527,12 +304,12 @@
                 <div>
                     <span class="badge bg-gu-secondary rounded-pill px-3 py-2 mb-2">Aprende / Noticias</span>
                     <h2 class="fw-bold text-gu-primary mb-2">Noticias ambientales de Colombia</h2>
-                    <p class="text-secondary mb-0" style="max-width: 780px;">
+                    <p class="text-secondary mb-0 ciudadano-educacion-estilo-19">
                         Consulta noticias reales sobre reciclaje, residuos, biodiversidad y medio ambiente. Desde cada
                         noticia puedes abrir el juego de preguntas cuando esté disponible.
                     </p>
                 </div>
-                <div class="input-group bg-white rounded-pill shadow-sm px-2" style="max-width: 330px;">
+                <div class="input-group bg-white rounded-pill shadow-sm px-2 ciudadano-educacion-estilo-20">
                     <span class="input-group-text bg-transparent border-0">
                         <span class="material-symbols-outlined fs-6 text-muted">search</span>
                     </span>
@@ -545,7 +322,7 @@
             <div id="estado-noticias" class="alert alert-info mb-4" role="status">Consultando noticias ambientales de
                 Colombia...</div>
 
-            <section class="mb-5" id="noticia-destacada" style="display: none;">
+            <section class="mb-5 ciudadano-educacion-estilo-21" id="noticia-destacada">
                 <div class="card gu-card featured-card border-0">
                     <div class="row g-0">
                         <div class="col-md-6 col-lg-7">
@@ -572,7 +349,7 @@
                 </div>
             </section>
 
-            <div class="row g-4" id="noticias-grid" style="display: none;"></div>
+            <div class="row g-4 ciudadano-educacion-estilo-21" id="noticias-grid"></div>
 
             <nav aria-label="Navegación de noticias" class="mt-5 d-flex justify-content-center" hidden>
                 <ul class="pagination shadow-sm rounded-pill overflow-hidden bg-white p-1"
@@ -583,7 +360,7 @@
         </section>
     </main>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3 ciudadano-educacion-estilo-22">
         <div id="pointsToast" class="toast align-items-center text-bg-success border-0 shadow-lg" role="alert"
             aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -605,7 +382,7 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="ciudadano-educacion-estilo-23">Green</span><span class="ciudadano-educacion-estilo-24">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -613,18 +390,15 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-educacion-estilo-25">
                             <span class="material-symbols-outlined fs-6">share</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-educacion-estilo-25">
                             <span class="material-symbols-outlined fs-6">public</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-educacion-estilo-25">
                             <span class="material-symbols-outlined fs-6">mail</span>
                         </a>
                     </div>

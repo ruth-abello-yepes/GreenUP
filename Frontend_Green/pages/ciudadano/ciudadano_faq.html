@@ -12,143 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-primary-container: #065591;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .bg-primary-container {
-            background-color: var(--gu-primary-container);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos de Acordeón Personalizado Bootstrap */
-        .accordion-item {
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 12px !important;
-            margin-bottom: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-            transition: all 0.3s ease;
-        }
-
-        .accordion-button {
-            font-weight: 600;
-            color: var(--gu-dark);
-            padding: 1.25rem 1.5rem;
-            background-color: white;
-            box-shadow: none !important;
-        }
-
-        .accordion-button:not(.collapsed) {
-            color: var(--gu-primary);
-            background-color: var(--gu-light-blue);
-        }
-
-        .accordion-button:focus {
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .accordion-body {
-            color: #414750;
-            line-height: 1.6;
-            padding: 1.5rem;
-        }
-
-        /* Estilos de la Caja de Búsqueda */
-        .search-box {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            color: white;
-        }
-
-        .search-box::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .search-box:focus {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: var(--gu-accent);
-            box-shadow: 0 0 0 0.25rem rgba(169, 242, 149, 0.25);
-            color: white;
-        }
-
-        /* Estilos del Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-
-        /* Animaciones Fade-up */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-faq">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-faq-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -161,7 +30,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-faq-estilo-2">Green</span><span class="ciudadano-faq-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -188,8 +57,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-faq-estilo-4"></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -227,8 +95,7 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-faq-estilo-2">Green</span><span class="ciudadano-faq-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -258,13 +125,13 @@
         </div>
     </div>
 
-    <header class="bg-primary-container text-white py-5 fade-up" style="margin-top: 70px;">
+    <header class="bg-primary-container text-white py-5 fade-up ciudadano-faq-estilo-5">
         <div class="container text-center py-4 py-md-5">
             <h1 class="display-5 fw-bold mb-3">Centro de Ayuda GreenUp</h1>
-            <p class="lead text-white-50 mb-4" style="max-width: 600px; margin: 0 auto;">¿Tienes dudas sobre cómo
+            <p class="lead text-white-50 mb-4 ciudadano-faq-estilo-6">¿Tienes dudas sobre cómo
                 reciclar en Valledupar? Estamos aquí para ayudarte.</p>
 
-            <div class="position-relative mx-auto mt-4" style="max-width: 600px;">
+            <div class="position-relative mx-auto mt-4 ciudadano-faq-estilo-7">
                 <span
                     class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-white-50">search</span>
                 <input type="text" id="searchInput"
@@ -279,7 +146,7 @@
         </div>
     </header>
 
-    <main class="flex-grow-1 container py-5" style="max-width: 800px; margin-bottom: 60px;">
+    <main class="flex-grow-1 container py-5 ciudadano-faq-estilo-8">
 
         <div id="faqContainer">
 
@@ -327,7 +194,7 @@
                 </div>
             </section>
 
-            <section class="mb-5 fade-up faq-category" style="transition-delay: 0.1s;">
+            <section class="mb-5 fade-up faq-category ciudadano-faq-estilo-9">
                 <div class="d-flex align-items-center gap-2 mb-4">
                     <span class="fs-3">🗺️</span>
                     <h3 class="fw-bold text-gu-primary mb-0">Mapa y Puntos de Reciclaje</h3>
@@ -411,7 +278,7 @@
                 </div>
             </section>
 
-            <section class="mb-5 fade-up faq-category" style="transition-delay: 0.2s;">
+            <section class="mb-5 fade-up faq-category ciudadano-faq-estilo-10">
                 <div class="d-flex align-items-center gap-2 mb-4">
                     <span class="fs-3">📚</span>
                     <h3 class="fw-bold text-gu-primary mb-0">Educación y Entregas</h3>
@@ -439,8 +306,7 @@
 
         </div>
 
-        <div class="mt-5 p-4 p-md-5 rounded-4 bg-light border text-center shadow-sm fade-up"
-            style="transition-delay: 0.3s;">
+        <div class="mt-5 p-4 p-md-5 rounded-4 bg-light border text-center shadow-sm fade-up ciudadano-faq-estilo-11">
             <div class="d-inline-flex bg-gu-primary text-white rounded-circle p-3 mb-3">
                 <span class="material-symbols-outlined fs-2">support_agent</span>
             </div>
@@ -460,7 +326,7 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="ciudadano-faq-estilo-12">Green</span><span class="ciudadano-faq-estilo-13">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -468,18 +334,15 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-faq-estilo-14">
                             <span class="material-symbols-outlined fs-6">share</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-faq-estilo-14">
                             <span class="material-symbols-outlined fs-6">public</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-faq-estilo-14">
                             <span class="material-symbols-outlined fs-6">mail</span>
                         </a>
                     </div>

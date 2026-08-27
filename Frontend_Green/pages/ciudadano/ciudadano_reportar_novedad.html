@@ -12,140 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos de Cards Base */
-        .gu-card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Glass Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(193, 199, 209, 0.3);
-        }
-
-        /* Componente Aside Memorizado */
-        .sidebar-item {
-            transition: all 0.2s ease;
-            border: none;
-            text-align: left;
-        }
-
-        .sidebar-item:hover:not(.active) {
-            background-color: #f1f5f9;
-            color: var(--gu-primary);
-        }
-
-        .sidebar-item.active {
-            background-color: var(--gu-accent);
-            color: var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        /* Botones Bootstrap Sobreescritos */
-        .btn-gu-primary {
-            background-color: var(--gu-primary);
-            color: white;
-            border-radius: 50px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .btn-gu-primary:hover {
-            background-color: #002b4d;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-gu-primary:active {
-            transform: scale(0.95);
-        }
-
-        /* Inputs Personalizados */
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--gu-primary);
-            box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.1);
-        }
-
-        /* Animaciones */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-reportar-novedad">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-reportar-novedad-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -158,7 +30,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-reportar-novedad-estilo-2">Green</span><span class="ciudadano-reportar-novedad-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -215,8 +87,7 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-reportar-novedad-estilo-2">Green</span><span class="ciudadano-reportar-novedad-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -251,7 +122,7 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1100px;">
+    <main class="flex-grow-1 container px-3 px-md-5 ciudadano-reportar-novedad-estilo-4">
 
         <div class="d-flex align-items-center gap-3 mb-4 fade-up">
             <a href="ciudadano_mapa.html"
@@ -264,7 +135,7 @@
             </div>
         </div>
 
-        <div class="row g-4 items-start fade-up" style="transition-delay: 0.1s;">
+        <div class="row g-4 items-start fade-up ciudadano-reportar-novedad-estilo-5">
 
             <aside class="col-lg-3 col-md-4">
                 <div class="d-flex flex-column gap-2">
@@ -332,8 +203,7 @@
                                 <div class="col-12 pt-3">
                                     <button type="submit" id="submit-btn"
                                         class="btn btn-gu-primary px-5 py-3 w-100 d-flex justify-content-center align-items-center gap-2 shadow-sm">
-                                        <span class="material-symbols-outlined"
-                                            style="font-variation-settings: 'FILL' 1;">send</span>
+                                        <span class="material-symbols-outlined ciudadano-reportar-novedad-estilo-6">send</span>
                                         Enviar Reporte
                                     </button>
                                 </div>
@@ -344,8 +214,7 @@
 
                 <div
                     class="glass-card rounded-4 p-4 d-flex flex-column flex-md-row align-items-md-center gap-4 shadow-sm">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style="width: 64px; height: 64px; background-color: var(--gu-accent);">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ciudadano-reportar-novedad-estilo-7">
                         <span class="material-symbols-outlined text-gu-secondary fs-2">volunteer_activism</span>
                     </div>
                     <div>
@@ -359,16 +228,14 @@
         </div>
     </main>
 
-    <footer class="bg-gu-dark text-white pt-5 position-relative z-3"
-        style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
+    <footer class="bg-gu-dark text-white pt-5 position-relative z-3 ciudadano-reportar-novedad-estilo-8">
         <div class="container pt-4 pb-5">
             <div class="row g-4">
                 <div class="col-lg-3 col-md-12 pe-lg-4">
                     <div class="d-flex align-items-center mb-4">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqzAt3-2lghqefZJbSRK7Yj1sVC6c_YND09yyjW3vJCvH3cxo3iMHWDekW-we8Yuwmv2NZm3wbxEwvh1Sx5TDxo34vJ1G-XlCuYKCE8wZ96yEgqBYA4Ve3PymaHwEIUaAmwgJHHj2lobMpf8DRSmbabgaUCma78cfa8OXpcIT8a2uSQQsSsxByZAqCNW0tcQO369NbkOWMmlzzDx_I_X5sm34ttK_orOm2nWmOLCPh52a0N1dyoRU4fkLDFJ5w5w9lQRW_770IP-I"
                             alt="Logo" width="40" height="40" class="me-2">
-                        <span class="fs-4 fw-bold"><span style="color: #065591;">Green</span><span
-                                style="color: #4CAF50;">Up</span></span>
+                        <span class="fs-4 fw-bold"><span class="ciudadano-reportar-novedad-estilo-9">Green</span><span class="ciudadano-reportar-novedad-estilo-3">Up</span></span>
                     </div>
                     <p class="text-white-50 small mb-4">Impulsando la sostenibilidad local a través del reciclaje, la
                         participación ciudadana y la comunidad.</p>

@@ -11,165 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f5f8ff;
-            --gu-dark: #121c2a;
-        }
-
-        body {
-            font-family: "Inter", sans-serif;
-            background: var(--gu-surface);
-        }
-
-        .text-gu-primary { color: var(--gu-primary); }
-        .text-gu-secondary { color: var(--gu-secondary); }
-        .bg-gu-dark { background: var(--gu-dark); }
-        .material-symbols-outlined { vertical-align: middle; }
-
-        .gu-card {
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 22px;
-            background: #fff;
-            box-shadow: 0 16px 40px rgba(0, 61, 108, 0.06);
-        }
-
-        .registro-form-card {
-            max-width: 520px;
-        }
-
-        .registro-card-head {
-            gap: 16px;
-        }
-
-        .registro-card-head .badge {
-            white-space: normal;
-            text-align: center;
-            line-height: 1.25;
-            max-width: 190px;
-        }
-
-        .estado-inicial-box {
-            min-height: 52px;
-            border: 1px solid #dce4ec;
-            border-radius: 12px;
-            background: #f8fafc;
-            color: #4b5563;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.85rem 1rem;
-            font-weight: 600;
-        }
-
-        .estado-inicial-box .material-symbols-outlined {
-            color: #d97706;
-            font-size: 1.25rem;
-        }
-
-        .historial-card {
-            min-height: 520px;
-        }
-
-        .historial-table {
-            min-width: 720px;
-        }
-
-        .historial-table thead th {
-            color: #111827;
-            font-size: 0.92rem;
-            white-space: nowrap;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-        }
-
-        .historial-empty {
-            border-top: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
-            background: #fbfdff;
-        }
-
-        .hero-panel {
-            background: linear-gradient(135deg, rgba(0, 61, 108, 0.96), rgba(41, 108, 31, 0.96));
-            color: #fff;
-            border-radius: 28px;
-        }
-
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: 700;
-        }
-
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        @media (max-width: 575.98px) {
-            main.container {
-                margin-top: 88px !important;
-                padding-left: 16px !important;
-                padding-right: 16px !important;
-            }
-
-            .hero-panel {
-                border-radius: 22px;
-                padding: 24px !important;
-            }
-
-            .hero-panel h1 {
-                font-size: 1.85rem;
-                line-height: 1.12;
-            }
-
-            .gu-card {
-                border-radius: 18px;
-            }
-
-            .gu-card.p-4,
-            .gu-card.p-lg-5 {
-                padding: 24px !important;
-            }
-
-            .gu-card > .d-flex.justify-content-between.align-items-start {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .registro-form-card {
-                max-width: none;
-            }
-
-            .registro-card-head .badge {
-                max-width: 100%;
-            }
-
-            .historial-card {
-                min-height: auto;
-            }
-
-            #puntos-disponibles {
-                align-self: flex-start;
-                max-width: 100%;
-                white-space: normal;
-                line-height: 1.25;
-            }
-
-            .form-control,
-            .form-select {
-                min-height: 50px;
-                font-size: 1rem;
-            }
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
-<body>
+<body class="ciudadano-pagina-registrar-reciclaje">
 
     <!-- Navbar principal del ciudadano. -->
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm" style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-registrar-reciclaje-estilo-1">
         <div class="container-fluid px-3 px-md-5">
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
@@ -178,7 +25,7 @@
                 </button>
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs" alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color:#4CAF50;">Up</span>
+                    <span class="ciudadano-registrar-reciclaje-estilo-2">Green</span><span class="ciudadano-registrar-reciclaje-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -193,7 +40,7 @@
                 <button aria-label="Notificaciones"
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
-                    <span id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="margin-top: 8px; margin-left: -10px;" hidden></span>
+                    <span id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-registrar-reciclaje-estilo-4" hidden></span>
                 </button>
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3" type="button" data-bs-toggle="dropdown">
@@ -217,7 +64,7 @@
         <div class="offcanvas-header border-bottom">
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs" alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span style="color:#4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-registrar-reciclaje-estilo-2">Green</span><span class="ciudadano-registrar-reciclaje-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -232,7 +79,7 @@
     </div>
 
     <!-- Contenido principal de la pantalla. -->
-    <main class="container px-3 px-md-5" style="margin-top: 104px; margin-bottom: 64px; max-width: 1240px;">
+    <main class="container px-3 px-md-5 ciudadano-registrar-reciclaje-estilo-5">
         <section class="hero-panel p-4 p-lg-5 mb-4">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
@@ -315,7 +162,10 @@
                             <h2 class="h3 fw-bold text-gu-primary mb-1">Historial del ciudadano</h2>
                             <p class="text-secondary mb-0">Aquí ves tus entregas pendientes, confirmadas o rechazadas.</p>
                         </div>
-                        <div class="d-flex gap-3">
+                        <div class="d-flex flex-wrap gap-3">
+                            <a class="btn btn-outline-primary rounded-4 d-flex align-items-center gap-1" href="ciudadano_historial_reciclaje.html">
+                                <span class="material-symbols-outlined">open_in_new</span> Ver historial completo
+                            </a>
                             <div class="border rounded-4 px-3 py-2 bg-warning-subtle">
                                 <div class="small text-secondary">Pendientes</div>
                                 <strong id="resumen-pendientes">0</strong>

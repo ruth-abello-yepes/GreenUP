@@ -107,7 +107,7 @@ function crearNavegacionInferiorCiudadano() {
             href: "ciudadano_registrar_reciclaje.html",
             icono: "add",
             texto: "Reciclar",
-            activos: ["ciudadano_registrar_reciclaje.html"],
+            activos: ["ciudadano_registrar_reciclaje.html", "ciudadano_historial_reciclaje.html"],
             principal: true,
             requiereSesion: true,
         },
@@ -228,6 +228,7 @@ function crearMenuHamburguesaCiudadano() {
         { href: "ciudadano_estadisticas.html", icono: "trending_up", texto: "Estadísticas" },
         { href: "ciudadano_educacion.html", icono: "menu_book", texto: "Aprende" },
         { href: "ciudadano_registrar_reciclaje.html", icono: "add_circle", texto: "Registrar reciclaje", requiereSesion: true },
+        { href: "ciudadano_historial_reciclaje.html", icono: "history", texto: "Mi historial", requiereSesion: true },
         { href: "ciudadano_ajustes.html", icono: "account_circle", texto: "Tu Perfil" },
     ];
 
@@ -343,6 +344,7 @@ function completarNavegacionCiudadano() {
     const rutasPrincipales = [
         { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
         { href: "ciudadano_mapa.html", icono: "map", texto: "Mapa Eco" },
+        { href: "ciudadano_historial_reciclaje.html", icono: "history", texto: "Historial" },
         { href: "ciudadano_estadisticas.html", icono: "bar_chart", texto: "Estadísticas" },
         { href: "ciudadano_educacion.html", icono: "school", texto: "Aprende" },
     ];

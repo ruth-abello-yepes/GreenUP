@@ -12,149 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos de Tarjetas (Bento Grid) */
-        .gu-card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .gu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Acentos visuales para KPI Cards */
-        .bento-accent-green {
-            border-left: 4px solid var(--gu-secondary) !important;
-        }
-
-        .bento-accent-blue {
-            border-left: 4px solid var(--gu-primary) !important;
-        }
-
-        /* Glass Card (Tip del Día) */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--gu-accent);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Ranking de Líderes */
-        .ranking-item {
-            transition: background-color 0.2s;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .ranking-item:last-child {
-            border-bottom: none;
-        }
-
-        .ranking-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .ranking-active-user {
-            background-color: rgba(41, 108, 31, 0.08);
-            border-left: 4px solid var(--gu-secondary);
-        }
-
-        /* Ajustes para Contenedores de Gráficas */
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        /* Estilos del Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-
-        /* Animaciones Fade-up */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-estadisticas">
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-estadisticas-estilo-1">
         <div class="container-fluid px-3 px-md-5">
 
             <div class="d-flex align-items-center">
@@ -167,7 +30,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-estadisticas-estilo-2">Green</span><span class="ciudadano-estadisticas-estilo-3">Up</span>
                 </a>
             </div>
 
@@ -195,8 +58,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-estadisticas-estilo-4"></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -233,8 +95,7 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-estadisticas-estilo-2">Green</span><span class="ciudadano-estadisticas-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -253,8 +114,7 @@
                     <span class="material-symbols-outlined">map</span> Mapa Eco
                 </a>
                 <a href="ciudadano_estadisticas.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success ciudadano-estadisticas-estilo-5">
                     <span class="material-symbols-outlined">bar_chart</span> Estadísticas
                 </a>
                 <a href="ciudadano_educacion.html"
@@ -270,23 +130,22 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1280px;">
+    <main class="flex-grow-1 container px-3 px-md-5 ciudadano-estadisticas-estilo-6">
 
         <section class="mb-5 fade-up">
             <h1 class="display-6 fw-bold text-gu-primary mb-2">Tu Impacto Ambiental, <span
                     class="text-gu-secondary">Eco-Líder</span></h1>
-            <p class="fs-5 text-secondary" style="max-width: 800px;">Monitorea tu progreso, visualiza tus logros y
+            <p class="fs-5 text-secondary ciudadano-estadisticas-estilo-7">Monitorea tu progreso, visualiza tus logros y
                 compite de manera saludable para un Valledupar más verde.</p>
         </section>
 
         <div id="estado-estadisticas" class="alert alert-danger mb-4" role="alert" hidden></div>
 
-        <div class="row g-4 mb-5 fade-up" style="transition-delay: 0.1s;">
+        <div class="row g-4 mb-5 fade-up ciudadano-estadisticas-estilo-8">
             <div class="col-md-4">
                 <div class="card gu-card bento-accent-green h-100 p-4 border-0">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                            style="width: 56px; height: 56px; background-color: rgba(41, 108, 31, 0.1); color: var(--gu-secondary);">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ciudadano-estadisticas-estilo-9">
                             <span class="material-symbols-outlined fs-2">event_available</span>
                         </div>
                         <div>
@@ -294,7 +153,7 @@
                             <h3 class="fw-bold text-gu-secondary mb-0"><span id="total-puntos">—</span> <span
                                     class="fs-6 fw-normal text-muted">kg</span></h3>
                             <p class="small text-success mb-0 mt-1 d-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
+                                <span class="material-symbols-outlined ciudadano-estadisticas-estilo-10">trending_up</span>
                                 <span id="puntos-mes">Cargando...</span>
                             </p>
                         </div>
@@ -305,8 +164,7 @@
             <div class="col-md-4">
                 <div class="card gu-card bento-accent-blue h-100 p-4 border-0">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                            style="width: 56px; height: 56px; background-color: rgba(0, 61, 108, 0.1); color: var(--gu-primary);">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ciudadano-estadisticas-estilo-11">
                             <span class="material-symbols-outlined fs-2">scale</span>
                         </div>
                         <div>
@@ -314,7 +172,7 @@
                             <h3 class="fw-bold text-gu-primary mb-0"><span id="total-kgs">—</span> <span
                                     class="fs-6 fw-normal text-muted">kg</span></h3>
                             <p class="small text-gu-primary mb-0 mt-1 d-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
+                                <span class="material-symbols-outlined ciudadano-estadisticas-estilo-10">check_circle</span>
                                 <span id="kgs-mes">Cargando...</span>
                             </p>
                         </div>
@@ -325,8 +183,7 @@
             <div class="col-md-4">
                 <div class="card gu-card bento-accent-green h-100 p-4 border-0">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                            style="width: 56px; height: 56px; background-color: rgba(41, 108, 31, 0.1); color: var(--gu-secondary);">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ciudadano-estadisticas-estilo-9">
                             <span class="material-symbols-outlined fs-2">package_2</span>
                         </div>
                         <div>
@@ -339,7 +196,7 @@
             </div>
         </div>
 
-        <div class="row g-4 fade-up" style="transition-delay: 0.2s;">
+        <div class="row g-4 fade-up ciudadano-estadisticas-estilo-12">
 
             <div class="col-lg-8 d-flex flex-column gap-4">
 
@@ -375,7 +232,7 @@
 
             <div class="col-lg-4 d-flex flex-column gap-4">
 
-                <div class="card gu-card border-0 overflow-hidden sticky-top" style="top: 90px; z-index: 10;">
+                <div class="card gu-card border-0 overflow-hidden sticky-top ciudadano-estadisticas-estilo-13">
                     <div class="bg-gu-primary text-white p-4">
                         <h5 class="fw-bold mb-1">Top Eco-Líderes</h5>
                         <p class="small text-white-50 text-uppercase tracking-widest mb-0">Valledupar Región</p>
@@ -412,7 +269,7 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="ciudadano-estadisticas-estilo-14">Green</span><span class="ciudadano-estadisticas-estilo-15">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -420,18 +277,15 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-estadisticas-estilo-16">
                             <span class="material-symbols-outlined fs-6">share</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-estadisticas-estilo-16">
                             <span class="material-symbols-outlined fs-6">public</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center ciudadano-estadisticas-estilo-16">
                             <span class="material-symbols-outlined fs-6">mail</span>
                         </a>
                     </div>

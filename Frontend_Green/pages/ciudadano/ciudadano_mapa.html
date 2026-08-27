@@ -17,284 +17,13 @@
     <!-- NUEVO: Leaflet Routing Machine CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 
-    <style>
-        :root {
-            --gu-primary: #003d6c;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        .hover-bg-light:hover {
-            background-color: #f1f5f9;
-        }
-
-        /* Estilos del Mapa y Panel Lateral */
-        main {
-            position: relative;
-            flex-grow: 1;
-            margin-top: 70px;
-            display: flex;
-        }
-
-        #eco-map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        #sidebar-panel {
-            width: 320px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-        }
-
-        #sidebar-panel.collapsed {
-            transform: translateX(calc(-100% - 20px));
-        }
-
-        #sidebar-collapse-trigger {
-            position: absolute;
-            right: -40px;
-            top: 15px;
-            width: 40px;
-            height: 40px;
-            border-radius: 0 12px 12px 0;
-            transition: all 0.3s;
-        }
-
-        #sidebar-panel.collapsed #sidebar-collapse-trigger .icon-arrow {
-            transform: rotate(180deg);
-        }
-
-        .gu-sidebar-item {
-            width: 100%;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #ffffff;
-            border-radius: 16px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .gu-sidebar-item:hover {
-            border-color: var(--gu-secondary);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transform: translateX(4px);
-        }
-
-        .gu-sidebar-item .type-icon {
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            flex: 0 0 auto;
-            border-radius: 14px;
-            background: #f4fff4;
-            color: var(--gu-secondary);
-            border: 1px solid rgba(41, 108, 31, 0.16);
-        }
-
-        .gu-sidebar-item .type-icon.gray {
-            background: #edf0f4;
-            color: #64748b;
-        }
-
-        .point-card-copy {
-            min-width: 0;
-        }
-
-        .point-card-copy strong,
-        .point-card-copy small {
-            display: block;
-        }
-
-        .point-card-copy strong {
-            color: #0f172a;
-            font-weight: 800;
-        }
-
-        .point-card-copy small {
-            margin-top: 4px;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        .gu-sidebar-meta {
-            display: grid;
-            gap: 4px;
-            margin-top: 10px;
-            color: #64748b;
-            font-size: 0.74rem;
-            line-height: 1.35;
-        }
-
-        .gu-sidebar-meta b {
-            font-weight: 800;
-        }
-
-        .gu-sidebar-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .gu-sidebar-meta .material-symbols-outlined {
-            color: var(--gu-secondary);
-            font-size: 15px;
-        }
-
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            padding: 4px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .greenup-map-popup {
-            min-width: 170px;
-            max-width: 205px;
-        }
-
-        .greenup-map-popup h6 {
-            margin: 0 0 8px;
-            font-size: 0.9rem;
-            font-weight: 900;
-        }
-
-        .point-info-list {
-            display: grid;
-            gap: 6px;
-        }
-
-        .point-info-row {
-            display: grid;
-            grid-template-columns: 17px minmax(0, 1fr);
-            gap: 7px;
-            align-items: center;
-        }
-
-        .point-info-row .material-symbols-outlined {
-            color: var(--gu-secondary);
-            font-size: 16px;
-            line-height: 1.15;
-        }
-
-        .point-info-row p {
-            margin: 0;
-        }
-
-        .point-info-row small {
-            color: #5e6873;
-            font-size: 0.76rem;
-            line-height: 1.25;
-        }
-
-        .greenup-map-popup button {
-            width: 100%;
-            min-height: 34px;
-            margin-top: 8px;
-            border: 0;
-            border-radius: 999px;
-            color: #ffffff;
-            cursor: pointer;
-            font-size: 0.78rem;
-            font-weight: 900;
-        }
-
-        .leaflet-routing-container {
-            display: none;
-        }
-
-        .map-floating-controls {
-            position: absolute;
-            right: 12px;
-            top: 12px;
-            z-index: 1000;
-            display: grid;
-            gap: 6px;
-        }
-
-        .map-control-button {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border: 1px solid rgba(15, 23, 42, 0.1);
-            border-radius: 12px;
-            background: #ffffff;
-            color: var(--gu-primary);
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
-            cursor: pointer;
-        }
-
-        .map-control-button:hover,
-        .map-control-button:focus-visible {
-            color: var(--gu-secondary);
-            background: #f0fbf2;
-        }
-
-        .map-control-button .material-symbols-outlined {
-            font-size: 22px;
-        }
-    </style>
+    <link href="../../css/ciudadano.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="ciudadano-pagina-mapa">
 
     <!-- NAVBAR UNIFICADA (Usuario Registrado) -->
-    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm"
-        style="height: 70px; z-index: 1050;">
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top shadow-sm ciudadano-mapa-estilo-1">
         <div class="container-fluid px-3 px-md-5">
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
@@ -304,7 +33,7 @@
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                         alt="Logo" width="32" height="32" class="me-2">
-                    <span style="color: var(--gu-primary);">Green</span><span style="color: #4CAF50;">Up</span>
+                    <span class="ciudadano-mapa-estilo-2">Green</span><span class="ciudadano-mapa-estilo-3">Up</span>
                 </a>
             </div>
             <div class="d-none d-md-flex h-100 align-items-center gap-4">
@@ -327,8 +56,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                        style="margin-top: 8px; margin-left: -10px;"></span>
+                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-mapa-estilo-4"></span>
                 </button>
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
@@ -367,8 +95,7 @@
             <div class="d-flex align-items-center">
                 <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                     alt="Logo" width="32" height="32" class="me-2">
-                <span class="fs-5 fw-bold"><span style="color: var(--gu-primary);">Green</span><span
-                        style="color: #4CAF50;">Up</span></span>
+                <span class="fs-5 fw-bold"><span class="ciudadano-mapa-estilo-2">Green</span><span class="ciudadano-mapa-estilo-3">Up</span></span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
@@ -384,8 +111,7 @@
                     <span class="material-symbols-outlined">newspaper</span> Noticias
                 </a>
                 <a href="ciudadano_mapa.html"
-                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success"
-                    style="color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);">
+                    class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 fw-bold border-end border-4 border-success ciudadano-mapa-estilo-5">
                     <span class="material-symbols-outlined">map</span> Mapa Eco
                 </a>
                 <a href="ciudadano_estadisticas.html"
@@ -424,13 +150,13 @@
             <!-- BUSCADOR Y FILTROS -->
             <div class="p-3 border-bottom bg-light">
                 <div class="mb-2 input-group">
-                    <input type="text" id="search-input" class="form-control" placeholder="Buscar dirección o barrio..." style="border-radius: 8px 0 0 8px;">
-                    <button class="btn text-white px-3" type="button" id="btn-search-address" style="background-color: var(--gu-primary); border-radius: 0 8px 8px 0;">
-                        <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">search</span>
+                    <input type="text" id="search-input" class="form-control ciudadano-mapa-estilo-6" placeholder="Buscar dirección o barrio...">
+                    <button class="btn text-white px-3 ciudadano-mapa-estilo-7" type="button" id="btn-search-address">
+                        <span class="material-symbols-outlined ciudadano-mapa-estilo-8">search</span>
                     </button>
                 </div>
                 <div>
-                    <select id="filter-select" class="form-select form-select-sm" style="border-radius: 8px; color: #495057;">
+                    <select id="filter-select" class="form-select form-select-sm ciudadano-mapa-estilo-9">
                         <option value="">Todos los residuos</option>
                         <option value="plástico">Plástico</option>
                         <option value="cartón">Cartón</option>
@@ -449,8 +175,7 @@
             <div class="p-3 bg-light rounded-bottom-4 border-top">
                 <!-- NUEVO: Botón configurado para abrir el Modal -->
                 <button id="btn-abrir-sugerencia"
-                    class="btn w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-white shadow-sm"
-                    style="background-color: var(--gu-secondary);">
+                    class="btn w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-white shadow-sm ciudadano-mapa-estilo-10">
                     <span class="material-symbols-outlined">add_location_alt</span> Sugerir Punto
                 </button>
             </div>
@@ -480,8 +205,8 @@
     </main>
 
     <!-- NUEVO: Modal de Sugerir Punto -->
-    <div class="modal fade" id="modalSugerirPunto" tabindex="-1" aria-labelledby="modalSugerirPuntoLabel"
-        aria-hidden="true" style="z-index: 2000;">
+    <div class="modal fade ciudadano-mapa-estilo-11" id="modalSugerirPunto" tabindex="-1" aria-labelledby="modalSugerirPuntoLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 pb-0">
@@ -510,8 +235,7 @@
                                 required>
                         </div>
                         <button type="button" id="btn-enviar-sugerencia"
-                            class="btn w-100 fw-bold text-white rounded-pill py-2"
-                            style="background-color: var(--gu-primary);">Enviar Sugerencia</button>
+                            class="btn w-100 fw-bold text-white rounded-pill py-2 ciudadano-mapa-estilo-12">Enviar Sugerencia</button>
                     </form>
                 </div>
             </div>
@@ -519,7 +243,7 @@
     </div>
 
     <!-- NUEVO: Toast de Éxito -->
-    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index: 2050;">
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3 ciudadano-mapa-estilo-13">
         <div id="successToast" class="toast align-items-center text-bg-success border-0 shadow-lg rounded-pill px-2"
             role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">

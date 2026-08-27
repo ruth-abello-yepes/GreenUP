@@ -334,3 +334,2058 @@
     font-size: 2.45rem;
   }
 }
+
+/* ===== INICIO: CSS EXTRAÍDO DE LAS VISTAS DEL CIUDADANO ===== */
+
+/* --- ciudadano_ajustes.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-ajustes {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+        }
+
+        body.ciudadano-pagina-ajustes {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-ajustes .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-ajustes .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-ajustes .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-ajustes .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-ajustes .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-ajustes .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-ajustes .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-ajustes .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos del Menú Lateral (Tabs) */
+        body.ciudadano-pagina-ajustes .list-group-item {
+            border: none;
+            border-radius: 8px !important;
+            margin-bottom: 4px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.ciudadano-pagina-ajustes .list-group-item:hover {
+            background-color: #f1f5f9;
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-ajustes .list-group-item.active {
+            background-color: rgba(169, 242, 149, 0.3) !important;
+            color: var(--gu-secondary) !important;
+            font-weight: bold;
+        }
+
+        /* Estilos de Tarjetas */
+        body.ciudadano-pagina-ajustes .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Estilos del Footer */
+        body.ciudadano-pagina-ajustes .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        body.ciudadano-pagina-ajustes .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+/* --- ciudadano_ajustes.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-5 {
+  z-index: 1100;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-6 {
+  margin-top: 100px; margin-bottom: 60px; max-width: 1100px;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-7 {
+  width: 80px; height: 80px;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-8 {
+  font-size: 40px;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-9 {
+  display: none;
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-10 {
+  color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-ajustes .ciudadano-ajustes-estilo-11 {
+  color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+/* --- ciudadano_educacion.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-educacion {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body.ciudadano-pagina-educacion {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-educacion .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-educacion .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-educacion .text-gu-accent {
+            color: var(--gu-accent);
+        }
+
+        body.ciudadano-pagina-educacion .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-educacion .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-educacion .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-educacion .bg-gu-accent {
+            background-color: var(--gu-accent);
+        }
+
+        body.ciudadano-pagina-educacion .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body.ciudadano-pagina-educacion .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-educacion .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-educacion .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Tarjetas (Bento Grid) */
+        body.ciudadano-pagina-educacion .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.ciudadano-pagina-educacion .gu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Degradado del Hero y Glass Card */
+        body.ciudadano-pagina-educacion .eco-gradient {
+            background: linear-gradient(135deg, var(--gu-primary) 0%, var(--gu-secondary) 100%);
+        }
+
+        body.ciudadano-pagina-educacion .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Imágenes de Tarjetas */
+        body.ciudadano-pagina-educacion .img-wrapper {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        body.ciudadano-pagina-educacion .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        body.ciudadano-pagina-educacion .gu-card:hover .img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        /* Ocultar scrollbar en filtros horizontales */
+        body.ciudadano-pagina-educacion .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        body.ciudadano-pagina-educacion .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Estilos del Footer */
+        body.ciudadano-pagina-educacion .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        body.ciudadano-pagina-educacion .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones Fade-up */
+        body.ciudadano-pagina-educacion .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        body.ciudadano-pagina-educacion .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        body.ciudadano-pagina-educacion .btn-gu-primary {
+            color: #fff;
+            background-color: var(--gu-primary);
+            border-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-educacion .btn-gu-primary:hover,
+body.ciudadano-pagina-educacion .btn-gu-primary:focus {
+            color: #fff;
+            background-color: #002f54;
+            border-color: #002f54;
+        }
+
+        body.ciudadano-pagina-educacion .education-skeleton {
+            min-height: 210px;
+            background: linear-gradient(90deg, #eef1f5 25%, #f8f9fa 50%, #eef1f5 75%);
+            background-size: 200% 100%;
+            animation: education-loading 1.2s infinite;
+        }
+
+        body.ciudadano-pagina-educacion .material-info {
+            border-left: 4px solid var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-educacion .learn-section-tabs {
+            background: #ffffff;
+            border: 1px solid rgba(0, 61, 108, 0.08);
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(0, 61, 108, 0.06);
+            display: inline-flex;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        body.ciudadano-pagina-educacion .learn-section-tabs a {
+            align-items: center;
+            border-radius: 999px;
+            color: #475569;
+            display: inline-flex;
+            font-weight: 800;
+            gap: 8px;
+            padding: 10px 18px;
+            text-decoration: none;
+        }
+
+        body.ciudadano-pagina-educacion .learn-section-tabs a:hover,
+body.ciudadano-pagina-educacion .learn-section-tabs a.is-active {
+            background: var(--gu-primary);
+            color: #ffffff;
+        }
+
+        body.ciudadano-pagina-educacion #noticias .featured-card .img-wrapper {
+            height: 100%;
+            border-radius: 15px 0 0 15px;
+        }
+
+        @media (max-width: 767.98px) {
+            body.ciudadano-pagina-educacion #noticias .featured-card .img-wrapper {
+                height: 250px;
+                border-radius: 15px 15px 0 0;
+            }
+        }
+
+        @keyframes education-loading {
+            to {
+                background-position: -200% 0;
+            }
+        }
+
+/* --- ciudadano_educacion.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-5 {
+  color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-6 {
+  margin-top: 100px; margin-bottom: 60px; max-width: 1600px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-7 {
+  height: 8px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-8 {
+  width: 0%;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-9 {
+  width: 300px; height: 300px; bottom: -100px; right: -50px; filter: blur(40px);
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-10 {
+  transition-delay: 0.1s;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-11 {
+  aspect-ratio: 16/9;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-12 {
+  width: 64px; height: 64px; cursor: pointer;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-13 {
+  transition-delay: 0.2s;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-14 {
+  transition-delay: 0.3s;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-15 {
+  transition-delay: 0.35s;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-16 {
+  transition-delay: 0.4s;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-17 {
+  min-height: 150px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-18 {
+  min-height: 120px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-19 {
+  max-width: 780px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-20 {
+  max-width: 330px;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-21 {
+  display: none;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-22 {
+  z-index: 1100;
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-23 {
+  color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-24 {
+  color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-educacion .ciudadano-educacion-estilo-25 {
+  width: 36px; height: 36px;
+}
+
+/* --- ciudadano_estadisticas.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-estadisticas {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body.ciudadano-pagina-estadisticas {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-estadisticas .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-estadisticas .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-estadisticas .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-estadisticas .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-estadisticas .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-estadisticas .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-estadisticas .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-estadisticas .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Tarjetas (Bento Grid) */
+        body.ciudadano-pagina-estadisticas .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.ciudadano-pagina-estadisticas .gu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Acentos visuales para KPI Cards */
+        body.ciudadano-pagina-estadisticas .bento-accent-green {
+            border-left: 4px solid var(--gu-secondary) !important;
+        }
+
+        body.ciudadano-pagina-estadisticas .bento-accent-blue {
+            border-left: 4px solid var(--gu-primary) !important;
+        }
+
+        /* Glass Card (Tip del Día) */
+        body.ciudadano-pagina-estadisticas .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--gu-accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Ranking de Líderes */
+        body.ciudadano-pagina-estadisticas .ranking-item {
+            transition: background-color 0.2s;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        body.ciudadano-pagina-estadisticas .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        body.ciudadano-pagina-estadisticas .ranking-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        body.ciudadano-pagina-estadisticas .ranking-active-user {
+            background-color: rgba(41, 108, 31, 0.08);
+            border-left: 4px solid var(--gu-secondary);
+        }
+
+        /* Ajustes para Contenedores de Gráficas */
+        body.ciudadano-pagina-estadisticas .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Estilos del Footer */
+        body.ciudadano-pagina-estadisticas .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        body.ciudadano-pagina-estadisticas .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones Fade-up */
+        body.ciudadano-pagina-estadisticas .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        body.ciudadano-pagina-estadisticas .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+/* --- ciudadano_estadisticas.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-5 {
+  color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-6 {
+  margin-top: 100px; margin-bottom: 60px; max-width: 1280px;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-7 {
+  max-width: 800px;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-8 {
+  transition-delay: 0.1s;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-9 {
+  width: 56px; height: 56px; background-color: rgba(41, 108, 31, 0.1); color: var(--gu-secondary);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-10 {
+  font-size: 14px;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-11 {
+  width: 56px; height: 56px; background-color: rgba(0, 61, 108, 0.1); color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-12 {
+  transition-delay: 0.2s;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-13 {
+  top: 90px; z-index: 10;
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-14 {
+  color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-15 {
+  color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-estadisticas .ciudadano-estadisticas-estilo-16 {
+  width: 36px; height: 36px;
+}
+
+/* --- ciudadano_faq.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-faq {
+            --gu-primary: #003d6c;
+            --gu-primary-container: #065591;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body.ciudadano-pagina-faq {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-faq .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-faq .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-faq .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-faq .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-faq .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-faq .bg-primary-container {
+            background-color: var(--gu-primary-container);
+        }
+
+        body.ciudadano-pagina-faq .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-faq .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Acordeón Personalizado Bootstrap */
+        body.ciudadano-pagina-faq .accordion-item {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px !important;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        body.ciudadano-pagina-faq .accordion-button {
+            font-weight: 600;
+            color: var(--gu-dark);
+            padding: 1.25rem 1.5rem;
+            background-color: white;
+            box-shadow: none !important;
+        }
+
+        body.ciudadano-pagina-faq .accordion-button:not(.collapsed) {
+            color: var(--gu-primary);
+            background-color: var(--gu-light-blue);
+        }
+
+        body.ciudadano-pagina-faq .accordion-button:focus {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.ciudadano-pagina-faq .accordion-body {
+            color: #414750;
+            line-height: 1.6;
+            padding: 1.5rem;
+        }
+
+        /* Estilos de la Caja de Búsqueda */
+        body.ciudadano-pagina-faq .search-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            color: white;
+        }
+
+        body.ciudadano-pagina-faq .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        body.ciudadano-pagina-faq .search-box:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--gu-accent);
+            box-shadow: 0 0 0 0.25rem rgba(169, 242, 149, 0.25);
+            color: white;
+        }
+
+        /* Estilos del Footer */
+        body.ciudadano-pagina-faq .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        body.ciudadano-pagina-faq .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones Fade-up */
+        body.ciudadano-pagina-faq .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        body.ciudadano-pagina-faq .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+/* --- ciudadano_faq.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-5 {
+  margin-top: 70px;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-6 {
+  max-width: 600px; margin: 0 auto;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-7 {
+  max-width: 600px;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-8 {
+  max-width: 800px; margin-bottom: 60px;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-9 {
+  transition-delay: 0.1s;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-10 {
+  transition-delay: 0.2s;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-11 {
+  transition-delay: 0.3s;
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-12 {
+  color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-13 {
+  color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-faq .ciudadano-faq-estilo-14 {
+  width: 36px; height: 36px;
+}
+
+/* --- ciudadano_inicio.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-inicio {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body.ciudadano-pagina-inicio {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-inicio .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-inicio .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-inicio .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-inicio .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-inicio .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-inicio .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-inicio .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-inicio .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Cards (Bento Grid) */
+        body.ciudadano-pagina-inicio .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.ciudadano-pagina-inicio .gu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        body.ciudadano-pagina-inicio .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--gu-accent);
+        }
+
+        /* Estilos del Gráfico de Barras */
+        body.ciudadano-pagina-inicio .chart-bar-container {
+            height: 160px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        body.ciudadano-pagina-inicio .chart-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        body.ciudadano-pagina-inicio .chart-bar {
+            width: 100%;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        body.ciudadano-pagina-inicio .chart-bar:hover {
+            filter: brightness(0.85);
+            cursor: pointer;
+        }
+
+        body.ciudadano-pagina-inicio .chart-label {
+            font-size: 0.75rem;
+            color: #727781;
+            font-weight: 500;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        body.ciudadano-pagina-inicio .chart-tooltip {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #121c2a;
+            color: white;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        body.ciudadano-pagina-inicio .chart-bar:hover .chart-tooltip {
+            opacity: 1;
+        }
+
+        /* Estilos de Acceso Rápido (Imágenes) */
+        body.ciudadano-pagina-inicio .img-preview-card {
+            height: 140px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        body.ciudadano-pagina-inicio .img-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        body.ciudadano-pagina-inicio .img-preview-card:hover img {
+            transform: scale(1.1);
+        }
+
+        body.ciudadano-pagina-inicio .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.25rem;
+            color: white;
+        }
+
+        /* Estilos Footer */
+        body.ciudadano-pagina-inicio .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        body.ciudadano-pagina-inicio .hover-white:hover {
+            color: #fff !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones */
+        body.ciudadano-pagina-inicio .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        body.ciudadano-pagina-inicio .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+/* --- ciudadano_inicio.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-5 {
+  color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-6 {
+  margin-top: 100px; margin-bottom: 60px; max-width: 1200px;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-7 {
+  color: #065591;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-8 {
+  max-width: 700px;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-9 {
+  height: 6px;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-10 {
+  width: 0%;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-11 {
+  font-size: 0.75rem;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-12 {
+  border-color: var(--gu-primary) !important;
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-13 {
+  background-color: rgba(6, 85, 145, 0.1);
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-14 {
+  color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-15 {
+  color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+body.ciudadano-pagina-inicio .ciudadano-inicio-estilo-16 {
+  width: 36px; height: 36px;
+}
+
+/* --- ciudadano_mapa.html: estilos del bloque <style> --- */
+body.ciudadano-pagina-mapa {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+        }
+
+        body.ciudadano-pagina-mapa {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body.ciudadano-pagina-mapa .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-mapa .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-mapa .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-mapa .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-mapa .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body.ciudadano-pagina-mapa .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        body.ciudadano-pagina-mapa .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body.ciudadano-pagina-mapa .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-mapa .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos del Mapa y Panel Lateral */
+        body.ciudadano-pagina-mapa main {
+            position: relative;
+            flex-grow: 1;
+            margin-top: 70px;
+            display: flex;
+        }
+
+        body.ciudadano-pagina-mapa #eco-map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        body.ciudadano-pagina-mapa #sidebar-panel {
+            width: 320px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        body.ciudadano-pagina-mapa #sidebar-panel.collapsed {
+            transform: translateX(calc(-100% - 20px));
+        }
+
+        body.ciudadano-pagina-mapa #sidebar-collapse-trigger {
+            position: absolute;
+            right: -40px;
+            top: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s;
+        }
+
+        body.ciudadano-pagina-mapa #sidebar-panel.collapsed #sidebar-collapse-trigger .icon-arrow {
+            transform: rotate(180deg);
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-item {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-item:hover {
+            border-color: var(--gu-secondary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateX(4px);
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-item .type-icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 14px;
+            background: #f4fff4;
+            color: var(--gu-secondary);
+            border: 1px solid rgba(41, 108, 31, 0.16);
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-item .type-icon.gray {
+            background: #edf0f4;
+            color: #64748b;
+        }
+
+        body.ciudadano-pagina-mapa .point-card-copy {
+            min-width: 0;
+        }
+
+        body.ciudadano-pagina-mapa .point-card-copy strong,
+body.ciudadano-pagina-mapa .point-card-copy small {
+            display: block;
+        }
+
+        body.ciudadano-pagina-mapa .point-card-copy strong {
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        body.ciudadano-pagina-mapa .point-card-copy small {
+            margin-top: 4px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-meta {
+            display: grid;
+            gap: 4px;
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 0.74rem;
+            line-height: 1.35;
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-meta b {
+            font-weight: 800;
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        body.ciudadano-pagina-mapa .gu-sidebar-meta .material-symbols-outlined {
+            color: var(--gu-secondary);
+            font-size: 15px;
+        }
+
+        body.ciudadano-pagina-mapa .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            padding: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.ciudadano-pagina-mapa .greenup-map-popup {
+            min-width: 170px;
+            max-width: 205px;
+        }
+
+        body.ciudadano-pagina-mapa .greenup-map-popup h6 {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            font-weight: 900;
+        }
+
+        body.ciudadano-pagina-mapa .point-info-list {
+            display: grid;
+            gap: 6px;
+        }
+
+        body.ciudadano-pagina-mapa .point-info-row {
+            display: grid;
+            grid-template-columns: 17px minmax(0, 1fr);
+            gap: 7px;
+            align-items: center;
+        }
+
+        body.ciudadano-pagina-mapa .point-info-row .material-symbols-outlined {
+            color: var(--gu-secondary);
+            font-size: 16px;
+            line-height: 1.15;
+        }
+
+        body.ciudadano-pagina-mapa .point-info-row p {
+            margin: 0;
+        }
+
+        body.ciudadano-pagina-mapa .point-info-row small {
+            color: #5e6873;
+            font-size: 0.76rem;
+            line-height: 1.25;
+        }
+
+        body.ciudadano-pagina-mapa .greenup-map-popup button {
+            width: 100%;
+            min-height: 34px;
+            margin-top: 8px;
+            border: 0;
+            border-radius: 999px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+        body.ciudadano-pagina-mapa .leaflet-routing-container {
+            display: none;
+        }
+
+        body.ciudadano-pagina-mapa .map-floating-controls {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            z-index: 1000;
+            display: grid;
+            gap: 6px;
+        }
+
+        body.ciudadano-pagina-mapa .map-control-button {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(15, 23, 42, 0.1);
+            border-radius: 12px;
+            background: #ffffff;
+            color: var(--gu-primary);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+            cursor: pointer;
+        }
+
+        body.ciudadano-pagina-mapa .map-control-button:hover,
+body.ciudadano-pagina-mapa .map-control-button:focus-visible {
+            color: var(--gu-secondary);
+            background: #f0fbf2;
+        }
+
+        body.ciudadano-pagina-mapa .map-control-button .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+/* --- ciudadano_mapa.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-5 {
+  color: var(--gu-secondary); background-color: rgba(41, 108, 31, 0.1);
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-6 {
+  border-radius: 8px 0 0 8px;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-7 {
+  background-color: var(--gu-primary); border-radius: 0 8px 8px 0;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-8 {
+  font-size: 20px; vertical-align: middle;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-9 {
+  border-radius: 8px; color: #495057;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-10 {
+  background-color: var(--gu-secondary);
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-11 {
+  z-index: 2000;
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-12 {
+  background-color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-mapa .ciudadano-mapa-estilo-13 {
+  z-index: 2050;
+}
+
+/* --- ciudadano_registrar_reciclaje.html: estilos del bloque <style> --- */
+body.ciudadano-pagina-registrar-reciclaje {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f5f8ff;
+            --gu-dark: #121c2a;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje {
+            font-family: "Inter", sans-serif;
+            background: var(--gu-surface);
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .text-gu-primary { color: var(--gu-primary); }
+        body.ciudadano-pagina-registrar-reciclaje .text-gu-secondary { color: var(--gu-secondary); }
+        body.ciudadano-pagina-registrar-reciclaje .bg-gu-dark { background: var(--gu-dark); }
+        body.ciudadano-pagina-registrar-reciclaje .material-symbols-outlined { vertical-align: middle; }
+
+        body.ciudadano-pagina-registrar-reciclaje .gu-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 22px;
+            background: #fff;
+            box-shadow: 0 16px 40px rgba(0, 61, 108, 0.06);
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .registro-form-card {
+            max-width: 520px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .registro-card-head {
+            gap: 16px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .registro-card-head .badge {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.25;
+            max-width: 190px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .estado-inicial-box {
+            min-height: 52px;
+            border: 1px solid #dce4ec;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.85rem 1rem;
+            font-weight: 600;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .estado-inicial-box .material-symbols-outlined {
+            color: #d97706;
+            font-size: 1.25rem;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .historial-card {
+            min-height: 520px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .historial-table {
+            min-width: 720px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .historial-table thead th {
+            color: #111827;
+            font-size: 0.92rem;
+            white-space: nowrap;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .historial-empty {
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fbfdff;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .hero-panel {
+            background: linear-gradient(135deg, rgba(0, 61, 108, 0.96), rgba(41, 108, 31, 0.96));
+            color: #fff;
+            border-radius: 28px;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: 700;
+        }
+
+        body.ciudadano-pagina-registrar-reciclaje .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        @media (max-width: 575.98px) {
+            body.ciudadano-pagina-registrar-reciclaje main.container {
+                margin-top: 88px !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .hero-panel {
+                border-radius: 22px;
+                padding: 24px !important;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .hero-panel h1 {
+                font-size: 1.85rem;
+                line-height: 1.12;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .gu-card {
+                border-radius: 18px;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .gu-card.p-4,
+body.ciudadano-pagina-registrar-reciclaje .gu-card.p-lg-5 {
+                padding: 24px !important;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .gu-card > .d-flex.justify-content-between.align-items-start {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .registro-form-card {
+                max-width: none;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .registro-card-head .badge {
+                max-width: 100%;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .historial-card {
+                min-height: auto;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje #puntos-disponibles {
+                align-self: flex-start;
+                max-width: 100%;
+                white-space: normal;
+                line-height: 1.25;
+            }
+
+            body.ciudadano-pagina-registrar-reciclaje .form-control,
+body.ciudadano-pagina-registrar-reciclaje .form-select {
+                min-height: 50px;
+                font-size: 1rem;
+            }
+        }
+
+/* --- ciudadano_registrar_reciclaje.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-registrar-reciclaje .ciudadano-registrar-reciclaje-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-registrar-reciclaje .ciudadano-registrar-reciclaje-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-registrar-reciclaje .ciudadano-registrar-reciclaje-estilo-3 {
+  color:#4CAF50;
+}
+
+body.ciudadano-pagina-registrar-reciclaje .ciudadano-registrar-reciclaje-estilo-4 {
+  margin-top: 8px; margin-left: -10px;
+}
+
+body.ciudadano-pagina-registrar-reciclaje .ciudadano-registrar-reciclaje-estilo-5 {
+  margin-top: 104px; margin-bottom: 64px; max-width: 1240px;
+}
+
+/* --- ciudadano_reportar_novedad.html: estilos del bloque <style> --- */
+/* Variables de Marca GreenUp */
+        body.ciudadano-pagina-reportar-novedad {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body.ciudadano-pagina-reportar-novedad {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        body.ciudadano-pagina-reportar-novedad .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        body.ciudadano-pagina-reportar-novedad .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        body.ciudadano-pagina-reportar-novedad .hover-bg-light:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Estilos de Cards Base */
+        body.ciudadano-pagina-reportar-novedad .gu-card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Glass Card */
+        body.ciudadano-pagina-reportar-novedad .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(193, 199, 209, 0.3);
+        }
+
+        /* Componente Aside Memorizado */
+        body.ciudadano-pagina-reportar-novedad .sidebar-item {
+            transition: all 0.2s ease;
+            border: none;
+            text-align: left;
+        }
+
+        body.ciudadano-pagina-reportar-novedad .sidebar-item:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: var(--gu-primary);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .sidebar-item.active {
+            background-color: var(--gu-accent);
+            color: var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        /* Botones Bootstrap Sobreescritos */
+        body.ciudadano-pagina-reportar-novedad .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        body.ciudadano-pagina-reportar-novedad .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        body.ciudadano-pagina-reportar-novedad .btn-gu-primary:active {
+            transform: scale(0.95);
+        }
+
+        /* Inputs Personalizados */
+        body.ciudadano-pagina-reportar-novedad .form-control:focus,
+body.ciudadano-pagina-reportar-novedad .form-select:focus {
+            border-color: var(--gu-primary);
+            box-shadow: 0 0 0 0.25rem rgba(0, 61, 108, 0.1);
+        }
+
+        /* Animaciones */
+        body.ciudadano-pagina-reportar-novedad .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        body.ciudadano-pagina-reportar-novedad .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+/* --- ciudadano_reportar_novedad.html: estilos que antes estaban en atributos style --- */
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-1 {
+  height: 70px; z-index: 1050;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-2 {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-3 {
+  color: #4CAF50;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-4 {
+  margin-top: 100px; margin-bottom: 60px; max-width: 1100px;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-5 {
+  transition-delay: 0.1s;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-6 {
+  font-variation-settings: 'FILL' 1;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-7 {
+  width: 64px; height: 64px; background-color: var(--gu-accent);
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-8 {
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+}
+
+body.ciudadano-pagina-reportar-novedad .ciudadano-reportar-novedad-estilo-9 {
+  color: #065591;
+}
+
+/* ===== FIN: CSS EXTRAÍDO DE LAS VISTAS DEL CIUDADANO ===== */
+
+/* ============================================================
+   HISTORIAL DE RECICLAJE DEL CIUDADANO
+   ============================================================ */
+body.ciudadano-pagina-historial-reciclaje {
+  --gu-primary: #003d6c;
+  --gu-secondary: #296c1f;
+  --gu-surface: #f5f8ff;
+  --gu-dark: #121c2a;
+  --gu-accent: #a9f295;
+  background: var(--gu-surface);
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+}
+
+body.ciudadano-pagina-historial-reciclaje .text-gu-primary {
+  color: var(--gu-primary) !important;
+}
+
+body.ciudadano-pagina-historial-reciclaje .bg-gu-dark {
+  background: var(--gu-dark);
+}
+
+body.ciudadano-pagina-historial-reciclaje .material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-navbar {
+  height: 70px;
+  z-index: 1050;
+}
+
+body.ciudadano-pagina-historial-reciclaje .marca-green {
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-historial-reciclaje .marca-up {
+  color: #4caf50;
+}
+
+body.ciudadano-pagina-historial-reciclaje .indicador-notificaciones {
+  margin-left: -10px;
+  margin-top: 8px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .nav-link.active-custom {
+  border-bottom: 2px solid var(--gu-secondary);
+  color: var(--gu-secondary) !important;
+  font-weight: 700;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-contenido {
+  margin-bottom: 64px;
+  margin-top: 104px;
+  max-width: 1440px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-hero {
+  background: linear-gradient(135deg, var(--gu-primary), #075f6b 58%, var(--gu-secondary));
+  border-radius: 28px;
+  box-shadow: 0 18px 45px rgba(0, 61, 108, 0.16);
+  color: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-hero::after {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  content: "";
+  height: 240px;
+  position: absolute;
+  right: -70px;
+  top: -110px;
+  width: 240px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-hero > .row {
+  position: relative;
+  z-index: 1;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-resumen-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 61, 108, 0.09);
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(0, 61, 108, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 150px;
+  padding: 20px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-resumen-icono {
+  align-items: center;
+  border-radius: 14px;
+  display: inline-flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .resumen-icono-azul {
+  background: #e8f1ff;
+  color: var(--gu-primary);
+}
+
+body.ciudadano-pagina-historial-reciclaje .resumen-icono-verde {
+  background: #e8f7ec;
+  color: #17713a;
+}
+
+body.ciudadano-pagina-historial-reciclaje .resumen-icono-amarillo {
+  background: #fff5d6;
+  color: #916900;
+}
+
+body.ciudadano-pagina-historial-reciclaje .resumen-icono-rojo {
+  background: #fdeaea;
+  color: #b42318;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-resumen-etiqueta {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-resumen-card strong {
+  color: var(--gu-primary);
+  font-size: 1.55rem;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-panel {
+  background: #ffffff;
+  border: 1px solid rgba(0, 61, 108, 0.09);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(0, 61, 108, 0.07);
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-filtros {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-filtros .form-control,
+body.ciudadano-pagina-historial-reciclaje .historial-filtros .form-select,
+body.ciudadano-pagina-historial-reciclaje .historial-filtros .input-group-text {
+  border-color: #d5dee9;
+  min-height: 44px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-filtros .form-control:focus,
+body.ciudadano-pagina-historial-reciclaje .historial-filtros .form-select:focus {
+  border-color: var(--gu-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(41, 108, 31, 0.12);
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-tabla-contenedor {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-tabla {
+  min-width: 1080px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-tabla thead th {
+  background: #eef4fb;
+  border-bottom: 1px solid #d8e2ee;
+  color: var(--gu-primary);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+  padding: 16px 14px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-tabla tbody td {
+  border-color: #edf1f5;
+  padding: 16px 14px;
+  vertical-align: middle;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-tabla tbody tr:hover {
+  background: #f9fcff;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-estado-badge {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  padding: 8px 10px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-estado-badge .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-detalle {
+  max-width: 260px;
+  min-width: 190px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-vacio {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 auto;
+  max-width: 460px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-vacio > .material-symbols-outlined {
+  color: var(--gu-primary);
+  font-size: 3rem;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-vacio strong {
+  color: var(--gu-primary);
+  font-size: 1.05rem;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-vacio p {
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-icono-carga {
+  animation: historial-girar 1s linear infinite;
+  color: var(--gu-primary);
+  font-size: 2.5rem;
+}
+
+body.ciudadano-pagina-historial-reciclaje .rounded-footer-top {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+@keyframes historial-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 991.98px) {
+  body.ciudadano-pagina-historial-reciclaje .historial-contenido {
+    margin-top: 92px;
+  }
+
+  body.ciudadano-pagina-historial-reciclaje .historial-resumen-card {
+    min-height: 138px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.ciudadano-pagina-historial-reciclaje .historial-contenido {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.ciudadano-pagina-historial-reciclaje .historial-hero,
+  body.ciudadano-pagina-historial-reciclaje .historial-panel {
+    border-radius: 20px;
+  }
+
+  body.ciudadano-pagina-historial-reciclaje .historial-resumen-card {
+    min-height: 132px;
+    padding: 16px;
+  }
+
+  body.ciudadano-pagina-historial-reciclaje .historial-resumen-card strong {
+    font-size: 1.3rem;
+  }
+}

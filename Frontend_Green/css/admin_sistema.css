@@ -971,7 +971,7 @@ body.admin-theme-dark .role-nav-menu {
   right: 0;
   z-index: 3;
   min-width: 126px;
-  background: #ffffff;
+  background: var(--admin-panel);
   box-shadow: -10px 0 18px rgba(15, 23, 42, 0.07);
 }
 
@@ -980,7 +980,7 @@ body.admin-theme-dark .role-nav-menu {
 }
 
 .admin-table.has-actions tbody tr:hover td:last-child {
-  background: #fbfdfc;
+  background: var(--admin-blue-soft);
 }
 
 .admin-table.has-actions td:last-child .row-actions {

@@ -176,58 +176,6 @@
           if (!Array.isArray(data)) data = [];
       }
       
-      // Injecting the points from the user's screenshots
-      const mockPoints = [
-        {
-          id: 'mock-vendicion',
-          nombre: 'Recicladora la vendicion',
-          direccion: 'Cl. 5 #44-56, Valledupar, Cesar',
-          telefono: 'Teléfono no registrado',
-          materiales_aceptados: ['Cartón', 'Plástico', 'Vidrio'],
-          horario: 'Lunes a Sábado - 8:00 AM a 5:00 PM',
-          // Approximate coordinates in Valledupar
-          latitud: 10.4685, 
-          longitud: -73.2450,
-          id_estado: 1
-        },
-        {
-          id: 'mock-servicios',
-          nombre: 'Reciclar todo servicios s.a.s',
-          direccion: 'Cra. 23 #41a- 03, la loma cesar, Valledupar, Cesar',
-          telefono: '317 4360912',
-          materiales_aceptados: ['Metal', 'Electrónicos', 'Papel', 'Cartón'],
-          horario: 'Lunes a Viernes - 7:00 AM a 6:00 PM',
-          latitud: 10.4550,
-          longitud: -73.2510,
-          id_estado: 1
-        },
-        {
-          id: 'mock-coorrenacer',
-          nombre: 'Coorrenacer',
-          direccion: 'Carrera 15 #22-40, 12 de Octubre, Valledupar, Cesar',
-          telefono: '55700564',
-          materiales_aceptados: ['Plástico', 'Papel', 'Cartón', 'Vidrio'],
-          horario: 'Lunes a Sábado - 8:00 AM a 6:00 PM',
-          latitud: 10.4701,
-          longitud: -73.2505,
-          id_estado: 1
-        },
-        {
-          id: 'mock-soldadura',
-          nombre: 'Recicladora y Soldadura',
-          direccion: 'Cl. 17 #463, Valledupar, Cesar',
-          telefono: '317 8283283',
-          materiales_aceptados: ['Metal', 'Chatarra', 'Aluminio'],
-          horario: 'Lunes a Viernes - 7:00 AM a 5:30 PM',
-          latitud: 10.4655,
-          longitud: -73.2600,
-          id_estado: 1
-        }
-      ];
-      
-      // Combine API data with mock points
-      data = [...mockPoints, ...data];
-
       const points = data.map(normalizePoint);
       return resolveRegisteredLocations(points);
     } catch (error) {
@@ -617,7 +565,7 @@
     const filterTerm = (filterSelect ? filterSelect.value : "").toLowerCase();
 
     const filteredPoints = allPoints.filter(point => {
-        const materialsText = (point.materialsPreview || "").toLowerCase();
+        const materialsText = `${point.type || ""} ${point.materialsPreview || ""}`.toLowerCase();
         return filterTerm === "" || materialsText.includes(filterTerm);
     });
 

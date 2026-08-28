@@ -154,6 +154,48 @@ def listar_ubicaciones():
 
     data = cursor.fetchall()
 
+    claves_existentes = {
+        (
+            str(item.get("nombre") or "").strip().lower(),
+            str(item.get("direccion") or "").strip().lower(),
+        )
+        for item in data
+    }
+
+    condicion_sin_punto = ""
+    if tiene_id_punto:
+        condicion_sin_punto = "AND recicladoras.id_punto IS NULL"
+
+    cursor.execute(f"""
+        SELECT
+            (recicladoras.id_recicladora * -1) AS id_punto,
+            COALESCE(NULLIF(recicladoras.nombre_empresa, ''), 'Recicladora registrada') AS nombre,
+            COALESCE(NULLIF(recicladoras.direccion_empresa, ''), 'Direccion por confirmar') AS direccion,
+            COALESCE(NULLIF(recicladoras.horario, ''), 'Horario por confirmar') AS horario,
+            NULL AS latitud,
+            NULL AS longitud,
+            COALESCE(NULLIF(recicladoras.telefono_empresa, ''), usuarios.celular, '') AS telefono,
+            COALESCE(NULLIF(recicladoras.nombre_empresa, ''), usuarios.usuario, '') AS responsable,
+            recicladoras.id_estado,
+            COALESCE(usuarios.correo, '') AS correo,
+            '' AS materiales_aceptados
+        FROM recicladoras
+        LEFT JOIN usuarios
+            ON usuarios.id_usuario = recicladoras.id_usuario
+        WHERE recicladoras.id_estado = 1
+          {condicion_sin_punto}
+        ORDER BY recicladoras.id_recicladora DESC
+    """)
+
+    for recicladora in cursor.fetchall():
+        clave = (
+            str(recicladora.get("nombre") or "").strip().lower(),
+            str(recicladora.get("direccion") or "").strip().lower(),
+        )
+        if clave not in claves_existentes:
+            data.append(recicladora)
+            claves_existentes.add(clave)
+
     cursor.close()
     conexion.close()
 

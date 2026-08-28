@@ -2133,12 +2133,33 @@ async function guardarContenido(evento) {
 }
 
 async function cargarEstadisticas() {
-  const [estadisticas, usuarios, puntos, recicladoras] = await Promise.all([
+  const resultados = await Promise.allSettled([
     apiAdmin("/estadisticas"),
     apiAdmin("/api/usuarios/listar"),
     apiAdmin("/ubicaciones"),
     apiAdmin("/api/recicladoras/listar"),
   ]);
+  const estadisticas = resultados[0].status === "fulfilled" && resultados[0].value
+    ? resultados[0].value
+    : {};
+  const usuarios = resultados[1].status === "fulfilled" && Array.isArray(resultados[1].value)
+    ? resultados[1].value
+    : [];
+  const puntos = resultados[2].status === "fulfilled" && Array.isArray(resultados[2].value)
+    ? resultados[2].value
+    : [];
+  let recicladoras = resultados[3].status === "fulfilled" && Array.isArray(resultados[3].value)
+    ? resultados[3].value
+    : [];
+  if (!recicladoras.length && usuarios.length) {
+    recicladoras = usuarios.filter((usuario) => Number(usuario.id_rol) === 2);
+  }
+  const erroresEstadisticas = resultados
+    .filter((resultado) => resultado.status === "rejected")
+    .map((resultado) => resultado.reason?.message || "No se pudo cargar una seccion");
+  if (erroresEstadisticas.length) {
+    console.warn("Secciones de estadisticas no cargadas:", erroresEstadisticas);
+  }
   pintarHero([
     ["Reciclajes", String(estadisticas.total_reciclajes || 0)],
     ["Kg", String(estadisticas.total_cantidad || 0)],

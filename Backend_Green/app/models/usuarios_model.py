@@ -87,18 +87,47 @@ def listar_usuarios():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
+    columnas_publicas = """
+        usuarios.id_usuario,
+        usuarios.nombres,
+        usuarios.apellidos,
+        usuarios.correo,
+        usuarios.usuario,
+        usuarios.numero_documento,
+        usuarios.celular,
+        usuarios.foto_perfil,
+        usuarios.id_tipo_documento,
+        usuarios.id_rol,
+        usuarios.id_estado
+    """
+
     if _tabla_existe(cursor, "ciudadano_puntos_juego"):
         sql = """
         SELECT
-            usuarios.*,
-            COALESCE(ciudadano_puntos_juego.puntos_total, 0) AS puntos_juego,
-            COALESCE(ciudadano_puntos_juego.noticias_completadas, 0) AS noticias_juego
+            {columnas_publicas},
+            COALESCE(puntos.puntos_juego, 0) AS puntos_juego,
+            COALESCE(puntos.noticias_juego, 0) AS noticias_juego
         FROM usuarios
-        LEFT JOIN ciudadano_puntos_juego
-          ON ciudadano_puntos_juego.id_usuario = usuarios.id_usuario
-        """
+        LEFT JOIN (
+            SELECT
+                id_usuario,
+                MAX(COALESCE(puntos_total, 0)) AS puntos_juego,
+                MAX(COALESCE(noticias_completadas, 0)) AS noticias_juego
+            FROM ciudadano_puntos_juego
+            GROUP BY id_usuario
+        ) puntos
+          ON puntos.id_usuario = usuarios.id_usuario
+        ORDER BY usuarios.id_usuario DESC
+        """.format(columnas_publicas=columnas_publicas)
     else:
-        sql = "SELECT usuarios.*, 0 AS puntos_juego, 0 AS noticias_juego FROM usuarios"
+        sql = f"""
+        SELECT
+            {columnas_publicas},
+            0 AS puntos_juego,
+            0 AS noticias_juego
+        FROM usuarios
+        ORDER BY usuarios.id_usuario DESC
+        """
 
     cursor.execute(sql)
     usuarios = cursor.fetchall()

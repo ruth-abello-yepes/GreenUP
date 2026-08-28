@@ -235,7 +235,13 @@ def ruta_listar_usuarios():
         description: No tiene permisos de administrador
     """
 
-    respuesta, estado = servicio_listar_usuarios()
+    try:
+        respuesta, estado = servicio_listar_usuarios()
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos al listar usuarios GreenUP: {error}")
+        return jsonify({
+            "mensaje": "No se pudieron cargar los usuarios. Revisa la conexion con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 

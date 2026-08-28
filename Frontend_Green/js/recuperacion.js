@@ -1,4 +1,5 @@
-const RECUPERACION_API = "https://greenup-hoxj.onrender.com/api/recuperar-contrasena";
+const RECUPERACION_API_BASE = typeof API_URL !== 'undefined' ? API_URL : "https://greenup-hoxj.onrender.com";
+const RECUPERACION_API = `${RECUPERACION_API_BASE}/api/recuperar-contrasena`;
 const RECUPERACION_TIMEOUT_MS = 45000;
 const RECUPERACION_EXPIRA_SEGUNDOS = 60;
 

@@ -91,6 +91,37 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
         smtp.send_message(mensaje)
 
 
+def _enviar_codigo_por_brevo(destinatario, asunto, html):
+    api_key = (os.getenv("BREVO_API_KEY") or "").strip()
+    if not api_key:
+        raise RuntimeError("BREVO_API_KEY no configurada")
+
+    remitente = (
+        current_app.config.get("MAIL_DEFAULT_SENDER")
+        or current_app.config.get("MAIL_USERNAME")
+        or "greenup213@gmail.com"
+    )
+
+    respuesta = requests.post(
+        "https://api.brevo.com/v3/smtp/email",
+        headers={
+            "api-key": api_key,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        json={
+            "sender": {"name": "GreenUP", "email": remitente},
+            "to": [{"email": destinatario}],
+            "subject": asunto,
+            "htmlContent": html
+        },
+        timeout=10,
+    )
+
+    if respuesta.status_code >= 400:
+        raise RuntimeError(respuesta.text[:180])
+
+
 def _enviar_codigo_por_resend(destinatario, asunto, texto, html):
     api_key = (os.getenv("RESEND_API_KEY") or "").strip()
     if not api_key:
@@ -319,6 +350,7 @@ def solicitar_codigo_recuperacion(datos):
             "mensaje": "No existe una cuenta registrada con ese correo electronico."
         }, 404
 
+    usa_brevo = bool((os.getenv("BREVO_API_KEY") or "").strip())
     usa_resend = bool((os.getenv("RESEND_API_KEY") or "").strip())
     usa_smtp = bool(current_app.config.get("MAIL_USERNAME") and current_app.config.get("MAIL_PASSWORD"))
 
@@ -333,7 +365,7 @@ def solicitar_codigo_recuperacion(datos):
         print(f"Error guardando codigo de recuperacion: {error}")
         return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
 
-    if not usa_resend and not usa_smtp:
+    if not usa_brevo and not usa_resend and not usa_smtp:
         print("Aviso: Credenciales de correo no configuradas. El codigo se imprimio en consola.", flush=True)
         return {
             "mensaje": "Codigo generado exitosamente. Revisa la consola.",
@@ -362,7 +394,9 @@ def solicitar_codigo_recuperacion(datos):
     </div>
     """
     try:
-        if usa_resend:
+        if usa_brevo:
+            _enviar_codigo_por_brevo(correo, asunto, html)
+        elif usa_resend:
             _enviar_codigo_por_resend(correo, asunto, texto, html)
         else:
             _enviar_codigo_por_smtp(correo, asunto, texto, html)

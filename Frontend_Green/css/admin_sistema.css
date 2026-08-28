@@ -805,7 +805,9 @@ body.admin-theme-dark .role-nav-menu {
 }
 
 .metrics-grid {
-  margin-bottom: 20px;
+  --bs-gutter-x: 1.75rem;
+  --bs-gutter-y: 1.75rem;
+  margin-bottom: 28px;
 }
 
 /* ---------------------------------------------------------------------
@@ -830,9 +832,9 @@ body.admin-theme-dark .role-nav-menu {
 
 .metric-card {
   display: grid;
-  gap: 12px;
-  min-height: 152px;
-  padding: 20px;
+  gap: 14px;
+  min-height: 170px;
+  padding: 24px 22px;
   border: 1px solid var(--admin-border);
   border-radius: var(--radius-lg);
   background: var(--admin-panel);
@@ -869,10 +871,13 @@ body.admin-theme-dark .role-nav-menu {
   margin: 0;
   color: #6a737d;
   font-size: 0.86rem;
+  line-height: 1.55;
 }
 
 .content-grid {
-  margin-bottom: 20px;
+  --bs-gutter-x: 1.75rem;
+  --bs-gutter-y: 1.75rem;
+  margin-bottom: 28px;
 }
 
 .content-grid.catalog-layout {
@@ -890,7 +895,7 @@ body.admin-theme-dark .role-nav-menu {
 .data-card,
 .module-card,
 .admin-card {
-  padding: 22px;
+  padding: 26px;
 }
 
 .card-title-row {
@@ -899,7 +904,7 @@ body.admin-theme-dark .role-nav-menu {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 .card-title-row > div {

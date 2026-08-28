@@ -723,11 +723,24 @@ async function cargarPanel() {
 }
 
 async function cargarUsuarios() {
-  const [ciudadanos, recicladoras, todos] = await Promise.all([
+  const resultados = await Promise.allSettled([
     apiAdmin("/api/usuarios/ciudadanos"),
     apiAdmin("/api/recicladoras/listar"),
     apiAdmin("/api/usuarios/listar"),
   ]);
+  const [ciudadanosResultado, recicladorasResultado, todosResultado] = resultados;
+  const ciudadanos = ciudadanosResultado.status === "fulfilled" && Array.isArray(ciudadanosResultado.value)
+    ? ciudadanosResultado.value
+    : [];
+  const recicladoras = recicladorasResultado.status === "fulfilled" && Array.isArray(recicladorasResultado.value)
+    ? recicladorasResultado.value
+    : [];
+  const todos = todosResultado.status === "fulfilled" && Array.isArray(todosResultado.value)
+    ? todosResultado.value
+    : [...ciudadanos, ...recicladoras];
+  const erroresCarga = resultados
+    .filter((resultado) => resultado.status === "rejected")
+    .map((resultado) => resultado.reason?.message || "No se pudo cargar una lista");
 
   pintarHero([
     ["Ciudadanos", String(ciudadanos.length)],
@@ -757,6 +770,11 @@ async function cargarUsuarios() {
 
   document.getElementById("admin-content").innerHTML = `
     ${toolbarUsuarios(todos.length)}
+    ${erroresCarga.length ? `
+      <div class="alert alert-warning mb-3" role="alert">
+        ${limpiar(erroresCarga.join(" "))}
+      </div>
+    ` : ""}
     <article class="data-card card">
       <div class="card-title-row">
         <div>

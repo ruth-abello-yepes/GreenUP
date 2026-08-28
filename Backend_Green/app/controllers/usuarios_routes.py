@@ -264,7 +264,13 @@ def ruta_listar_ciudadanos():
         description: No tiene permisos de administrador
     """
 
-    respuesta, estado = servicio_listar_ciudadanos()
+    try:
+        respuesta, estado = servicio_listar_ciudadanos()
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos al listar ciudadanos GreenUP: {error}")
+        return jsonify({
+            "mensaje": "No se pudieron cargar los ciudadanos. Revisa la conexion con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 

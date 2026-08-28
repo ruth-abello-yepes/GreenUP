@@ -138,7 +138,13 @@ def ruta_listar_duenos_recicladora():
         description: No tiene permisos
     """
 
-    respuesta, estado = servicio_listar_duenos_recicladora()
+    try:
+        respuesta, estado = servicio_listar_duenos_recicladora()
+    except (OperationalError, DatabaseError) as error:
+        print(f"Error de base de datos al listar recicladoras GreenUP: {error}")
+        return jsonify({
+            "mensaje": "No se pudieron cargar las recicladoras. Revisa la conexion con Supabase."
+        }), 503
 
     return jsonify(respuesta), estado
 

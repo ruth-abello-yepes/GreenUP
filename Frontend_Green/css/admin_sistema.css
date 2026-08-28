@@ -905,6 +905,7 @@ body.admin-theme-dark .role-nav-menu {
 
 .content-grid.catalog-layout {
   align-items: start;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .content-grid.content-layout {

@@ -107,7 +107,22 @@ def listar_recicladoras():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("""
+    dias_trabajo = "recicladoras.dias_trabajo" if _tabla_tiene_columna(cursor, "recicladoras", "dias_trabajo") else "NULL AS dias_trabajo"
+    hora_inicio = "recicladoras.hora_inicio" if _tabla_tiene_columna(cursor, "recicladoras", "hora_inicio") else "NULL AS hora_inicio"
+    hora_fin = "recicladoras.hora_fin" if _tabla_tiene_columna(cursor, "recicladoras", "hora_fin") else "NULL AS hora_fin"
+    dias_no_trabaja = "recicladoras.dias_no_trabaja" if _tabla_tiene_columna(cursor, "recicladoras", "dias_no_trabaja") else "NULL AS dias_no_trabaja"
+    estado_validacion_nit = (
+        "COALESCE(NULLIF(recicladoras.estado_validacion_nit, ''), 'pendiente') AS estado_validacion_nit"
+        if _tabla_tiene_columna(cursor, "recicladoras", "estado_validacion_nit")
+        else "'pendiente' AS estado_validacion_nit"
+    )
+    estado_camara_comercio = (
+        "COALESCE(NULLIF(recicladoras.estado_camara_comercio, ''), 'pendiente') AS estado_camara_comercio"
+        if _tabla_tiene_columna(cursor, "recicladoras", "estado_camara_comercio")
+        else "'pendiente' AS estado_camara_comercio"
+    )
+
+    cursor.execute(f"""
     SELECT
         usuarios.id_usuario,
         usuarios.nombres,
@@ -125,12 +140,12 @@ def listar_recicladoras():
         COALESCE(NULLIF(recicladoras.telefono_empresa, ''), usuarios.celular) AS telefono_empresa,
         COALESCE(recicladoras.camara_comercio, '') AS camara_comercio,
         COALESCE(NULLIF(recicladoras.horario, ''), 'Horario pendiente') AS horario,
-        recicladoras.dias_trabajo,
-        recicladoras.hora_inicio,
-        recicladoras.hora_fin,
-        recicladoras.dias_no_trabaja,
-        COALESCE(NULLIF(recicladoras.estado_validacion_nit, ''), 'pendiente') AS estado_validacion_nit,
-        COALESCE(NULLIF(recicladoras.estado_camara_comercio, ''), 'pendiente') AS estado_camara_comercio,
+        {dias_trabajo},
+        {hora_inicio},
+        {hora_fin},
+        {dias_no_trabaja},
+        {estado_validacion_nit},
+        {estado_camara_comercio},
         CASE
             WHEN recicladoras.id_recicladora IS NULL THEN TRUE
             ELSE FALSE

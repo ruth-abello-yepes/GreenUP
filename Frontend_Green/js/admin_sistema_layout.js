@@ -732,12 +732,17 @@ async function cargarUsuarios() {
   const ciudadanos = ciudadanosResultado.status === "fulfilled" && Array.isArray(ciudadanosResultado.value)
     ? ciudadanosResultado.value
     : [];
-  const recicladoras = recicladorasResultado.status === "fulfilled" && Array.isArray(recicladorasResultado.value)
+  let recicladoras = recicladorasResultado.status === "fulfilled" && Array.isArray(recicladorasResultado.value)
     ? recicladorasResultado.value
     : [];
   const todos = todosResultado.status === "fulfilled" && Array.isArray(todosResultado.value)
     ? todosResultado.value
     : [...ciudadanos, ...recicladoras];
+  if (!recicladoras.length && todos.length) {
+    recicladoras = todos
+      .filter((usuario) => Number(usuario.id_rol) === 2)
+      .map((usuario) => ({ ...usuario, registro_incompleto: true }));
+  }
   const erroresCarga = resultados
     .filter((resultado) => resultado.status === "rejected")
     .map((resultado) => resultado.reason?.message || "No se pudo cargar una lista");

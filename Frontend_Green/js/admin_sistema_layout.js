@@ -2478,9 +2478,10 @@ function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
   }
 
   const tieneAcciones = data.some((row) => row.actions);
+  const claseModuloTabla = moduloActual() === "usuarios" ? "users-table" : "";
   contenedor.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table table table-hover align-middle ${tieneAcciones ? "has-actions" : ""}">
+      <table class="admin-table table table-hover align-middle ${claseModuloTabla} ${tieneAcciones ? "has-actions" : ""}">
         <thead>
           <tr>
             ${adminTableColumns.map((col) => `<th>${limpiar(col)}</th>`).join("")}

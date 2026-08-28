@@ -928,12 +928,14 @@ body.admin-theme-dark .role-nav-menu {
   width: 100%;
   min-width: 0;
   overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .admin-table {
   width: 100%;
-  min-width: 860px;
+  min-width: 1040px;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .admin-table th {
@@ -945,6 +947,7 @@ body.admin-theme-dark .role-nav-menu {
   text-align: left;
   text-transform: uppercase;
   border-bottom: 1px solid var(--admin-border);
+  white-space: nowrap;
 }
 
 .admin-table td {
@@ -953,6 +956,8 @@ body.admin-theme-dark .role-nav-menu {
   font-size: 0.9rem;
   border-bottom: 1px solid #edf2ef;
   vertical-align: middle;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .admin-table tbody tr:hover td {
@@ -967,16 +972,8 @@ body.admin-theme-dark .role-nav-menu {
 
 .admin-table.has-actions th:last-child,
 .admin-table.has-actions td:last-child {
-  position: sticky;
-  right: 0;
-  z-index: 3;
-  min-width: 126px;
+  min-width: 132px;
   background: var(--admin-panel);
-  box-shadow: -10px 0 18px rgba(15, 23, 42, 0.07);
-}
-
-.admin-table.has-actions th:last-child {
-  z-index: 4;
 }
 
 .admin-table.has-actions tbody tr:hover td:last-child {
@@ -993,6 +990,27 @@ body.admin-theme-dark .role-nav-menu {
   min-height: 36px;
   padding: 0 10px;
   white-space: nowrap;
+}
+
+.admin-table.users-table {
+  min-width: 1180px;
+}
+
+.admin-table.users-table th:nth-child(2),
+.admin-table.users-table td:nth-child(2) {
+  min-width: 190px;
+}
+
+.admin-table.users-table th:nth-child(4),
+.admin-table.users-table td:nth-child(4) {
+  min-width: 260px;
+}
+
+.admin-table.users-table th:nth-child(6),
+.admin-table.users-table td:nth-child(6),
+.admin-table.users-table th:nth-child(7),
+.admin-table.users-table td:nth-child(7) {
+  min-width: 130px;
 }
 
 .status-pill,

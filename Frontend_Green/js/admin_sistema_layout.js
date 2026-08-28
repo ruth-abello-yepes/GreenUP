@@ -741,6 +741,9 @@ async function cargarUsuarios() {
   const erroresCarga = resultados
     .filter((resultado) => resultado.status === "rejected")
     .map((resultado) => resultado.reason?.message || "No se pudo cargar una lista");
+  if (erroresCarga.length) {
+    console.warn("Listas de usuarios no cargadas:", erroresCarga);
+  }
 
   pintarHero([
     ["Ciudadanos", String(ciudadanos.length)],
@@ -770,11 +773,6 @@ async function cargarUsuarios() {
 
   document.getElementById("admin-content").innerHTML = `
     ${toolbarUsuarios(todos.length)}
-    ${erroresCarga.length ? `
-      <div class="alert alert-warning mb-3" role="alert">
-        ${limpiar(erroresCarga.join(" "))}
-      </div>
-    ` : ""}
     <article class="data-card card">
       <div class="card-title-row">
         <div>

@@ -665,16 +665,36 @@ async function cargarModuloAdmin() {
 }
 
 async function cargarPanel() {
-  const [usuarios, ciudadanos, recicladoras, puntos, reciclajes, novedades, estadisticas] =
-    await Promise.all([
-      apiAdmin("/api/usuarios/listar"),
-      apiAdmin("/api/usuarios/ciudadanos"),
-      apiAdmin("/api/recicladoras/listar"),
-      apiAdmin("/ubicaciones"),
-      apiAdmin("/reciclaje"),
-      apiAdmin("/novedades"),
-      apiAdmin("/estadisticas"),
-    ]);
+  const resultados = await Promise.allSettled([
+    apiAdmin("/api/usuarios/listar"),
+    apiAdmin("/api/usuarios/ciudadanos"),
+    apiAdmin("/api/recicladoras/listar"),
+    apiAdmin("/ubicaciones"),
+    apiAdmin("/reciclaje"),
+    apiAdmin("/novedades"),
+    apiAdmin("/estadisticas"),
+  ]);
+  const obtenerLista = (indice) => resultados[indice].status === "fulfilled" && Array.isArray(resultados[indice].value)
+    ? resultados[indice].value
+    : [];
+  const usuarios = obtenerLista(0);
+  const ciudadanos = obtenerLista(1);
+  let recicladoras = obtenerLista(2);
+  const puntos = obtenerLista(3);
+  const reciclajes = obtenerLista(4);
+  const novedades = obtenerLista(5);
+  const estadisticas = resultados[6].status === "fulfilled" && resultados[6].value
+    ? resultados[6].value
+    : {};
+  if (!recicladoras.length && usuarios.length) {
+    recicladoras = usuarios.filter((usuario) => Number(usuario.id_rol) === 2);
+  }
+  const erroresPanel = resultados
+    .filter((resultado) => resultado.status === "rejected")
+    .map((resultado) => resultado.reason?.message || "No se pudo cargar una seccion");
+  if (erroresPanel.length) {
+    console.warn("Secciones del panel no cargadas:", erroresPanel);
+  }
 
   pintarHero([
     ["Usuarios", String(usuarios.length)],
@@ -2786,6 +2806,7 @@ async function cargarNotificacionesAdmin() {
     if (!contenedor) return;
 
     if (!notificaciones.length) {
+      contenedor.classList.remove("has-notifications");
       contenedor.innerHTML = `
         <span class="material-symbols-outlined">inbox</span>
         <strong>Sin notificaciones</strong>
@@ -2794,6 +2815,7 @@ async function cargarNotificacionesAdmin() {
       return;
     }
 
+    contenedor.classList.add("has-notifications");
     contenedor.innerHTML = notificaciones.map((item) => `
       <article class="notification-item ${item.leida ? "" : "unread"}" data-admin-notification-id="${item.id_notificacion}">
         <span class="material-symbols-outlined">${item.leida ? "notifications" : "notifications_active"}</span>

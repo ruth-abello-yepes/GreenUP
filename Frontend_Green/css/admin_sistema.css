@@ -956,7 +956,7 @@ body.admin-theme-dark .role-nav-menu {
   font-size: 0.9rem;
   border-bottom: 1px solid #edf2ef;
   vertical-align: middle;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   word-break: normal;
 }
 
@@ -993,17 +993,23 @@ body.admin-theme-dark .role-nav-menu {
 }
 
 .admin-table.users-table {
-  min-width: 1180px;
+  min-width: 1260px;
+}
+
+.admin-table.users-table th:first-child,
+.admin-table.users-table td:first-child {
+  min-width: 120px;
+  width: 120px;
 }
 
 .admin-table.users-table th:nth-child(2),
 .admin-table.users-table td:nth-child(2) {
-  min-width: 190px;
+  min-width: 220px;
 }
 
 .admin-table.users-table th:nth-child(4),
 .admin-table.users-table td:nth-child(4) {
-  min-width: 260px;
+  min-width: 300px;
 }
 
 .admin-table.users-table th:nth-child(6),
@@ -1011,6 +1017,13 @@ body.admin-theme-dark .role-nav-menu {
 .admin-table.users-table th:nth-child(7),
 .admin-table.users-table td:nth-child(7) {
   min-width: 130px;
+}
+
+.admin-table.users-table .type-pill,
+.admin-table.users-table .status-pill {
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .status-pill,

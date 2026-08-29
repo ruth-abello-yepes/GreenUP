@@ -79,7 +79,7 @@ def buscar_recicladora_por_nit(nit_empresa):
     cursor = conexion.cursor()
     cursor.execute(
         """
-        SELECT id_recicladora, nit_empresa, nombre_empresa
+        SELECT id_recicladora, id_usuario, nit_empresa, nombre_empresa
         FROM recicladoras
         WHERE nit_empresa = %s
         LIMIT 1
@@ -108,8 +108,8 @@ def listar_recicladoras():
     cursor = conexion.cursor()
 
     dias_trabajo = "recicladoras.dias_trabajo" if _tabla_tiene_columna(cursor, "recicladoras", "dias_trabajo") else "NULL AS dias_trabajo"
-    hora_inicio = "recicladoras.hora_inicio" if _tabla_tiene_columna(cursor, "recicladoras", "hora_inicio") else "NULL AS hora_inicio"
-    hora_fin = "recicladoras.hora_fin" if _tabla_tiene_columna(cursor, "recicladoras", "hora_fin") else "NULL AS hora_fin"
+    hora_inicio = "TO_CHAR(recicladoras.hora_inicio, 'HH24:MI') AS hora_inicio" if _tabla_tiene_columna(cursor, "recicladoras", "hora_inicio") else "NULL AS hora_inicio"
+    hora_fin = "TO_CHAR(recicladoras.hora_fin, 'HH24:MI') AS hora_fin" if _tabla_tiene_columna(cursor, "recicladoras", "hora_fin") else "NULL AS hora_fin"
     dias_no_trabaja = "recicladoras.dias_no_trabaja" if _tabla_tiene_columna(cursor, "recicladoras", "dias_no_trabaja") else "NULL AS dias_no_trabaja"
     estado_validacion_nit = (
         "COALESCE(NULLIF(recicladoras.estado_validacion_nit, ''), 'pendiente') AS estado_validacion_nit"
@@ -131,6 +131,7 @@ def listar_recicladoras():
         usuarios.usuario,
         usuarios.numero_documento,
         usuarios.celular,
+        usuarios.foto_perfil,
         usuarios.fecha_registro,
         usuarios.id_estado,
         recicladoras.id_recicladora,
@@ -279,18 +280,19 @@ def buscar_recicladora_por_usuario(id_usuario):
         usuarios.usuario,
         usuarios.numero_documento,
         usuarios.celular,
+        usuarios.foto_perfil,
         usuarios.fecha_registro,
         usuarios.id_estado AS id_estado_usuario,
         recicladoras.id_recicladora,
-        recicladoras.nit_empresa,
+        COALESCE(NULLIF(recicladoras.nit_empresa, ''), usuarios.numero_documento) AS nit_empresa,
         COALESCE(NULLIF(recicladoras.nombre_empresa, ''), NULLIF(puntos_reciclaje.nombre, '')) AS nombre_empresa,
         COALESCE(NULLIF(recicladoras.direccion_empresa, ''), NULLIF(puntos_reciclaje.direccion, '')) AS direccion_empresa,
         COALESCE(NULLIF(recicladoras.telefono_empresa, ''), NULLIF(puntos_reciclaje.telefono, ''), usuarios.celular) AS telefono_empresa,
         recicladoras.camara_comercio,
         recicladoras.horario AS horario_recicladora,
         recicladoras.dias_trabajo,
-        recicladoras.hora_inicio,
-        recicladoras.hora_fin,
+        TO_CHAR(recicladoras.hora_inicio, 'HH24:MI') AS hora_inicio,
+        TO_CHAR(recicladoras.hora_fin, 'HH24:MI') AS hora_fin,
         recicladoras.dias_no_trabaja,
         recicladoras.estado_validacion_nit,
         recicladoras.estado_camara_comercio,
@@ -331,6 +333,7 @@ def buscar_punto_por_usuario_recicladora(id_usuario):
             usuarios.usuario,
             usuarios.numero_documento,
             usuarios.celular,
+            usuarios.foto_perfil,
             usuarios.fecha_registro,
             usuarios.id_estado AS id_estado_usuario,
             NULL AS id_recicladora,
@@ -382,12 +385,12 @@ def actualizar_perfil_recicladora(id_usuario, datos):
     cursor.execute(
         """
         UPDATE usuarios
-        SET nombres = COALESCE(%s, nombres),
-            apellidos = COALESCE(%s, apellidos),
-            correo = COALESCE(%s, correo),
-            usuario = COALESCE(%s, usuario),
-            celular = COALESCE(%s, celular),
-            foto_perfil = COALESCE(%s, foto_perfil)
+        SET nombres = COALESCE(NULLIF(%s, ''), nombres),
+            apellidos = COALESCE(NULLIF(%s, ''), apellidos),
+            correo = COALESCE(NULLIF(%s, ''), correo),
+            usuario = COALESCE(NULLIF(%s, ''), usuario),
+            celular = COALESCE(NULLIF(%s, ''), celular),
+            foto_perfil = COALESCE(NULLIF(%s, ''), foto_perfil)
         WHERE id_usuario = %s
         """,
         (
@@ -404,16 +407,16 @@ def actualizar_perfil_recicladora(id_usuario, datos):
     cursor.execute(
         """
         UPDATE recicladoras
-        SET nit_empresa = COALESCE(%s, nit_empresa),
-            nombre_empresa = COALESCE(%s, nombre_empresa),
-            direccion_empresa = COALESCE(%s, direccion_empresa),
-            telefono_empresa = COALESCE(%s, telefono_empresa),
-            camara_comercio = COALESCE(%s, camara_comercio),
-            horario = COALESCE(%s, horario),
-            dias_trabajo = COALESCE(%s, dias_trabajo),
-            hora_inicio = COALESCE(%s, hora_inicio),
-            hora_fin = COALESCE(%s, hora_fin),
-            dias_no_trabaja = COALESCE(%s, dias_no_trabaja)
+        SET nit_empresa = COALESCE(NULLIF(%s, ''), nit_empresa),
+            nombre_empresa = COALESCE(NULLIF(%s, ''), nombre_empresa),
+            direccion_empresa = COALESCE(NULLIF(%s, ''), direccion_empresa),
+            telefono_empresa = COALESCE(NULLIF(%s, ''), telefono_empresa),
+            camara_comercio = COALESCE(NULLIF(%s, ''), camara_comercio),
+            horario = COALESCE(NULLIF(%s, ''), horario),
+            dias_trabajo = COALESCE(NULLIF(%s, ''), dias_trabajo),
+            hora_inicio = COALESCE(NULLIF(%s, '')::time, hora_inicio),
+            hora_fin = COALESCE(NULLIF(%s, '')::time, hora_fin),
+            dias_no_trabaja = COALESCE(NULLIF(%s, ''), dias_no_trabaja)
         WHERE id_usuario = %s
         """,
         (
@@ -450,7 +453,7 @@ def actualizar_punto_recicladora(id_usuario, datos):
         UPDATE puntos_reciclaje
         SET nombre = COALESCE(%s, nombre),
             direccion = COALESCE(%s, direccion),
-            horario = COALESCE(%s, horario),
+            horario = COALESCE(NULLIF(%s, ''), horario),
             latitud = COALESCE(%s, latitud),
             longitud = COALESCE(%s, longitud),
             telefono = COALESCE(%s, telefono),
@@ -537,10 +540,12 @@ def listar_registros_por_recicladora(id_usuario, fecha_inicio=None, fecha_fin=No
             COALESCE(tipo_material.nombre, 'Material') AS material,
             COALESCE(tipo_material.puntos_por_kg, 0)::float AS puntos_por_kg,
             COALESCE(usuarios.nombres || ' ' || usuarios.apellidos, usuarios.usuario, 'Usuario') AS usuario,
+            COALESCE(puntos_reciclaje.nombre, 'Punto ' || registrar_reciclaje.id_punto::text) AS punto,
             COALESCE(NULLIF(registrar_reciclaje.estado, ''), estado.descripcion, 'Sin estado') AS estado
         FROM registrar_reciclaje
         LEFT JOIN tipo_material ON registrar_reciclaje.id_tipo_material = tipo_material.id_tipo_material
         LEFT JOIN usuarios ON registrar_reciclaje.id_usuario = usuarios.id_usuario
+        LEFT JOIN puntos_reciclaje ON registrar_reciclaje.id_punto = puntos_reciclaje.id_punto
         LEFT JOIN estado ON registrar_reciclaje.id_estado = estado.id_estado
         WHERE {' AND '.join(filtros)}
         ORDER BY registrar_reciclaje.fecha_hora DESC

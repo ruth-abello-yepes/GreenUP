@@ -5,9 +5,16 @@
  */
 
 (function () {
-  const API_BASE = typeof API_URL !== "undefined" ? API_URL : "https://greenup-hoxj.onrender.com";
+  const API_BASE = typeof API_URL !== "undefined"
+    ? API_URL
+    : window.GREENUP_API_URL || (
+      ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
+        ? `http://${window.location.hostname === "localhost" ? "localhost" : "127.0.0.1"}:5000`
+        : "https://greenup-hoxj.onrender.com"
+    );
   const DEFAULT_CENTER = [10.4631, -73.2532];
   const DEFAULT_CITY = "Valledupar, Cesar, Colombia";
+  const EMPTY_ADDRESS_LABEL = "Direccion por confirmar";
 
   let map = null;
   let controlRutaActual = null;
@@ -39,6 +46,14 @@
     return value || "Materiales por confirmar";
   }
 
+  function normalizeRegisteredAddress(value) {
+    const address = String(value || "").trim();
+    if (!address) return "";
+    if (/^(direccion|dirección)\s*(pendiente|por confirmar)?$/i.test(address)) return "";
+    if (/pendiente|por confirmar|sin dirección|no registrada/i.test(address)) return "";
+    return address;
+  }
+
   function summarizeMaterials(value, limit = 3) {
     const materials = normalizeMaterials(value);
     if (materials === "Materiales por confirmar") return materials;
@@ -56,6 +71,7 @@
     const lat = Number.parseFloat(point.latitud);
     const lng = Number.parseFloat(point.longitud);
     const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+    const registeredAddress = normalizeRegisteredAddress(point.direccion || point.address);
     const statusId = point.id_estado ?? point.id_estado_punto ?? point.id_estado_recicladora;
     const inactive = Number(statusId) === 2;
     const materials = normalizeMaterials(
@@ -66,7 +82,7 @@
       id: point.id_punto || point.id || index + 1,
       pos: hasCoords ? [lat, lng] : [DEFAULT_CENTER[0] + index * 0.006, DEFAULT_CENTER[1] - index * 0.004],
       title: point.nombre || point.title || "Punto de reciclaje",
-      address: point.direccion || point.address || "Direccion por confirmar",
+      address: registeredAddress || EMPTY_ADDRESS_LABEL,
       type: materials,
       materialsPreview: summarizeMaterials(materials),
       schedule: point.horario || point.horario_recicladora || point.horario_punto || "Horario por confirmar",
@@ -74,6 +90,7 @@
       phone: point.telefono || "Telefono por confirmar",
       email: point.correo || point.email || point.correo_empresa || "Correo no registrado",
       hasCoords,
+      hasRegisteredAddress: Boolean(registeredAddress),
       inactive,
       color: inactive ? "#6b7280" : "#296c1f",
       icon: inactive ? "location_off" : "recycling",
@@ -85,9 +102,10 @@
   }
 
   async function geocodeAddress(address) {
-    if (!address || address === "Direccion por confirmar") return null;
+    const registeredAddress = normalizeRegisteredAddress(address);
+    if (!registeredAddress) return null;
 
-    const cacheKey = `greenup_geocode_arcgis_${address.toLowerCase().trim()}`;
+    const cacheKey = `greenup_geocode_arcgis_${registeredAddress.toLowerCase()}`;
     try {
       const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
       if (Array.isArray(cached) && cached.length === 2) return cached;
@@ -119,20 +137,20 @@
         return null;
     };
 
-    let coords = await fetchCoords(address);
+    let coords = await fetchCoords(registeredAddress);
     
     // Fallback 1: Limpiar caracteres conflictivos (#, -)
     if (!coords) {
-        let cleanAddress = address.replace(/#/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
-        if (cleanAddress !== address) {
+        let cleanAddress = registeredAddress.replace(/#/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanAddress !== registeredAddress) {
             coords = await fetchCoords(cleanAddress);
         }
     }
 
     // Fallback 2: Buscar solo por la calle principal
     if (!coords) {
-        let streetOnly = address.split(/#|No|Nro|\d+-/i)[0].trim();
-        if (streetOnly && streetOnly !== address) {
+        let streetOnly = registeredAddress.split(/#|No|Nro|\d+-/i)[0].trim();
+        if (streetOnly && streetOnly !== registeredAddress) {
             coords = await fetchCoords(streetOnly);
         }
     }
@@ -213,7 +231,8 @@
       const point = normalizePoint({
         id: profile.id_punto || profile.id_recicladora,
         nombre: profile.nombre_punto || profile.nombre_empresa,
-        direccion: profile.direccion_punto || profile.direccion_empresa,
+        direccion: normalizeRegisteredAddress(profile.direccion_punto)
+          || normalizeRegisteredAddress(profile.direccion_empresa),
         telefono: profile.telefono_punto || profile.telefono_empresa,
         correo: profile.correo,
         horario: profile.horario_recicladora || profile.horario,
@@ -290,7 +309,7 @@
     const rows = [
       ["location_on", point.address],
       ["schedule", point.schedule],
-      ["delete", point.materialsPreview],
+      ["delete", ownerMode ? point.type : point.materialsPreview],
       ["call", point.phone],
     ];
 
@@ -326,18 +345,23 @@
   }
 
   function renderPoint(point, sidebarList) {
-    const marker = L.marker(point.pos, {
-      icon: createRecyclingMarkerIcon(point),
-      title: point.title,
-    });
-    
-    if (markersLayer) {
-        marker.addTo(markersLayer);
-    } else {
-        marker.addTo(map);
+    const locationAvailable = !ownerMode || (point.hasRegisteredAddress && point.hasCoords);
+    let marker = null;
+
+    if (locationAvailable) {
+      marker = L.marker(point.pos, {
+        icon: createRecyclingMarkerIcon(point),
+        title: point.title,
+      });
+
+      if (markersLayer) {
+          marker.addTo(markersLayer);
+      } else {
+          marker.addTo(map);
+      }
     }
 
-    if (publicPreview) {
+    if (marker && publicPreview) {
       marker.bindPopup(`
         <div class="greenup-map-popup greenup-public-point-name">
           <h6 style="color:${point.color};">${escapeHtml(point.title)}</h6>
@@ -347,7 +371,7 @@
         minWidth: 150,
         className: "greenup-public-popup",
       });
-    } else {
+    } else if (marker) {
       marker.bindPopup(`
         <div class="greenup-map-popup">
           <h6 style="color:${point.color};">${escapeHtml(point.title)}</h6>
@@ -365,6 +389,11 @@
     const item = document.createElement("button");
     item.type = "button";
     item.className = "gu-sidebar-item";
+    if (!locationAvailable) {
+      item.classList.add("location-unavailable");
+      item.setAttribute("aria-disabled", "true");
+    }
+    const materialsText = ownerMode ? point.type : point.materialsPreview;
     item.innerHTML = `
       <span class="type-icon map-point-icon ${point.inactive ? "gray" : ""}">
         <span class="material-symbols-outlined">${point.icon}</span>
@@ -374,17 +403,19 @@
         <small>${escapeHtml(point.address)}</small>
         <span class="gu-sidebar-meta">
           <span><span class="material-symbols-outlined">schedule</span>${escapeHtml(point.schedule)}</span>
-          <span><span class="material-symbols-outlined">delete</span>${escapeHtml(point.materialsPreview)}</span>
+          <span><span class="material-symbols-outlined">delete</span>${escapeHtml(materialsText)}</span>
           <span><span class="material-symbols-outlined">call</span>${escapeHtml(point.phone)}</span>
         </span>
       </span>
     `;
 
-    item.addEventListener("click", () => {
-      map.setView(point.pos, 16, { animate: true });
-      setTimeout(() => marker.openPopup(), 350);
-      if (window.innerWidth < 768) window.toggleSidebar();
-    });
+    if (marker) {
+      item.addEventListener("click", () => {
+        map.setView(point.pos, 16, { animate: true });
+        setTimeout(() => marker.openPopup(), 350);
+        if (window.innerWidth < 768) window.toggleSidebar();
+      });
+    }
 
     sidebarList.appendChild(item);
   }
@@ -405,12 +436,14 @@
   };
 
   window.centerOwnRecyclingPoint = function () {
-    if (ownerMode && ownerPoint && map) {
+    if (ownerMode && ownerPoint?.hasRegisteredAddress && ownerPoint.hasCoords && map) {
       map.setView(ownerPoint.pos, 16, { animate: true });
       return;
     }
 
-    window.centerMap();
+    alert(ownerPoint?.hasRegisteredAddress
+      ? "No pudimos ubicar la direccion registrada. Revisa que este completa en tu perfil."
+      : "Tu recicladora aun no tiene una direccion registrada.");
   };
 
   window.greenupMapZoomIn = function () {
@@ -488,8 +521,10 @@
   };
 
   window.mostrarRutaMiRecicladora = async function () {
-    if (!ownerPoint) {
-      alert("No encontramos el punto de tu recicladora para calcular la ruta.");
+    if (!ownerPoint?.hasRegisteredAddress || !ownerPoint.hasCoords) {
+      alert(ownerPoint?.hasRegisteredAddress
+        ? "No pudimos ubicar la direccion registrada para calcular la ruta."
+        : "Registra la direccion de tu recicladora antes de calcular una ruta.");
       return;
     }
 
@@ -519,17 +554,26 @@
           }
           allPoints.forEach(p => p.distanceToSearch = 0);
           renderPointsList();
-          if (userLocation) map.setView(userLocation, 14);
+          if (ownerMode && ownerPoint?.hasRegisteredAddress && ownerPoint.hasCoords) {
+              map.setView(ownerPoint.pos, 16);
+          } else if (userLocation) map.setView(userLocation, 14);
           else map.setView(DEFAULT_CENTER, 14);
           return;
       }
 
       const btn = document.getElementById("btn-search-address");
-      if (btn) btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+      if (btn) {
+          btn.dataset.idleHtml ||= btn.innerHTML;
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Buscando</span>';
+      }
       
       const coords = await geocodeAddress(query);
       
-      if (btn) btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">search</span>';
+      if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = btn.dataset.idleHtml;
+      }
 
       if (coords) {
           if (searchMarker) map.removeLayer(searchMarker);
@@ -614,6 +658,31 @@
       }
   }
 
+  function renderOwnerMapState() {
+    if (!ownerMode) return;
+    const shell = document.getElementById("eco-map")?.parentElement;
+    if (!shell) return;
+
+    shell.querySelector(".owner-map-empty-state")?.remove();
+    const hasAddress = ownerPoint?.hasRegisteredAddress;
+    const hasLocation = hasAddress && ownerPoint?.hasCoords;
+    if (hasLocation) return;
+
+    const state = document.createElement("div");
+    state.className = "owner-map-empty-state";
+    state.setAttribute("role", "status");
+    state.innerHTML = hasAddress
+      ? `
+        <span class="material-symbols-outlined">wrong_location</span>
+        <div><strong>No pudimos ubicar esta direccion</strong><small>Revisa que la direccion de tu recicladora este completa y vuelve a cargar la pagina.</small></div>
+      `
+      : `
+        <span class="material-symbols-outlined">add_location_alt</span>
+        <div><strong>Aun no tienes una direccion registrada</strong><small>Agregala desde tu perfil para mostrar la ubicacion real de tu recicladora.</small></div>
+      `;
+    shell.appendChild(state);
+  }
+
   window.toggleSidebar = function () {
     const sidebar = document.getElementById("sidebar-panel");
     if (!sidebar) return;
@@ -650,6 +719,7 @@
     window.dispatchEvent(new CustomEvent("greenup:map-points-loaded", { detail: { points } }));
 
     renderPointsList();
+    renderOwnerMapState();
     setupFilters();
 
     if (window.innerWidth < 768) {

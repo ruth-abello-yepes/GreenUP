@@ -1,10 +1,19 @@
-// Esta es la URL donde está corriendo nuestro backend Flask en Render.
-// Si necesitas trabajar localmente, cambia temporalmente esta línea por tu servidor local.
+// En desarrollo usa Flask local; en los dominios publicados usa Render.
 /**
  * URL base donde se encuentra corriendo la API de Flask.
  * @constant {string}
  */
-const API_URL = "https://greenup-hoxj.onrender.com";
+const GREENUP_PRODUCTION_API_URL = "https://greenup-hoxj.onrender.com";
+const GREENUP_LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const API_URL = window.GREENUP_API_URL || (
+    GREENUP_LOCAL_HOSTS.has(window.location.hostname)
+        ? `http://${window.location.hostname === "localhost" ? "localhost" : "127.0.0.1"}:5000`
+        : GREENUP_PRODUCTION_API_URL
+);
+
+// Compatibilidad para modulos que consultan la configuracion desde window.
+window.GREENUP_API_URL = API_URL;
+window.API_URL = API_URL;
 
 /**
  * Realiza una petición HTTP estandarizada al backend de GreenUp, inyectando 

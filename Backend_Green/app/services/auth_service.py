@@ -20,7 +20,7 @@ Roles:
 """
 
 import os
-import random
+import secrets
 import signal
 import smtplib
 import ssl
@@ -55,8 +55,74 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
-SEGUNDOS_EXPIRACION_RECUPERACION = 60
+SEGUNDOS_EXPIRACION_RECUPERACION = 5 * 60
 SMTP_TIMEOUT_MAXIMO_SEGUNDOS = 8
+
+
+def _variable_activa(nombre):
+    return (os.getenv(nombre) or "").strip().lower() in ("1", "true", "si", "yes", "on")
+
+def _enviar_codigo_por_apps_script(destinatario, asunto, texto, html):
+  url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
+
+  if not url:
+    raise RuntimeError("APPS_SCRIPT_URL debe estar configurada en Render")
+
+  respuesta = requests.post(
+      url,
+      json={
+          "to": destinatario,
+          "subject": asunto,
+          "text": texto,
+          "html": html,
+      },
+      timeout=15,
+  )
+
+  if respuesta.status_code >= 400:
+    raise RuntimeError(
+        f"Apps Script respondio HTTP {respuesta.status_code}"
+    )
+
+  try:
+    resultado = respuesta.json()
+  except ValueError as error:
+    raise RuntimeError(
+        "Apps Script no devolvio una respuesta JSON valida"
+    ) from error
+
+  if resultado.get("estado") != "ok":
+    raise RuntimeError(
+        resultado.get("mensaje") or "Apps Script no pudo enviar el correo"
+    )
+    url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
+    secreto = (os.getenv("APPS_SCRIPT_SECRET") or "").strip()
+
+    if not url or not secreto:
+        raise RuntimeError("APPS_SCRIPT_URL y APPS_SCRIPT_SECRET deben estar configuradas")
+
+    respuesta = requests.post(
+        url,
+        json={
+            "secret": secreto,
+            "to": destinatario,
+            "subject": asunto,
+            "text": texto,
+            "html": html,
+        },
+        timeout=15,
+    )
+
+    if respuesta.status_code >= 400:
+        raise RuntimeError(f"Apps Script respondio HTTP {respuesta.status_code}")
+
+    try:
+        resultado = respuesta.json()
+    except ValueError as error:
+        raise RuntimeError("Apps Script no devolvio una respuesta JSON valida") from error
+
+    if resultado.get("estado") != "ok":
+        raise RuntimeError(resultado.get("mensaje") or "Apps Script no pudo enviar el correo")
 
 
 def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
@@ -350,28 +416,41 @@ def solicitar_codigo_recuperacion(datos):
             "mensaje": "No existe una cuenta registrada con ese correo electronico."
         }, 404
 
+    apps_script_url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
+    usa_apps_script = bool(apps_script_url)
+    apps_script_incompleto = False
     usa_brevo = bool((os.getenv("BREVO_API_KEY") or "").strip())
     usa_resend = bool((os.getenv("RESEND_API_KEY") or "").strip())
     usa_smtp = bool(current_app.config.get("MAIL_USERNAME") and current_app.config.get("MAIL_PASSWORD"))
 
     try:
-        codigo = str(random.randint(100000, 999999))
-        print(f"\n============================================================", flush=True)
-        print(f" CODIGO DE RECUPERACION GENERADO PARA {correo}: {codigo} ", flush=True)
-        print(f"============================================================\n", flush=True)
+        codigo = str(secrets.randbelow(900000) + 100000)
         expiracion = datetime.now() + timedelta(seconds=SEGUNDOS_EXPIRACION_RECUPERACION)
         guardar_codigo_recuperacion_db(usuario["id_usuario"], codigo, expiracion)
     except Exception as error:
         print(f"Error guardando codigo de recuperacion: {error}")
         return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
 
-    if not usa_brevo and not usa_resend and not usa_smtp:
-        print("Aviso: Credenciales de correo no configuradas. El codigo se imprimio en consola.", flush=True)
+    if apps_script_incompleto:
         return {
-            "mensaje": "Codigo generado exitosamente. Revisa la consola.",
-            "enviado": True,
+            "mensaje": "La configuracion de Google Apps Script esta incompleta.",
+            "enviado": False,
             "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
-        }, 200
+        }, 503
+
+    if not usa_apps_script and not usa_brevo and not usa_resend and not usa_smtp:
+        if _variable_activa("EMAIL_DEBUG_CODES"):
+            print(f"Codigo de recuperacion de desarrollo para {correo}: {codigo}", flush=True)
+            return {
+                "mensaje": "Codigo generado en modo de desarrollo. Revisa la consola local.",
+                "enviado": True,
+                "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
+            }, 200
+        return {
+            "mensaje": "El servicio de correo no esta configurado.",
+            "enviado": False,
+            "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
+        }, 503
 
     nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
     asunto = "Codigo para restablecer tu contrasena - GreenUP"
@@ -379,7 +458,7 @@ def solicitar_codigo_recuperacion(datos):
         f"Sr(a) {nombre_usuario},\n\n"
         "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
-        "Este codigo vence en 1 minuto. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Este codigo vence en 5 minutos. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
     html = f"""
@@ -388,13 +467,15 @@ def solicitar_codigo_recuperacion(datos):
       <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
       <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
-      <p style="margin-top:20px">Este codigo vence en <strong>1 minuto</strong>.</p>
+      <p style="margin-top:20px">Este codigo vence en <strong>5 minutos</strong>.</p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
       <p style="color:#607080">Equipo GreenUP</p>
     </div>
     """
     try:
-        if usa_brevo:
+        if usa_apps_script:
+            _enviar_codigo_por_apps_script(correo, asunto, texto, html)
+        elif usa_brevo:
             _enviar_codigo_por_brevo(correo, asunto, html)
         elif usa_resend:
             _enviar_codigo_por_resend(correo, asunto, texto, html)
@@ -402,13 +483,11 @@ def solicitar_codigo_recuperacion(datos):
             _enviar_codigo_por_smtp(correo, asunto, texto, html)
     except Exception as error:
         print(f"Error enviando correo de recuperacion GreenUP: {error}")
-        # Para que el flujo de pruebas no se rompa si el correo falla,
-        # permitimos continuar e informamos que el codigo esta en consola.
         return {
-            "mensaje": "Error enviando correo SMTP. El codigo esta en la consola del servidor.",
-            "enviado": True,
+            "mensaje": "No se pudo enviar el codigo por correo. Intenta nuevamente.",
+            "enviado": False,
             "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
-        }, 200
+        }, 502
 
     return {
         "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",

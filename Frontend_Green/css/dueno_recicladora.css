@@ -1420,6 +1420,27 @@ body.recicladora-theme-dark .profile-photo-help {
   overflow: hidden;
 }
 
+.dueno-map-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.dueno-map-search > .material-symbols-outlined {
+  color: var(--greenup-green);
+}
+
+.dueno-map-search .form-control {
+  min-height: 46px;
+}
+
+.dueno-map-search .btn-greenup {
+  min-height: 46px;
+  padding-inline: 20px;
+}
+
 .dueno-map-shell {
   position: relative;
   min-height: 460px;
@@ -1434,6 +1455,49 @@ body.recicladora-theme-dark .profile-photo-help {
   min-height: 460px;
   height: 100%;
   z-index: 1;
+}
+
+.owner-map-empty-state {
+  position: absolute;
+  z-index: 7;
+  top: 16px;
+  left: 50%;
+  width: min(440px, calc(100% - 32px));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #bad8c2;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--greenup-muted);
+  box-shadow: 0 12px 28px rgba(6, 85, 145, 0.16);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.owner-map-empty-state > .material-symbols-outlined {
+  color: var(--greenup-green);
+  font-size: 30px;
+}
+
+.owner-map-empty-state strong,
+.owner-map-empty-state small {
+  display: block;
+}
+
+.owner-map-empty-state strong {
+  color: var(--greenup-ink);
+}
+
+.owner-map-empty-state small {
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.dueno-map-list .gu-sidebar-item.location-unavailable {
+  cursor: default;
 }
 
 .map-side-stack {

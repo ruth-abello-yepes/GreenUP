@@ -422,11 +422,29 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
 
         datos["correo"] = nuevo_correo
 
+    recicladora = buscar_recicladora_por_usuario(id_usuario)
+    nuevo_nit = _texto_limpio(datos, "nit_empresa", "nit")
+
+    if nuevo_nit:
+        if len(nuevo_nit) > 30 or not nuevo_nit.replace("-", "").replace(".", "").isdigit():
+            return {"mensaje": "El NIT solo puede contener numeros, puntos y guiones (maximo 30 caracteres)"}, 400
+
+        nit_repetido = buscar_recicladora_por_nit(nuevo_nit)
+        if (
+            nit_repetido
+            and (
+                not recicladora
+                or int(nit_repetido.get("id_recicladora") or 0) != int(recicladora.get("id_recicladora") or 0)
+            )
+        ):
+            return {"mensaje": "El NIT ya pertenece a otra recicladora"}, 409
+
+        datos["nit_empresa"] = nuevo_nit
+
     telefono_empresa = _texto_limpio(datos, "telefono_empresa", "telefono")
     if telefono_empresa and not datos.get("celular"):
         datos["celular"] = telefono_empresa
 
-    recicladora = buscar_recicladora_por_usuario(id_usuario)
     if not recicladora:
         if int(usuario_actual.get("id_rol") or 0) != 2:
             return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404

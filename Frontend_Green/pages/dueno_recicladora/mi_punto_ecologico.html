@@ -182,8 +182,14 @@
       <article class="admin-card span-8 recycling-map-card">
         <div class="card-title-row">
           <h2>Ubicacion de mi recicladora</h2>
-          <button class="btn-soft" type="button" onclick="centerMap()"><span class="material-symbols-outlined">my_location</span>Centrar mi punto</button>
+          <button class="btn-soft" type="button" onclick="centerOwnRecyclingPoint()"><span class="material-symbols-outlined">my_location</span>Centrar mi punto</button>
         </div>
+        <form class="dueno-map-search" role="search" onsubmit="return false;">
+          <label class="visually-hidden" for="search-input">Buscar direccion en el mapa</label>
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          <input id="search-input" class="form-control" type="search" placeholder="Buscar direccion o barrio..." autocomplete="street-address" />
+          <button id="btn-search-address" class="btn-greenup" type="button">Buscar</button>
+        </form>
         <div class="dueno-map-shell">
           <div id="eco-map"></div>
           <div class="map-floating-controls">

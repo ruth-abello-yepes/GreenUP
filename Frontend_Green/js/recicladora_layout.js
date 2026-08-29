@@ -13,7 +13,11 @@ function getUser() {
 }
 
 function getApiBase() {
-  return typeof API_URL !== "undefined" ? API_URL : "https://greenup-hoxj.onrender.com";
+  if (typeof API_URL !== "undefined") return API_URL;
+  if (window.GREENUP_API_URL) return window.GREENUP_API_URL;
+  return ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
+    ? `http://${window.location.hostname === "localhost" ? "localhost" : "127.0.0.1"}:5000`
+    : "https://greenup-hoxj.onrender.com";
 }
 
 function getSessionHeaders() {
@@ -161,12 +165,15 @@ function rowsToTable(tableTitle, rows, options = {}) {
 
   if (!rows.length) {
     const columnCount = card.querySelectorAll("thead th").length || 1;
+    const emptyIcon = options.emptyIcon || "inbox";
+    const emptyTitle = options.emptyTitle || "Sin registros";
+    const emptyMessage = options.emptyMessage || "Cuando haya informacion en la base de datos aparecera aqui automaticamente.";
     tbody.innerHTML = `
       <tr class="empty-row">
         <td colspan="${columnCount}" class="empty-table-cell">
-          <span class="material-symbols-outlined">inbox</span>
-          <strong>Sin registros</strong>
-          <small>Cuando haya informacion en la base de datos aparecera aqui automaticamente.</small>
+          <span class="material-symbols-outlined">${escapeHtml(emptyIcon)}</span>
+          <strong>${escapeHtml(emptyTitle)}</strong>
+          <small>${escapeHtml(emptyMessage)}</small>
         </td>
       </tr>
     `;
@@ -283,6 +290,20 @@ function renderMaterialsTable(materiales) {
   });
 }
 
+function getRegistroReciclajeState(item) {
+  const estadoGuardado = String(item.estado || "").toLowerCase();
+  const idEstado = Number(item.id_estado);
+  const rechazado = estadoGuardado.includes("rechaz") || idEstado === 3;
+  const confirmado = estadoGuardado.includes("confirm") || idEstado === 2;
+  const pendiente = !rechazado && !confirmado;
+  return {
+    rechazado,
+    confirmado,
+    pendiente,
+    label: confirmado ? "Confirmado" : rechazado ? "Rechazado" : "Pendiente",
+  };
+}
+
 function renderRegistrosRecicladoraTable(registros) {
   const card = [...document.querySelectorAll(".table-card")]
     .find((item) => item.querySelector("h2")?.textContent === "Entradas recientes");
@@ -295,12 +316,7 @@ function renderRegistrosRecicladoraTable(registros) {
   }
 
   tbody.innerHTML = registros.map((item) => {
-    const estadoGuardado = String(item.estado || "").toLowerCase();
-    const idEstado = Number(item.id_estado);
-    const rechazado = estadoGuardado.includes("rechaz") || idEstado === 3;
-    const confirmado = estadoGuardado.includes("confirm") || idEstado === 2;
-    const pendiente = !rechazado && !confirmado;
-    const estadoVisible = confirmado ? "Confirmado" : rechazado ? "Rechazado" : "Pendiente";
+    const { rechazado, confirmado, pendiente, label: estadoVisible } = getRegistroReciclajeState(item);
 
     return `
       <tr>
@@ -399,22 +415,38 @@ function updateDashboard(data) {
 }
 
 function updateOwnPointPage(profile, current) {
-  const status = Number(profile.id_estado_recicladora) === 1 ? "Activo" : "Inactivo";
+  const statusId = profile.id_estado_punto ?? profile.id_estado_recicladora;
+  const status = Number(statusId) === 1 ? "Activo" : Number(statusId) === 2 ? "Inactivo" : "Por confirmar";
   const responsible = `${profile.nombres || ""} ${profile.apellidos || ""}`.trim() || profile.usuario || "Responsable por confirmar";
   const phone = profile.telefono_empresa || "Telefono por confirmar";
-  const address = profile.direccion_empresa || "Direccion por confirmar";
-  const name = profile.nombre_empresa || "Mi recicladora";
+  const address = valorPerfilUtil(profile.direccion_punto) || valorPerfilUtil(profile.direccion_empresa);
+  const addressLabel = address || "Sin direccion registrada";
+  const name = profile.nombre_punto || profile.nombre_empresa || "Mi recicladora";
   const schedule = profile.horario_recicladora || profile.horario || "Horario por confirmar";
   const tableTitle = current === "recicladora_puntos_reciclaje.html" ? "Datos de mi punto" : "Datos de mi recicladora";
 
   setText('[data-summary-label="Mi punto"]', name);
   setText('[data-summary-label="Registro"]', name);
   setText('[data-summary-label="Estado"]', status);
-  setText('[data-own-point-status="Ubicacion"]', address);
+  setText('[data-own-point-status="Ubicacion"]', addressLabel);
   setText('[data-own-point-status="Contacto"]', phone);
   setText('[data-own-point-status="Horario"]', schedule);
   setText('[data-own-point-status="Estado"]', status);
-  rowsToTable(tableTitle, [[name, address, phone, schedule, responsible, status]]);
+  if (!address) {
+    rowsToTable(tableTitle, [], {
+      emptyIcon: "add_location_alt",
+      emptyTitle: "Sin direccion registrada",
+      emptyMessage: "Agrega la direccion de tu recicladora desde el perfil para verla en el mapa.",
+    });
+    setExportData([], "mi_recicladora.csv");
+    return;
+  }
+
+  const row = current === "recicladora_puntos_reciclaje.html"
+    ? [name, address, phone, responsible, status]
+    : [name, address, phone, schedule, responsible, status];
+  rowsToTable(tableTitle, [row]);
+  setExportData([row], "mi_recicladora.csv");
 }
 async function refreshCurrentPage() {
   const current = getCurrentFile();
@@ -445,34 +477,40 @@ async function refreshCurrentPage() {
 
   if (current === "recicladora_residuos.html" || current === "recicladora_registros_reciclaje.html") {
     const registros = await fetchJson("/api/recicladoras/registros");
-    const pendientes = registros.filter((item) => {
-      const estado = String(item.estado || "").toLowerCase();
-      return !(estado.includes("confirm") || estado.includes("rechaz")) && Number(item.id_estado) === 1;
-    });
-    const totalKg = pendientes.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
+    const pendientes = registros.filter((item) => getRegistroReciclajeState(item).pendiente);
+    const confirmados = registros.filter((item) => getRegistroReciclajeState(item).confirmado);
+    const totalKgProcesado = confirmados.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
 
     if (current === "recicladora_residuos.html") {
-      setText('[data-summary-label="Procesados"]', formatKg(totalKg));
-      setText('[data-summary-label="En transito"]', "0 cargas");
-      rowsToTable("Residuos registrados", pendientes.map((item) => ({
-        id: item.id_registro,
-        values: [
-          `#GR-${item.id_registro}`,
-          item.material || `Material ${item.id_tipo_material}`,
-          formatKg(item.cantidad),
-          item.punto || (item.id_punto ? `Punto ${item.id_punto}` : "Punto sin asignar"),
-          "Pendiente de validación",
-        ],
-      })), {
-        renderActions: (row) => `
-          <button class="btn-icon" type="button" title="Confirmar entrega" aria-label="Confirmar entrega" onclick="confirmarRegistroRecicladora(${Number(row.id)})">
-            <span class="material-symbols-outlined">task_alt</span>
-          </button>
-          <button class="btn-icon" type="button" title="Rechazar entrega" aria-label="Rechazar entrega" onclick="rechazarRegistroRecicladora(${Number(row.id)})">
-            <span class="material-symbols-outlined">cancel</span>
-          </button>
-        `,
+      setText('[data-summary-label="Procesados"]', formatKg(totalKgProcesado));
+      setText('[data-summary-label="En transito"]', `${pendientes.length} cargas`);
+      const filasResiduos = registros.map((item) => {
+        const estado = getRegistroReciclajeState(item);
+        return {
+          id: item.id_registro,
+          pendiente: estado.pendiente,
+          values: [
+            `#GR-${item.id_registro}`,
+            item.material || `Material ${item.id_tipo_material}`,
+            formatKg(item.cantidad),
+            item.punto || (item.id_punto ? `Punto ${item.id_punto}` : "Punto sin asignar"),
+            estado.label,
+          ],
+        };
       });
+      rowsToTable("Residuos registrados", filasResiduos, {
+        emptyTitle: "Sin reciclajes registrados",
+        emptyMessage: "Los reciclajes asociados a esta recicladora apareceran aqui sin perder su historial.",
+        renderActions: (row) => row.pendiente ? `
+            <button class="btn-icon" type="button" title="Confirmar entrega" aria-label="Confirmar entrega" onclick="confirmarRegistroRecicladora(${Number(row.id)})">
+              <span class="material-symbols-outlined">task_alt</span>
+            </button>
+            <button class="btn-icon" type="button" title="Rechazar entrega" aria-label="Rechazar entrega" onclick="rechazarRegistroRecicladora(${Number(row.id)})">
+              <span class="material-symbols-outlined">cancel</span>
+            </button>
+          ` : "",
+      });
+      setExportData(filasResiduos.map((row) => row.values), "residuos_recicladora.csv");
     }
 
     if (current === "recicladora_registros_reciclaje.html") {
@@ -915,17 +953,54 @@ function updateProfilePhotoUI(src) {
   });
 }
 
+function compressProfilePhoto(file, maxSize = 320, quality = 0.78) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("El archivo seleccionado no es una imagen valida"));
+      image.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+        const width = Math.max(1, Math.round(image.width * scale));
+        const height = Math.max(1, Math.round(image.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function persistProfilePhoto(photo) {
+  if (!photo) throw new Error("Selecciona una foto antes de guardarla");
+  await fetchJson("/api/recicladoras/perfil", {
+    method: "PUT",
+    body: JSON.stringify({ foto_perfil: photo }),
+  });
+  const user = getUser();
+  localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: photo }));
+  updateProfilePhotoUI(photo);
+}
+
 function bindProfilePhotoInput() {
   const input = document.getElementById("profilePhotoInput");
   const hidden = document.getElementById("profilePhotoValue");
   const label = document.getElementById("profilePhotoName");
   if (!input || !hidden) return;
 
-  input.addEventListener("change", () => {
+  input.addEventListener("change", async () => {
     const file = input.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("Selecciona una imagen valida");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      alert("Selecciona una imagen JPG, PNG o WebP");
       input.value = "";
       return;
     }
@@ -935,13 +1010,28 @@ function bindProfilePhotoInput() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      hidden.value = reader.result;
-      if (label) label.textContent = file.name;
-      updateProfilePhotoUI(reader.result);
-    };
-    reader.readAsDataURL(file);
+    let compressedPhoto = "";
+    try {
+      if (label) label.textContent = "Procesando imagen...";
+      compressedPhoto = await compressProfilePhoto(file);
+      hidden.value = compressedPhoto;
+      updateProfilePhotoUI(compressedPhoto);
+    } catch (error) {
+      input.value = "";
+      if (label) label.textContent = "PNG o JPG, maximo 2 MB.";
+      alert(error.message || "No se pudo preparar la foto de perfil");
+      return;
+    }
+
+    try {
+      if (label) label.textContent = "Guardando foto...";
+      await persistProfilePhoto(compressedPhoto);
+      if (label) label.textContent = `${file.name} guardada`;
+      alert("Foto de perfil guardada correctamente");
+    } catch (error) {
+      if (label) label.textContent = `${file.name} lista para reintentar`;
+      alert(error.message || "No se pudo guardar la foto de perfil");
+    }
   });
 }
 
@@ -1026,13 +1116,7 @@ function bindProfilePhotoSave() {
 
   button.addEventListener("click", async () => {
     try {
-      await fetchJson("/api/recicladoras/perfil", {
-        method: "PUT",
-        body: JSON.stringify({ foto_perfil: hidden.value }),
-      });
-      const user = getUser();
-      localStorage.setItem("usuario", JSON.stringify({ ...user, foto_perfil: hidden.value }));
-      updateProfilePhotoUI(hidden.value);
+      await persistProfilePhoto(hidden.value);
       alert("Foto de perfil actualizada correctamente");
     } catch (error) {
       alert(error.message);
@@ -1088,6 +1172,7 @@ function bindProfileSave() {
       } catch (errorPunto) {
         console.warn("Perfil guardado sin actualizar punto ecologico:", errorPunto.message);
       }
+      await hydrateRecicladoraProfile();
       alert("Perfil actualizado correctamente");
       const user = getUser();
       localStorage.setItem("usuario", JSON.stringify({

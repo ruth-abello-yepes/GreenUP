@@ -52,7 +52,7 @@ ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
 ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
-SEGUNDOS_EXPIRACION_RECUPERACION = 5 * 60
+SEGUNDOS_EXPIRACION_RECUPERACION = 60
 SMTP_TIMEOUT_MAXIMO_SEGUNDOS = 8
 
 
@@ -398,7 +398,7 @@ def solicitar_codigo_recuperacion(datos):
         f"Sr(a) {nombre_usuario},\n\n"
         "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
-        "Este codigo vence en 5 minutos. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Tienes 60 segundos para ingresar este codigo. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
     html = f"""
@@ -407,7 +407,7 @@ def solicitar_codigo_recuperacion(datos):
       <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
       <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
-      <p style="margin-top:20px">Este codigo vence en <strong>5 minutos</strong>.</p>
+      <p style="margin-top:20px">Tienes <strong>60 segundos</strong> para ingresar este codigo.</p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
       <p style="color:#607080">Equipo GreenUP</p>
     </div>

@@ -94,6 +94,25 @@
             color: #b42318;
         }
 
+        .timer-box.warning {
+            background: #fff4df;
+            color: #9a5b00;
+        }
+
+        .resend-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            color: var(--color-primary);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .resend-link[hidden] {
+            display: none;
+        }
+
         .otp-container {
             display: grid;
             grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -206,11 +225,11 @@
             <div class="mb-3">
                 <h1 class="recovery-title fw-bold mb-2">Ingresa el código</h1>
                 <p class="recovery-help">
-                    Escribe el código de 6 dígitos que enviamos a tu correo electrónico.
+                    Escribe el código de 6 dígitos que enviamos a tu correo electrónico. Tienes 60 segundos.
                 </p>
                 <div id="contadorCodigo" class="timer-box" aria-live="polite">
                     <span class="material-symbols-outlined">timer</span>
-                    <span>Vence en 30 s</span>
+                    <span>Vence en 60 s</span>
                 </div>
             </div>
 
@@ -228,6 +247,11 @@
                     Validar código
                     <span class="material-symbols-outlined">verified</span>
                 </button>
+
+                <a id="solicitarNuevoCodigo" class="resend-link" href="public_recuperar_contrasena.html" hidden>
+                    <span class="material-symbols-outlined">refresh</span>
+                    Solicitar un código nuevo
+                </a>
             </form>
         </div>
 
@@ -239,7 +263,7 @@
     </div>
   <script src="../../js/modal_alerts.js?v=20260827"></script>
   <script src="../../js/api.js"></script>
-  <script src="../../js/recuperacion.js?v=20260829"></script>
+  <script src="../../js/recuperacion.js?v=20260831"></script>
   <script src="../../js/public_ui_fix.js?v=20260821"></script>
 </body>
 

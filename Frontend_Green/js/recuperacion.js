@@ -1,7 +1,7 @@
 const RECUPERACION_API_BASE = typeof API_URL !== 'undefined' ? API_URL : "https://greenup-hoxj.onrender.com";
 const RECUPERACION_API = `${RECUPERACION_API_BASE}/api/recuperar-contrasena`;
 const RECUPERACION_TIMEOUT_MS = 45000;
-const RECUPERACION_EXPIRA_SEGUNDOS = 5 * 60;
+const RECUPERACION_EXPIRA_SEGUNDOS = 60;
 
 async function enviarRecuperacion(endpoint, datos) {
   const controller = new AbortController();
@@ -223,12 +223,18 @@ function iniciarContadorCodigo() {
   if (!contador) return;
 
   const texto = contador.querySelector("span:last-child") || contador;
+  const solicitarNuevo = document.getElementById("solicitarNuevoCodigo");
   let intervalo = null;
 
   const actualizar = () => {
     const restante = Math.max(0, Math.ceil((getExpiracionCodigo() - Date.now()) / 1000));
     texto.textContent = restante > 0 ? `Vence en ${restante} s` : "Código vencido";
     contador.classList.toggle("expired", restante <= 0);
+    contador.classList.toggle("warning", restante > 0 && restante <= 15);
+
+    if (solicitarNuevo) {
+      solicitarNuevo.hidden = restante > 0;
+    }
 
     document.querySelectorAll(".otp-input").forEach((input) => {
       input.disabled = restante <= 0;

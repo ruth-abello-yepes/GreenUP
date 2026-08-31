@@ -217,6 +217,17 @@ article a {
   box-shadow: 0 0 0 3px rgba(60, 179, 113, 0.18);
 }
 
+.recovery-notice {
+  margin: -14px 0 22px;
+  padding: 12px 14px;
+  border: 1px solid #cce4d5;
+  border-radius: 10px;
+  background-color: #f1faf5;
+  color: #315646;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
   vertical-align: middle;

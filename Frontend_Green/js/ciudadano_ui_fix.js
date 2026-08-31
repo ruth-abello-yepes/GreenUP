@@ -726,6 +726,34 @@ function redirigirAjustesAntiguos() {
     }
 }
 
+/**
+ * Etiqueta las tablas del ciudadano para que CSS pueda presentarlas como
+ * fichas legibles en celular y tablet. También cubre filas cargadas después
+ * desde la API, por ejemplo el historial de reciclaje.
+ */
+function prepararTablasResponsivasCiudadano(root = document) {
+    const tablas = [];
+    if (root.matches?.("table.historial-tabla, table.historial-table")) tablas.push(root);
+    root.querySelectorAll?.("table.historial-tabla, table.historial-table").forEach((tabla) => tablas.push(tabla));
+
+    tablas.forEach((tabla) => {
+        const etiquetas = Array.from(tabla.querySelectorAll("thead th"))
+            .map((encabezado) => encabezado.textContent.trim());
+        tabla.classList.add("responsive-table-ready");
+
+        tabla.querySelectorAll("tbody tr").forEach((fila) => {
+            Array.from(fila.children).forEach((celda, indice) => {
+                if (celda.tagName !== "TD") return;
+                if (celda.hasAttribute("colspan")) {
+                    celda.classList.add("responsive-table-empty");
+                    return;
+                }
+                celda.dataset.label = etiquetas[indice] || "Dato";
+            });
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     asegurarCssCiudadano();
     redirigirAjustesAntiguos();
@@ -740,4 +768,17 @@ document.addEventListener("DOMContentLoaded", () => {
     corregirFooterCiudadano();
     conectarEnlacesVaciosCiudadano();
     conectarSugerenciaPuntoCiudadano();
+    prepararTablasResponsivasCiudadano();
+
+    const observadorTablasResponsive = new MutationObserver((cambios) => {
+        cambios.forEach((cambio) => {
+            cambio.addedNodes.forEach((nodo) => {
+                if (nodo.nodeType !== Node.ELEMENT_NODE) return;
+                prepararTablasResponsivasCiudadano(nodo);
+                const tabla = nodo.closest?.("table.historial-tabla, table.historial-table");
+                if (tabla) prepararTablasResponsivasCiudadano(tabla);
+            });
+        });
+    });
+    observadorTablasResponsive.observe(document.body, { childList: true, subtree: true });
 });

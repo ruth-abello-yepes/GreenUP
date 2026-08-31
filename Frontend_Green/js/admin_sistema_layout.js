@@ -2527,7 +2527,7 @@ function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
   const claseModuloTabla = moduloActual() === "usuarios" ? "users-table" : "";
   contenedor.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table table table-hover align-middle ${claseModuloTabla} ${tieneAcciones ? "has-actions" : ""}">
+      <table class="admin-table responsive-table-ready table table-hover align-middle ${claseModuloTabla} ${tieneAcciones ? "has-actions" : ""}">
         <thead>
           <tr>
             ${adminTableColumns.map((col) => `<th>${limpiar(col)}</th>`).join("")}
@@ -2537,8 +2537,8 @@ function pintarTablaActual(data = adminTableData, estadoVacio = {}) {
         <tbody>
           ${data.map((row) => `
             <tr>
-              ${row.values.map((value) => `<td>${value}</td>`).join("")}
-              ${tieneAcciones ? `<td><div class="row-actions">${row.actions || ""}</div></td>` : ""}
+              ${row.values.map((value, index) => `<td data-label="${limpiar(adminTableColumns[index] || "Dato")}">${value}</td>`).join("")}
+              ${tieneAcciones ? `<td data-label="Acciones"><div class="row-actions">${row.actions || ""}</div></td>` : ""}
             </tr>
           `).join("")}
         </tbody>
@@ -2567,10 +2567,10 @@ function tablaDatos(columnas, filas) {
   if (!filas.length) return renderEmpty("database", "No hay registros.", "Los datos apareceran cuando existan en Supabase.");
   return `
     <div class="table-wrap">
-      <table class="admin-table table table-hover align-middle">
+      <table class="admin-table responsive-table-ready table table-hover align-middle">
         <thead><tr>${columnas.map((c) => `<th>${limpiar(c)}</th>`).join("")}</tr></thead>
         <tbody>
-          ${filas.map((fila) => `<tr>${fila.map((v) => `<td>${limpiarHtmlPermitido(v)}</td>`).join("")}</tr>`).join("")}
+          ${filas.map((fila) => `<tr>${fila.map((v, index) => `<td data-label="${limpiar(columnas[index] || "Dato")}">${limpiarHtmlPermitido(v)}</td>`).join("")}</tr>`).join("")}
         </tbody>
       </table>
     </div>

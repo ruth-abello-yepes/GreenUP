@@ -62,39 +62,8 @@ SMTP_TIMEOUT_MAXIMO_SEGUNDOS = 8
 def _variable_activa(nombre):
     return (os.getenv(nombre) or "").strip().lower() in ("1", "true", "si", "yes", "on")
 
+
 def _enviar_codigo_por_apps_script(destinatario, asunto, texto, html):
-  url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
-
-  if not url:
-    raise RuntimeError("APPS_SCRIPT_URL debe estar configurada en Render")
-
-  respuesta = requests.post(
-      url,
-      json={
-          "to": destinatario,
-          "subject": asunto,
-          "text": texto,
-          "html": html,
-      },
-      timeout=15,
-  )
-
-  if respuesta.status_code >= 400:
-    raise RuntimeError(
-        f"Apps Script respondio HTTP {respuesta.status_code}"
-    )
-
-  try:
-    resultado = respuesta.json()
-  except ValueError as error:
-    raise RuntimeError(
-        "Apps Script no devolvio una respuesta JSON valida"
-    ) from error
-
-  if resultado.get("estado") != "ok":
-    raise RuntimeError(
-        resultado.get("mensaje") or "Apps Script no pudo enviar el correo"
-    )
     url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
     secreto = (os.getenv("APPS_SCRIPT_SECRET") or "").strip()
 
@@ -417,8 +386,9 @@ def solicitar_codigo_recuperacion(datos):
         }, 404
 
     apps_script_url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
-    usa_apps_script = bool(apps_script_url)
-    apps_script_incompleto = False
+    apps_script_secret = (os.getenv("APPS_SCRIPT_SECRET") or "").strip()
+    usa_apps_script = bool(apps_script_url and apps_script_secret)
+    apps_script_incompleto = bool(apps_script_url) != bool(apps_script_secret)
     usa_brevo = bool((os.getenv("BREVO_API_KEY") or "").strip())
     usa_resend = bool((os.getenv("RESEND_API_KEY") or "").strip())
     usa_smtp = bool(current_app.config.get("MAIL_USERNAME") and current_app.config.get("MAIL_PASSWORD"))

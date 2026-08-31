@@ -2085,3 +2085,166 @@ body.recicladora-theme-dark .profile-photo-help {
 .map-floating-controls {
   display: none !important;
 }
+
+/* ================================================================
+   RESPONSIVE COMPARTIDO DE RECICLADORA
+   Evita tablas de escritorio recortadas y mantiene intacto el escritorio.
+================================================================ */
+.app-topbar {
+  z-index: 2100;
+}
+
+@media (max-width: 1500px) {
+  .content-grid.reports-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .content-grid.reports-layout > [class*="span-"] {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .role-nav-menu {
+    position: fixed;
+    top: calc(var(--topbar-height) + 8px);
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: calc(100dvh - var(--topbar-height) - 24px);
+    z-index: 2200;
+  }
+
+  .notifications-menu,
+  .user-dropdown {
+    z-index: 2200;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .table-responsive:has(.responsive-table-ready) {
+    overflow: visible;
+  }
+
+  .admin-table.responsive-table-ready {
+    width: 100%;
+    min-width: 0 !important;
+    display: block;
+    border: 0;
+  }
+
+  .admin-table.responsive-table-ready thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .admin-table.responsive-table-ready tbody {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .admin-table.responsive-table-ready tbody tr {
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    overflow: hidden;
+    border: 1px solid var(--greenup-border);
+    border-radius: 17px;
+    background: var(--greenup-panel);
+    box-shadow: 0 10px 24px rgba(6, 85, 145, 0.06);
+  }
+
+  .admin-table.responsive-table-ready tbody td {
+    min-width: 0;
+    width: auto;
+    display: grid;
+    grid-template-columns: minmax(105px, 0.42fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 11px 13px;
+    border: 0;
+    border-bottom: 1px solid var(--greenup-border);
+    background: transparent;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .admin-table.responsive-table-ready tbody td:last-child {
+    border-bottom: 0;
+  }
+
+  .admin-table.responsive-table-ready tbody td::before {
+    content: attr(data-label);
+    color: var(--greenup-muted);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .admin-table.responsive-table-ready tbody tr.empty-row {
+    display: block;
+    grid-column: 1 / -1;
+  }
+
+  .admin-table.responsive-table-ready td.responsive-table-empty {
+    width: 100%;
+    display: block;
+    padding: 30px 18px !important;
+    border: 0;
+    text-align: center;
+  }
+
+  .admin-table.responsive-table-ready td.responsive-table-empty::before {
+    display: none;
+  }
+
+  body.recicladora-theme-dark .admin-table.responsive-table-ready tbody tr {
+    background: var(--greenup-panel);
+    border-color: var(--greenup-border);
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .main-content {
+    padding-top: calc(var(--topbar-height) + 20px);
+    padding-bottom: 40px;
+  }
+
+  .admin-card,
+  .table-card,
+  .module-card {
+    border-radius: 20px;
+  }
+
+  .card-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .card-title-actions,
+  .card-title-row > .btn-greenup,
+  .card-title-row > .btn-soft {
+    width: 100%;
+  }
+
+  .card-title-actions > *,
+  .card-title-row > .btn-greenup,
+  .card-title-row > .btn-soft {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .admin-table.responsive-table-ready tbody {
+    padding: 10px;
+  }
+}

@@ -2389,3 +2389,136 @@ body.ciudadano-pagina-historial-reciclaje .rounded-footer-top {
     font-size: 1.3rem;
   }
 }
+
+/* ================================================================
+   RESPONSIVE COMPARTIDO DEL CIUDADANO
+   El historial deja de depender de desplazamiento horizontal en móvil.
+================================================================ */
+body[class*="ciudadano-pagina-"] {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body[class*="ciudadano-pagina-"] img,
+body[class*="ciudadano-pagina-"] svg,
+body[class*="ciudadano-pagina-"] canvas,
+body[class*="ciudadano-pagina-"] input,
+body[class*="ciudadano-pagina-"] select,
+body[class*="ciudadano-pagina-"] textarea {
+  max-width: 100%;
+}
+
+@media (max-width: 1199.98px) {
+  body.ciudadano-pagina-mapa #sidebar-panel {
+    width: min(320px, calc(100vw - 56px)) !important;
+  }
+
+  body.ciudadano-pagina-mapa #sidebar-collapse-trigger {
+    right: -36px;
+    width: 36px;
+  }
+
+  .table-responsive:has(.responsive-table-ready) {
+    overflow: visible;
+    border: 0;
+  }
+
+  table.responsive-table-ready,
+  body.ciudadano-pagina-historial-reciclaje .historial-tabla.responsive-table-ready,
+  body.ciudadano-pagina-registrar-reciclaje .historial-table.responsive-table-ready {
+    width: 100%;
+    min-width: 0;
+    display: block;
+    margin: 0;
+    border: 0;
+  }
+
+  table.responsive-table-ready thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  table.responsive-table-ready tbody {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+  }
+
+  table.responsive-table-ready tbody tr {
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    overflow: hidden;
+    border: 1px solid #dfe7ee;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(0, 61, 108, 0.06);
+  }
+
+  table.responsive-table-ready tbody td {
+    min-width: 0;
+    width: auto;
+    display: grid;
+    grid-template-columns: minmax(105px, 0.42fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 11px 13px !important;
+    border: 0;
+    border-bottom: 1px solid #e6edf2;
+    background: transparent !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  table.responsive-table-ready tbody td:last-child {
+    border-bottom: 0;
+  }
+
+  table.responsive-table-ready tbody td::before {
+    content: attr(data-label);
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.045em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  table.responsive-table-ready tbody tr:has(.responsive-table-empty) {
+    display: block;
+    grid-column: 1 / -1;
+  }
+
+  table.responsive-table-ready td.responsive-table-empty {
+    width: 100%;
+    display: block;
+    padding: 30px 18px !important;
+    border: 0;
+    text-align: center;
+  }
+
+  table.responsive-table-ready td.responsive-table-empty::before {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.ciudadano-pagina-educacion .row.g-5 {
+    --bs-gutter-x: 1.5rem;
+  }
+
+  body.ciudadano-pagina-historial-reciclaje .historial-panel,
+  body.ciudadano-pagina-registrar-reciclaje .historial-card {
+    padding: 18px !important;
+  }
+
+  table.responsive-table-ready tbody {
+    grid-template-columns: 1fr;
+  }
+}

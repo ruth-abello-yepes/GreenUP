@@ -1458,6 +1458,31 @@ async function initRecicladoraMap() {
     window.initGreenupMap({ scope: "recicladora" });
   }
 }
+
+/**
+ * Convierte los encabezados de las tablas en etiquetas utilizables por la
+ * presentación responsive. El observador cubre filas que llegan luego desde
+ * la API, sin duplicar esta lógica en cada pantalla de la recicladora.
+ */
+function prepararTablasResponsivasRecicladora(root = document) {
+  root.querySelectorAll?.("table.admin-table").forEach((tabla) => {
+    const etiquetas = Array.from(tabla.querySelectorAll("thead th"))
+      .map((encabezado) => encabezado.textContent.trim());
+
+    tabla.classList.add("responsive-table-ready");
+    tabla.querySelectorAll("tbody tr").forEach((fila) => {
+      const celdas = Array.from(fila.children).filter((celda) => celda.tagName === "TD");
+      celdas.forEach((celda, indice) => {
+        if (celda.hasAttribute("colspan")) {
+          celda.classList.add("responsive-table-empty");
+          return;
+        }
+        celda.dataset.label = etiquetas[indice] || "Dato";
+      });
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof protegerRol === "function") {
     protegerRol(2);
@@ -1482,6 +1507,21 @@ document.addEventListener("DOMContentLoaded", function () {
   bindProfileSave();
   bindReportExports();
   normalizarFooterRecicladora();
+  prepararTablasResponsivasRecicladora();
+
+  const observadorTablasResponsive = new MutationObserver((cambios) => {
+    cambios.forEach((cambio) => {
+      cambio.addedNodes.forEach((nodo) => {
+        if (nodo.nodeType === Node.ELEMENT_NODE) {
+          prepararTablasResponsivasRecicladora(nodo);
+          if (nodo.matches?.("tr, td")) {
+            prepararTablasResponsivasRecicladora(nodo.closest("table")?.parentElement || document);
+          }
+        }
+      });
+    });
+  });
+  observadorTablasResponsive.observe(document.body, { childList: true, subtree: true });
 
   const current = getCurrentFile();
   if (current === "recicladora_perfil.html") {

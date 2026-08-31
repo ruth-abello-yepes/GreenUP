@@ -1,4 +1,3 @@
-## Archivo: auth_service.py
 ## Servicio de negocio: valida reglas del sistema antes de llamar a modelos.
 
 """
@@ -48,8 +47,6 @@ from app.common.security import (
 
 
 # Datos iniciales del Administrador del Sistema.
-# Si Supabase no tiene el usuario admin, el backend lo crea automaticamente
-# cuando se intenta iniciar sesion con estos datos.
 ADMIN_USUARIO_INICIAL = "admin"
 ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
 ADMIN_CORREO_INICIAL = "admin@greenup.com"
@@ -67,8 +64,8 @@ def _enviar_codigo_por_apps_script(destinatario, asunto, texto, html):
     url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
     secreto = (os.getenv("APPS_SCRIPT_SECRET") or "").strip()
 
-    if not url or not secreto:
-        raise RuntimeError("APPS_SCRIPT_URL y APPS_SCRIPT_SECRET deben estar configuradas")
+    if not url:
+        raise RuntimeError("APPS_SCRIPT_URL no esta configurada")
 
     respuesta = requests.post(
         url,
@@ -99,7 +96,6 @@ def _enviar_codigo_por_smtp(destinatario, asunto, texto, html):
     servidor = current_app.config.get("MAIL_SERVER") or "smtp.gmail.com"
     puerto = int(current_app.config.get("MAIL_PORT") or 587)
     usuario = current_app.config.get("MAIL_USERNAME")
-    # Limpiar espacios en blanco de la contrasena por si se copio con formato
     password = (current_app.config.get("MAIL_PASSWORD") or "").replace(" ", "")
     timeout = min(int(current_app.config.get("MAIL_TIMEOUT") or SMTP_TIMEOUT_MAXIMO_SEGUNDOS), SMTP_TIMEOUT_MAXIMO_SEGUNDOS)
 
@@ -226,15 +222,8 @@ def _limpiar_intentos_login(usuario):
 
 def servicio_login(datos):
     """
-    Login normal.
-
-    Este login solo permite entrar a:
-    - Dueno de punto ecologico
-    - Ciudadano
-
-    El administrador NO entra por aqui.
+    Login normal para dueno de punto ecologico y ciudadano.
     """
-
     usuario = (datos.get("usuario") or datos.get("correo") or datos.get("email") or "").strip()
     contrasena = datos.get("contrasena") or datos.get("password")
 
@@ -286,16 +275,7 @@ def servicio_login(datos):
 def servicio_login_admin(datos):
     """
     Login exclusivo del administrador.
-
-    Pide:
-    - usuario
-    - contrasena
-    - codigo_admin
-
-    El codigo_admin se guarda en el archivo .env.
     """
-
-    # strip() quita espacios por si el usuario copia y pega los datos.
     usuario = (datos.get("usuario") or "").strip()
     contrasena = (datos.get("contrasena") or "").strip()
     codigo_admin = (datos.get("codigo_admin") or "").strip()
@@ -314,8 +294,6 @@ def servicio_login_admin(datos):
 
     usuario_encontrado = buscar_usuario_por_usuario(usuario)
 
-    # Si el administrador inicial no existe en Supabase, lo creamos.
-    # Esto evita el error "Administrador no encontrado" en un clon nuevo.
     if usuario_encontrado is None and usuario == ADMIN_USUARIO_INICIAL:
         if contrasena != ADMIN_CONTRASENA_INICIAL:
             return {"mensaje": "Administrador no encontrado"}, 404
@@ -386,9 +364,8 @@ def solicitar_codigo_recuperacion(datos):
         }, 404
 
     apps_script_url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
-    apps_script_secret = (os.getenv("APPS_SCRIPT_SECRET") or "").strip()
-    usa_apps_script = bool(apps_script_url and apps_script_secret)
-    apps_script_incompleto = bool(apps_script_url) != bool(apps_script_secret)
+    usa_apps_script = bool(apps_script_url)
+    apps_script_incompleto = False  # Permitir conexion simple
     usa_brevo = bool((os.getenv("BREVO_API_KEY") or "").strip())
     usa_resend = bool((os.getenv("RESEND_API_KEY") or "").strip())
     usa_smtp = bool(current_app.config.get("MAIL_USERNAME") and current_app.config.get("MAIL_PASSWORD"))
@@ -400,13 +377,6 @@ def solicitar_codigo_recuperacion(datos):
     except Exception as error:
         print(f"Error guardando codigo de recuperacion: {error}")
         return {"mensaje": "No se pudo generar el codigo de recuperacion."}, 500
-
-    if apps_script_incompleto:
-        return {
-            "mensaje": "La configuracion de Google Apps Script esta incompleta.",
-            "enviado": False,
-            "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
-        }, 503
 
     if not usa_apps_script and not usa_brevo and not usa_resend and not usa_smtp:
         if _variable_activa("EMAIL_DEBUG_CODES"):

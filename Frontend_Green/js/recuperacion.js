@@ -8,7 +8,7 @@ async function enviarRecuperacion(endpoint, datos) {
   const timeout = window.setTimeout(() => controller.abort(), RECUPERACION_TIMEOUT_MS);
 
   try {
-    const respuesta = await fetch(`${RECUPERACION_API}/${endpoint}`, {
+    const respuesta = await fetch(RECUPERACION_API + "/" + endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos),

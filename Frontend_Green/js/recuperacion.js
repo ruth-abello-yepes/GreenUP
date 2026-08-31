@@ -143,7 +143,7 @@ function configurarSolicitudCodigo() {
   formSolicitar.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const btnEnviar = document.getElementById("btnEnviar");
+    const btnEnviar = formSolicitar.querySelector("button[type='submit']") || document.getElementById("btnEnviar");
     const correo = correoInput.value.trim();
 
     if (!correo) {
@@ -167,10 +167,8 @@ function configurarSolicitudCodigo() {
       }
 
       if (window.greenupAlert) {
-        window.greenupAlert(
-          respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.",
-          "Recuperar contraseña"
-        );
+        const mensajeError = respuesta.data?.mensaje || "No se pudo enviar el código de verificación.";
+        window.greenupAlert(mensajeError, "Recuperar contraseña");
       } else {
         alert(respuesta.data.mensaje || "No se pudo enviar el codigo de verificacion.");
       }

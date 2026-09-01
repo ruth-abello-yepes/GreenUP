@@ -907,3 +907,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     observadorTablasResponsive.observe(document.body, { childList: true, subtree: true });
 });
+
+(function cargarAccesibilidadCiudadana() {
+    if (document.querySelector("script[data-greenup-accessibility]")) return;
+    const script = document.createElement("script");
+    script.dataset.greenupAccessibility = "true";
+    script.src = `${new URL("accessibility.js", document.currentScript.src).href}?v=20260901-a11y3`;
+    document.head.appendChild(script);
+})();

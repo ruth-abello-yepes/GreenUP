@@ -90,10 +90,61 @@
     });
   }
 
+  function describirIconos(nombreIcono) {
+    const nombres = {
+      menu: "Abrir menu",
+      close: "Cerrar",
+      login: "Entrar",
+      logout: "Cerrar sesion",
+      arrow_forward: "Continuar",
+      arrow_back: "Volver",
+      search: "Buscar",
+      notifications: "Notificaciones",
+      share: "Compartir",
+      public: "Ver informacion publica",
+      mail: "Enviar correo",
+      visibility: "Mostrar u ocultar informacion",
+      visibility_off: "Mostrar u ocultar informacion",
+      my_location: "Usar mi ubicacion",
+      add: "Agregar",
+      refresh: "Actualizar",
+      download: "Descargar",
+      edit: "Editar",
+      delete: "Eliminar",
+      history: "Historial",
+      map: "Mapa",
+      school: "Educacion",
+      bar_chart: "Estadisticas",
+      home: "Inicio"
+    };
+    return nombres[nombreIcono] || nombreIcono.replace(/_/g, " ");
+  }
+
+  function mejorarBotonesEIconos(root = document) {
+    root.querySelectorAll?.("button, a").forEach((control) => {
+      const texto = (control.textContent || "").trim();
+      const icono = (control.querySelector(".material-symbols-outlined, .material-icons")?.textContent || "").trim();
+      if (!control.getAttribute("aria-label") && !control.getAttribute("aria-labelledby") && (!texto || texto === icono) && icono) {
+        control.setAttribute("aria-label", describirIconos(icono));
+      }
+    });
+
+    root.querySelectorAll?.(".material-symbols-outlined, .material-icons").forEach((icono) => {
+      icono.setAttribute("aria-hidden", "true");
+    });
+
+    root.querySelectorAll?.("img").forEach((imagen) => {
+      const alt = (imagen.getAttribute("alt") || "").trim().toLowerCase();
+      if (alt === "logo") imagen.setAttribute("alt", "GreenUp");
+      if (!imagen.getAttribute("alt")) imagen.setAttribute("alt", "");
+    });
+  }
+
   function aplicar(root = document) {
     etiquetarControles(root);
     prepararTablas(root);
     mejorarMensajes(root);
+    mejorarBotonesEIconos(root);
   }
 
   function iniciar() {

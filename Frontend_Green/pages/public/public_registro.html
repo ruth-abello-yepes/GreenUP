@@ -476,17 +476,17 @@
             <div id="seccion-1">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label">Nombres</label>
+                  <label class="form-label" for="nombres">Nombres</label>
                   <input id="nombres" class="form-control" type="text" placeholder="Ej. Alex" required />
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Apellidos</label>
+                  <label class="form-label" for="apellidos">Apellidos</label>
                   <input id="apellidos" class="form-control" type="text" placeholder="Ej. Verde" required />
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Correo electrónico</label>
+                  <label class="form-label" for="correo">Correo electrónico</label>
                   <input id="correo" class="form-control" type="email" placeholder="contacto@ejemplo.com" required />
                   <div id="mensaje-correo" class="invalid-feedback">
                     Ingresa un correo válido y disponible.
@@ -494,12 +494,12 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Celular</label>
+                  <label class="form-label" for="celular">Celular</label>
                   <input id="celular" class="form-control" type="tel" placeholder="3180000000" />
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Género</label>
+                  <label class="form-label" for="genero">Género</label>
                   <select id="genero" class="form-select" required>
                     <option value="">Selecciona una opción</option>
                     <option value="Femenino">Femenino</option>
@@ -509,7 +509,7 @@
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label">Tipo de registro</label>
+                  <label class="form-label" for="tipo_registro">Tipo de registro</label>
                   <select id="tipo_registro" class="form-select" onchange="mostrarCamposEmpresa()" required>
                     <option value="ciudadano">Ciudadano</option>
                     <option value="recicladora">
@@ -523,7 +523,7 @@
             <div id="seccion-2" class="d-none">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label">Tipo de documento personal</label>
+                  <label class="form-label" for="id_tipo_documento">Tipo de documento personal</label>
                   <select id="id_tipo_documento" class="form-select" required>
                     <option value="">Selecciona una opción</option>
                     <option value="1">Cédula de ciudadanía</option>
@@ -533,7 +533,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Número de documento</label>
+                  <label class="form-label" for="numero_documento">Número de documento</label>
                   <input id="numero_documento" class="form-control" type="text" placeholder="1234567890" required />
                   <div id="mensaje-documento" class="invalid-feedback">
                     Cédula ya registrada.
@@ -541,7 +541,7 @@
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label">Nombre de usuario</label>
+                  <label class="form-label" for="usuario">Nombre de usuario</label>
                   <input id="usuario" class="form-control" type="text" placeholder="anyeli123" minlength="5" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{5,}" title="Mínimo 5 caracteres, solo letras y números." required />
                   <div id="mensaje-usuario" class="invalid-feedback">
                     El usuario debe tener mínimo 5 caracteres.
@@ -558,7 +558,7 @@
 
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">Tipo de documento empresarial</label>
+                    <label class="form-label" for="tipo_documento_empresa">Tipo de documento empresarial</label>
                     <select id="tipo_documento_empresa" class="form-select">
                       <option value="NIT">NIT</option>
                       <option value="RUT">RUT</option>
@@ -566,7 +566,7 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Número NIT o RUT</label>
+                    <label class="form-label" for="nit_empresa">Número NIT o RUT</label>
                     <input id="nit_empresa" class="form-control" type="text" placeholder="900123456-1" />
                     <div id="mensaje-nit" class="invalid-feedback">
                       NIT ya registrado o inválido.
@@ -574,7 +574,7 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Nombre de la empresa</label>
+                    <label class="form-label" for="nombre_empresa">Nombre de la empresa</label>
                     <input id="nombre_empresa" class="form-control" type="text" placeholder="Punto Verde GreenUp" />
                     <div id="mensaje-nombre-empresa" class="invalid-feedback">
                       El nombre de la empresa es obligatorio.
@@ -582,38 +582,38 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Teléfono de la empresa</label>
+                    <label class="form-label" for="telefono_empresa">Teléfono de la empresa</label>
                     <input id="telefono_empresa" class="form-control" type="text" placeholder="6051234567" />
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Dirección de la empresa</label>
+                    <label class="form-label" for="direccion_empresa">Dirección de la empresa</label>
                     <input id="direccion_empresa" class="form-control" type="text" placeholder="Calle 10 # 15-20" />
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Días de trabajo</label>
+                    <label class="form-label" for="dias_trabajo">Días de trabajo</label>
                     <input id="dias_trabajo" class="form-control" type="text" placeholder="Lunes a sábado" />
                   </div>
 
                   <div class="col-md-3">
-                    <label class="form-label">Hora inicial</label>
+                    <label class="form-label" for="hora_inicio">Hora inicial</label>
                     <input id="hora_inicio" class="form-control" type="time" />
                   </div>
 
                   <div class="col-md-3">
-                    <label class="form-label">Hora final</label>
+                    <label class="form-label" for="hora_fin">Hora final</label>
                     <input id="hora_fin" class="form-control" type="time" />
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Días que no trabaja</label>
+                    <label class="form-label" for="dias_no_trabaja">Días que no trabaja</label>
                     <input id="dias_no_trabaja" class="form-control" type="text" placeholder="Domingos y festivos" />
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Materiales que recibe</label>
-                    <div id="materiales-recicladora" class="row g-2">
+                    <span class="form-label" id="materiales-recicladora-label">Materiales que recibe</span>
+                    <div id="materiales-recicladora" class="row g-2" role="group" aria-labelledby="materiales-recicladora-label">
                       <div class="col-12">
                         <div class="alert alert-light border mb-0">Cargando materiales del sistema...</div>
                       </div>
@@ -622,7 +622,7 @@
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Cámara de comercio</label>
+                    <label class="form-label" for="camara_comercio">Cámara de comercio</label>
                     <input id="camara_comercio" class="form-control" type="file" accept=".pdf,.jpg,.jpeg,.png" />
                     <small class="text-muted">Puedes subir PDF, JPG o PNG. El administrador revisará el documento antes de activar la cuenta.</small>
                   </div>
@@ -633,7 +633,7 @@
             <div id="seccion-3" class="d-none">
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label">Contraseña</label>
+                  <label class="form-label" for="contrasena">Contraseña</label>
                   <div class="campo-contrasena">
                     <input id="contrasena" class="form-control" type="password" minlength="8"
                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])(?!.*\s).{8,}"
@@ -652,7 +652,7 @@
                   </small>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Confirmar contraseña</label>
+                  <label class="form-label" for="confirmar_contrasena">Confirmar contraseña</label>
                   <div class="campo-contrasena">
                     <input id="confirmar_contrasena" class="form-control" type="password" autocomplete="new-password"
                       placeholder="Repite la contraseña" required />
@@ -698,7 +698,7 @@
   <script src="../../js/modal_alerts.js?v=20260827"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/registro.js"></script>
-  <script src="../../js/public_ui_fix.js?v=20260821"></script>
+  <script src="../../js/public_ui_fix.js?v=20260901-a11y3"></script>
 </body>
 
 </html>

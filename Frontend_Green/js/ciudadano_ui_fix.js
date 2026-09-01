@@ -806,6 +806,12 @@ function asegurarNombreAccesibleControl(control) {
         return;
     }
 
+    const labelPrevio = control.parentElement?.querySelector?.(`label:not([for])`);
+    if (id && labelPrevio?.textContent?.trim()) {
+        labelPrevio.setAttribute("for", id);
+        return;
+    }
+
     control.setAttribute("aria-label", textoAccesibleDesdeControl(control));
 }
 
@@ -851,6 +857,20 @@ function mejorarAccesibilidadCiudadano(root = document) {
             && control.textContent.trim() === control.querySelector(".material-symbols-outlined")?.textContent.trim();
         if (soloIcono && !control.hasAttribute("aria-label")) {
             control.setAttribute("aria-label", textoAccesibleDesdeControl(control));
+        }
+    });
+
+    root.querySelectorAll?.('[role="tab"]').forEach((tab) => {
+        const destino = tab.getAttribute("data-bs-target") || tab.getAttribute("href");
+        if (destino?.startsWith("#")) {
+            const panel = document.querySelector(destino);
+            if (panel?.id) {
+                tab.setAttribute("aria-controls", panel.id);
+                if (tab.id) panel.setAttribute("aria-labelledby", tab.id);
+            }
+        }
+        if (!tab.hasAttribute("aria-selected")) {
+            tab.setAttribute("aria-selected", String(tab.classList.contains("active") || tab.classList.contains("is-active")));
         }
     });
 

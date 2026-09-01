@@ -2587,3 +2587,22 @@ body.ciudadano-pagina-estadisticas .glass-card p {
 body.ciudadano-pagina-historial-reciclaje .historial-hero p {
   color: #eef8ff !important;
 }
+
+body.ciudadano-pagina-educacion .eco-gradient .text-white-50,
+body.ciudadano-pagina-registrar-reciclaje .hero-panel .text-white-50,
+body.ciudadano-pagina-registrar-reciclaje .hero-panel p,
+body[class*="ciudadano-pagina-"] .bg-gu-primary .text-white-50,
+body[class*="ciudadano-pagina-"] footer .text-white-50 {
+  color: #eef8ff !important;
+}
+
+body.ciudadano-pagina-educacion .alert-warning,
+body.ciudadano-pagina-registrar-reciclaje .bg-warning-subtle {
+  background-color: #fff4c2 !important;
+  color: #4f3b00 !important;
+}
+
+body.ciudadano-pagina-educacion .alert-warning .material-symbols-outlined,
+body.ciudadano-pagina-registrar-reciclaje .bg-warning-subtle .text-secondary {
+  color: #5f4700 !important;
+}

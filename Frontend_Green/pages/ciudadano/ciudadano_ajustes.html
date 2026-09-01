@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <link href="../../css/ciudadano.css" rel="stylesheet">
+    <link href="../../css/ciudadano.css?v=20260901-a11y2" rel="stylesheet">
 </head>
 
 <body class="ciudadano-pagina-ajustes">
@@ -51,7 +51,7 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <button
+                <button aria-label="Notificaciones"
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
@@ -60,7 +60,7 @@
 
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir menu de usuario">
                         <span
                             class="d-none d-sm-inline fw-medium text-secondary small nombre-usuario-display">Usuario</span>
                         <span class="material-symbols-outlined text-gu-primary fs-3">account_circle</span>
@@ -136,17 +136,17 @@
                 <div class="list-group shadow-sm p-2 bg-white rounded-4" id="list-tab" role="tablist">
                     <button class="list-group-item list-group-item-action active d-flex align-items-center gap-3 py-3"
                         id="list-perfil-list" data-bs-toggle="list" data-bs-target="#list-perfil" type="button"
-                        role="tab">
+                        role="tab" aria-controls="list-perfil" aria-selected="true">
                         <span class="material-symbols-outlined fs-5">person</span> Perfil
                     </button>
                     <button class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3"
                         id="list-notificaciones-list" data-bs-toggle="list" data-bs-target="#list-notificaciones"
-                        type="button" role="tab">
+                        type="button" role="tab" aria-controls="list-notificaciones" aria-selected="false">
                         <span class="material-symbols-outlined fs-5">notifications</span> Notificaciones
                     </button>
                     <button class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3"
                         id="list-seguridad-list" data-bs-toggle="list" data-bs-target="#list-seguridad" type="button"
-                        role="tab">
+                        role="tab" aria-controls="list-seguridad" aria-selected="false">
                         <span class="material-symbols-outlined fs-5">security</span> Seguridad
                     </button>
                 </div>
@@ -155,7 +155,7 @@
             <div class="col-lg-9 col-md-8">
                 <div class="tab-content" id="nav-tabContent">
 
-                    <div class="tab-pane fade show active" id="list-perfil" role="tabpanel">
+                    <div class="tab-pane fade show active" id="list-perfil" role="tabpanel" aria-labelledby="list-perfil-list">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Información Personal</h4>
 
@@ -168,24 +168,24 @@
                                     <button type="button" id="btnCambiarAvatar"
                                         class="btn btn-outline-secondary btn-sm rounded-pill px-3">Cambiar
                                         Avatar</button>
-                                    <input class="ciudadano-ajustes-estilo-9" type="file" id="inputAvatar" accept="image/*">
+                                    <input class="ciudadano-ajustes-estilo-9" type="file" id="inputAvatar" accept="image/*" aria-label="Seleccionar foto de perfil">
                                 </div>
                             </div>
 
                             <form id="form-perfil" class="ajustes-form">
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Nombres</label>
+                                        <label class="form-label small fw-semibold text-secondary" for="nombres">Nombres</label>
                                         <input id="nombres" name="nombres" type="text" class="form-control"
                                             placeholder="Tus nombres" autocomplete="given-name" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Apellidos</label>
+                                        <label class="form-label small fw-semibold text-secondary" for="apellidos">Apellidos</label>
                                         <input id="apellidos" name="apellidos" type="text" class="form-control"
                                             placeholder="Tus apellidos" autocomplete="family-name" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Nombre de
+                                        <label class="form-label small fw-semibold text-secondary" for="usuario">Nombre de
                                             Usuario</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light text-muted">@</span>
@@ -194,12 +194,12 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Celular</label>
+                                        <label class="form-label small fw-semibold text-secondary" for="celular">Celular</label>
                                         <input id="celular" name="celular" type="tel" class="form-control"
                                             placeholder="Tu celular" autocomplete="tel" required>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label small fw-semibold text-secondary">Correo
+                                        <label class="form-label small fw-semibold text-secondary" for="correo">Correo
                                             Electrónico</label>
                                         <input id="correo" name="correo" type="email" class="form-control"
                                             placeholder="Tu correo electrónico" autocomplete="email" required>
@@ -214,7 +214,7 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="list-notificaciones" role="tabpanel">
+                    <div class="tab-pane fade" id="list-notificaciones" role="tabpanel" aria-labelledby="list-notificaciones-list">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Alertas y Notificaciones</h4>
 
@@ -226,7 +226,7 @@
                                             aprobado.</p>
                                     </div>
                                     <div class="form-check form-switch fs-4 mb-0">
-                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch"
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch" aria-label="Recibir alertas de registros aprobados"
                                             checked>
                                     </div>
                                 </div>
@@ -237,7 +237,7 @@
                                             ecológicas.</p>
                                     </div>
                                     <div class="form-check form-switch fs-4 mb-0">
-                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch"
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch" aria-label="Recibir boletin semanal"
                                             checked>
                                     </div>
                                 </div>
@@ -248,14 +248,14 @@
                                             inactivo.</p>
                                     </div>
                                     <div class="form-check form-switch fs-4 mb-0">
-                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch">
+                                        <input class="form-check-input switch-ajuste" type="checkbox" role="switch" aria-label="Recibir alertas de puntos ecologicos">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="list-seguridad" role="tabpanel">
+                    <div class="tab-pane fade" id="list-seguridad" role="tabpanel" aria-labelledby="list-seguridad-list">
                         <div class="gu-card p-4 p-md-5">
                             <h4 class="fw-bold text-gu-primary mb-4 border-bottom pb-3">Privacidad y Seguridad</h4>
 
@@ -263,19 +263,19 @@
                                 <h6 class="fw-bold mb-3">Cambiar Contraseña</h6>
                                 <div class="row g-3 mb-3">
                                     <div class="col-12">
-                                        <label class="form-label small fw-semibold text-secondary">Contraseña
+                                        <label class="form-label small fw-semibold text-secondary" for="password_actual">Contraseña
                                             Actual</label>
                                         <input id="password_actual" name="password_actual" type="password"
                                             class="form-control" placeholder="••••••••" autocomplete="current-password" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Nueva
+                                        <label class="form-label small fw-semibold text-secondary" for="nueva_password">Nueva
                                             Contraseña</label>
                                         <input id="nueva_password" name="nueva_password" type="password"
                                             class="form-control" placeholder="••••••••" autocomplete="new-password" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-secondary">Confirmar Nueva
+                                        <label class="form-label small fw-semibold text-secondary" for="confirmar_password">Confirmar Nueva
                                             Contraseña</label>
                                         <input id="confirmar_password" name="confirmar_password" type="password"
                                             class="form-control" placeholder="••••••••" autocomplete="new-password" required>
@@ -408,7 +408,7 @@
   <script src="../../js/api.js"></script>
   <script src="../../js/ajustes.js"></script>
   <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260901-a11y2"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUp | Historial de reciclaje</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: "Inter", sans-serif;
+            background: var(--gu-surface);
+        }
+
+        .text-gu-primary { color: var(--gu-primary); }
+        .text-gu-secondary { color: var(--gu-secondary); }
+        .bg-gu-dark { background: var(--gu-dark); }
+
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+            vertical-align: middle;
+        }
+
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: 800;
+        }
+
+        .btn-gu-primary {
+            background: var(--gu-primary);
+            border-radius: 50px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .btn-gu-primary:hover {
+            background: #002b4d;
+            color: #ffffff;
+        }
+
+        .history-public-section {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            margin-top: 70px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .history-panel {
+            position: relative;
+            z-index: 2;
+            max-width: 760px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid rgba(193, 199, 209, 0.45);
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 25px 50px -12px rgba(0, 61, 108, 0.18);
+        }
+
+        .history-preview {
+            position: absolute;
+            inset: 0;
+            opacity: 0.42;
+            pointer-events: none;
+        }
+
+        .history-preview-card {
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 12px 28px rgba(0, 61, 108, 0.08);
+            padding: 18px;
+        }
+
+        .fake-line {
+            height: 14px;
+            border-radius: 999px;
+            background: #dbe7f2;
+        }
+
+        .fake-status {
+            width: 96px;
+            height: 30px;
+            border-radius: 999px;
+            background: #dff5e6;
+        }
+
+        .history-feature {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            color: #465568;
+            font-weight: 700;
+        }
+
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: #ffffff !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2" style="z-index: 1050;">
+        <div class="container-fluid px-4">
+            <button class="navbar-toggler border-0 shadow-none d-md-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileOffcanvas" aria-controls="mobileOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-decoration-none" href="public_inicio.html">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
+                    alt="GreenUp" width="32" height="32" class="me-2">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </a>
+
+            <div class="collapse navbar-collapse justify-content-center d-none d-md-flex">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary" href="public_inicio.html"><span class="material-symbols-outlined me-1">home</span> Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary" href="public_mapa.html"><span class="material-symbols-outlined me-1">map</span> Mapa Eco</a></li>
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary" href="public_estadisticas.html"><span class="material-symbols-outlined me-1">bar_chart</span> Estadísticas</a></li>
+                    <li class="nav-item"><a class="nav-link active-custom d-flex align-items-center" href="public_historial.html" aria-current="page"><span class="material-symbols-outlined me-1">history</span> Historial</a></li>
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary" href="public_educacion.html"><span class="material-symbols-outlined me-1">school</span> Educación</a></li>
+                </ul>
+            </div>
+
+            <div class="d-none d-md-flex align-items-center gap-2">
+                <a href="public_login.html" class="btn btn-outline-success rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-5">login</span> Entrar
+                </a>
+                <a href="public_registro.html" class="btn btn-gu-primary rounded-pill px-3 py-1 fw-semibold">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileOffcanvas" aria-labelledby="mobileOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="mobileOffcanvasLabel">
+                <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between">
+            <ul class="navbar-nav flex-column gap-2">
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_inicio.html"><span class="material-symbols-outlined me-2">home</span> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_mapa.html"><span class="material-symbols-outlined me-2">map</span> Mapa Eco</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_estadisticas.html"><span class="material-symbols-outlined me-2">bar_chart</span> Estadísticas</a></li>
+                <li class="nav-item"><a class="nav-link active-custom d-flex align-items-center p-2 rounded" href="public_historial.html" aria-current="page"><span class="material-symbols-outlined me-2">history</span> Historial</a></li>
+                <li class="nav-item"><a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_educacion.html"><span class="material-symbols-outlined me-2">school</span> Educación</a></li>
+            </ul>
+            <div class="mt-4 pt-3 border-top">
+                <a href="public_login.html" class="btn btn-outline-success w-100 mb-2 rounded-pill fw-semibold">Entrar</a>
+                <a href="public_registro.html" class="btn btn-gu-primary w-100 rounded-pill fw-semibold">Registrarse</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1">
+        <section class="history-public-section px-3">
+            <div class="history-preview container">
+                <div class="row g-4">
+                    <div class="col-lg-4"><div class="history-preview-card"><div class="fake-line w-50"></div><div class="fake-line w-75 mt-3"></div><div class="fake-status mt-4"></div></div></div>
+                    <div class="col-lg-8"><div class="history-preview-card"><div class="fake-line w-25"></div><div class="fake-line w-100 mt-4"></div><div class="fake-line w-75 mt-3"></div><div class="fake-line w-50 mt-3"></div></div></div>
+                    <div class="col-lg-8"><div class="history-preview-card"><div class="fake-line w-75"></div><div class="fake-line w-100 mt-3"></div><div class="fake-status mt-4"></div></div></div>
+                    <div class="col-lg-4"><div class="history-preview-card"><div class="fake-line w-50"></div><div class="fake-line w-100 mt-4"></div></div></div>
+                </div>
+            </div>
+
+            <article class="history-panel text-center p-4 p-md-5">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-4"
+                    style="width: 80px; height: 80px; background: var(--gu-accent); color: var(--gu-secondary); box-shadow: 0 4px 15px rgba(169, 242, 149, 0.4);">
+                    <span class="material-symbols-outlined" style="font-size: 45px;">history</span>
+                </div>
+                <h1 class="display-6 fw-bold text-gu-primary mb-4">Revisa tu historial de reciclaje</h1>
+                <p class="fs-5 text-secondary mb-4 px-md-4">
+                    Inicia sesión para ver tus entregas registradas, cantidades en kilogramos, estado de confirmación,
+                    recicladora asociada y observaciones de cada registro.
+                </p>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-4"><div class="history-feature"><span class="material-symbols-outlined text-gu-secondary">inventory_2</span> Entregas</div></div>
+                    <div class="col-md-4"><div class="history-feature"><span class="material-symbols-outlined text-gu-secondary">verified</span> Confirmaciones</div></div>
+                    <div class="col-md-4"><div class="history-feature"><span class="material-symbols-outlined text-gu-secondary">download</span> Reporte CSV</div></div>
+                </div>
+                <div class="d-flex flex-column align-items-center gap-3">
+                    <a href="public_login.html" class="btn btn-gu-primary btn-lg px-5 py-3 w-100 shadow-sm" style="max-width: 350px;">
+                        Iniciar sesión para ver historial
+                    </a>
+                    <a href="public_registro.html" class="text-secondary small fw-medium text-decoration-none">
+                        ¿No tienes cuenta? <span class="fw-bold text-gu-primary text-decoration-underline" style="text-underline-offset: 4px;">Crea una gratis</span>
+                    </a>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top">
+        <div class="container">
+            <div class="row align-items-center small text-white-50">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span>Valledupar, Cesar - Colombia</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../js/modal_alerts.js?v=20260827"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/desactivar_consola.js"></script>
+    <script src="../../js/public_ui_fix.js?v=20260821"></script>
+</body>
+
+</html>

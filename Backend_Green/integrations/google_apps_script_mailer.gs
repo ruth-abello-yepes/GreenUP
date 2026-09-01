@@ -7,11 +7,17 @@ function doPost(e) {
 
     // Leer los datos enviados por GreenUp
     var data = JSON.parse(e.postData.contents);
+    var expectedSecret = PropertiesService.getScriptProperties().getProperty("GREENUP_MAIL_SECRET");
+
+    if (expectedSecret && data.secret !== expectedSecret) {
+      throw new Error("Solicitud no autorizada.");
+    }
 
     // Obtener los datos del correo
     var destinatario = data.to;
     var asunto = data.subject || "Código de recuperación de contraseña - GreenUp";
-    var mensaje = data.html || "<p>Este es un mensaje de GreenUp.</p>";
+    var mensajeHtml = data.html || "<p>Este es un mensaje de GreenUp.</p>";
+    var mensajeTexto = data.text || "Este es un mensaje de GreenUp.";
 
     // Verificar que exista un destinatario
     if (!destinatario) {
@@ -22,7 +28,9 @@ function doPost(e) {
     MailApp.sendEmail({
       to: destinatario,
       subject: asunto,
-      htmlBody: mensaje
+      body: mensajeTexto,
+      htmlBody: mensajeHtml,
+      name: "GreenUP"
     });
 
     // Responder que el correo fue enviado

@@ -387,6 +387,26 @@ async function apiAdmin(ruta, opciones = {}) {
   return datos;
 }
 
+function listaSegura(resultado) {
+  return resultado?.status === "fulfilled" && Array.isArray(resultado.value)
+    ? resultado.value
+    : [];
+}
+
+function objetoSeguro(resultado) {
+  return resultado?.status === "fulfilled" && resultado.value && typeof resultado.value === "object"
+    ? resultado.value
+    : {};
+}
+
+function mensajeAmableModulo(error) {
+  const texto = (error?.message || "").trim();
+  if (!texto || /error interno|failed to fetch|load failed|network|servidor/i.test(texto)) {
+    return "No pudimos cargar esta informacion ahora. Puedes actualizar en unos segundos.";
+  }
+  return texto;
+}
+
 function pintarEstructuraBase() {
   const actual = moduloActual();
   const admin = obtenerAdminActual();
@@ -658,9 +678,9 @@ async function cargarModuloAdmin() {
     document.getElementById("admin-content").innerHTML = renderEmpty(
       "warning",
       "No se pudo cargar este modulo.",
-      error.message,
+      mensajeAmableModulo(error),
     );
-    mostrarToast("Error", error.message);
+    console.warn("Modulo admin no cargado:", error);
   }
 }
 
@@ -1703,12 +1723,16 @@ async function cargarReportes(filtros = {}) {
     Carga informacion real de reciclaje y aplica filtros desde el backend.
   */
   const query = construirQueryReporte(filtros);
-  const [datos, usuarios, materiales, puntos] = await Promise.all([
+  const resultados = await Promise.allSettled([
     apiAdmin(`/reportes/reciclaje${query}`),
     apiAdmin("/api/usuarios/listar"),
     apiAdmin("/materiales"),
     apiAdmin("/ubicaciones"),
   ]);
+  const datos = listaSegura(resultados[0]);
+  const usuarios = listaSegura(resultados[1]);
+  const materiales = listaSegura(resultados[2]);
+  const puntos = listaSegura(resultados[3]);
   pintarHero([
     ["Filas", String(datos.length)],
     ["Formato", "CSV/Excel/PDF"],
@@ -1892,10 +1916,12 @@ async function descargarReporteAdmin(formato) {
 }
 
 async function cargarNovedades() {
-  const [datos, noticiasAmbientales] = await Promise.all([
+  const resultados = await Promise.allSettled([
     apiAdmin("/novedades"),
     apiAdmin("/api/noticias/ambientales?pagina=1&por_pagina=4"),
   ]);
+  const datos = listaSegura(resultados[0]);
+  const noticiasAmbientales = objetoSeguro(resultados[1]);
   pintarHero([
     ["Noticias", String(datos.length)],
     ["Activas", String(datos.filter((n) => Number(n.id_estado) === 1).length)],

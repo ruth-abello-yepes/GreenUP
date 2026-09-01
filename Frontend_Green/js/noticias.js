@@ -125,27 +125,56 @@ function pintarPaginacion(paginacion) {
     const contenedor = document.getElementById("paginacion-noticias");
     contenedor.replaceChildren();
     const totalPaginas = Number(paginacion.total_paginas) || 0;
+    const paginaActual = Number(paginacion.pagina) || 1;
     if (totalPaginas <= 1) {
         contenedor.closest("nav").hidden = true;
         return;
     }
     contenedor.closest("nav").hidden = false;
+    contenedor.classList.add("flex-wrap", "justify-content-center", "gap-1");
 
-    const agregarBoton = (texto, pagina, deshabilitado = false, activo = false) => {
+    const agregarBoton = (texto, pagina, deshabilitado = false, activo = false, etiqueta = "") => {
         const item = crearElemento("li", `page-item${deshabilitado ? " disabled" : ""}${activo ? " active" : ""}`);
         const boton = crearElemento("button", "page-link border-0", texto);
         boton.type = "button";
         boton.disabled = deshabilitado;
+        if (etiqueta) boton.setAttribute("aria-label", etiqueta);
+        if (activo) boton.setAttribute("aria-current", "page");
         boton.addEventListener("click", () => cargarNoticias(pagina));
         item.appendChild(boton);
         contenedor.appendChild(item);
     };
 
-    agregarBoton("‹", paginacion.pagina - 1, paginacion.pagina <= 1);
-    for (let pagina = 1; pagina <= totalPaginas; pagina += 1) {
-        agregarBoton(String(pagina), pagina, false, pagina === paginacion.pagina);
+    const agregarSeparador = () => {
+        const item = crearElemento("li", "page-item disabled");
+        const separador = crearElemento("span", "page-link border-0 bg-transparent text-muted", "...");
+        separador.setAttribute("aria-hidden", "true");
+        item.appendChild(separador);
+        contenedor.appendChild(item);
+    };
+
+    const paginas = [];
+    if (totalPaginas <= 7) {
+        for (let pagina = 1; pagina <= totalPaginas; pagina += 1) paginas.push(pagina);
+    } else {
+        paginas.push(1);
+        if (paginaActual > 3) paginas.push("...");
+        const inicio = Math.max(2, paginaActual - 1);
+        const fin = Math.min(totalPaginas - 1, paginaActual + 1);
+        for (let pagina = inicio; pagina <= fin; pagina += 1) paginas.push(pagina);
+        if (paginaActual < totalPaginas - 2) paginas.push("...");
+        paginas.push(totalPaginas);
     }
-    agregarBoton("›", paginacion.pagina + 1, paginacion.pagina >= totalPaginas);
+
+    agregarBoton("‹", paginaActual - 1, paginaActual <= 1, false, "Página anterior");
+    paginas.forEach(pagina => {
+        if (pagina === "...") {
+            agregarSeparador();
+            return;
+        }
+        agregarBoton(String(pagina), pagina, false, pagina === paginaActual, `Página ${pagina}`);
+    });
+    agregarBoton("›", paginaActual + 1, paginaActual >= totalPaginas, false, "Página siguiente");
 }
 
 function pintarEstadoNoticias(mensaje, tipo = "info") {

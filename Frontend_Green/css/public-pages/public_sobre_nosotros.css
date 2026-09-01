@@ -1,0 +1,64 @@
+:root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+        }
+
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            border: none;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: 700;
+        }
+        .bg-gu-dark {
+            background-color: #121c2a !important;
+        }
+
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: #fff !important;
+        }
+
+.public_sobre_nosotros-inline-2 { height: 320px; object-fit: cover; }
+
+.public_sobre_nosotros-inline-3 { color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_sobre_nosotros-inline-4 { color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_sobre_nosotros-inline-5 { width: 36px; height: 36px; }
+
+.public_sobre_nosotros-inline-6 { width: 36px; height: 36px; }
+
+.public_sobre_nosotros-inline-7 { width: 36px; height: 36px; }
+
+

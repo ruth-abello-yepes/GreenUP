@@ -1,0 +1,298 @@
+/* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-primary-container: #065591;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        /* Botones Bootstrap Sobreescritos */
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-filter.active {
+            background-color: var(--gu-primary);
+            color: white;
+            border-color: var(--gu-primary);
+        }
+
+        /* Estilos de Cards (Bento Grid) */
+        .gu-card {
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .gu-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Imágenes en las Tarjetas */
+        .card-img-wrapper {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .gu-card:hover .card-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        /* Tarjeta Destacada (Imagen Completa) */
+        .card-highlight {
+            height: 100%;
+            min-height: 350px;
+            position: relative;
+        }
+
+        .card-highlight img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+            transition: transform 0.7s ease;
+        }
+
+        .gu-card:hover .card-highlight img {
+            transform: scale(1.05);
+        }
+
+        .card-highlight-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border-left: 4px solid var(--gu-secondary);
+        }
+
+        /* Hover Link Text */
+        .hover-primary-text:hover {
+            color: var(--gu-primary) !important;
+            text-decoration: underline;
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* Animaciones */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .news-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 18px;
+            background-color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .news-card .img-wrapper {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .news-card .img-wrapper img,
+        .featured-news-card .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-news-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 24px;
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0, 61, 108, 0.08);
+        }
+
+        .featured-news-card .img-wrapper {
+            min-height: 320px;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #paginacion-noticias .page-item.active .page-link {
+            background-color: var(--gu-primary);
+            color: white;
+        }
+
+        @media (max-width: 575.98px) {
+            main {
+                margin-top: 84px !important;
+            }
+
+            .card-highlight {
+                min-height: 560px;
+            }
+
+            .card-highlight-overlay {
+                padding: 1.25rem;
+            }
+
+            .card-highlight-overlay h2 {
+                font-size: 1.75rem;
+                line-height: 1.15;
+            }
+
+            .card-highlight-overlay .lead {
+                font-size: 0.98rem;
+                line-height: 1.45;
+            }
+
+            .card-highlight-overlay .d-flex.align-items-center.justify-content-between {
+                align-items: flex-start !important;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+.public_educacion-inline-2 { margin-top: 100px; margin-bottom: 60px; max-width: 1280px; }
+
+.public_educacion-inline-3 { background-color: var(--gu-primary-container); color: white; }
+
+.public_educacion-inline-4 { background-color: var(--gu-accent); color: var(--gu-secondary); }
+
+.public_educacion-inline-5 { width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -100px; right: -50px; }
+
+.public_educacion-inline-6 { width: 200px; height: 200px; background: rgba(255,255,255,0.05); bottom: -50px; right: 150px; }
+
+.public_educacion-inline-7 { transition-delay: 0.1s; }
+
+.public_educacion-inline-8 { max-width: 400px; }
+
+.public_educacion-inline-9 { transition-delay: 0.2s; }
+
+.public_educacion-inline-209876543210 { background-color: var(--gu-secondary); }
+
+.public_educacion-inline-21 { aspect-ratio: 1/1; }
+
+.public_educacion-inline-22 { transition-delay: 0.25s; }
+
+.public_educacion-inline-23 { max-width: 360px; }
+
+.public_educacion-inline-24 { display: none; }
+
+.public_educacion-inline-25 { display: none; }
+
+.public_educacion-inline-26 { border-radius: 40px !important; }
+
+.public_educacion-inline-27 { font-size: 120px; color: var(--gu-accent); }
+
+.public_educacion-inline-28 { max-width: 800px; }
+
+.public_educacion-inline-29 { background-color: var(--gu-accent); color: var(--gu-secondary); }
+
+.public_educacion-inline-30 { color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_educacion-inline-31 { color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_educacion-inline-32 { width: 36px; height: 36px; }
+
+.public_educacion-inline-33 { width: 36px; height: 36px; }
+
+.public_educacion-inline-34 { width: 36px; height: 36px; }
+
+

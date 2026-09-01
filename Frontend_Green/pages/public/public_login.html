@@ -15,477 +15,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet" />
 
-  <style>
-    /* ===== VARIABLES GLOBALES DE COLOR ===== */
-    :root {
-      --color-primary: #003d6c;
-      --color-secondary: #296c1f;
-      --color-background: #f8f9ff;
-      --color-surface: #f8f9ff;
-      --color-surface-bright: #f8f9ff;
-      --color-surface-lowest: #ffffff;
-      --color-surface-low: #eff4ff;
-      --color-surface-container: #e6eeff;
-      --color-surface-high: #dee9fc;
-      --color-on-surface: #121c2a;
-      --color-on-surface-variant: #414750;
-      --color-primary-container: #065591;
-      --color-secondary-fixed: #acf597;
-      --color-on-secondary-fixed: #002200;
-      --color-outline: #727781;
-      --color-outline-variant: #c1c7d1;
-      --color-on-primary: #ffffff;
-    }
 
-    /* ===== BASE ===== */
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #ffffff;
-      color: var(--color-on-surface);
-      margin: 0;
-      min-height: 100vh;
-      height: 100vh;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow-x: hidden;
-      overflow-y: hidden;
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-    }
-
-    /* ===== TARJETA PRINCIPAL (login card) ===== */
-    .login-card {
-      width: 100%;
-      max-width: 1120px;
-      height: calc(100vh - 20px);
-      max-height: calc(100vh - 20px);
-      background-color: var(--color-surface-lowest);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 20px 50px -12px rgba(0, 61, 108, 0.12);
-      margin: 0;
-    }
-
-    /* ===== COLUMNA IZQUIERDA: Formulario ===== */
-    .form-col {
-      padding: clamp(16px, 3vh, 32px) clamp(30px, 4vw, 56px);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    @media (max-width: 992px) {
-      body {
-        height: auto;
-        overflow-y: auto;
-        padding: 12px;
-      }
-
-      .login-card {
-        height: auto;
-        min-height: calc(100vh - 24px);
-        max-height: none;
-      }
-
-      .form-col {
-        padding: 48px 24px;
-      }
-    }
-
-    /* Botón Volver */
-    .btn-back {
-      background: none;
-      border: none;
-      color: var(--color-on-surface-variant);
-      font-size: 14px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0;
-      text-decoration: none;
-      transition: color 0.2s;
-      margin-bottom: 10px;
-    }
-
-    .btn-back:hover {
-      color: var(--color-primary);
-    }
-
-    .btn-back:hover .material-symbols-outlined {
-      transform: translateX(-4px);
-    }
-
-    .btn-back .material-symbols-outlined {
-      font-size: 20px;
-      transition: transform 0.2s;
-    }
-
-    /* Campos del formulario */
-    .field-wrapper {
-      position: relative;
-    }
-
-    .field-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--color-outline);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .input-custom {
-      width: 100%;
-      padding: 11px 16px 11px 48px;
-      background-color: var(--color-surface-bright);
-      border: 1px solid var(--color-outline-variant);
-      border-radius: 12px;
-      font-size: 16px;
-      color: var(--color-on-surface);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .input-custom::placeholder {
-      color: var(--color-outline-variant);
-    }
-
-    .input-custom:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(0, 61, 108, 0.12);
-    }
-
-    /* Padding extra derecho para el campo contraseña (icono toggle) */
-    .input-password {
-      padding-right: 48px;
-    }
-
-    /* Botón mostrar/ocultar contraseña */
-    .btn-toggle-pass {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--color-outline);
-      padding: 0;
-      cursor: pointer;
-      transition: color 0.2s;
-      z-index: 1;
-    }
-
-    .btn-toggle-pass:hover {
-      color: var(--color-primary);
-    }
-
-    /* Checkbox "Recordarme" */
-    .check-remember {
-      width: 20px;
-      height: 20px;
-      border: 1px solid var(--color-outline-variant);
-      border-radius: 4px;
-      accent-color: var(--color-primary);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    /* Botón principal de login */
-    .btn-login {
-      width: 100%;
-      padding: 13px 24px;
-      background-color: var(--color-primary);
-      color: var(--color-on-primary);
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 8px 20px rgba(0, 61, 108, 0.2);
-      transition: background 0.3s, transform 0.1s;
-    }
-
-    .btn-login:hover {
-      background: linear-gradient(135deg, #003d6c 0%, #296c1f 100%);
-    }
-
-    .btn-login:active {
-      transform: scale(0.98);
-    }
-
-    /* Separador "O continuar con" */
-    .divider-text {
-      position: relative;
-      text-align: center;
-      margin: 14px 0;
-    }
-
-    .divider-text::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      width: 100%;
-      height: 1px;
-      background-color: var(--color-outline-variant);
-    }
-
-    .divider-text span {
-      position: relative;
-      background-color: var(--color-surface-lowest);
-      padding: 0 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-on-surface-variant);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Botón de login social (Google) */
-    .btn-social {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 10px 16px;
-      border: 1px solid var(--color-outline-variant);
-      border-radius: 12px;
-      background: transparent;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--color-on-surface);
-      transition: background 0.2s;
-    }
-
-    .btn-social:hover {
-      background-color: var(--color-surface-low);
-    }
-
-    .access-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 14px;
-      margin-top: 8px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .access-links a {
-      color: var(--color-primary);
-      text-decoration: none;
-    }
-
-    .access-links a:hover {
-      color: var(--color-secondary);
-      text-decoration: underline;
-    }
-
-    /* ===== COLUMNA DERECHA: Hero visual ===== */
-    .hero-col {
-      position: relative;
-      overflow: hidden;
-      min-height: 0;
-      height: 100%;
-    }
-
-    .hero-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.7s ease;
-    }
-
-    .hero-col:hover .hero-img {
-      transform: scale(1.1);
-    }
-
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg,
-          rgba(0, 61, 108, 0.6) 0%,
-          rgba(41, 108, 31, 0.4) 100%);
-      backdrop-filter: blur(2px);
-    }
-
-    .hero-content {
-      position: absolute;
-      bottom: 28px;
-      left: 48px;
-      right: 48px;
-      color: #fff;
-    }
-
-    /* Ícono decorativo de hoja */
-    .hero-icon-box {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      padding: 14px;
-      display: inline-flex;
-      margin-bottom: 12px;
-    }
-
-    /* Avatares superpuestos */
-    .avatar-stack {
-      display: flex;
-    }
-
-    .avatar-stack img,
-    .avatar-count {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      object-fit: cover;
-      margin-left: -12px;
-    }
-
-    .avatar-stack img:first-child {
-      margin-left: 0;
-    }
-
-    .avatar-count {
-      background-color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    /* Tarjeta flotante de impacto CO2 */
-    .floating-card {
-      position: absolute;
-      top: 48px;
-      right: 48px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
-      padding: 20px;
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .co2-icon-wrap {
-      background: rgba(172, 245, 151, 0.2);
-      border-radius: 12px;
-      padding: 8px;
-      display: inline-flex;
-    }
-
-    /* ===== TOAST DE ÉXITO ===== */
-    .success-toast {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%) translateY(40px);
-      background-color: var(--color-on-surface);
-      color: var(--color-surface);
-      padding: 16px 32px;
-      border-radius: 50px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s, transform 0.5s;
-      z-index: 100;
-    }
-
-    .success-toast.visible {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-
-    .form-col>.mb-5 {
-      margin-bottom: 0.9rem !important;
-    }
-
-    .form-col .mb-4 {
-      margin-bottom: 0.75rem !important;
-    }
-
-    .form-col .mt-5 {
-      margin-top: 0.9rem !important;
-    }
-
-    .form-col h1 {
-      font-size: clamp(25px, 3.6vh, 32px) !important;
-    }
-
-    .form-col p {
-      margin-bottom: 0;
-    }
-
-    .hero-content h2 {
-      font-size: clamp(2rem, 3.3vw, 2.8rem) !important;
-    }
-
-    .hero-content p {
-      margin-bottom: 1.4rem !important;
-    }
-
-    @media (max-height: 720px) and (min-width: 993px) {
-      .form-col {
-        padding: 24px 56px;
-      }
-
-      .btn-back {
-        margin-bottom: 12px;
-      }
-
-      .form-col>.mb-5 {
-        margin-bottom: 1rem !important;
-      }
-
-      .divider-text {
-        margin: 18px 0;
-      }
-
-      .hero-icon-box {
-        margin-bottom: 12px;
-      }
-
-      .hero-content p {
-        margin-bottom: 1.5rem !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../../css/public-pages/public_login.css">
 </head>
 
 <body>
@@ -519,13 +50,13 @@
         <div class="d-flex align-items-center gap-2 mb-4">
           <img
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQVWCYGNc2gGZr_z_S4e1b7syZbHCIzBjSLmwEUV5EDT2T4mSqBPJLD83gV7308Dskiu_1hPaoYcZWiB2GRtGp9gGYfCBwxXAvxn-Nq8YRmzQ9toQMkM4MLfVQZeakD6CZOC7EqVs9YoqMtvZp2_Mx1vmKdNASg0q08zOt2ON5Dps7HMQ0M-d0LfRHa3IINGyfy66-DFAP0j_uCtkiemu9Nwh9feDVvZgElb5OiR8rwEWnHmUp8cqGdq21lAt3sWGlXIiUymaSsn4"
-            alt="GreenUp Logo" style="height:40px;width:auto;object-fit:contain;" />
-          <span class="fw-bold" style="font-size:20px;">
-            <span style="color:#065591;">Green</span><span style="color:#4caf50;">Up</span>
+            alt="GreenUp Logo" class="public_login-inline-2" />
+          <span class="fw-bold public_login-inline-3">
+            <span class="public_login-inline-4">Green</span><span class="public_login-inline-5">Up</span>
           </span>
         </div>
-        <h1 class="fw-bold mb-1" style="font-size:32px;color:var(--color-on-surface);">Bienvenido de nuevo</h1>
-        <p style="font-size:16px;color:var(--color-on-surface-variant);">Ingresa tus credenciales para continuar
+        <h1 class="fw-bold mb-1 public_login-inline-6">Bienvenido de nuevo</h1>
+        <p class="public_login-inline-7">Ingresa tus credenciales para continuar
           tu camino sostenible.</p>
       </div>
 
@@ -539,8 +70,8 @@
 
         <!-- Campo Email -->
         <div class="mb-4">
-          <label class="d-block mb-2" for="usuario"
-            style="font-size:14px;font-weight:500;color:var(--color-on-surface-variant);">
+          <label class="d-block mb-2 public_login-inline-8" for="usuario"
+           >
             Correo electrónico o Nombre de usuario
           </label>
           <div class="field-wrapper">
@@ -553,11 +84,11 @@
         <!-- Campo Contraseña -->
         <div class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <label for="contrasena" style="font-size:14px;font-weight:500;color:var(--color-on-surface-variant);">
+            <label for="contrasena" class="public_login-inline-9">
               Contraseña
             </label>
             <a href="public_recuperar_contrasena.html"
-              style="font-size:12px;font-weight:600;color:var(--color-primary);text-decoration:none;">
+              class="public_login-inline-209876543210">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
@@ -577,7 +108,7 @@
         <div class="d-flex align-items-center gap-2 mb-4">
           <input class="check-remember" type="checkbox" id="remember" />
           <label for="remember"
-            style="font-size:14px;font-weight:500;color:var(--color-on-surface-variant);cursor:pointer;">
+            class="public_login-inline-21">
             Recordarme en este dispositivo
           </label>
         </div>
@@ -585,7 +116,7 @@
         <!-- Botón principal de acceso -->
         <button class="btn-login" type="submit">
           Ingresar a mi cuenta
-          <span class="material-symbols-outlined" style="font-size:20px;">arrow_forward</span>
+          <span class="material-symbols-outlined public_login-inline-22">arrow_forward</span>
         </button>
 
       </form>
@@ -606,10 +137,10 @@
 
 
       <!-- Link a registro -->
-      <p class="text-center mt-5 mb-0" style="font-size:16px;color:var(--color-on-surface-variant);">
+      <p class="text-center mt-5 mb-0 public_login-inline-23">
         ¿No tienes una cuenta?
-        <a href="public_registro.html" class="fw-bold text-decoration-none"
-          style="color:var(--color-primary);">Regístrate
+        <a href="public_registro.html" class="fw-bold text-decoration-none public_login-inline-24"
+         >Regístrate
           gratis</a>
       </p>
 
@@ -625,7 +156,7 @@
        Contiene: imagen de fondo, overlay degradado, texto inspirador,
        imagen ambiental estática.
        ============================================================ -->
-    <div class="hero-col d-none d-lg-block" style="width:50%;">
+    <div class="hero-col d-none d-lg-block public_login-inline-25">
 
       <!-- Imagen de fondo -->
       <img class="hero-img" alt="Sostenibilidad"
@@ -639,15 +170,15 @@
 
         <!-- Ícono decorativo -->
         <div class="hero-icon-box">
-          <span class="material-symbols-outlined"
-            style="color:var(--color-secondary-fixed);font-size:36px;">energy_savings_leaf</span>
+          <span class="material-symbols-outlined public_login-inline-26"
+           >energy_savings_leaf</span>
         </div>
 
         <!-- Título e descripción -->
-        <h2 class="fw-bold text-white mb-3" style="font-size:clamp(2rem,3.5vw,3rem);line-height:1.15;">
+        <h2 class="fw-bold text-white mb-3 public_login-inline-27">
           Cada acción cuenta para el mañana.
         </h2>
-        <p class="mb-5" style="font-size:18px;color:rgba(255,255,255,0.9);max-width:420px;">
+        <p class="mb-5 public_login-inline-28">
           Únete a GreenUp y aprende a separar, registrar y entregar tus residuos de forma organizada.
         </p>
 
@@ -665,7 +196,7 @@
               alt="Avatar" />
             <div class="avatar-count">Eco</div>
           </div>
-          <span style="font-size:12px;font-weight:600;color:#fff;">Comunidad GreenUp</span>
+          <span class="public_login-inline-29">Comunidad GreenUp</span>
         </div>
 
       </div><!-- /hero-content -->
@@ -688,7 +219,7 @@
      Se muestra con la clase .visible añadida por JS.
      ============================================================ -->
   <div class="success-toast" id="toast">
-    <span class="material-symbols-outlined" style="color:var(--color-secondary-fixed);">check_circle</span>
+    <span class="material-symbols-outlined public_login-inline-30">check_circle</span>
     <span>Acceso concedido. Redirigiendo...</span>
   </div>
   <!-- ============================================================

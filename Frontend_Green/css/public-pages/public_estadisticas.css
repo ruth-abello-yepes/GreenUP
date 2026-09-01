@@ -1,0 +1,203 @@
+/* Variables de Marca GreenUp */
+        :root {
+            --gu-primary: #003d6c;
+            --gu-secondary: #296c1f;
+            --gu-surface: #f8f9ff;
+            --gu-dark: #121c2a;
+            --gu-accent: #a9f295;
+            --gu-light-blue: #e6eeff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gu-surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utilidades Personalizadas */
+        .text-gu-primary {
+            color: var(--gu-primary);
+        }
+
+        .text-gu-secondary {
+            color: var(--gu-secondary);
+        }
+
+        .bg-gu-primary {
+            background-color: var(--gu-primary);
+        }
+
+        .bg-gu-secondary {
+            background-color: var(--gu-secondary);
+        }
+
+        .bg-gu-dark {
+            background-color: var(--gu-dark);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Ajustes Navbar */
+        .nav-link.active-custom {
+            color: var(--gu-secondary) !important;
+            border-bottom: 2px solid var(--gu-secondary);
+            font-weight: bold;
+        }
+
+        /* Botones Bootstrap Sobreescritos */
+        .btn-gu-primary {
+            background-color: var(--gu-primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-gu-primary:hover {
+            background-color: #002b4d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Estilos del Footer */
+        .rounded-footer-top {
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .hover-white:hover {
+            color: white !important;
+            text-decoration: underline !important;
+            text-underline-offset: 4px;
+        }
+
+        /* --- ESTILOS ESPECÍFICOS PARA ESTADÍSTICAS --- */
+        .dashboard-section {
+            position: relative;
+            min-height: 85vh;
+            /* Ocupa casi toda la pantalla */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 70px;
+            /* Compensa la navbar fija */
+        }
+
+        /* Fondo borroso (Mockup del Dashboard) */
+        .dashboard-blur-bg {
+            position: absolute;
+            inset: 0;
+            background-color: var(--gu-surface);
+            filter: blur(10px);
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Esqueleto de bloques falsos para el fondo */
+        .fake-block {
+            background-color: #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Capa oscura superpuesta */
+        .overlay-darkener {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(248, 249, 255, 0.6);
+            z-index: 10;
+        }
+
+        /* Panel Glassmorphism Central */
+        .glass-panel {
+            position: relative;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(193, 199, 209, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 61, 108, 0.15);
+        }
+
+        /* Animaciones */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+.public_estadisticas-inline-2 { z-index: 1050; }
+
+.public_estadisticas-inline-3 { background-color: rgba(41, 108, 31, 0.1); }
+
+.public_estadisticas-inline-4 { height: 15px; }
+
+.public_estadisticas-inline-5 { height: 30px; }
+
+.public_estadisticas-inline-6 { height: 15px; }
+
+.public_estadisticas-inline-7 { height: 30px; }
+
+.public_estadisticas-inline-8 { height: 15px; }
+
+.public_estadisticas-inline-9 { height: 30px; }
+
+.public_estadisticas-inline-209876543210 { height: 40%; }
+
+.public_estadisticas-inline-21 { height: 60%; }
+
+.public_estadisticas-inline-22 { height: 80%; }
+
+.public_estadisticas-inline-23 { height: 50%; }
+
+.public_estadisticas-inline-24 { height: 90%; }
+
+.public_estadisticas-inline-25 { width: 150px; height: 150px; }
+
+.public_estadisticas-inline-26 { max-width: 700px; width: 100%; }
+
+.public_estadisticas-inline-27 { width: 80px; height: 80px; background-color: var(--gu-accent); color: var(--gu-secondary); box-shadow: 0 4px 15px rgba(169, 242, 149, 0.4); }
+
+.public_estadisticas-inline-28 { font-size: 45px; }
+
+.public_estadisticas-inline-29 { line-height: 1.2; }
+
+.public_estadisticas-inline-30 { max-width: 350px; border-radius: 50px; }
+
+.public_estadisticas-inline-31 { text-underline-offset: 4px; }
+
+.public_estadisticas-inline-32 { color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_estadisticas-inline-33 { color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35); }
+
+.public_estadisticas-inline-34 { width: 36px; height: 36px; }
+
+.public_estadisticas-inline-35 { width: 36px; height: 36px; }
+
+.public_estadisticas-inline-36 { width: 36px; height: 36px; }
+
+

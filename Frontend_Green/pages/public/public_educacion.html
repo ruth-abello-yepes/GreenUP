@@ -12,258 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* Variables de Marca GreenUp */
-        :root {
-            --gu-primary: #003d6c;
-            --gu-primary-container: #065591;
-            --gu-secondary: #296c1f;
-            --gu-surface: #f8f9ff;
-            --gu-dark: #121c2a;
-            --gu-accent: #a9f295;
-            --gu-light-blue: #e6eeff;
-        }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gu-surface);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Utilidades Personalizadas */
-        .text-gu-primary {
-            color: var(--gu-primary);
-        }
-
-        .text-gu-secondary {
-            color: var(--gu-secondary);
-        }
-
-        .bg-gu-primary {
-            background-color: var(--gu-primary);
-        }
-
-        .bg-gu-secondary {
-            background-color: var(--gu-secondary);
-        }
-
-        .bg-gu-dark {
-            background-color: var(--gu-dark);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        /* Ajustes Navbar */
-        .nav-link.active-custom {
-            color: var(--gu-secondary) !important;
-            border-bottom: 2px solid var(--gu-secondary);
-            font-weight: bold;
-        }
-
-        /* Botones Bootstrap Sobreescritos */
-        .btn-gu-primary {
-            background-color: var(--gu-primary);
-            color: white;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-gu-primary:hover {
-            background-color: #002b4d;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-filter.active {
-            background-color: var(--gu-primary);
-            color: white;
-            border-color: var(--gu-primary);
-        }
-
-        /* Estilos de Cards (Bento Grid) */
-        .gu-card {
-            border-radius: 24px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-            overflow: hidden;
-        }
-
-        .gu-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Imágenes en las Tarjetas */
-        .card-img-wrapper {
-            height: 200px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.7s ease;
-        }
-
-        .gu-card:hover .card-img-wrapper img {
-            transform: scale(1.05);
-        }
-
-        /* Tarjeta Destacada (Imagen Completa) */
-        .card-highlight {
-            height: 100%;
-            min-height: 350px;
-            position: relative;
-        }
-
-        .card-highlight img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            inset: 0;
-            transition: transform 0.7s ease;
-        }
-
-        .gu-card:hover .card-highlight img {
-            transform: scale(1.05);
-        }
-
-        .card-highlight-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2rem;
-        }
-
-        /* Glass Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            border-left: 4px solid var(--gu-secondary);
-        }
-
-        /* Hover Link Text */
-        .hover-primary-text:hover {
-            color: var(--gu-primary) !important;
-            text-decoration: underline;
-        }
-
-        /* Estilos del Footer */
-        .rounded-footer-top {
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .hover-white:hover {
-            color: white !important;
-            text-decoration: underline !important;
-            text-underline-offset: 4px;
-        }
-
-        /* Animaciones */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .news-card {
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 18px;
-            background-color: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .news-card .img-wrapper {
-            height: 220px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .news-card .img-wrapper img,
-        .featured-news-card .img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .featured-news-card {
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 24px;
-            background: white;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(0, 61, 108, 0.08);
-        }
-
-        .featured-news-card .img-wrapper {
-            min-height: 320px;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-
-        #paginacion-noticias .page-item.active .page-link {
-            background-color: var(--gu-primary);
-            color: white;
-        }
-
-        @media (max-width: 575.98px) {
-            main {
-                margin-top: 84px !important;
-            }
-
-            .card-highlight {
-                min-height: 560px;
-            }
-
-            .card-highlight-overlay {
-                padding: 1.25rem;
-            }
-
-            .card-highlight-overlay h2 {
-                font-size: 1.75rem;
-                line-height: 1.15;
-            }
-
-            .card-highlight-overlay .lead {
-                font-size: 0.98rem;
-                line-height: 1.45;
-            }
-
-            .card-highlight-overlay .d-flex.align-items-center.justify-content-between {
-                align-items: flex-start !important;
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+  <link rel="stylesheet" href="../../css/public-pages/public_educacion.css">
 </head>
 
 <body data-news-mode="public">
@@ -374,10 +124,10 @@
         </div>
     </div>
 
-    <main class="flex-grow-1 container px-3 px-md-5" style="margin-top: 100px; margin-bottom: 60px; max-width: 1280px;">
+    <main class="flex-grow-1 container px-3 px-md-5 public_educacion-inline-2">
 
-        <header class="position-relative overflow-hidden rounded-4 p-4 p-md-5 mb-5 fade-up shadow-sm"
-            style="background-color: var(--gu-primary-container); color: white;">
+        <header class="position-relative overflow-hidden rounded-4 p-4 p-md-5 mb-5 fade-up shadow-sm public_educacion-inline-3"
+           >
             <div class="row align-items-center position-relative z-10">
                 <div class="col-lg-8">
                     <h1 class="display-5 fw-bold mb-4 leading-tight">Aprende a separar tus residuos y cuida Valledupar
@@ -385,24 +135,24 @@
                     <p class="lead mb-4 text-white-50">Encuentra guías claras, noticias ambientales reales y consejos
                         prácticos para reciclar mejor en casa, en el barrio o en tu negocio.</p>
                     <a href="public_registro.html"
-                        class="btn btn-lg rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow"
-                        style="background-color: var(--gu-accent); color: var(--gu-secondary);">
+                        class="btn btn-lg rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow public_educacion-inline-4"
+                       >
                         Crea tu cuenta gratis <span class="material-symbols-outlined">arrow_forward</span>
                     </a>
                 </div>
             </div>
-            <div class="position-absolute rounded-circle"
-                style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -100px; right: -50px;">
+            <div class="position-absolute rounded-circle public_educacion-inline-5"
+               >
             </div>
-            <div class="position-absolute rounded-circle"
-                style="width: 200px; height: 200px; background: rgba(255,255,255,0.05); bottom: -50px; right: 150px;">
+            <div class="position-absolute rounded-circle public_educacion-inline-6"
+               >
             </div>
         </header>
 
-        <section class="mb-5 fade-up" style="transition-delay: 0.1s;">
+        <section class="mb-5 fade-up public_educacion-inline-7">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4 mb-4">
                 <h2 class="fw-bold text-dark mb-0">Guías de Reciclaje</h2>
-                <div class="input-group shadow-sm rounded-pill overflow-hidden" style="max-width: 400px;">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden public_educacion-inline-8">
                     <span class="input-group-text bg-white border-end-0"><span
                             class="material-symbols-outlined text-muted">search</span></span>
                     <input id="buscar-guias-reciclaje" type="search" class="form-control border-start-0 py-2 shadow-none"
@@ -423,15 +173,15 @@
             </div>
         </section>
 
-        <section id="guias-reciclaje-grid" class="row g-4 mb-5 fade-up" style="transition-delay: 0.2s;">
+        <section id="guias-reciclaje-grid" class="row g-4 mb-5 fade-up public_educacion-inline-9">
 
             <div class="col-lg-8 reciclaje-card" data-category="plasticos">
                 <article class="gu-card h-100 card-highlight d-flex flex-column justify-content-end">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlSO5RwafaQ61FjKkemap5K2pvbT-RQHehDicKpsyJLMI8yVomNaxNWtgYYo_fOrbrpMHymMTyGoPHe7tgaD8mJwj4Et0dgN_QHk2FCzgruqFLf0feHY8QHqWFy1ZttWx1TwOgW2kVozAeAKZHRl8hmB-IjjHkLtz4tydnLJRkOYdSw-hDYJAtNsg34y9g6roPPooTaxMMsdhroX5LVW-uIJ2BbubGCNHEW4A9rWY7McIglB3j7vg"
                         alt="Jardín tropical">
                     <div class="card-highlight-overlay">
-                        <span class="badge text-white px-3 py-1 text-uppercase tracking-wider mb-3 align-self-start"
-                            style="background-color: var(--gu-secondary);">Destacado</span>
+                        <span class="badge text-white px-3 py-1 text-uppercase tracking-wider mb-3 align-self-start public_educacion-inline-209876543210"
+                           >Destacado</span>
                         <h2 class="display-6 fw-bold text-white mb-3">El Ciclo del Plástico en el Valle</h2>
                         <p class="text-white-50 mb-4 lead">Descubre cómo tus botellas PET se transforman en nuevos
                             recursos locales y cómo evitar que lleguen al Río Guatapurí.</p>
@@ -449,7 +199,7 @@
 
             <div class="col-lg-4 reciclaje-card" data-category="todos">
                 <article class="gu-card glass-card h-100 p-4 d-flex flex-column">
-                    <div class="mb-4 overflow-hidden rounded-3" style="aspect-ratio: 1/1;">
+                    <div class="mb-4 overflow-hidden rounded-3 public_educacion-inline-21">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTfgzKWPAbp86SwCmPazkc9SJljiupawEnf9otB1SMoEBaAGglu7SENgh8UlsRAgbonJUqXQiGthoaVDzIYA7nMyzNnv7IUmfz7JUnTgbH5U7j2AgERiHdfAjuiVCD8uD_Sd5iib5JWMW_aDWMEF153o5YZqtLhql-ghDqcR2poaYIZCj-HAC5EtGKrGaaIp2QxClbQJQKfhh954ScrfspSGEOWJAFXh_try6j5wnWhrB8AX_O958N"
                             alt="Botella de vidrio" class="w-100 h-100 object-fit-cover">
                     </div>
@@ -516,7 +266,7 @@
             No encontramos guías con esa búsqueda. Prueba con plástico, orgánico, electrónico, peligroso, papel o vidrio.
         </div>
 
-        <section id="noticias" class="pt-5 mt-5 border-top fade-up" style="transition-delay: 0.25s;">
+        <section id="noticias" class="pt-5 mt-5 border-top fade-up public_educacion-inline-22">
             <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
                 <div>
                     <span class="badge bg-gu-secondary rounded-pill px-3 py-2 mb-2">Educación / Noticias</span>
@@ -526,7 +276,7 @@
                         usada por GreenUp.
                     </p>
                 </div>
-                <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white" style="max-width: 360px;">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white public_educacion-inline-23">
                     <span class="input-group-text bg-white border-0">
                         <span class="material-symbols-outlined fs-6 text-muted">search</span>
                     </span>
@@ -539,7 +289,7 @@
                 Consultando noticias ambientales de Colombia...
             </div>
 
-            <section id="noticia-destacada" class="mb-5" style="display: none;">
+            <section id="noticia-destacada" class="mb-5 public_educacion-inline-24">
                 <article class="featured-news-card">
                     <div class="row g-0 align-items-stretch">
                         <div class="col-lg-7">
@@ -561,7 +311,7 @@
                 </article>
             </section>
 
-            <div id="noticias-grid" class="row g-4" style="display: none;"></div>
+            <div id="noticias-grid" class="row g-4 public_educacion-inline-25"></div>
 
             <nav aria-label="Navegación de noticias" class="mt-5 d-flex justify-content-center" hidden>
                 <ul id="paginacion-noticias" class="pagination shadow-sm"></ul>
@@ -571,19 +321,19 @@
         </section>
 
         <section
-            class="bg-gu-dark text-white rounded-4 p-4 p-md-5 text-center position-relative overflow-hidden fade-up shadow-lg mb-5"
-            style="border-radius: 40px !important;">
+            class="bg-gu-dark text-white rounded-4 p-4 p-md-5 text-center position-relative overflow-hidden fade-up shadow-lg mb-5 public_educacion-inline-26"
+           >
             <div class="position-absolute top-0 end-0 p-4 opacity-25">
-                <span class="material-symbols-outlined icon-fill"
-                    style="font-size: 120px; color: var(--gu-accent);">eco</span>
+                <span class="material-symbols-outlined icon-fill public_educacion-inline-27"
+                   >eco</span>
             </div>
-            <div class="position-relative z-10 py-4 mx-auto" style="max-width: 800px;">
+            <div class="position-relative z-10 py-4 mx-auto public_educacion-inline-28">
                 <h2 class="display-5 fw-bold mb-4">¿Listo para ser un Eco-Líder?</h2>
                 <p class="lead text-white-50 mb-5">Únete a GreenUp para aprender, registrar tus reciclajes y encontrar
                     información ambiental útil para tu día a día.</p>
                 <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-                    <a href="public_registro.html" class="btn btn-lg rounded-pill fw-bold px-5 py-3 shadow-sm"
-                        style="background-color: var(--gu-accent); color: var(--gu-secondary);">
+                    <a href="public_registro.html" class="btn btn-lg rounded-pill fw-bold px-5 py-3 shadow-sm public_educacion-inline-29"
+                       >
                         Registrarse Ahora
                     </a>
                     <a href="public_sobre_nosotros.html" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-5 py-3 border-2">
@@ -603,7 +353,7 @@
                     <div class="d-flex align-items-center fw-bold fs-4 mb-3">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
                             alt="Logo" width="32" height="32" class="me-2">
-                        <span style="color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.35);">Green</span><span style="color:#a9f295;text-shadow:0 2px 10px rgba(0,0,0,.35);">Up</span>
+                        <span class="public_educacion-inline-30">Green</span><span class="public_educacion-inline-31">Up</span>
                     </div>
                     <p class="text-white-50 small pe-lg-3">
                         Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos
@@ -611,18 +361,18 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_educacion-inline-32"
+                           >
                             <span class="material-symbols-outlined fs-6">share</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_educacion-inline-33"
+                           >
                             <span class="material-symbols-outlined fs-6">public</span>
                         </a>
                         <a href="#"
-                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
-                            style="width: 36px; height: 36px;">
+                            class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_educacion-inline-34"
+                           >
                             <span class="material-symbols-outlined fs-6">mail</span>
                         </a>
                     </div>

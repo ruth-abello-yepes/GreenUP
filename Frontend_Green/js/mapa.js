@@ -352,6 +352,7 @@
       marker = L.marker(point.pos, {
         icon: createRecyclingMarkerIcon(point),
         title: point.title,
+        alt: `Punto ecologico ${point.title}`,
       });
 
       if (markersLayer) {
@@ -386,14 +387,15 @@
 
     if (!sidebarList) return;
 
+    const materialsText = ownerMode ? point.type : point.materialsPreview;
     const item = document.createElement("button");
     item.type = "button";
     item.className = "gu-sidebar-item";
+    item.setAttribute("aria-label", `${point.title}. ${point.address}. ${point.schedule}. ${materialsText}`);
     if (!locationAvailable) {
       item.classList.add("location-unavailable");
       item.setAttribute("aria-disabled", "true");
     }
-    const materialsText = ownerMode ? point.type : point.materialsPreview;
     item.innerHTML = `
       <span class="type-icon map-point-icon ${point.inactive ? "gray" : ""}">
         <span class="material-symbols-outlined">${point.icon}</span>

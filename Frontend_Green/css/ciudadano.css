@@ -2522,3 +2522,68 @@ body[class*="ciudadano-pagina-"] textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   ACCESIBILIDAD CIUDADANO
+   Mejora contraste y lectura en Inicio, Mapa, Historial y Estadisticas.
+   ============================================================ */
+body[class*="ciudadano-pagina-"] .text-secondary,
+body[class*="ciudadano-pagina-"] .text-muted,
+body[class*="ciudadano-pagina-"] small,
+body[class*="ciudadano-pagina-"] .small,
+body[class*="ciudadano-pagina-"] .card p,
+body[class*="ciudadano-pagina-"] .gu-sidebar-meta,
+body[class*="ciudadano-pagina-"] .point-card-copy small,
+body[class*="ciudadano-pagina-"] .historial-resumen-etiqueta,
+body[class*="ciudadano-pagina-"] .historial-vacio p {
+  color: #465568 !important;
+}
+
+body[class*="ciudadano-pagina-"] .nav-link.text-secondary,
+body[class*="ciudadano-pagina-"] .dropdown-item.text-secondary,
+body[class*="ciudadano-pagina-"] .list-group-item.text-secondary {
+  color: #334155 !important;
+}
+
+body[class*="ciudadano-pagina-"] .nav-link.text-secondary:hover,
+body[class*="ciudadano-pagina-"] .nav-link.text-secondary:focus-visible,
+body[class*="ciudadano-pagina-"] .dropdown-item.text-secondary:hover,
+body[class*="ciudadano-pagina-"] .dropdown-item.text-secondary:focus-visible {
+  color: #003d6c !important;
+}
+
+body[class*="ciudadano-pagina-"] .badge.bg-success-subtle,
+body[class*="ciudadano-pagina-"] .badge.bg-primary-subtle,
+body[class*="ciudadano-pagina-"] .badge.bg-light {
+  border: 1px solid currentColor;
+  color: #003d6c !important;
+  font-weight: 900;
+}
+
+body[class*="ciudadano-pagina-"] .bg-success-subtle.text-success {
+  color: #0b642b !important;
+}
+
+body[class*="ciudadano-pagina-"] .form-control::placeholder {
+  color: #59687a;
+  opacity: 1;
+}
+
+body[class*="ciudadano-pagina-"] .material-symbols-outlined[aria-hidden="true"] {
+  speak: never;
+}
+
+body.ciudadano-pagina-mapa .gu-sidebar-meta,
+body.ciudadano-pagina-mapa .point-info-row small {
+  color: #435165 !important;
+}
+
+body.ciudadano-pagina-estadisticas .ranking-item .text-muted,
+body.ciudadano-pagina-estadisticas .chart-wrapper + p,
+body.ciudadano-pagina-estadisticas .glass-card p {
+  color: #465568 !important;
+}
+
+body.ciudadano-pagina-historial-reciclaje .historial-hero p {
+  color: #eef8ff !important;
+}

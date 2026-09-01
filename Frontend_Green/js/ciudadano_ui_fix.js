@@ -754,6 +754,109 @@ function prepararTablasResponsivasCiudadano(root = document) {
     });
 }
 
+function textoAccesibleDesdeControl(control) {
+    const id = control.id || "";
+    const placeholder = control.getAttribute("placeholder") || "";
+    const nombre = control.getAttribute("name") || "";
+    const textos = {
+        "search-input": "Buscar direccion o barrio",
+        "filter-select": "Filtrar puntos por residuo",
+        "btn-search-address": "Buscar direccion en el mapa",
+        "btn-abrir-sugerencia": "Sugerir un nuevo punto ecologico",
+        "btn-enviar-sugerencia": "Enviar sugerencia de punto ecologico",
+        "sidebar-collapse-trigger": "Contraer panel de puntos ecologicos",
+    };
+    const iconos = {
+        menu: "Abrir menu",
+        notifications: "Notificaciones",
+        account_circle: "Menu de usuario",
+        expand_more: "Abrir opciones",
+        search: "Buscar",
+        add_location_alt: "Sugerir punto ecologico",
+        chevron_left: "Contraer panel",
+        my_location: "Centrar mapa",
+        add: "Acercar mapa",
+        remove: "Alejar mapa",
+        download: "Descargar",
+        refresh: "Actualizar",
+        logout: "Cerrar sesion",
+    };
+    const icono = control.querySelector?.(".material-symbols-outlined")?.textContent?.trim();
+
+    if (textos[id]) return textos[id];
+    if (icono && iconos[icono]) return iconos[icono];
+    if (placeholder) return placeholder.replace(/\.+$/, "");
+    if (nombre) return nombre.replaceAll("_", " ");
+    if (control.textContent?.trim()) return control.textContent.trim();
+    return "Campo de formulario";
+}
+
+function asegurarNombreAccesibleControl(control) {
+    if (!control || control.hasAttribute("aria-label") || control.hasAttribute("aria-labelledby")) {
+        return;
+    }
+
+    const id = control.id;
+    if (id && document.querySelector(`label[for="${CSS.escape(id)}"]`)) {
+        return;
+    }
+
+    const labelCercano = control.closest("label");
+    if (labelCercano?.textContent?.trim()) {
+        return;
+    }
+
+    control.setAttribute("aria-label", textoAccesibleDesdeControl(control));
+}
+
+function repararReferenciasAriaCiudadano(root = document) {
+    root.querySelectorAll?.("[aria-labelledby], [aria-describedby], [aria-controls]").forEach((elemento) => {
+        ["aria-labelledby", "aria-describedby", "aria-controls"].forEach((atributo) => {
+            const valor = elemento.getAttribute(atributo);
+            if (!valor) return;
+
+            const idsValidos = valor
+                .split(/\s+/)
+                .filter((id) => id && document.getElementById(id));
+
+            if (idsValidos.length) {
+                elemento.setAttribute(atributo, idsValidos.join(" "));
+            } else {
+                elemento.removeAttribute(atributo);
+            }
+        });
+    });
+}
+
+function mejorarAccesibilidadCiudadano(root = document) {
+    root.querySelectorAll?.(".material-symbols-outlined").forEach((icono) => {
+        const contenedorInteractivo = icono.closest("button, a");
+        if (!contenedorInteractivo || contenedorInteractivo.textContent.trim() !== icono.textContent.trim()) {
+            icono.setAttribute("aria-hidden", "true");
+        }
+    });
+
+    root.querySelectorAll?.("img").forEach((imagen) => {
+        const alt = (imagen.getAttribute("alt") || "").trim().toLowerCase();
+        if (!alt || alt === "logo" || alt === "foto de perfil") {
+            imagen.setAttribute("alt", alt === "foto de perfil" ? "Foto de perfil del usuario" : "GreenUP");
+        }
+    });
+
+    root.querySelectorAll?.("input, select, textarea").forEach(asegurarNombreAccesibleControl);
+
+    root.querySelectorAll?.("button, a").forEach((control) => {
+        const soloIcono = control.textContent.trim().length > 0
+            && control.querySelector(".material-symbols-outlined")
+            && control.textContent.trim() === control.querySelector(".material-symbols-outlined")?.textContent.trim();
+        if (soloIcono && !control.hasAttribute("aria-label")) {
+            control.setAttribute("aria-label", textoAccesibleDesdeControl(control));
+        }
+    });
+
+    repararReferenciasAriaCiudadano(root);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     asegurarCssCiudadano();
     redirigirAjustesAntiguos();
@@ -769,12 +872,14 @@ document.addEventListener("DOMContentLoaded", () => {
     conectarEnlacesVaciosCiudadano();
     conectarSugerenciaPuntoCiudadano();
     prepararTablasResponsivasCiudadano();
+    mejorarAccesibilidadCiudadano();
 
     const observadorTablasResponsive = new MutationObserver((cambios) => {
         cambios.forEach((cambio) => {
             cambio.addedNodes.forEach((nodo) => {
                 if (nodo.nodeType !== Node.ELEMENT_NODE) return;
                 prepararTablasResponsivasCiudadano(nodo);
+                mejorarAccesibilidadCiudadano(nodo);
                 const tabla = nodo.closest?.("table.historial-tabla, table.historial-table");
                 if (tabla) prepararTablasResponsivasCiudadano(tabla);
             });

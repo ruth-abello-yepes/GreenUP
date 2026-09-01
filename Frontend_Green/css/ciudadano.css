@@ -2569,10 +2569,6 @@ body[class*="ciudadano-pagina-"] .form-control::placeholder {
   opacity: 1;
 }
 
-body[class*="ciudadano-pagina-"] .material-symbols-outlined[aria-hidden="true"] {
-  speak: never;
-}
-
 body.ciudadano-pagina-mapa .gu-sidebar-meta,
 body.ciudadano-pagina-mapa .point-info-row small {
   color: #435165 !important;

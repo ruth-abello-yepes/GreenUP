@@ -62,6 +62,8 @@ def _enviar_codigo_por_apps_script(destinatario, asunto, texto, html):
 
     if not url:
         raise RuntimeError("APPS_SCRIPT_URL no esta configurada")
+    if not secreto:
+        raise RuntimeError("APPS_SCRIPT_SECRET no esta configurada correctamente")
 
     respuesta = requests.post(
         url,
@@ -76,7 +78,11 @@ def _enviar_codigo_por_apps_script(destinatario, asunto, texto, html):
     )
 
     if respuesta.status_code >= 400:
-        raise RuntimeError(f"Apps Script respondio HTTP {respuesta.status_code}")
+        detalle = respuesta.text[:180].replace("\n", " ").strip()
+        raise RuntimeError(
+            f"Apps Script respondio HTTP {respuesta.status_code}"
+            + (f": {detalle}" if detalle else "")
+        )
 
     try:
         resultado = respuesta.json()

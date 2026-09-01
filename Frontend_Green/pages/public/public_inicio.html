@@ -121,6 +121,66 @@
     .footer-brand-text .brand-up {
       color: var(--gu-accent);
     }
+
+    .landing-history-preview {
+      background:
+        linear-gradient(135deg, rgba(0, 61, 108, 0.96), rgba(41, 108, 31, 0.92)),
+        url("https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1600&q=80") center/cover;
+      border-radius: 32px;
+      color: #ffffff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .landing-history-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      color: #0f172a;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .landing-history-row {
+      align-items: center;
+      border-bottom: 1px solid #e5edf3;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      padding: 14px 0;
+    }
+
+    .landing-history-row:last-child {
+      border-bottom: 0;
+    }
+
+    .landing-history-icon {
+      align-items: center;
+      background: #e9f8ee;
+      border-radius: 14px;
+      color: var(--gu-secondary);
+      display: inline-flex;
+      height: 42px;
+      justify-content: center;
+      width: 42px;
+    }
+
+    .landing-history-status {
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
+    .landing-history-status.ok {
+      background: #e8f7ec;
+      color: #146c2e;
+    }
+
+    .landing-history-status.pending {
+      background: #fff4c2;
+      color: #664d00;
+    }
   </style>
 </head>
 
@@ -155,6 +215,11 @@
           <li class="nav-item">
             <a class="nav-link d-flex align-items-center text-secondary" href="public_estadisticas.html">
               <span class="material-symbols-outlined me-1">bar_chart</span> Estadísticas
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center text-secondary" href="public_login.html">
+              <span class="material-symbols-outlined me-1">history</span> Historial
             </a>
           </li>
           <li class="nav-item">
@@ -203,6 +268,11 @@
         <li class="nav-item">
           <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_estadisticas.html">
             <span class="material-symbols-outlined me-2">bar_chart</span> Estadísticas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center text-secondary p-2 rounded" href="public_login.html">
+            <span class="material-symbols-outlined me-2">history</span> Historial
           </a>
         </li>
         <li class="nav-item">
@@ -388,6 +458,62 @@
                 Saber más <span class="material-symbols-outlined ms-1 fs-5">arrow_forward</span>
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container py-5 fade-up" id="historial">
+      <div class="landing-history-preview p-4 p-lg-5">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <span class="badge rounded-pill text-bg-light text-gu-primary mb-3">Historial ciudadano</span>
+            <h2 class="display-6 fw-bold mb-3">Consulta cada reciclaje desde un solo lugar</h2>
+            <p class="lead mb-4" style="color:#eef8ff;">Cuando creas tu cuenta, GreenUp organiza tus entregas por fecha,
+              material, punto ecológico y estado de validación.</p>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+              <a href="public_login.html" class="btn btn-light text-gu-primary rounded-4 px-4 py-3 fw-bold">
+                Ver mi historial
+              </a>
+              <a href="public_registro.html" class="btn btn-outline-light rounded-4 px-4 py-3 fw-bold">
+                Crear cuenta
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <article class="landing-history-card p-4" aria-label="Vista previa del historial de reciclaje">
+              <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                  <h3 class="h5 fw-bold mb-1">Mi historial de reciclaje</h3>
+                  <p class="text-secondary mb-0">Ejemplo de seguimiento personal</p>
+                </div>
+                <span class="material-symbols-outlined text-gu-secondary fs-2" aria-hidden="true">history</span>
+              </div>
+              <div class="landing-history-row">
+                <span class="landing-history-icon material-symbols-outlined" aria-hidden="true">inventory_2</span>
+                <div>
+                  <strong>Botellas plásticas</strong>
+                  <p class="small text-secondary mb-0">2.5 kg · Recicladora cercana</p>
+                </div>
+                <span class="landing-history-status ok">Confirmado</span>
+              </div>
+              <div class="landing-history-row">
+                <span class="landing-history-icon material-symbols-outlined" aria-hidden="true">schedule</span>
+                <div>
+                  <strong>Cartón limpio</strong>
+                  <p class="small text-secondary mb-0">1.8 kg · Punto ecológico</p>
+                </div>
+                <span class="landing-history-status pending">Pendiente</span>
+              </div>
+              <div class="landing-history-row">
+                <span class="landing-history-icon material-symbols-outlined" aria-hidden="true">verified</span>
+                <div>
+                  <strong>Resumen mensual</strong>
+                  <p class="small text-secondary mb-0">Kilos, entregas y confirmaciones</p>
+                </div>
+                <span class="landing-history-status ok">Visible</span>
+              </div>
+            </article>
           </div>
         </div>
       </div>

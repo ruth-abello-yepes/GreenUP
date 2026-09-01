@@ -1,13 +1,13 @@
-Flask # Framework principal para crear el backend/API
-flask-cors # Permite que el frontend o app movil se comunique con el backend
-flasgger # Genera la documentacion Swagger de la API
-psycopg2-binary # Conector para trabajar con Supabase/PostgreSQL sin usar ORM
-Flask-Mail # Permite enviar correos desde Flask, se usa en recuperacion de contrasena
-python-dotenv # Permite leer variables del archivo .env
-Werkzeug # Sirve para cifrar y verificar contrasenas
-PyJWT # Sirve para crear y validar tokens de inicio de sesion
-pandas # Sirve para manejar datos y preparar reportes
-openpyxl # Sirve para exportar reportes en Excel
-reportlab # Sirve para exportar reportes en PDF
-requests # Consume servicios HTTP externos como World News API
-gunicorn # Servidor WSGI usado por Render para ejecutar Flask en produccion
+Flask==3.1.3
+flask-cors==6.0.2
+flasgger==0.9.7.1
+psycopg2-binary==2.9.12
+Flask-Mail==0.10.0
+python-dotenv==1.2.2
+Werkzeug==3.1.8
+PyJWT==2.13.0
+pandas==3.0.5
+openpyxl==3.1.5
+reportlab==5.0.0
+requests==2.33.1
+gunicorn==23.0.0

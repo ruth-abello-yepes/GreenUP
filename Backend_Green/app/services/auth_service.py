@@ -32,7 +32,6 @@ import requests
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
 
 from app.models.usuarios_model import (
-    registrar_usuario,
     buscar_usuario_por_usuario,
     buscar_usuario_por_correo,
     guardar_codigo_recuperacion_db,
@@ -46,13 +45,10 @@ from app.common.security import (
 )
 
 
-# Datos iniciales del Administrador del Sistema.
-ADMIN_USUARIO_INICIAL = "admin"
-ADMIN_CONTRASENA_INICIAL = "GreenUp2026!"
-ADMIN_CORREO_INICIAL = "admin@greenup.com"
-ADMIN_DOCUMENTO_INICIAL = "1000000000"
 INTENTOS_LOGIN = {}
-SEGUNDOS_EXPIRACION_RECUPERACION = 60
+INTENTOS_RECUPERACION = {}
+SOLICITUDES_RECUPERACION = {}
+SEGUNDOS_EXPIRACION_RECUPERACION = 300
 SMTP_TIMEOUT_MAXIMO_SEGUNDOS = 8
 
 
@@ -237,7 +233,7 @@ def servicio_login(datos):
 
     if usuario_encontrado is None:
         _registrar_fallo_login(usuario)
-        return {"mensaje": "Usuario no encontrado"}, 404
+        return {"mensaje": "Credenciales incorrectas"}, 401
 
     es_recicladora_pendiente = int(usuario_encontrado.get("id_rol") or 0) == 2 and int(usuario_encontrado.get("id_estado") or 0) == 2
     if usuario_encontrado["id_estado"] != 1 and not es_recicladora_pendiente:
@@ -250,7 +246,7 @@ def servicio_login(datos):
 
     if not contrasena_correcta:
         _registrar_fallo_login(usuario)
-        return {"mensaje": "Contrasena incorrecta"}, 401
+        return {"mensaje": "Credenciales incorrectas"}, 401
 
     if usuario_encontrado["id_rol"] == 1:
         return {"mensaje": "El administrador debe usar el login de administrador"}, 403
@@ -294,29 +290,9 @@ def servicio_login_admin(datos):
 
     usuario_encontrado = buscar_usuario_por_usuario(usuario)
 
-    if usuario_encontrado is None and usuario == ADMIN_USUARIO_INICIAL:
-        if contrasena != ADMIN_CONTRASENA_INICIAL:
-            return {"mensaje": "Administrador no encontrado"}, 404
-
-        registrar_usuario(
-            "Administrador",
-            "Sistema",
-            ADMIN_CORREO_INICIAL,
-            ADMIN_USUARIO_INICIAL,
-            cifrar_contrasena(ADMIN_CONTRASENA_INICIAL),
-            ADMIN_DOCUMENTO_INICIAL,
-            "3000000000",
-            "",
-            1,
-            1,
-            1
-        )
-
-        usuario_encontrado = buscar_usuario_por_usuario(usuario)
-
     if usuario_encontrado is None:
         _registrar_fallo_login(usuario)
-        return {"mensaje": "Administrador no encontrado"}, 404
+        return {"mensaje": "Credenciales administrativas incorrectas"}, 401
 
     if usuario_encontrado["id_estado"] != 1:
         return {"mensaje": "Administrador inactivo"}, 403
@@ -331,7 +307,7 @@ def servicio_login_admin(datos):
 
     if not contrasena_correcta:
         _registrar_fallo_login(usuario)
-        return {"mensaje": "Contrasena incorrecta"}, 401
+        return {"mensaje": "Credenciales administrativas incorrectas"}, 401
 
     _limpiar_intentos_login(usuario)
     token = _crear_token(usuario_encontrado)
@@ -356,12 +332,24 @@ def solicitar_codigo_recuperacion(datos):
     if not correo:
         return {"mensaje": "El correo electronico es obligatorio"}, 400
 
+    ahora = datetime.now()
+    ultima_solicitud = SOLICITUDES_RECUPERACION.get(correo)
+    if ultima_solicitud and (ahora - ultima_solicitud).total_seconds() < 60:
+        return {
+            "mensaje": "Si el correo esta registrado, recibiras un codigo en breve.",
+            "enviado": True,
+            "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION,
+        }, 200
+    SOLICITUDES_RECUPERACION[correo] = ahora
+
     usuario = buscar_usuario_por_correo(correo)
 
     if not usuario:
         return {
-            "mensaje": "No existe una cuenta registrada con ese correo electronico."
-        }, 404
+            "mensaje": "Si el correo esta registrado, recibiras un codigo en breve.",
+            "enviado": True,
+            "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION,
+        }, 200
 
     apps_script_url = (os.getenv("APPS_SCRIPT_URL") or "").strip()
     usa_apps_script = bool(apps_script_url)
@@ -398,7 +386,7 @@ def solicitar_codigo_recuperacion(datos):
         f"Sr(a) {nombre_usuario},\n\n"
         "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
-        "Tienes 60 segundos para ingresar este codigo. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
+        "Tienes 5 minutos para ingresar este codigo. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
     html = f"""
@@ -407,7 +395,7 @@ def solicitar_codigo_recuperacion(datos):
       <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
       <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
-      <p style="margin-top:20px">Tienes <strong>60 segundos</strong> para ingresar este codigo.</p>
+      <p style="margin-top:20px">Tienes <strong>5 minutos</strong> para ingresar este codigo.</p>
       <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
       <p style="color:#607080">Equipo GreenUP</p>
     </div>
@@ -453,16 +441,22 @@ def restablecer_contrasena(datos):
     if not usuario:
         return {"mensaje": "Codigo invalido o expirado"}, 400
 
+    clave_intentos = str(usuario["id_usuario"])
+    if INTENTOS_RECUPERACION.get(clave_intentos, 0) >= 5:
+        return {"mensaje": "Demasiados intentos. Solicita un codigo nuevo."}, 429
+
     registro_codigo = obtener_codigo_recuperacion_db(usuario["id_usuario"], codigo)
 
     if not registro_codigo:
-        return {"mensaje": "Codigo invalido o incorrecto"}, 400
+        INTENTOS_RECUPERACION[clave_intentos] = INTENTOS_RECUPERACION.get(clave_intentos, 0) + 1
+        return {"mensaje": "Codigo invalido o expirado"}, 400
 
     if datetime.now() > registro_codigo["expiracion"]:
         return {"mensaje": "El codigo ha expirado. Solicita uno nuevo."}, 400
 
     contrasena_hash = cifrar_contrasena(nueva_contrasena)
     actualizar_contrasena_db(usuario["id_usuario"], contrasena_hash)
+    INTENTOS_RECUPERACION.clear()
 
     return {"mensaje": "Contrasena actualizada exitosamente. Ya puedes iniciar sesion."}, 200
 
@@ -479,10 +473,15 @@ def verificar_codigo_recuperacion(datos):
     if not usuario:
         return {"mensaje": "Codigo invalido o expirado"}, 400
 
+    clave_intentos = str(usuario["id_usuario"])
+    if INTENTOS_RECUPERACION.get(clave_intentos, 0) >= 5:
+        return {"mensaje": "Demasiados intentos. Solicita un codigo nuevo."}, 429
+
     registro_codigo = obtener_codigo_recuperacion_db(usuario["id_usuario"], codigo)
 
     if not registro_codigo:
-        return {"mensaje": "Codigo invalido o incorrecto"}, 400
+        INTENTOS_RECUPERACION[clave_intentos] = INTENTOS_RECUPERACION.get(clave_intentos, 0) + 1
+        return {"mensaje": "Codigo invalido o expirado"}, 400
 
     if datetime.now() > registro_codigo["expiracion"]:
         return {"mensaje": "El codigo ha expirado. Solicita uno nuevo."}, 400

@@ -10,8 +10,8 @@ from app.services import auth_service
 
 
 class AppsScriptEmailTests(unittest.TestCase):
-    def test_codigo_expira_en_sesenta_segundos(self):
-        self.assertEqual(auth_service.SEGUNDOS_EXPIRACION_RECUPERACION, 60)
+    def test_codigo_expira_en_cinco_minutos(self):
+        self.assertEqual(auth_service.SEGUNDOS_EXPIRACION_RECUPERACION, 300)
 
     @patch.dict(
         os.environ,

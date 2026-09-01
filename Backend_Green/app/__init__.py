@@ -65,10 +65,24 @@ def crear_app():
             respuesta.headers["Vary"] = "Origin"
             respuesta.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
             respuesta.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        respuesta.headers["X-Content-Type-Options"] = "nosniff"
+        respuesta.headers["X-Frame-Options"] = "DENY"
+        respuesta.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        respuesta.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(self)"
+        respuesta.headers["Content-Security-Policy"] = (
+            "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; "
+            "form-action 'self'"
+        )
+        if request.is_secure:
+            respuesta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return respuesta
 
-    # Permitir hasta 2 MB en el body (necesario para fotos de perfil en base64)
-    app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+    # 5 MB de archivo se convierten en ~6.7 MB al serializar Base64.
+    app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH_MB', '8')) * 1024 * 1024
+
+    # Valida el secreto al arrancar, no al recibir el primer inicio de sesion.
+    from app.common.jwt_config import obtener_jwt_secret
+    obtener_jwt_secret()
 
     # Configuración del servidor de correo SMTP (Gmail)
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')

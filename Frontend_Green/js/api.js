@@ -63,3 +63,12 @@ async function peticionSegura(endpoint, metodo = "GET", datos = null) {
         throw error;
     }
 }
+
+// Una sola capa compartida cubre accesibilidad y tablas de todos los modulos.
+(function cargarAccesibilidadGreenUp() {
+    if (document.querySelector("script[data-greenup-accessibility]")) return;
+    const script = document.createElement("script");
+    script.dataset.greenupAccessibility = "true";
+    script.src = new URL("accessibility.js", document.currentScript.src).href;
+    document.head.appendChild(script);
+})();

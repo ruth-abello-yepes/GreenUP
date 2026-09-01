@@ -353,8 +353,8 @@ class SeguridadIntegracionTest(unittest.TestCase):
             },
         )
 
-        self.assertEqual(respuesta.status_code, 404)
-        self.assertIn("usuario", respuesta.get_json()["mensaje"].lower())
+        self.assertEqual(respuesta.status_code, 401)
+        self.assertIn("credenciales", respuesta.get_json()["mensaje"].lower())
 
     def test_registro_ciudadano_rechaza_usuario_menor_a_cinco(self):
         """El registro publico no acepta nombres de usuario demasiado cortos."""

@@ -1,58 +1,101 @@
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function safeEquals(left, right) {
+  left = String(left || "");
+  right = String(right || "");
+
+  if (!left || left.length !== right.length) {
+    return false;
+  }
+
+  var difference = 0;
+
+  for (var index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return difference === 0;
+}
+
+// Permite comprobar que la aplicación web está funcionando.
+function doGet() {
+  return jsonResponse({
+    estado: "ok",
+    servicio: "GreenUP Mailer"
+  });
+}
+
+// Recibe desde el backend el correo y envía el código.
 function doPost(e) {
   try {
-    // Verificar que se recibieron datos
     if (!e || !e.postData || !e.postData.contents) {
-      throw new Error("No se recibieron datos.");
+      return jsonResponse({
+        estado: "error",
+        mensaje: "No se recibieron datos"
+      });
     }
 
-    // Leer los datos enviados por GreenUp
     var data = JSON.parse(e.postData.contents);
-    var expectedSecret = PropertiesService.getScriptProperties().getProperty("GREENUP_MAIL_SECRET");
 
-    if (expectedSecret && data.secret !== expectedSecret) {
-      throw new Error("Solicitud no autorizada.");
+    var expectedSecret = PropertiesService
+      .getScriptProperties()
+      .getProperty("GREENUP_MAIL_SECRET");
+
+    if (!expectedSecret || !safeEquals(data.secret, expectedSecret)) {
+      return jsonResponse({
+        estado: "error",
+        mensaje: "Solicitud no autorizada"
+      });
     }
 
-    // Obtener los datos del correo
-    var destinatario = data.to;
-    var asunto = data.subject || "Código de recuperación de contraseña - GreenUp";
-    var mensajeHtml = data.html || "<p>Este es un mensaje de GreenUp.</p>";
-    var mensajeTexto = data.text || "Este es un mensaje de GreenUp.";
+    var recipient = String(data.to || "").trim().toLowerCase();
+    var subject = String(
+      data.subject || "Código de recuperación - GreenUP"
+    ).trim().slice(0, 150);
 
-    // Verificar que exista un destinatario
-    if (!destinatario) {
-      throw new Error("No se recibió el correo del destinatario.");
+    var textBody = String(
+      data.text || "Tu código de recuperación está en este mensaje."
+    );
+
+    var htmlBody = String(data.html || "");
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
+      return jsonResponse({
+        estado: "error",
+        mensaje: "Destinatario inválido"
+      });
     }
 
-    // Enviar el correo desde Gmail
+    if (MailApp.getRemainingDailyQuota() < 1) {
+      return jsonResponse({
+        estado: "error",
+        mensaje: "Cuota diaria de correo agotada"
+      });
+    }
+
     MailApp.sendEmail({
-      to: destinatario,
-      subject: asunto,
-      body: mensajeTexto,
-      htmlBody: mensajeHtml,
+      to: recipient,
+      subject: subject,
+      body: textBody,
+      htmlBody: htmlBody,
       name: "GreenUP"
     });
 
-    // Responder que el correo fue enviado
-    return ContentService
-      .createTextOutput(
-        JSON.stringify({
-          estado: "ok",
-          mensaje: "Correo enviado correctamente."
-        })
-      )
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse({
+      estado: "ok",
+      mensaje: "Correo enviado correctamente"
+    });
 
   } catch (error) {
+    console.error("GreenUP Mailer:", error);
 
-    // Responder si ocurre un error
-    return ContentService
-      .createTextOutput(
-        JSON.stringify({
-          estado: "error",
-          mensaje: error.toString()
-        })
-      )
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse({
+      estado: "error",
+      mensaje: "No fue posible enviar el correo"
+    });
   }
 }

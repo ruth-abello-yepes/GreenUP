@@ -93,3 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("a[href='#']").forEach(normalizarEnlacePublico);
   conectarBotonesPublicos();
 });
+
+(function cargarAccesibilidadPublica() {
+  if (document.querySelector("script[data-greenup-accessibility]")) return;
+  const script = document.createElement("script");
+  script.dataset.greenupAccessibility = "true";
+  script.src = new URL("accessibility.js", document.currentScript.src).href;
+  document.head.appendChild(script);
+})();

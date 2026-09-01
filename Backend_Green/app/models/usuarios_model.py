@@ -531,6 +531,12 @@ def buscar_usuario_por_correo(correo):
     return usuario
 
 
+def _hash_codigo_recuperacion(codigo):
+    """Genera una huella irreversible del codigo antes de persistirlo."""
+    import hashlib
+    return hashlib.sha256(str(codigo).encode("utf-8")).hexdigest()
+
+
 def guardar_codigo_recuperacion_db(id_usuario, codigo, expiracion):
     """
     Guarda el código de 6 dígitos generado en la tabla codigos_recuperacion.
@@ -547,7 +553,7 @@ def guardar_codigo_recuperacion_db(id_usuario, codigo, expiracion):
     INSERT INTO codigos_recuperacion (id_usuario, codigo, expiracion)
     VALUES (%s, %s, %s)
     """
-    cursor.execute(sql, (id_usuario, codigo, expiracion))
+    cursor.execute(sql, (id_usuario, _hash_codigo_recuperacion(codigo), expiracion))
     conexion.commit()
 
     cursor.close()
@@ -562,7 +568,7 @@ def obtener_codigo_recuperacion_db(id_usuario, codigo):
     cursor = conexion.cursor()
 
     sql = "SELECT * FROM codigos_recuperacion WHERE id_usuario = %s AND codigo = %s"
-    cursor.execute(sql, (id_usuario, codigo))
+    cursor.execute(sql, (id_usuario, _hash_codigo_recuperacion(codigo)))
     registro_codigo = cursor.fetchone()
 
     cursor.close()

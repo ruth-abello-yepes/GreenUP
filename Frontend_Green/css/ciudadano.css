@@ -30,6 +30,23 @@
   display: none;
 }
 
+/* Apariencia comun del footer en todas las pantallas del ciudadano. */
+#main-footer.rounded-footer-top {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+#main-footer .hover-white {
+  transition: color 0.2s ease;
+}
+
+#main-footer .hover-white:hover,
+#main-footer .hover-white:focus-visible {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+}
+
 /* Botón flotante para registrar reciclaje desde cualquier pantalla ciudadana. */
 .greenup-reciclaje-float {
   align-items: center;
@@ -682,10 +699,97 @@ body.ciudadano-pagina-educacion .learn-section-tabs a.is-active {
             border-radius: 15px 0 0 15px;
         }
 
+        /* Paginacion de noticias con identidad visual GreenUp. */
+        body.ciudadano-pagina-educacion #paginacion-noticias {
+            align-items: center;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(41, 108, 31, 0.16);
+            border-radius: 999px;
+            box-shadow: 0 12px 30px rgba(0, 61, 108, 0.12);
+            gap: 0.35rem !important;
+            margin-bottom: 0;
+            max-width: 100%;
+            overflow: visible !important;
+            padding: 0.5rem !important;
+            width: fit-content;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item {
+            display: flex;
+            margin: 0;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-link {
+            align-items: center;
+            background: transparent;
+            border: 0 !important;
+            border-radius: 999px !important;
+            color: var(--gu-primary);
+            display: inline-flex;
+            font-size: 0.95rem;
+            font-weight: 700;
+            height: 42px;
+            justify-content: center;
+            line-height: 1;
+            min-width: 42px;
+            padding: 0 0.75rem;
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease,
+                box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item:not(.active):not(.disabled) .page-link:hover {
+            background: rgba(169, 242, 149, 0.32);
+            color: var(--gu-secondary);
+            transform: translateY(-2px);
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-link:focus-visible {
+            box-shadow: 0 0 0 3px rgba(169, 242, 149, 0.75);
+            outline: 2px solid transparent;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--gu-secondary), #0b7f34);
+            box-shadow: 0 7px 16px rgba(41, 108, 31, 0.28);
+            color: #ffffff;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item:first-child .page-link,
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item:last-child .page-link {
+            background: rgba(0, 61, 108, 0.07);
+            font-size: 1.45rem;
+            padding-bottom: 2px;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item.disabled .page-link {
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        body.ciudadano-pagina-educacion #paginacion-noticias .page-item.disabled:not(:first-child):not(:last-child) .page-link {
+            background: transparent !important;
+            color: #64748b;
+            opacity: 1;
+        }
+
         @media (max-width: 767.98px) {
             body.ciudadano-pagina-educacion #noticias .featured-card .img-wrapper {
                 height: 250px;
                 border-radius: 15px 15px 0 0;
+            }
+
+            body.ciudadano-pagina-educacion #paginacion-noticias {
+                gap: 0.2rem !important;
+                padding: 0.4rem !important;
+            }
+
+            body.ciudadano-pagina-educacion #paginacion-noticias .page-link {
+                font-size: 0.875rem;
+                height: 36px;
+                min-width: 36px;
+                padding: 0 0.55rem;
             }
         }
 

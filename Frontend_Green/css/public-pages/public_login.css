@@ -293,9 +293,7 @@
       transition: transform 0.7s ease;
     }
 
-    .hero-col:hover .hero-img {
-      transform: scale(1.1);
-    }
+    .hero-col:hover .hero-img { transform: none; }
 
     .hero-overlay {
       position: absolute;

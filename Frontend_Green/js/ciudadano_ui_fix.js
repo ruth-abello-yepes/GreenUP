@@ -450,6 +450,45 @@ function estilizarBotonesCerrarSesionCiudadano() {
 }
 
 /**
+ * Mantiene disponible la pagina institucional desde todas las pantallas del
+ * ciudadano sin agregarla a la barra de navegacion principal.
+ */
+function asegurarEnlaceSobreGreenUpCiudadano() {
+    const rutaSobreGreenUp = "../public/public_sobre_nosotros.html";
+    let footer = document.querySelector("footer");
+
+    if (!footer) {
+        footer = document.createElement("footer");
+        footer.className = "ciudadano-about-footer";
+        footer.setAttribute("aria-label", "Información de GreenUp");
+        footer.innerHTML = `
+            <span>© 2026 GreenUp</span>
+            <a href="${rutaSobreGreenUp}">
+                <span class="material-symbols-outlined" aria-hidden="true">info</span>
+                Sobre GreenUp
+            </a>
+        `;
+
+        const contenidoPrincipal = document.querySelector("main");
+        if (contenidoPrincipal) {
+            contenidoPrincipal.insertAdjacentElement("afterend", footer);
+        } else {
+            document.body.appendChild(footer);
+        }
+        return;
+    }
+
+    if (footer.querySelector(`a[href="${rutaSobreGreenUp}"]`)) return;
+
+    const listaInformativa = Array.from(footer.querySelectorAll("nav ul")).at(-1);
+    if (!listaInformativa) return;
+
+    const item = document.createElement("li");
+    item.innerHTML = `<a href="${rutaSobreGreenUp}" class="text-white-50 text-decoration-none hover-white">Sobre GreenUp</a>`;
+    listaInformativa.appendChild(item);
+}
+
+/**
  * Corrige el footer para que la marca no use fondo blanco.
  */
 function corregirFooterCiudadano() {
@@ -888,6 +927,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarOffcanvasViejoCiudadano();
     quitarModulosNoDeseadosCiudadano();
     estilizarBotonesCerrarSesionCiudadano();
+    asegurarEnlaceSobreGreenUpCiudadano();
     corregirFooterCiudadano();
     conectarEnlacesVaciosCiudadano();
     conectarSugerenciaPuntoCiudadano();

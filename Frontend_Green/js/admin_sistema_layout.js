@@ -504,6 +504,14 @@ function pintarEstructuraBase() {
       <section id="admin-content"></section>
     </main>
 
+    <footer class="role-about-footer admin-about-footer" aria-label="Información de GreenUp">
+      <span>© 2026 GreenUp</span>
+      <a href="../public/public_sobre_nosotros.html">
+        <span class="material-symbols-outlined" aria-hidden="true">info</span>
+        Sobre GreenUp
+      </a>
+    </footer>
+
     <nav class="mobile-bottom-nav nav">
       ${adminPrimaryNav.map((item) => `
         <a class="${item.module === actual ? "active" : ""}" href="${item.href}" title="${item.label}">

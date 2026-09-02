@@ -1309,6 +1309,29 @@ function normalizarFooterRecicladora() {
   });
 }
 
+/**
+ * Agrega un pie compacto y comun a todas las pantallas de la recicladora.
+ * La pagina institucional permanece fuera de la navegacion operativa.
+ */
+function crearFooterSobreGreenUpRecicladora() {
+  if (document.querySelector(".recicladora-about-footer")) return;
+
+  const contenidoPrincipal = document.querySelector(".main-content");
+  if (!contenidoPrincipal) return;
+
+  const footer = document.createElement("footer");
+  footer.className = "role-about-footer recicladora-about-footer";
+  footer.setAttribute("aria-label", "Información de GreenUp");
+  footer.innerHTML = `
+    <span>© 2026 GreenUp</span>
+    <a href="../public/public_sobre_nosotros.html">
+      <span class="material-symbols-outlined" aria-hidden="true">info</span>
+      Sobre GreenUp
+    </a>
+  `;
+  contenidoPrincipal.insertAdjacentElement("afterend", footer);
+}
+
 function iniciarCambioContrasenaDesdePerfil() {
   const correo = document.querySelector('[data-profile-field="correo"]')?.value?.trim() || getUser().correo || "";
   if (correo && correo !== "Cargando...") {
@@ -1537,6 +1560,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindGenericExportButtons();
   bindProfileSave();
   bindReportExports();
+  crearFooterSobreGreenUpRecicladora();
   normalizarFooterRecicladora();
   prepararTablasResponsivasRecicladora();
 

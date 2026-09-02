@@ -509,6 +509,40 @@ body.admin-theme-dark .role-nav-menu {
   max-width: calc(100% - var(--sidebar-width));
 }
 
+.admin-about-footer {
+  align-items: center;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  color: var(--admin-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+  gap: 0.8rem 1.5rem;
+  justify-content: space-between;
+  margin: 0 40px 32px calc(var(--sidebar-width) + 40px);
+  padding: 1.15rem 1.4rem;
+}
+
+.admin-about-footer a {
+  align-items: center;
+  color: var(--admin-blue-dark);
+  display: inline-flex;
+  font-weight: 800;
+  gap: 0.4rem;
+}
+
+.admin-about-footer a:hover,
+.admin-about-footer a:focus-visible {
+  color: var(--admin-green-dark);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-about-footer .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
 #admin-hero,
 #admin-content {
   min-width: 0;
@@ -1925,6 +1959,10 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   .admin-main.container-fluid {
     width: 100%;
     max-width: 100%;
+  }
+
+  .admin-about-footer {
+    margin: 0 18px 90px;
   }
 
   .metrics-grid {

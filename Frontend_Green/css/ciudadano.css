@@ -47,6 +47,41 @@
   text-underline-offset: 4px;
 }
 
+/* Pie compacto para pantallas especiales, como el mapa, que no traen footer. */
+.ciudadano-about-footer {
+  align-items: center;
+  background: #121c2a;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  gap: 0.85rem 1.5rem;
+  justify-content: space-between;
+  padding: 1.25rem clamp(1rem, 4vw, 3rem);
+  position: relative;
+  z-index: 500;
+}
+
+.ciudadano-about-footer a {
+  align-items: center;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.ciudadano-about-footer a:hover,
+.ciudadano-about-footer a:focus-visible {
+  color: #a9f295;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ciudadano-about-footer .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
 /* Botón flotante para registrar reciclaje desde cualquier pantalla ciudadana. */
 .greenup-reciclaje-float {
   align-items: center;

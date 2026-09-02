@@ -761,6 +761,25 @@ function crearMenuSuperiorRecicladora() {
   const sidebar = document.querySelector(".app-sidebar");
   if (!contenedorMarca || !sidebar || document.getElementById("recicladoraRoleMenu")) return;
 
+  // Registros pendientes es un modulo principal del rol, no una opcion oculta
+  // dentro del menu de perfil.
+  const navegacion = sidebar.querySelector(".sidebar-nav");
+  if (navegacion && !navegacion.querySelector('a[href="recicladora_pendientes.html"]')) {
+    const enlaceRegistros = document.createElement("a");
+    enlaceRegistros.className = "sidebar-link";
+    enlaceRegistros.href = "recicladora_pendientes.html";
+    enlaceRegistros.innerHTML = '<span class="material-symbols-outlined">fact_check</span><span>Registro pendiente</span>';
+    navegacion.appendChild(enlaceRegistros);
+  }
+
+  const paginaActual = window.location.pathname.split("/").pop() || "recicladora_panel.html";
+  sidebar.querySelectorAll(".sidebar-nav .sidebar-link").forEach((enlace) => {
+    const activo = enlace.getAttribute("href") === paginaActual;
+    enlace.classList.toggle("active", activo);
+    if (activo) enlace.setAttribute("aria-current", "page");
+    else enlace.removeAttribute("aria-current");
+  });
+
   const boton = document.createElement("button");
   boton.type = "button";
   boton.className = "role-menu-toggle";

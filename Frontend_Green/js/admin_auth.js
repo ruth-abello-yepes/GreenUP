@@ -37,31 +37,36 @@ async function iniciarSesionAdmin(evento) {
     return;
   }
 
-  const respuesta = await fetch(API_URL + "/api/admin/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      usuario: usuario,
-      contrasena: contrasena,
-      codigo_admin: codigoAdmin,
-      captcha_token: captcha,
-    }),
-  });
+  try {
+    const respuesta = await fetch(API_URL + "/api/admin/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        usuario: usuario,
+        contrasena: contrasena,
+        codigo_admin: codigoAdmin,
+        captcha_token: captcha,
+      }),
+    });
 
-  const datos = await respuesta.json();
+    const datos = await respuesta.json();
 
-  if (respuesta.ok) {
-    localStorage.setItem("usuario", JSON.stringify(datos.usuario));
-    if (datos.token) {
-      localStorage.setItem("token", datos.token);
+    if (respuesta.ok) {
+      localStorage.setItem("usuario", JSON.stringify(datos.usuario));
+      if (datos.token) {
+        localStorage.setItem("token", datos.token);
+      }
+      sessionStorage.setItem("greenup_admin_sesion_activa", "1");
+
+      window.location.href = "../admin_sistema/admin_panel.html";
+    } else {
+      alert(datos.mensaje || "No se pudo iniciar la sesión administrativa.");
     }
-    sessionStorage.setItem("greenup_admin_sesion_activa", "1");
-
-    window.location.href = "../admin_sistema/admin_panel.html";
-  } else {
-    alert(datos.mensaje);
+  } catch (error) {
+    console.error("Error en login administrativo:", error);
+    alert("No se pudo conectar con el servidor. Intenta nuevamente.");
   }
 }
 

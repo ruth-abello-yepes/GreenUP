@@ -19,10 +19,11 @@ async function iniciarSesion(evento) {
   const campoUsuario = document.getElementById("usuario") || document.getElementById("email");
   const campoContrasena = document.getElementById("contrasena") || document.getElementById("password");
 
+  const captcha = document.querySelector('[name="g-recaptcha-response"]')?.value || document.getElementById("captcha_token")?.value || "";
   const credenciales = {
     usuario: campoUsuario.value.trim(),
     contrasena: campoContrasena.value,
-    captcha_token: document.getElementById("captcha_token")?.value || ""
+    captcha_token: captcha
   };
 
   // 2. Usamos nuestra función unificada (asumiendo que api.js está vinculado en el HTML antes que auth.js)

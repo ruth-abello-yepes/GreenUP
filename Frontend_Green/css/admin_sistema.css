@@ -2619,3 +2619,96 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   }
   .admin-table.responsive-table-ready .row-actions { flex-wrap: wrap; }
 }
+
+/* Ajustes finales para pantallas estrechas: las tablas y filtros no deben
+   conservar el ancho de escritorio ni convertir los selectores en bloques
+   gigantes. Se aplica también a las tablas marcadas por accessibility.js. */
+@media (max-width: 767.98px) {
+  .toolbar {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .toolbar select,
+  .toolbar input,
+  .toolbar .type-pill,
+  .toolbar > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    flex: 0 0 auto !important;
+  }
+
+  .toolbar select,
+  .toolbar input {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .table-wrap,
+  .greenup-table-scroll,
+  .table-responsive {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  .admin-table.greenup-responsive-table,
+  .admin-table.responsive-table-ready {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+  }
+
+  .admin-table.greenup-responsive-table thead,
+  .admin-table.responsive-table-ready thead {
+    display: none;
+  }
+
+  .admin-table.greenup-responsive-table tbody,
+  .admin-table.responsive-table-ready tbody {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-table.greenup-responsive-table tbody tr,
+  .admin-table.responsive-table-ready tbody tr {
+    display: grid;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    background: var(--admin-panel);
+  }
+
+  .admin-table.greenup-responsive-table tbody td,
+  .admin-table.responsive-table-ready tbody td {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+    gap: 10px;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 11px 12px !important;
+    border: 0;
+    border-bottom: 1px solid var(--admin-border);
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-table.greenup-responsive-table tbody td::before,
+  .admin-table.responsive-table-ready tbody td::before {
+    content: attr(data-label);
+    color: var(--admin-muted);
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .admin-table.greenup-responsive-table tbody td:last-child,
+  .admin-table.responsive-table-ready tbody td:last-child {
+    border-bottom: 0;
+  }
+}

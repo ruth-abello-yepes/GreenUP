@@ -21,6 +21,7 @@ POST /api/recuperar-contrasena/restablecer
 """
 
 from flask import Blueprint, g, request, jsonify
+import logging
 from psycopg2 import DatabaseError, OperationalError
 
 from app.services.auth_service import (
@@ -36,6 +37,7 @@ from app.middlewares.auth_middleware import login_requerido
 
 # No usamos url_prefix="/api/auth" para que las rutas sean mas cortas.
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
+logger_seguridad = logging.getLogger("greenup.security")
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -84,6 +86,7 @@ def ruta_login():
             "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
         }), 503
 
+    logger_seguridad.info("login_normal resultado=%s ip=%s", estado, request.remote_addr)
     return jsonify(respuesta), estado
 
 
@@ -137,6 +140,7 @@ def ruta_login_admin():
             "mensaje": "Base de datos no disponible. Revisa la conexion de Render con Supabase."
         }), 503
 
+    logger_seguridad.info("login_admin resultado=%s ip=%s", estado, request.remote_addr)
     return jsonify(respuesta), estado
 
 

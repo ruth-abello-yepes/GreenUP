@@ -2,8 +2,19 @@
 ## Modulo comun del backend: configuracion, conexion, seguridad o Swagger reutilizable.
 
 import re
+import logging
 
 from werkzeug.security import generate_password_hash, check_password_hash
+
+logger_seguridad = logging.getLogger("greenup.security")
+
+
+def validar_correo(correo):
+    """Valida y normaliza correos antes de usarlos en autenticacion."""
+    valor = (correo or "").strip().lower()
+    if len(valor) > 254 or not re.fullmatch(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+", valor):
+        return None
+    return valor
 
 
 MENSAJE_CONTRASENA_SEGURA = (

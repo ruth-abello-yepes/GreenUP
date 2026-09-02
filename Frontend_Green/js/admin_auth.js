@@ -58,3 +58,21 @@ async function iniciarSesionAdmin(evento) {
     alert(datos.mensaje);
   }
 }
+
+// El panel administrativo se cierra tras 20 minutos sin actividad.
+(function configurarInactividadAdmin() {
+  const limite = 20 * 60 * 1000;
+  let temporizador;
+  const reiniciar = () => {
+    if (!localStorage.getItem("token")) return;
+    clearTimeout(temporizador);
+    temporizador = setTimeout(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      sessionStorage.removeItem("greenup_admin_sesion_activa");
+      window.location.href = "admin_login.html?sesion=expirada";
+    }, limite);
+  };
+  ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach((evento) => window.addEventListener(evento, reiniciar, { passive: true }));
+  reiniciar();
+})();

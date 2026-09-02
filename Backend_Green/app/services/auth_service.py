@@ -43,6 +43,7 @@ from app.common.security import (
     validar_contrasena_segura,
     verificar_contrasena,
     cifrar_contrasena
+    , validar_correo
 )
 
 
@@ -334,7 +335,7 @@ def servicio_login_admin(datos):
 
 
 def solicitar_codigo_recuperacion(datos):
-    correo = (datos.get("correo") or "").strip().lower()
+    correo = validar_correo(datos.get("correo"))
 
     if not correo:
         return {"mensaje": "El correo electronico es obligatorio"}, 400

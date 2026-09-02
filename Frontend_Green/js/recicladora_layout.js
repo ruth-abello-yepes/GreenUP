@@ -471,7 +471,16 @@ async function refreshCurrentPage() {
   }
 
   if (current === "recicladora_materiales.html") {
-    const materiales = await fetchJson("/api/recicladoras/materiales");
+    let materiales;
+    try {
+      materiales = await fetchJson("/api/recicladoras/materiales");
+    } catch (error) {
+      const card = [...document.querySelectorAll(".table-card")]
+        .find((item) => item.querySelector("h2")?.textContent.includes("Materiales aceptados"));
+      const tbody = card?.querySelector("tbody");
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="empty-table-cell"><strong>No se pudieron cargar los materiales</strong><small>${escapeHtml(error.message)}</small></td></tr>`;
+      throw error;
+    }
     const aceptados = materiales.filter((item) => item.aceptado);
     setText('[data-summary-label="Catalogados"]', `${materiales.length} tipos`);
     setText('[data-summary-label="Activos"]', `${aceptados.length} materiales`);

@@ -2620,6 +2620,61 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   .admin-table.responsive-table-ready .row-actions { flex-wrap: wrap; }
 }
 
+/* Vista compacta de usuarios en celular. Los datos secundarios se consultan
+   desde "Ver detalles" para evitar tarjetas largas y repetitivas. */
+@media (max-width: 767.98px) {
+  .admin-table.users-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 14px;
+    gap: 4px 12px;
+  }
+
+  .admin-table.users-table tbody td {
+    display: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .admin-table.users-table tbody td:nth-child(1),
+  .admin-table.users-table tbody td:nth-child(2),
+  .admin-table.users-table tbody td:nth-child(8),
+  .admin-table.users-table tbody td:last-child {
+    display: flex !important;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .admin-table.users-table tbody td:nth-child(1) { order: 1; }
+  .admin-table.users-table tbody td:nth-child(2) { order: 2; font-size: 1rem; font-weight: 800; }
+  .admin-table.users-table tbody td:nth-child(8) { order: 3; }
+  .admin-table.users-table tbody td:last-child { order: 4; padding-top: 10px !important; }
+  .admin-table.users-table tbody td::before { display: none !important; }
+  .admin-table.users-table .row-actions { width: 100%; gap: 8px; }
+  .admin-table.users-table .row-actions .small-button { flex: 1 1 0; min-width: 0; }
+}
+
+.admin-user-details {
+  width: min(92vw, 480px);
+  max-width: 480px;
+  padding: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: var(--admin-panel);
+  color: var(--admin-ink);
+  box-shadow: 0 24px 70px rgba(6, 85, 145, 0.24);
+}
+
+.admin-user-details::backdrop { background: rgba(7, 17, 31, 0.48); }
+.user-details-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 22px 14px; }
+.user-details-header h2 { margin: 4px 0 0; color: var(--admin-ink); font-size: 1.25rem; }
+.user-details-header .eyebrow { color: var(--admin-green-dark); font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.user-details-list { display: grid; gap: 0; padding: 0 22px 22px; }
+.user-details-list div { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(0, 1.2fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--admin-border); }
+.user-details-list strong { color: var(--admin-muted); font-size: .76rem; text-transform: uppercase; }
+.user-details-list span { overflow-wrap: anywhere; }
+
 /* Ajustes finales para pantallas estrechas: las tablas y filtros no deben
    conservar el ancho de escritorio ni convertir los selectores en bloques
    gigantes. Se aplica también a las tablas marcadas por accessibility.js. */

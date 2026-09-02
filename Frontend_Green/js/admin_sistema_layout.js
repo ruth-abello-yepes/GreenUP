@@ -890,10 +890,42 @@ function renderEstadoUsuario(usuario) {
   ` : "";
   return `
     ${accionesDocumento}
+    <button class="small-button btn btn-sm btn-outline-primary user-details-button" type="button" onclick="verDetallesUsuario(${usuario.id_usuario})">
+      Ver detalles
+    </button>
     <button class="small-button btn btn-sm ${clase}" type="button" onclick="cambiarEstadoUsuario(${usuario.id_usuario}, ${siguiente})">
       ${texto}
     </button>
   `;
+}
+
+function verDetallesUsuario(idUsuario) {
+  const fila = adminTableData.find((row) => Number(row.raw?.id_usuario) === Number(idUsuario));
+  const usuario = fila?.raw;
+  if (!usuario) return;
+
+  document.getElementById("modal-detalle-usuario")?.remove();
+  const modal = document.createElement("dialog");
+  modal.id = "modal-detalle-usuario";
+  modal.className = "admin-user-details";
+  const datos = [
+    ["Tipo", usuario.tipo_admin || "Ciudadano"],
+    ["Nombre / Empresa", `${usuario.nombres || ""} ${usuario.apellidos || ""}`.trim() || usuario.nombre_empresa || "Sin registrar"],
+    ["Usuario", usuario.usuario],
+    ["Correo", usuario.correo],
+    ["Documento / NIT", usuario.numero_documento || usuario.nit_empresa],
+    ["Cámara de Comercio", usuario.tipo_admin === "Recicladora" ? (usuario.estado_camara_comercio || "Pendiente") : "No aplica"],
+    ["Estado", Number(usuario.id_estado) === 1 ? "Activo" : "Inactivo"],
+  ];
+  modal.innerHTML = `
+    <div class="user-details-header"><div><span class="eyebrow">Cuenta GreenUp</span><h2>Detalle del usuario</h2></div>
+      <button type="button" class="icon-button" aria-label="Cerrar detalles">×</button></div>
+    <div class="user-details-list">${datos.map(([etiqueta, valor]) => `<div><strong>${limpiar(etiqueta)}</strong><span>${limpiar(valor || "No registrado")}</span></div>`).join("")}</div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector("button")?.addEventListener("click", () => modal.close());
+  modal.addEventListener("click", (evento) => { if (evento.target === modal) modal.close(); });
+  modal.showModal();
 }
 
 function consultarRecicladoraEnRues(idUsuario) {

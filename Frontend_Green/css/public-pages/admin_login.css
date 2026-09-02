@@ -265,12 +265,35 @@
         grid-template-columns: 1fr;
       }
 
+      /* En móvil el acceso es la primera información visible. */
+      .login-panel {
+        order: 1;
+      }
+
       .login-visual {
-        min-height: 360px;
+        order: 2;
+      }
+
+      .login-visual {
+        min-height: 260px;
       }
 
       .status-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .status-card {
+        padding: 10px;
+        border-radius: 14px;
+      }
+
+      .status-card strong {
+        font-size: 1rem;
+      }
+
+      .status-card span {
+        font-size: 0.68rem;
       }
     }
 
@@ -282,6 +305,26 @@
       .login-visual,
       .login-panel {
         padding: 26px;
+      }
+
+      .login-panel {
+        min-height: 590px;
+      }
+
+      .login-visual {
+        min-height: 250px;
+      }
+
+      .visual-copy h1 {
+        font-size: clamp(2.2rem, 12vw, 3.4rem);
+      }
+
+      .status-card strong {
+        font-size: 0.9rem;
+      }
+
+      .status-card span {
+        font-size: 0.62rem;
       }
     }
 

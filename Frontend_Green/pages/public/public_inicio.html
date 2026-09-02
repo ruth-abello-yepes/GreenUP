@@ -146,9 +146,18 @@
             </div>
           </div>
           <div class="col-md-6 d-none d-md-block text-center">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJXREBaQ3zDdfK7xLCcwmgXF3NSKM40p4fuuygEkjcgM4NtakAMLAExta2QNxfmnlrvW3lflP4SvsvI4ZAAFs6J36AkRFO574GqV12LmbSjsLTD9aoDdNU93dxhuhGxLW82hlpW7v7y8iyoIFmw0tT-nPMk_OsyZ6tSQxFlpUuc8QSQHy0jvI99saouD1iE6EshtST-nAPQhYhSC1bzmv-n6TPFy8-NGxR7VUh2aeEGr7TIPLCcorX0TIei1iSUf99zKODBe4r_vA"
-              alt="Sostenibilidad moderna" class="img-fluid rounded-4 gu-inline-4">
+            <div class="landing-hero-carousel" data-landing-carousel aria-label="Imágenes de GreenUp">
+              <img class="landing-hero-slide is-active" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJXREBaQ3zDdfK7xLCcwmgXF3NSKM40p4fuuygEkjcgM4NtakAMLAExta2QNxfmnlrvW3lflP4SvsvI4ZAAFs6J36AkRFO574GqV12LmbSjsLTD9aoDdNU93dxhuhGxLW82hlpW7v7y8iyoIFmw0tT-nPMk_OsyZ6tSQxFlpUuc8QSQHy0jvI99saouD1iE6EshtST-nAPQhYhSC1bzmv-n6TPFy8-NGxR7VUh2aeEGr7TIPLCcorX0TIei1iSUf99zKODBe4r_vA" alt="Tecnología verde y plantas">
+              <img class="landing-hero-slide" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80" alt="Manos cuidando el planeta">
+              <img class="landing-hero-slide" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80" alt="Bosque y naturaleza protegida">
+              <button class="landing-carousel-arrow landing-carousel-prev" type="button" data-landing-prev aria-label="Imagen anterior"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
+              <button class="landing-carousel-arrow landing-carousel-next" type="button" data-landing-next aria-label="Imagen siguiente"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
+              <div class="landing-carousel-dots" aria-label="Seleccionar imagen">
+                <button class="is-active" type="button" data-landing-dot="0" aria-label="Mostrar imagen 1"></button>
+                <button type="button" data-landing-dot="1" aria-label="Mostrar imagen 2"></button>
+                <button type="button" data-landing-dot="2" aria-label="Mostrar imagen 3"></button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -456,6 +465,24 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/public_inicio.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-landing-carousel]');
+      if (!root) return;
+      const slides = [...root.querySelectorAll('.landing-hero-slide')];
+      const dots = [...root.querySelectorAll('[data-landing-dot]')];
+      let index = 0;
+      let timer;
+      const show = (next) => { index = (next + slides.length) % slides.length; slides.forEach((s, i) => s.classList.toggle('is-active', i === index)); dots.forEach((d, i) => d.classList.toggle('is-active', i === index)); };
+      const start = () => { clearInterval(timer); timer = setInterval(() => show(index + 1), 4500); };
+      root.querySelector('[data-landing-prev]').onclick = () => { show(index - 1); start(); };
+      root.querySelector('[data-landing-next]').onclick = () => { show(index + 1); start(); };
+      dots.forEach((dot) => dot.onclick = () => { show(Number(dot.dataset.landingDot)); start(); });
+      root.onmouseenter = () => clearInterval(timer);
+      root.onmouseleave = start;
+      start();
+    })();
+  </script>
   <script>
     // Animación de entrada al hacer scroll (Reemplaza la lógica previa de Tailwind)
     const observerOptions = { threshold: 0.1 };

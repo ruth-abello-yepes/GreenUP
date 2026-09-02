@@ -187,3 +187,15 @@
 .gu-inline-17 { width: 36px; height: 36px; }
 .gu-inline-18 { width: 36px; height: 36px; }
 
+.landing-hero-carousel { position: relative; min-height: 430px; }
+.landing-hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; object-fit: cover; }
+.landing-hero-slide.is-active { opacity: 1; }
+.landing-carousel-arrow { position: absolute; top: 50%; z-index: 2; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.75); border-radius: 50%; background: rgba(0,40,55,.6); color: #fff; transform: translateY(-50%); }
+.landing-carousel-prev { left: 14px; }
+.landing-carousel-next { right: 14px; }
+.landing-carousel-dots { position: absolute; right: 0; bottom: 14px; left: 0; z-index: 2; display: flex; justify-content: center; gap: 8px; }
+.landing-carousel-dots button { width: 28px; height: 5px; padding: 0; border: 0; border-radius: 999px; background: rgba(255,255,255,.6); }
+.landing-carousel-dots button.is-active { background: var(--gu-accent); }
+@media (prefers-reduced-motion: reduce) { .landing-hero-slide { transition: none; } }
+@media (max-width: 767.98px) { .landing-hero-carousel { min-height: 280px; } }
+

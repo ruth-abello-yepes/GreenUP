@@ -825,6 +825,9 @@ body.recicladora-theme-dark .role-nav-menu {
   padding: 0 14px;
   font-size: 0.76rem;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .status-success {

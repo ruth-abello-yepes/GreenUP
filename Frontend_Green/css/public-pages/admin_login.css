@@ -169,6 +169,21 @@
       min-height: 620px;
     }
 
+    @media (min-width: 901px) {
+      body {
+        overflow: hidden;
+      }
+
+      .login-shell {
+        max-height: calc(100vh - 56px);
+      }
+
+      .login-visual,
+      .login-panel {
+        min-height: 0;
+      }
+    }
+
     .login-panel h2 {
       margin: 0;
       color: var(--admin-blue-dark);
@@ -263,6 +278,12 @@
       line-height: 1.45;
     }
 
+    .visual-note {
+      margin-top: 16px;
+      background: rgba(233, 244, 255, 0.86);
+      font-size: 0.78rem;
+    }
+
     @media (max-width: 900px) {
       body {
         display: block;
@@ -317,7 +338,7 @@
       }
 
       .login-panel {
-        min-height: 590px;
+        min-height: 0;
       }
 
       .login-visual {

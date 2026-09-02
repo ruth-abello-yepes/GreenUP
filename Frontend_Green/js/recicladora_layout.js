@@ -772,12 +772,38 @@ function crearMenuSuperiorRecicladora() {
     navegacion.appendChild(enlaceRegistros);
   }
 
+  // Todas las pantallas usan el mismo orden, incluida la pagina de pendientes.
+  const ordenNavegacion = [
+    "recicladora_panel.html",
+    "recicladora_materiales.html",
+    "recicladora_residuos.html",
+    "recicladora_pendientes.html",
+    "recicladora_usuarios.html",
+    "mi_punto_ecologico.html",
+  ];
+  if (navegacion) {
+    const enlaces = new Map(Array.from(navegacion.querySelectorAll(".sidebar-link"))
+      .map((enlace) => [enlace.getAttribute("href"), enlace]));
+    ordenNavegacion.forEach((href) => {
+      const enlace = enlaces.get(href);
+      if (enlace) navegacion.appendChild(enlace);
+    });
+  }
+
   const paginaActual = window.location.pathname.split("/").pop() || "recicladora_panel.html";
   sidebar.querySelectorAll(".sidebar-nav .sidebar-link").forEach((enlace) => {
     const activo = enlace.getAttribute("href") === paginaActual;
     enlace.classList.toggle("active", activo);
     if (activo) enlace.setAttribute("aria-current", "page");
     else enlace.removeAttribute("aria-current");
+  });
+
+  // El acceso contextual también debe llevar al mismo módulo y conservar el
+  // nombre visible, independientemente de la pantalla desde la que se abra.
+  document.querySelectorAll('.user-dropdown a[href="recicladora_pendientes.html"], .user-dropdown a[href="recicladora_registros_reciclaje.html"]').forEach((enlace) => {
+    enlace.href = "recicladora_pendientes.html";
+    const texto = enlace.querySelector("span:last-child");
+    if (texto) texto.textContent = "Registro pendiente";
   });
 
   const boton = document.createElement("button");

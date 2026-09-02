@@ -8,7 +8,7 @@
   <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="../../img/logo-greenup.png">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estadisticas de impacto - GreenUp</title>
+  <title>Registros pendientes - GreenUp</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -40,10 +40,6 @@
       </a>
     
       <a class="sidebar-link" href="recicladora_residuos.html">
-      <a class="sidebar-link" href="recicladora_pendientes.html">
-        <span class="material-symbols-outlined">pending_actions</span>
-        <span>Registro pendiente</span>
-      </a>
         <span class="material-symbols-outlined">delete_sweep</span>
         <span>Gestionar residuos</span>
       </a>
@@ -113,7 +109,7 @@
           </button>
           <div class="user-dropdown" id="userDropdown">
             
-      <a href="recicladora_registros_reciclaje.html" class="">
+      <a href="recicladora_pendientes.html" class="">
         <span class="material-symbols-outlined">fact_check</span>
         <span>Registros</span>
       </a>
@@ -167,56 +163,58 @@
 
     <section class="page-hero">
       <div>
-        <h1 class="page-title">Estadisticas de <strong>impacto</strong></h1>
-        <p class="page-subtitle">Analiza recuperacion de materiales, eficiencia de rutas y composicion de residuos para tomar mejores decisiones.</p>
+        <h1 class="page-title">Registros de <strong>reciclaje</strong></h1>
+        <p class="page-subtitle">Consulta entradas de material, entregas registradas y trazabilidad de cada carga recibida.</p>
       </div>
       <div class="hero-stats">
       <article class="summary-card muted">
-        <span class="summary-label">Recuperado</span>
-        <span class="summary-value" data-summary-label="Recuperado">0 kg</span>
+        <span class="summary-label">Registros</span>
+        <span class="summary-value" data-summary-label="Registros">0</span>
       </article>
     
       <article class="summary-card blue">
-        <span class="summary-label">Crecimiento</span>
-        <span class="summary-value" data-summary-label="Crecimiento">0%</span>
+        <span class="summary-label">Pendientes</span>
+        <span class="summary-value" data-summary-label="Pendientes">0</span>
       </article>
     </div>
     </section>
   
 <section class="filter-bar" aria-label="Filtros">
-      <select class="form-select" aria-label="Periodo">
-        <option selected>Periodo</option><option >Ultimos 30 dias</option><option >Trimestre</option><option >Ano</option>
-      </select>
+      <div class="search-shell search-field">
+        <span class="material-symbols-outlined">search</span>
+        <input class="form-control" type="search" placeholder="Buscar por codigo, usuario o material..." aria-label="Buscar">
+      </div>
     
       <select class="form-select" aria-label="Material">
-        <option selected>Material</option><option >Todos</option><option >PET</option><option >Vidrio</option>
+        <option selected>Material</option><option >PET</option><option >Vidrio</option><option >Carton</option>
       </select>
     
-      <select class="form-select" aria-label="Zona">
-        <option selected>Zona</option><option >Todas</option><option >Norte</option><option >Centro</option><option >Sur</option>
+      <select class="form-select" aria-label="Periodo">
+        <option selected>Periodo</option><option >Hoy</option><option >Semana</option><option >Mes</option>
       </select>
     <button class="filter-action" type="button" aria-label="Aplicar filtros"><span class="material-symbols-outlined">filter_list</span></button></section>
-
-    <section class="content-grid">
-      <article class="admin-card span-8">
-        <div class="card-title-row"><h2>Toneladas recuperadas</h2><button class="btn-soft" type="button" disabled title="No hay datos para exportar">Exportar</button></div>
-        
-    <div class="chart-bars" aria-label="Grafico semanal">
-      <div class="chart-bar"><span data-chart-value="Lun" style="height:0%"></span><span>Lun</span></div><div class="chart-bar"><span data-chart-value="Mar" style="height:0%"></span><span>Mar</span></div><div class="chart-bar"><span data-chart-value="Mie" style="height:0%"></span><span>Mie</span></div><div class="chart-bar"><span data-chart-value="Jue" style="height:0%"></span><span>Jue</span></div><div class="chart-bar"><span data-chart-value="Vie" style="height:0%"></span><span>Vie</span></div><div class="chart-bar"><span data-chart-value="Sab" style="height:0%"></span><span>Sab</span></div><div class="chart-bar"><span data-chart-value="Dom" style="height:0%"></span><span>Dom</span></div>
-    </div>
-  
-      </article>
-      <article class="admin-card span-4">
-        <div class="card-title-row"><h2>Composicion</h2></div>
-        <div class="donut empty"><div class="donut-center"><div><span style="display:block;font-size:2rem;">0%</span><small>reciclable</small></div></div></div>
-        <div class="stack-list" style="margin-top:22px;">
-          <div style="display:flex;justify-content:space-between;"><span>Plastico</span><strong>0%</strong></div>
-          <div style="display:flex;justify-content:space-between;"><span>Vidrio</span><strong>0%</strong></div>
-          <div style="display:flex;justify-content:space-between;"><span>Metal</span><strong>0%</strong></div>
-        </div>
-      </article>
-    </section>
-  
+<section class="content-grid">
+    <article class="table-card span-12">
+      <div class="card-title-row" style="padding: 22px 24px 0;">
+        <h2>Entradas recientes</h2>
+        <button class="btn-soft" type="button" disabled title="No hay datos para exportar"><span class="material-symbols-outlined">download</span>Exportar</button>
+      </div>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead><tr><th>Registro</th><th>Usuario</th><th>Material</th><th>Cantidad</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+    <tr class="empty-row">
+      <td colspan="6" class="empty-table-cell">
+        <span class="material-symbols-outlined">inbox</span>
+        <strong>Sin registros</strong>
+        <small>Cuando haya informacion en la base de datos aparecera aqui automaticamente.</small>
+      </td>
+    </tr>
+  </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
   </main>
   <!-- Navegacion inferior movil para accesos rapidos. -->
 

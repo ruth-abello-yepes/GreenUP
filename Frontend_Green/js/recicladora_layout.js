@@ -544,11 +544,12 @@ async function refreshCurrentPage() {
       `).join("") : '<tr><td colspan="5" class="empty-table-cell">No hay residuos registrados.</td></tr>';
     }
 
-    if (current === "recicladora_registros_reciclaje.html") {
-      setText('[data-summary-label="Registros"]', registros.length);
+  if (current === "recicladora_registros_reciclaje.html" || current === "recicladora_pendientes.html") {
+      const registrosVisibles = current === "recicladora_pendientes.html" ? pendientes : registros;
+      setText('[data-summary-label="Registros"]', registrosVisibles.length);
       setText('[data-summary-label="Pendientes"]', pendientes.length);
-      renderRegistrosRecicladoraTable(registros);
-      setExportData(registros.map((item) => [
+      renderRegistrosRecicladoraTable(registrosVisibles);
+      setExportData(registrosVisibles.map((item) => [
         `#RR-${item.id_registro}`,
         item.usuario || `Usuario ${item.id_usuario}`,
         item.material || `Material ${item.id_tipo_material}`,

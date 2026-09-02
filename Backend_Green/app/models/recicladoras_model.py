@@ -137,7 +137,26 @@ def listar_recicladoras():
         recicladoras.id_recicladora,
         COALESCE(NULLIF(recicladoras.nit_empresa, ''), usuarios.numero_documento) AS nit_empresa,
         COALESCE(NULLIF(recicladoras.nombre_empresa, ''), '') AS nombre_empresa,
-        COALESCE(NULLIF(recicladoras.direccion_empresa, ''), 'Direccion pendiente') AS direccion_empresa,
+        COALESCE(
+            NULLIF(
+                CASE
+                    WHEN LOWER(TRIM(COALESCE(recicladoras.direccion_empresa, ''))) LIKE '%pendiente%'
+                      OR LOWER(TRIM(COALESCE(recicladoras.direccion_empresa, ''))) LIKE '%por confirmar%'
+                    THEN ''
+                    ELSE recicladoras.direccion_empresa
+                END,
+                ''
+            ),
+            (
+                SELECT NULLIF(TRIM(p.direccion), '')
+                FROM puntos_reciclaje p
+                WHERE LOWER(TRIM(COALESCE(p.nombre, ''))) = LOWER(TRIM(COALESCE(recicladoras.nombre_empresa, '')))
+                   OR LOWER(TRIM(COALESCE(p.responsable, ''))) = LOWER(TRIM(CONCAT(usuarios.nombres, ' ', usuarios.apellidos)))
+                ORDER BY p.id_punto DESC
+                LIMIT 1
+            ),
+            'Direccion pendiente'
+        ) AS direccion_empresa,
         COALESCE(NULLIF(recicladoras.telefono_empresa, ''), usuarios.celular) AS telefono_empresa,
         COALESCE(recicladoras.camara_comercio, '') AS camara_comercio,
         COALESCE(NULLIF(recicladoras.horario, ''), 'Horario pendiente') AS horario,

@@ -476,6 +476,13 @@ async function refreshCurrentPage() {
     setText('[data-summary-label="Catalogados"]', `${materiales.length} tipos`);
     setText('[data-summary-label="Activos"]', `${aceptados.length} materiales`);
     renderMaterialsTable(materiales);
+    const registroMateriales = document.getElementById("registro-residuos-materiales");
+    if (registroMateriales) {
+      const registros = await fetchJson("/api/recicladoras/registros");
+      registroMateriales.innerHTML = registros.length ? registros.slice(0, 12).map((item) => `
+        <tr><td>#GR-${item.id_registro}</td><td>${escapeHtml(item.material || "Material")}</td><td>${formatKg(item.cantidad)}</td><td>${escapeHtml(getRegistroReciclajeState(item).label)}</td><td>${escapeHtml(item.punto || "Punto de origen")}</td></tr>
+      `).join("") : '<tr><td colspan="5" class="empty-table-cell">No hay materiales registrados.</td></tr>';
+    }
     setExportData(materiales.map((item) => [
       `#MAT-${item.id_tipo_material}`,
       item.nombre || "Material",

@@ -1159,19 +1159,18 @@ function bindProfileSave() {
         method: "PUT",
         body: JSON.stringify(data),
       });
-      try {
-        await fetchJson("/api/recicladoras/mi-punto", {
-          method: "PUT",
-          body: JSON.stringify({
-            nombre_empresa: data.nombre_empresa,
-            direccion_empresa: data.direccion_empresa,
-            telefono_empresa: data.telefono_empresa,
-            horario: data.horario,
-          }),
-        });
-      } catch (errorPunto) {
-        console.warn("Perfil guardado sin actualizar punto ecologico:", errorPunto.message);
-      }
+      // La dirección y el horario deben confirmarse también en el punto
+      // ecológico. Si esta segunda operación falla, no mostramos un falso
+      // mensaje de éxito: el catch exterior informa el error real.
+      await fetchJson("/api/recicladoras/mi-punto", {
+        method: "PUT",
+        body: JSON.stringify({
+          nombre_empresa: data.nombre_empresa,
+          direccion_empresa: data.direccion_empresa,
+          telefono_empresa: data.telefono_empresa,
+          horario: data.horario,
+        }),
+      });
       await hydrateRecicladoraProfile();
       alert("Perfil actualizado correctamente");
       const user = getUser();

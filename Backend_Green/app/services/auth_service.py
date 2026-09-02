@@ -30,6 +30,7 @@ from flask import current_app
 import jwt
 import requests
 from app.common.jwt_config import JWT_ALGORITHM, obtener_jwt_secret
+from app.common.config import JWT_EXPIRACION_MINUTOS
 
 from app.models.usuarios_model import (
     buscar_usuario_por_usuario,
@@ -196,7 +197,7 @@ def _crear_token(usuario):
         "id_usuario": usuario["id_usuario"],
         "id_rol": usuario["id_rol"],
         "usuario": usuario["usuario"],
-        "exp": datetime.utcnow() + timedelta(hours=8),
+        "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRACION_MINUTOS),
     }
     return jwt.encode(payload, obtener_jwt_secret(), algorithm=JWT_ALGORITHM)
 

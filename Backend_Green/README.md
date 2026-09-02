@@ -86,6 +86,10 @@ Edita `.env` con las credenciales reales de PostgreSQL/Supabase.
 | `ADMIN_ACCESS_CODE` | Codigo extra requerido para login de administrador | `GREENUP-ADMIN-2026` |
 | `JWT_SECRET_KEY` | Clave para firmar tokens JWT | `cambia-esto-en-produccion` |
 | `CORS_ORIGINS` | Origenes permitidos separados por coma | `https://greenupgrup.netlify.app,http://127.0.0.1:5502` |
+| `JWT_EXPIRACION_MINUTOS` | Vigencia maxima del token JWT | `30` |
+| `INACTIVIDAD_MINUTOS` | Referencia para cierre por inactividad del cliente | `20` |
+| `LOGIN_IP_MAX_INTENTOS` | Solicitudes de login permitidas por IP en la ventana | `20` |
+| `LOGIN_IP_VENTANA_SEGUNDOS` | Ventana del limite por IP | `900` |
 
 ## Base de datos
 

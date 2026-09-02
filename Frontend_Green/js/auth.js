@@ -100,6 +100,23 @@ function cerrarSesion() {
   window.location.href = "../public/public_login.html";
 }
 
+// Cierra sesiones inactivas para limitar el riesgo si se deja el navegador abierto.
+(function configurarExpiracionPorInactividad() {
+  const LIMITE = 20 * 60 * 1000;
+  let temporizador;
+  const reiniciar = () => {
+    if (!localStorage.getItem("token")) return;
+    clearTimeout(temporizador);
+    temporizador = setTimeout(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "../public/public_login.html?sesion=expirada";
+    }, LIMITE);
+  };
+  ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach((evento) => window.addEventListener(evento, reiniciar, { passive: true }));
+  reiniciar();
+})();
+
 /**
  * Crea una ventana modal Bootstrap para confirmar el cierre de sesion.
  *

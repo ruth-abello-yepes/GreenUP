@@ -3,6 +3,8 @@
 
 import os
 import traceback
+import logging
+import time
 from dotenv import load_dotenv
 
 # Cargar variables de entorno desde el archivo .env
@@ -13,6 +15,10 @@ from flask_cors import CORS
 from flask_mail import Mail
 
 from app.common.swagger import configurar_swagger
+from app.common.config import LOGIN_IP_MAX_INTENTOS, LOGIN_IP_VENTANA_SEGUNDOS
+
+_intentos_por_ip = {}
+_logger_seguridad = logging.getLogger("greenup.security")
 
 # Instancia global del correo
 mail = Mail()
@@ -56,6 +62,21 @@ def crear_app():
         resources={r"/*": {"origins": origenes_permitidos}},
         supports_credentials=False,
     )
+
+    @app.before_request
+    def limitar_login_por_ip():
+        if request.method != "POST" or request.path not in ("/api/login", "/api/admin/login"):
+            return None
+        ahora = time.time()
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr or "desconocida").split(",")[0].strip()
+        registro = _intentos_por_ip.get(ip, [])
+        registro = [marca for marca in registro if ahora - marca < LOGIN_IP_VENTANA_SEGUNDOS]
+        if len(registro) >= LOGIN_IP_MAX_INTENTOS:
+            _logger_seguridad.warning("login_rate_limited ip=%s ruta=%s", ip, request.path)
+            return jsonify({"mensaje": "Demasiados intentos desde esta red. Intenta mas tarde."}), 429
+        registro.append(ahora)
+        _intentos_por_ip[ip] = registro
+        return None
 
     @app.after_request
     def agregar_cors_a_todas_las_respuestas(respuesta):

@@ -752,8 +752,8 @@ function crearMenuSuperiorRecicladora() {
   cerrar.type = "button";
   cerrar.className = "logout-link role-menu-link";
   cerrar.innerHTML = '<span class="material-symbols-outlined">logout</span><span>Cerrar sesion</span>';
-  cerrar.addEventListener("click", () => {
-    if (typeof cerrarSesion === "function") cerrarSesion();
+  cerrar.addEventListener("click", (event) => {
+    if (typeof cerrarSesion === "function") cerrarSesion(event);
   });
   menu.appendChild(cerrar);
 

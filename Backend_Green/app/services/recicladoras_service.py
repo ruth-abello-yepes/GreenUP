@@ -322,6 +322,8 @@ def servicio_registrar_dueno_recicladora(datos):
         if not materiales_guardados:
             raise RuntimeError("No se pudieron asociar los materiales al punto ecologico.")
 
+        _activar_si_datos_completos(id_usuario_creado)
+
         crear_notificacion(
             "Nueva recicladora registrada",
             f"Se registró la recicladora {nombre_empresa}. Revisa su Cámara de Comercio para activar la cuenta.",

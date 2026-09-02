@@ -8,9 +8,10 @@
     <meta charset="UTF-8" />
       <link rel="icon" type="image/png" href="../../img/logo-greenup.png">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sobre GreenUp</title>
+    <meta name="description"
+        content="Conoce el propósito, las funciones y el equipo creador de GreenUp, una plataforma ambiental desarrollada en Valledupar.">
+    <title>GreenUp | Sobre nosotros</title>
 
-    <link rel="stylesheet" href="../../css/general.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
@@ -19,7 +20,7 @@
   <link rel="stylesheet" href="../../css/public-pages/public_sobre_nosotros.css">
 </head>
 
-<body>
+<body class="public-about-page">
 
     <nav class="navbar navbar-expand-md bg-white fixed-top shadow-sm py-2">
         <div class="container-fluid px-4">
@@ -29,8 +30,7 @@
             </button>
 
             <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-decoration-none" href="public_inicio.html">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
-                    alt="Logo" width="32" height="32" class="me-2">
+                <img src="../../img/logo-greenup.png" alt="Logo de GreenUp" width="36" height="36" class="me-2">
                 <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
             </a>
 
@@ -79,8 +79,7 @@
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileOffcanvas" aria-labelledby="mobileOffcanvasLabel">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="mobileOffcanvasLabel">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
-                    alt="Logo" width="28" height="28" class="me-2">
+                <img src="../../img/logo-greenup.png" alt="Logo de GreenUp" width="30" height="30" class="me-2">
                 <span class="text-gu-primary">Green</span><span class="text-gu-secondary">Up</span>
             </h5>
             <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -127,157 +126,319 @@
         </div>
     </div>
 
-    <main>
-        <section class="container py-5">
-            <div class="row g-4 align-items-center">
-                <div class="col-lg-7">
-                    <span class="badge rounded-pill text-bg-success mb-3 px-3 py-2">Sobre GreenUp</span>
-                    <h1 class="display-5 fw-bold text-gu-primary mb-3">Reciclar en Valledupar debe ser más fácil de entender y de hacer</h1>
-                    <p class="lead text-secondary mb-4">
-                        GreenUp conecta ciudadanos, recicladoras y administradores para organizar la separación de residuos,
-                        ubicar puntos ecológicos y consultar información ambiental en un solo lugar.
+    <main id="contenido-principal">
+        <section class="about-hero">
+            <div class="container">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-7">
+                        <span class="about-eyebrow">
+                            <span class="material-symbols-outlined" aria-hidden="true">eco</span>
+                            Proyecto ambiental y tecnológico
+                        </span>
+                        <h1>Tecnología para hacer el reciclaje más claro, cercano y medible</h1>
+                        <p class="about-hero-copy">
+                            GreenUp nace en Valledupar para reducir la distancia entre querer reciclar y saber cómo
+                            hacerlo. La plataforma reúne puntos de recolección, educación ambiental, registros y
+                            estadísticas en una experiencia accesible para la comunidad.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <a href="public_registro.html" class="btn btn-gu-primary btn-lg rounded-pill px-4">Únete a GreenUp</a>
+                            <a href="#equipo" class="btn btn-outline-success btn-lg rounded-pill px-4">Conoce al equipo</a>
+                        </div>
+                        <ul class="about-facts" aria-label="Datos del proyecto">
+                            <li><span class="material-symbols-outlined" aria-hidden="true">school</span> Proyecto SENA</li>
+                            <li><span class="material-symbols-outlined" aria-hidden="true">location_on</span> Valledupar, Cesar</li>
+                            <li><span class="material-symbols-outlined" aria-hidden="true">badge</span> Ficha 315086</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="about-hero-card">
+                            <div class="about-hero-logo">
+                                <img src="../../img/logo-greenup.png" alt="" aria-hidden="true">
+                            </div>
+                            <p class="about-card-kicker">Una plataforma, tres participantes</p>
+                            <h2>Todos cumplen un papel en el ciclo del reciclaje</h2>
+                            <div class="about-role-list">
+                                <div><span class="material-symbols-outlined" aria-hidden="true">person</span><span><strong>Ciudadanía</strong> registra y consulta su aporte.</span></div>
+                                <div><span class="material-symbols-outlined" aria-hidden="true">recycling</span><span><strong>Recicladoras</strong> gestionan puntos y materiales.</span></div>
+                                <div><span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span><span><strong>Administración</strong> organiza la información del sistema.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="proposito">
+            <div class="container">
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-lg-7">
+                        <div class="about-story-card h-100">
+                            <span class="section-kicker">El reto</span>
+                            <h2 class="section-title">La intención de reciclar necesita información y herramientas</h2>
+                            <p>
+                                En Valledupar muchas personas quieren manejar mejor sus residuos, pero no siempre
+                                conocen los puntos de entrega, sus horarios, los materiales aceptados o la forma
+                                correcta de separarlos. Esa falta de información dificulta convertir la conciencia
+                                ambiental en una práctica constante.
+                            </p>
+                            <p class="mb-0">
+                                GreenUp responde a ese reto conectando educación, geolocalización y seguimiento para
+                                que cada usuario pueda aprender, actuar y observar su progreso desde un mismo lugar.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="about-question-card h-100">
+                            <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+                            <p class="about-card-kicker">La pregunta que nos guía</p>
+                            <blockquote>
+                                ¿Cómo puede la tecnología facilitar el reciclaje, fortalecer la conciencia ambiental
+                                y conectar a la comunidad con los puntos de recolección?
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section about-section-soft" id="mision">
+            <div class="container">
+                <div class="section-heading text-center">
+                    <span class="section-kicker">Nuestro propósito</span>
+                    <h2 class="section-title">Una solución local con visión de futuro</h2>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <article class="purpose-card h-100">
+                            <div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">target</span></div>
+                            <h3>Misión</h3>
+                            <p>
+                                Fomentar la conciencia ambiental y la práctica del reciclaje, vinculando a las personas
+                                con puntos de recolección, contenido educativo y herramientas que impulsen la
+                                participación comunitaria.
+                            </p>
+                        </article>
+                    </div>
+                    <div class="col-md-6">
+                        <article class="purpose-card h-100">
+                            <div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">visibility</span></div>
+                            <h3>Visión</h3>
+                            <p>
+                                Consolidar una herramienta tecnológica adaptable que apoye la cultura ambiental, la
+                                economía circular y la colaboración entre ciudadanía y actores del reciclaje en
+                                Valledupar y otras comunidades.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="funciones">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-kicker">Qué permite hacer</span>
+                    <h2 class="section-title">Herramientas conectadas con necesidades reales</h2>
+                    <p>Las funciones se apoyan en módulos que ya forman parte de la plataforma y de su backend.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">map</span></div><h3>Encontrar puntos ecológicos</h3><p>Consultar ubicaciones de reciclaje y los materiales recibidos en cada punto.</p></article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">recycling</span></div><h3>Registrar reciclajes</h3><p>Guardar el material, la cantidad, la fecha y el lugar asociado a cada entrega.</p></article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">school</span></div><h3>Aprender a separar</h3><p>Acceder a contenidos sobre clasificación de residuos, reciclaje y sostenibilidad.</p></article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span></div><h3>Consultar estadísticas</h3><p>Observar cantidades registradas, evolución del reciclaje y actividad por material.</p></article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">report_problem</span></div><h3>Reportar novedades</h3><p>Informar problemas como puntos saturados, inactivos o con datos incorrectos.</p></article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="feature-card h-100"><div class="about-icon"><span class="material-symbols-outlined" aria-hidden="true">manage_accounts</span></div><h3>Gestionar por roles</h3><p>Ofrecer accesos diferenciados para ciudadanía, recicladoras y administración.</p></article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section impact-section" id="impacto">
+            <div class="container">
+                <div class="section-heading text-center text-white">
+                    <span class="section-kicker section-kicker-light">Impacto esperado</span>
+                    <h2 class="section-title text-white">Cuatro maneras de aportar a la ciudad</h2>
+                    <p>Estos son los efectos que el proyecto busca promover; no son cifras o resultados inventados.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-sm-6 col-xl-3"><article class="impact-card h-100"><span class="material-symbols-outlined" aria-hidden="true">diversity_3</span><h3>Social</h3><p>Impulsar participación y conciencia ambiental en la comunidad.</p></article></div>
+                    <div class="col-sm-6 col-xl-3"><article class="impact-card h-100"><span class="material-symbols-outlined" aria-hidden="true">autorenew</span><h3>Económico</h3><p>Apoyar la economía circular y el valor de los materiales recuperables.</p></article></div>
+                    <div class="col-sm-6 col-xl-3"><article class="impact-card h-100"><span class="material-symbols-outlined" aria-hidden="true">forest</span><h3>Ambiental</h3><p>Favorecer la separación y reducir residuos sólidos mal gestionados.</p></article></div>
+                    <div class="col-sm-6 col-xl-3"><article class="impact-card h-100"><span class="material-symbols-outlined" aria-hidden="true">devices</span><h3>Tecnológico</h3><p>Integrar mapas, datos y educación en una herramienta adaptable.</p></article></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section team-section" id="equipo">
+            <div class="container">
+                <div class="section-heading text-center">
+                    <span class="section-kicker">Quiénes somos</span>
+                    <h2 class="section-title">Equipo creador de GreenUp</h2>
+                    <p>
+                        GreenUp es un proyecto académico desarrollado colaborativamente por tres aprendices. El
+                        análisis, el diseño y la construcción de la plataforma son resultado del trabajo conjunto.
                     </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="public_registro.html" class="btn btn-gu-primary text-white rounded-pill px-4">Crear cuenta</a>
-                        <a href="public_educacion.html" class="btn btn-outline-success rounded-pill px-4">Ver educación ambiental</a>
-                    </div>
                 </div>
-                <div class="col-lg-5">
-                    <div class="rounded-4 overflow-hidden shadow-sm">
-                        <img class="w-100 public_sobre_nosotros-inline-2"
-                            src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=900&q=80"
-                            alt="Personas separando residuos reciclables">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-xl-4">
+                        <article class="team-card h-100">
+                            <img src="../../img/equipo/anyeli-chico.jpeg" alt="Retrato de Anyeli Marian Chico Arrieta" loading="lazy">
+                            <div class="team-card-body">
+                                <span class="team-role">Analista y desarrolladora de software</span>
+                                <h3>Anyeli Marian Chico Arrieta</h3>
+                                <p class="team-description">
+                                    Aprendiz SENA de Análisis y Desarrollo de Software, enfocada en el análisis,
+                                    diseño y creación de soluciones digitales funcionales, atractivas y de calidad.
+                                    En GreenUp fortalece el diseño de interfaces y la integración de funcionalidades.
+                                </p>
+                                <a href="https://github.com/anyelimarianchico-dev" target="_blank" rel="noopener noreferrer" class="team-link">
+                                    <span class="material-symbols-outlined" aria-hidden="true">code</span> @anyelimarianchico-dev
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="team-card h-100">
+                            <img src="../../img/equipo/oreste-suarez.jpeg" alt="Retrato de Oreste Junior Suarez Leguía" loading="lazy">
+                            <div class="team-card-body">
+                                <span class="team-role">Analista y desarrollador de software</span>
+                                <h3>Oreste Junior Suarez Leguía</h3>
+                                <p class="team-description">
+                                    Aprendiz SENA de Análisis y Desarrollo de Software, interesado en la tecnología y
+                                    el desarrollo de soluciones digitales. En GreenUp participa principalmente en la
+                                    construcción de interfaces y la implementación visual de la plataforma.
+                                </p>
+                                <a href="https://github.com/OresteSuarez" target="_blank" rel="noopener noreferrer" class="team-link">
+                                    <span class="material-symbols-outlined" aria-hidden="true">code</span> @OresteSuarez
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="team-card h-100">
+                            <img src="../../img/equipo/ruth-abello.jpeg" alt="Retrato de Ruth Mery Abello Yepes" loading="lazy">
+                            <div class="team-card-body">
+                                <span class="team-role">Analista y desarrolladora de software</span>
+                                <h3>Ruth Mery Abello Yepes</h3>
+                                <p class="team-description">
+                                    Aprendiz SENA de Análisis y Desarrollo de Software, con formación previa en
+                                    Ingeniería de Sistemas. Participa en requerimientos, diseño, codificación, pruebas
+                                    y documentación, con énfasis en backend, datos e integración técnica.
+                                </p>
+                                <a href="https://github.com/ruth-abello-yepes" target="_blank" rel="noopener noreferrer" class="team-link">
+                                    <span class="material-symbols-outlined" aria-hidden="true">code</span> @ruth-abello-yepes
+                                </a>
+                            </div>
+                        </article>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="mision" class="container py-4">
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="bg-white rounded-4 shadow-sm p-4 h-100 border">
-                        <h2 class="h4 fw-bold text-gu-primary">Misión</h2>
-                        <p class="text-secondary mb-0">
-                            Ayudar a que más personas separen sus residuos correctamente, encuentren dónde entregarlos
-                            y entiendan cómo sus acciones aportan al cuidado ambiental de la ciudad.
-                        </p>
+        <section class="about-section" id="alcance">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="scope-card h-100">
+                            <span class="section-kicker">Alcance actual</span>
+                            <h2 class="section-title">De una idea móvil a una plataforma web adaptable</h2>
+                            <p>
+                                La propuesta nació como una aplicación móvil educativa. Actualmente se implementa como
+                                una plataforma web responsive con frontend en HTML, CSS, JavaScript y Bootstrap, una API
+                                en Flask y almacenamiento en PostgreSQL/Supabase.
+                            </p>
+                            <div class="tech-list" aria-label="Tecnologías principales">
+                                <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Bootstrap</span>
+                                <span>Flask</span><span>PostgreSQL</span><span>Supabase</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="bg-white rounded-4 shadow-sm p-4 h-100 border">
-                        <h2 class="h4 fw-bold text-gu-primary">Visión</h2>
-                        <p class="text-secondary mb-0">
-                            Convertir a GreenUp en una herramienta local de apoyo para ciudadanos, recicladoras,
-                            colegios, negocios y entidades que quieran mejorar la cultura ambiental del Cesar.
-                        </p>
+                    <div class="col-lg-5">
+                        <aside class="scope-limit-card h-100">
+                            <span class="material-symbols-outlined" aria-hidden="true">info</span>
+                            <h2>Qué no hace GreenUp</h2>
+                            <p>
+                                La plataforma orienta, conecta y registra información. No realiza la recolección física
+                                de residuos ni administra la logística de transporte.
+                            </p>
+                            <p class="mb-0">Algunas funciones continúan en desarrollo y pueden cambiar durante las pruebas.</p>
+                        </aside>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="impacto" class="container py-4">
-            <div class="bg-light rounded-4 p-4 p-md-5 border">
-                <h2 class="h3 fw-bold text-gu-primary mb-3">Impacto del proyecto</h2>
-                <p class="text-secondary mb-0">
-                    Las cifras de GreenUp se calculan con los usuarios, puntos y registros guardados en la base de datos.
-                    Por eso evitamos mostrar números inflados: el impacto real crecerá a medida que la comunidad use la plataforma.
-                </p>
-            </div>
-        </section>
-
-        <section id="equipo" class="container py-4">
-            <h2 class="h3 fw-bold text-gu-primary mb-3">Nuestro equipo</h2>
-            <p class="text-secondary">
-                Somos un equipo académico construyendo una solución web para apoyar la educación ambiental, la gestión
-                de reciclaje y la comunicación entre ciudadanos y recicladoras.
-            </p>
-        </section>
-
-        <section id="legal" class="container py-4 pb-5">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h3 class="h5 fw-bold text-gu-primary">Privacidad</h3>
-                    <p class="text-secondary small">Usamos los datos únicamente para identificar la cuenta, cargar el perfil y registrar acciones dentro de GreenUp.</p>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="h5 fw-bold text-gu-primary">Términos de uso</h3>
-                    <p class="text-secondary small">La plataforma está en fase de desarrollo académico y sus funciones pueden ajustarse durante las pruebas.</p>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="h5 fw-bold text-gu-primary">Soporte</h3>
-                    <p class="text-secondary small">Para reportar fallas o enviar sugerencias puedes escribir a greenup213@gmail.com.</p>
+        <section class="about-section pt-0" id="contacto">
+            <div class="container">
+                <div class="contact-banner">
+                    <div>
+                        <span class="section-kicker section-kicker-light">Construyamos mejores hábitos</span>
+                        <h2>¿Tienes una sugerencia para GreenUp?</h2>
+                        <p>Tu experiencia puede ayudarnos a mejorar una plataforma creada para la comunidad.</p>
+                    </div>
+                    <a href="mailto:greenup213@gmail.com" class="btn btn-light btn-lg rounded-pill px-4">
+                        <span class="material-symbols-outlined" aria-hidden="true">mail</span> Escríbenos
+                    </a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="d-flex align-items-center fw-bold fs-4 mb-3">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs" alt="Logo" width="32" height="32" class="me-2">
-                        <span class="public_sobre_nosotros-inline-3">Green</span><span class="public_sobre_nosotros-inline-4">Up</span>
-                    </div>
-                    <p class="text-white-50 small pe-lg-3">
-                        Plataforma tecnológica para promover la separación en la fuente, geolocalización de puntos limpios y economía circular en Valledupar.
-                    </p>
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_sobre_nosotros-inline-5">
-                            <span class="material-symbols-outlined fs-6">share</span>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_sobre_nosotros-inline-6">
-                            <span class="material-symbols-outlined fs-6">public</span>
-                        </a>
-                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle p-2 d-inline-flex align-items-center justify-content-center public_sobre_nosotros-inline-7">
-                            <span class="material-symbols-outlined fs-6">mail</span>
-                        </a>
-                    </div>
-                </div>
+    <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top" id="main-footer">
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-5 col-md-12">
+        <a href="public_inicio.html" class="d-inline-flex align-items-center gap-2 text-white text-decoration-none fw-bold fs-4 mb-3" aria-label="Ir al inicio de GreenUp">
+          <img src="../../img/logo-greenup.png" alt="" width="38" height="38" aria-hidden="true">
+          <span>GreenUp</span>
+        </a>
+        <p class="text-white-50 small mb-0 pe-lg-5">
+          GreenUp facilita el reciclaje, la consulta de puntos ecológicos y el acceso a información ambiental en Valledupar.
+        </p>
+      </div>
 
-                <div class="col-lg-3 col-md-6 col-6">
-                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Sobre Nosotros</h6>
-                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Misión y Visión</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Impacto 2026</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Nuestro Equipo</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Carreras</a></li>
-                    </ul>
-                </div>
+      <nav class="col-6 col-lg-3" aria-label="Navegación del pie de página">
+        <h2 class="h6 text-white fw-bold text-uppercase mb-3">Explora</h2>
+        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+          <li><a href="public_inicio.html" class="text-white-50 text-decoration-none hover-white">Inicio</a></li>
+          <li><a href="public_mapa.html" class="text-white-50 text-decoration-none hover-white">Mapa ecológico</a></li>
+          <li><a href="public_educacion.html" class="text-white-50 text-decoration-none hover-white">Educación ambiental</a></li>
+          <li><a href="public_estadisticas.html" class="text-white-50 text-decoration-none hover-white">Estadísticas</a></li>
+        </ul>
+      </nav>
 
-                <div class="col-lg-3 col-md-6 col-6">
-                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Noticias</h6>
-                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Boletín Ambiental</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eventos Locales</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Eco-Blog</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Novedades</a></li>
-                    </ul>
-                </div>
+      <nav class="col-6 col-lg-4" aria-label="Información de GreenUp">
+        <h2 class="h6 text-white fw-bold text-uppercase mb-3">Información</h2>
+        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+          <li><a href="public_sobre_nosotros.html" class="text-white-50 text-decoration-none hover-white">Sobre GreenUp</a></li>
+          <li><a href="public_educacion.html#noticias" class="text-white-50 text-decoration-none hover-white">Noticias ambientales</a></li>
+          <li><a href="public_login.html" class="text-white-50 text-decoration-none hover-white">Iniciar sesión</a></li>
+          <li><a href="public_registro.html" class="text-white-50 text-decoration-none hover-white">Crear una cuenta</a></li>
+        </ul>
+      </nav>
+    </div>
 
-                <div class="col-lg-3 col-md-6 col-6">
-                    <h6 class="text-gu-secondary fw-bold text-uppercase mb-3">Legal & Soporte</h6>
-                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Privacidad</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Términos de Uso</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Cookies</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none hover-white">Soporte Técnico</a></li>
-                    </ul>
-                </div>
-            </div>
+    <hr class="border-secondary my-4">
 
-            <hr class="border-secondary my-4">
-
-            <div class="row align-items-center small text-white-50">
-                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-                    © 2026 <span class="text-gu-primary fw-bold">Green</span><span class="text-gu-secondary fw-bold">Up</span>. Todos los derechos reservados.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <span>Valledupar, Cesar - Colombia</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <div class="row align-items-center small text-white-50 g-2">
+      <div class="col-md-7 text-center text-md-start">© 2026 GreenUp. Todos los derechos reservados.</div>
+      <div class="col-md-5 text-center text-md-end">Valledupar, Cesar, Colombia</div>
+    </div>
+  </div>
+</footer>
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="../../js/modal_alerts.js?v=20260827"></script>
   <script src="../../js/public_ui_fix.js?v=20260901-a11y3"></script>

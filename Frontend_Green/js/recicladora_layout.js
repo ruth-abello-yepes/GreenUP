@@ -505,7 +505,7 @@ async function refreshCurrentPage() {
     ]), "materiales_recicladora.csv");
   }
 
-  if (current === "recicladora_residuos.html" || current === "recicladora_registros_reciclaje.html") {
+  if (current === "recicladora_residuos.html" || current === "recicladora_registros_reciclaje.html" || current === "recicladora_pendientes.html") {
     const registros = await fetchJson("/api/recicladoras/registros");
     const pendientes = registros.filter((item) => getRegistroReciclajeState(item).pendiente);
     const confirmados = registros.filter((item) => getRegistroReciclajeState(item).confirmado);

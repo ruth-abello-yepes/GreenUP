@@ -252,14 +252,6 @@ function renderMaterialsTable(materiales) {
     return;
   }
 
-  const resumen = card.querySelector(".residuos-clasificacion") || document.createElement("div");
-  resumen.className = "residuos-clasificacion";
-  resumen.innerHTML = ["Aprovechables", "Organicos", "Peligrosos", "Quimicos"].map((categoria) => {
-    const total = materiales.filter((item) => clasificarResiduo(item) === categoria).length;
-    return `<span><strong>${total}</strong> ${categoria}</span>`;
-  }).join("");
-  const table = card.querySelector("table");
-  if (table && !resumen.parentElement) table.parentElement.insertBefore(resumen, table);
   tbody.innerHTML = materiales.map((item) => {
     const aceptado = Boolean(item.aceptado);
     return `
@@ -484,13 +476,6 @@ async function refreshCurrentPage() {
     setText('[data-summary-label="Catalogados"]', `${materiales.length} tipos`);
     setText('[data-summary-label="Activos"]', `${aceptados.length} materiales`);
     renderMaterialsTable(materiales);
-    const registroResiduos = document.getElementById("registro-residuos-materiales");
-    if (registroResiduos) {
-      const registros = await fetchJson("/api/recicladoras/registros");
-      registroResiduos.innerHTML = registros.length ? registros.slice(0, 12).map((item) => `
-        <tr><td>#GR-${item.id_registro}</td><td>${escapeHtml(clasificarResiduo(item))}</td><td>${escapeHtml(item.material || "Material")}</td><td>${formatKg(item.cantidad)}</td><td>${escapeHtml(getRegistroReciclajeState(item).label)}</td></tr>
-      `).join("") : '<tr><td colspan="5" class="empty-table-cell">No hay residuos registrados.</td></tr>';
-    }
     setExportData(materiales.map((item) => [
       `#MAT-${item.id_tipo_material}`,
       item.nombre || "Material",
@@ -537,6 +522,10 @@ async function refreshCurrentPage() {
           ` : "",
       });
       setExportData(filasResiduos.map((row) => row.values), "residuos_recicladora.csv");
+      const registroResiduos = document.getElementById("registro-residuos-materiales");
+      if (registroResiduos) registroResiduos.innerHTML = registros.length ? registros.slice(0, 12).map((item) => `
+        <tr><td>#GR-${item.id_registro}</td><td>${escapeHtml(clasificarResiduo(item))}</td><td>${escapeHtml(item.material || "Material")}</td><td>${formatKg(item.cantidad)}</td><td>${escapeHtml(getRegistroReciclajeState(item).label)}</td></tr>
+      `).join("") : '<tr><td colspan="5" class="empty-table-cell">No hay residuos registrados.</td></tr>';
     }
 
     if (current === "recicladora_registros_reciclaje.html") {

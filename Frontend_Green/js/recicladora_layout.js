@@ -288,6 +288,10 @@ function renderMaterialsTable(materiales) {
       refreshCurrentPage();
     });
   });
+
+  // Las filas llegan después de cargar la página; actualiza sus etiquetas
+  // accesibles y el modo de presentación responsive tras cada respuesta API.
+  prepararTablasResponsivasRecicladora(card);
 }
 
 function clasificarResiduo(item) {

@@ -2317,6 +2317,23 @@ body.recicladora-theme-dark .profile-photo-help {
 .admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 150px; }
 .admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 135px; white-space: nowrap; word-break: normal; }
 
+/* Materiales: la descripcion ocupa el espacio disponible sin empujar el estado. */
+.materiales-table { table-layout: fixed; min-width: 0; }
+.materiales-table th:nth-child(1), .materiales-table td:nth-child(1) { width: 92px; }
+.materiales-table th:nth-child(2), .materiales-table td:nth-child(2) { width: 175px; }
+.materiales-table th:nth-child(3), .materiales-table td:nth-child(3) { width: auto; min-width: 0; white-space: normal; }
+.materiales-table th:nth-child(4), .materiales-table td:nth-child(4) { width: 72px; }
+.materiales-table th:nth-child(5), .materiales-table td:nth-child(5) { width: 112px; white-space: nowrap; }
+.materiales-table th:nth-child(6), .materiales-table td:nth-child(6) { width: 96px; white-space: nowrap; }
+.materiales-table td:nth-child(2), .materiales-table td:nth-child(3) { overflow-wrap: anywhere; word-break: normal; }
+
+@media (max-width: 1199.98px) {
+  .materiales-table.responsive-table-ready th,
+  .materiales-table.responsive-table-ready td { width: auto; }
+  .materiales-table.responsive-table-ready tbody td:nth-child(2),
+  .materiales-table.responsive-table-ready tbody td:nth-child(3) { white-space: normal; }
+}
+
 @media (max-width: 720px) {
   .residuos-clasificacion { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; }
   .residuos-guia-grid { grid-template-columns: 1fr; padding: 14px; }

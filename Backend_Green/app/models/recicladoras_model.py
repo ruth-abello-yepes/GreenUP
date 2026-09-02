@@ -649,8 +649,10 @@ def listar_materiales_punto_recicladora(id_usuario):
         """
         SELECT
             tipo_material.*,
+            COALESCE(tipo_residuo.nombre, 'Sin clasificar') AS residuo,
             CASE WHEN punto_material.id_punto_material IS NULL THEN false ELSE true END AS aceptado
         FROM tipo_material
+        LEFT JOIN tipo_residuo ON tipo_residuo.id_tipo_residuo = tipo_material.id_tipo_residuo
         LEFT JOIN punto_material
             ON tipo_material.id_tipo_material = punto_material.id_tipo_material
            AND punto_material.id_punto = %s

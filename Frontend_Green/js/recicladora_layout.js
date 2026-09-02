@@ -243,7 +243,7 @@ async function alternarNovedadRecicladora(idNovedad, idEstadoActual) {
 }
 function renderMaterialsTable(materiales) {
   const card = [...document.querySelectorAll(".table-card")]
-    .find((item) => item.querySelector("h2")?.textContent === "Materiales aceptados");
+    .find((item) => item.querySelector("h2")?.textContent.includes("Materiales aceptados"));
   const tbody = card?.querySelector("tbody");
   if (!tbody) return;
 
@@ -252,12 +252,21 @@ function renderMaterialsTable(materiales) {
     return;
   }
 
+  const resumen = card.querySelector(".residuos-clasificacion") || document.createElement("div");
+  resumen.className = "residuos-clasificacion";
+  resumen.innerHTML = ["Inorganicos", "Organicos", "Peligrosos", "Quimicos"].map((categoria) => {
+    const total = materiales.filter((item) => clasificarResiduo(item) === categoria).length;
+    return `<span><strong>${total}</strong> ${categoria}</span>`;
+  }).join("");
+  const table = card.querySelector("table");
+  if (table && !resumen.parentElement) table.parentElement.insertBefore(resumen, table);
   tbody.innerHTML = materiales.map((item) => {
     const aceptado = Boolean(item.aceptado);
     return `
       <tr>
         <td>${escapeHtml(`#MAT-${item.id_tipo_material}`)}</td>
         <td>${escapeHtml(item.nombre || "Material")}</td>
+        <td>${escapeHtml(clasificarResiduo(item))}</td>
         <td>${escapeHtml(item.descripcion || "")}</td>
         <td>${escapeHtml(item.unidad || "kg")}</td>
         <td><span class="status-pill status-${aceptado ? "success" : "danger"}">${aceptado ? "Aceptado" : "Inactivo"}</span></td>
@@ -288,6 +297,14 @@ function renderMaterialsTable(materiales) {
       refreshCurrentPage();
     });
   });
+}
+
+function clasificarResiduo(item) {
+  const nombre = String(item.residuo || item.nombre_residuo || "").toLowerCase();
+  if (nombre.includes("organ")) return "Organicos";
+  if (nombre.includes("pelig") || nombre.includes("raee")) return "Peligrosos";
+  if (nombre.includes("quim")) return "Quimicos";
+  return "Inorganicos";
 }
 
 function getRegistroReciclajeState(item) {

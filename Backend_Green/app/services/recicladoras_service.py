@@ -3,6 +3,7 @@
 
 
 import re
+import json
 
 from app.common.database import obtener_conexion
 from app.models.usuarios_model import registrar_usuario
@@ -82,6 +83,59 @@ def _texto_desde_lista(valor):
 
     texto = str(valor).strip()
     return texto or None
+
+
+def _documento_camara_apto_para_validacion_automatica(valor):
+    """Comprueba que exista un documento cargado y utilizable."""
+    if not valor:
+        return False
+    documento = valor
+    if isinstance(valor, str):
+        try:
+            documento = json.loads(valor)
+        except (TypeError, ValueError):
+            documento = {"contenido": valor}
+    if not isinstance(documento, dict):
+        return False
+    contenido = str(documento.get("contenido") or "").strip()
+    nombre = str(documento.get("nombre") or "").strip().lower()
+    if not contenido:
+        return False
+    es_archivo = contenido.startswith(("data:application/pdf", "data:image/"))
+    es_url_segura = contenido.startswith("https://")
+    extension_valida = nombre.endswith((".pdf", ".png", ".jpg", ".jpeg", ".webp"))
+    return (es_archivo or es_url_segura) and (extension_valida or es_archivo)
+
+
+def _datos_recicladora_completos_para_activar(recicladora):
+    """Define los requisitos mínimos para activar automáticamente."""
+    if not recicladora:
+        return False
+    direccion = str(recicladora.get("direccion_empresa") or "").strip().lower()
+    placeholders = ("direccion por confirmar", "pendiente", "por completar", "sin direccion")
+    return (
+        bool(str(recicladora.get("nombre_empresa") or "").strip())
+        and bool(str(recicladora.get("nit_empresa") or "").strip())
+        and bool(direccion)
+        and not any(texto in direccion for texto in placeholders)
+        and _documento_camara_apto_para_validacion_automatica(recicladora.get("camara_comercio"))
+    )
+
+
+def _activar_si_datos_completos(id_usuario):
+    """Activa la cuenta y el punto cuando el registro interno está completo."""
+    recicladora = buscar_recicladora_por_usuario(id_usuario)
+    if not _datos_recicladora_completos_para_activar(recicladora):
+        return False
+    if str(recicladora.get("estado_camara_comercio") or "").lower() == "validado":
+        return True
+    resultado = actualizar_validacion_recicladora(id_usuario, "validado")
+    if not resultado:
+        return False
+    nombre = resultado.get("nombre_empresa") or recicladora.get("nombre_empresa") or "la recicladora"
+    crear_notificacion("Recicladora activada automáticamente", f"{nombre} fue activada al completar sus datos y documento.", id_usuario, None)
+    crear_notificacion("Nuevo punto ecológico disponible", f"Ya puedes consultar en el mapa el punto ecológico de {nombre}.", None, 3)
+    return True
 
 
 def _limpiar_registro_recicladora_incompleto(id_usuario, id_punto=None):
@@ -469,6 +523,7 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
                 "estado_camara_comercio": "pendiente",
             },
         )
+        _activar_si_datos_completos(id_usuario)
         crear_notificacion(
             "Documento de recicladora pendiente",
             f"La recicladora {nombre_empresa} actualizó su Cámara de Comercio. Revisa el documento para activar la cuenta.",
@@ -478,6 +533,7 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
         return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200
 
     actualizar_perfil_recicladora(id_usuario, datos)
+    _activar_si_datos_completos(id_usuario)
     return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200
 def servicio_obtener_punto_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)

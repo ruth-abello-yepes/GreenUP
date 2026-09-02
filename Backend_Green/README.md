@@ -90,6 +90,8 @@ Edita `.env` con las credenciales reales de PostgreSQL/Supabase.
 | `INACTIVIDAD_MINUTOS` | Referencia para cierre por inactividad del cliente | `20` |
 | `LOGIN_IP_MAX_INTENTOS` | Solicitudes de login permitidas por IP en la ventana | `20` |
 | `LOGIN_IP_VENTANA_SEGUNDOS` | Ventana del limite por IP | `900` |
+| `TURNSTILE_SECRET_KEY` | Clave privada de Cloudflare Turnstile; si existe, exige CAPTCHA | `` |
+| `TURNSTILE_SITE_KEY` | Clave publica para renderizar Turnstile en los formularios | `` |
 
 ## Base de datos
 

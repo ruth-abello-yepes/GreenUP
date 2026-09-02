@@ -79,6 +79,15 @@ def crear_app():
         return None
 
     @app.after_request
+    def registrar_eventos_de_seguridad(respuesta):
+        if request.method == "POST" and request.path in ("/api/login", "/api/admin/login"):
+            _logger_seguridad.info(
+                "security_event=login status=%s path=%s ip=%s",
+                respuesta.status_code, request.path, request.remote_addr
+            )
+        return respuesta
+
+    @app.after_request
     def agregar_cors_a_todas_las_respuestas(respuesta):
         origen = request.headers.get("Origin")
         if origen in origenes_permitidos:

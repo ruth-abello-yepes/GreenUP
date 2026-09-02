@@ -266,7 +266,6 @@ function renderMaterialsTable(materiales) {
       <tr>
         <td>${escapeHtml(`#MAT-${item.id_tipo_material}`)}</td>
         <td>${escapeHtml(item.nombre || "Material")}</td>
-        <td>${escapeHtml(clasificarResiduo(item))}</td>
         <td>${escapeHtml(item.descripcion || "")}</td>
         <td>${escapeHtml(item.unidad || "kg")}</td>
         <td><span class="status-pill status-${aceptado ? "success" : "danger"}">${aceptado ? "Aceptado" : "Inactivo"}</span></td>
@@ -508,6 +507,7 @@ async function refreshCurrentPage() {
           pendiente: estado.pendiente,
           values: [
             `#GR-${item.id_registro}`,
+            clasificarResiduo(item),
             item.material || `Material ${item.id_tipo_material}`,
             formatKg(item.cantidad),
             item.punto || (item.id_punto ? `Punto ${item.id_punto}` : "Punto sin asignar"),

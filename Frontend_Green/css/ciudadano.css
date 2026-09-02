@@ -2602,3 +2602,17 @@ body.ciudadano-pagina-educacion .alert-warning .material-symbols-outlined,
 body.ciudadano-pagina-registrar-reciclaje .bg-warning-subtle .text-secondary {
   color: #5f4700 !important;
 }
+
+/* Cierre responsive para todas las pantallas del ciudadano. */
+@media (max-width: 767.98px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  main, main > *, .container, .container-fluid, .card, .glass-card,
+  .hero-panel, .historial-panel, .content-section { min-width: 0; max-width: 100%; }
+  .row { --bs-gutter-x: 1rem; }
+  .row > * { min-width: 0; }
+  .display-1, .display-2, .display-3, h1, h2, h3 { overflow-wrap: anywhere; }
+  .hero-panel, .historial-hero, .glass-card, .card { padding: 18px !important; }
+  .hero-panel .btn, .card .btn, form .btn { max-width: 100%; white-space: normal; }
+  .d-flex.justify-content-between { flex-wrap: wrap; gap: 12px; }
+  .map-container, .map-wrapper, #map { width: 100%; max-width: 100%; min-height: 360px; }
+}

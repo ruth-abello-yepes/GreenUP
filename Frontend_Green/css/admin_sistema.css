@@ -2593,3 +2593,29 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
     display: none;
   }
 }
+
+/* Cierre responsive: ningun modulo administrativo debe crear scroll lateral. */
+@media (max-width: 767.98px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .admin-main, .admin-main > *, .content-area, .module-card, .data-card,
+  .admin-card, .page-hero, .page-hero > *, .content-grid, .dashboard-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .page-hero, .content-grid, .dashboard-grid, .stats-grid, .kpi-grid,
+  .form-grid, .admin-grid, .map-layout { grid-template-columns: minmax(0, 1fr) !important; }
+  .page-hero { padding: 18px !important; }
+  .page-hero h1 { overflow-wrap: anywhere; }
+  .card-title-row, .card-title-actions, .toolbar, .filter-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .card-title-row > *, .card-title-actions > *, .toolbar > *, .filter-bar > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .admin-table.responsive-table-ready tbody td {
+    grid-template-columns: minmax(88px, .38fr) minmax(0, 1fr);
+  }
+  .admin-table.responsive-table-ready .row-actions { flex-wrap: wrap; }
+}

@@ -2248,3 +2248,30 @@ body.recicladora-theme-dark .profile-photo-help {
     padding: 10px;
   }
 }
+
+/* Cierre responsive para todas las pantallas de recicladora. */
+@media (max-width: 767.98px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .main-content, .main-content > *, .admin-card, .table-card, .module-card,
+  .page-hero, .content-grid, .dashboard-grid, .reports-layout, .form-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .content-grid, .dashboard-grid, .reports-layout, .form-grid, .stats-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .page-hero { padding: 18px !important; }
+  .page-hero h1, h1, h2, h3 { overflow-wrap: anywhere; }
+  .card-title-row, .card-title-actions, .toolbar, .filter-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .card-title-row > *, .card-title-actions > *, .toolbar > *, .filter-bar > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .admin-table.responsive-table-ready tbody td {
+    grid-template-columns: minmax(88px, .38fr) minmax(0, 1fr);
+  }
+  .admin-table.responsive-table-ready .row-actions { flex-wrap: wrap; }
+}

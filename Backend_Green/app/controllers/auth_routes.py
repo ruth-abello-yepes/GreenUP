@@ -33,6 +33,8 @@ from app.services.auth_service import (
     restablecer_contrasena
 )
 from app.middlewares.auth_middleware import login_requerido
+from app.common.security import verificar_captcha
+from app.common.security_audit import registrar_evento
 
 
 # No usamos url_prefix="/api/auth" para que las rutas sean mas cortas.
@@ -78,6 +80,10 @@ def ruta_login():
 
     datos = request.get_json() or {}
 
+    if not verificar_captcha(datos.get("captcha_token"), request.remote_addr):
+        registrar_evento("captcha_rechazado", request, detalle="login")
+        return jsonify({"mensaje": "No se pudo validar el CAPTCHA. Intenta nuevamente."}), 403
+
     try:
         respuesta, estado = servicio_login(datos)
     except (OperationalError, DatabaseError) as error:
@@ -87,6 +93,7 @@ def ruta_login():
         }), 503
 
     logger_seguridad.info("login_normal resultado=%s ip=%s", estado, request.remote_addr)
+    registrar_evento("login_usuario", request, detalle=f"status={estado}")
     return jsonify(respuesta), estado
 
 
@@ -132,6 +139,10 @@ def ruta_login_admin():
 
     datos = request.get_json() or {}
 
+    if not verificar_captcha(datos.get("captcha_token"), request.remote_addr):
+        registrar_evento("captcha_rechazado", request, detalle="login_admin")
+        return jsonify({"mensaje": "No se pudo validar el CAPTCHA. Intenta nuevamente."}), 403
+
     try:
         respuesta, estado = servicio_login_admin(datos)
     except (OperationalError, DatabaseError) as error:
@@ -141,6 +152,7 @@ def ruta_login_admin():
         }), 503
 
     logger_seguridad.info("login_admin resultado=%s ip=%s", estado, request.remote_addr)
+    registrar_evento("login_admin", request, detalle=f"status={estado}")
     return jsonify(respuesta), estado
 
 

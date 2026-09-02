@@ -21,7 +21,8 @@ async function iniciarSesion(evento) {
 
   const credenciales = {
     usuario: campoUsuario.value.trim(),
-    contrasena: campoContrasena.value
+    contrasena: campoContrasena.value,
+    captcha_token: document.getElementById("captcha_token")?.value || ""
   };
 
   // 2. Usamos nuestra función unificada (asumiendo que api.js está vinculado en el HTML antes que auth.js)

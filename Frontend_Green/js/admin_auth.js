@@ -41,6 +41,7 @@ async function iniciarSesionAdmin(evento) {
       usuario: usuario,
       contrasena: contrasena,
       codigo_admin: codigoAdmin,
+      captcha_token: document.getElementById("captcha_token")?.value || "",
     }),
   });
 

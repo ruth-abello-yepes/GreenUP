@@ -3,10 +3,31 @@
 
 import re
 import logging
+import os
+import requests
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 logger_seguridad = logging.getLogger("greenup.security")
+
+
+def verificar_captcha(token, ip=None):
+    """Verifica CAPTCHA solo cuando Render tiene CAPTCHA_SECRET_KEY configurada."""
+    secreto = (os.getenv("CAPTCHA_SECRET_KEY") or "").strip()
+    if not secreto:
+        return True
+    if not token:
+        return False
+    try:
+        respuesta = requests.post(
+            os.getenv("CAPTCHA_VERIFY_URL", "https://www.google.com/recaptcha/api/siteverify"),
+            data={"secret": secreto, "response": token, "remoteip": ip},
+            timeout=5,
+        )
+        return bool(respuesta.ok and respuesta.json().get("success"))
+    except (requests.RequestException, ValueError):
+        logger_seguridad.exception("captcha_verification_failed")
+        return False
 
 
 def validar_correo(correo):

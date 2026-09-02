@@ -19,7 +19,11 @@ async function iniciarSesion(evento) {
   const campoUsuario = document.getElementById("usuario") || document.getElementById("email");
   const campoContrasena = document.getElementById("contrasena") || document.getElementById("password");
 
-  const captcha = document.querySelector('[name="g-recaptcha-response"]')?.value || document.getElementById("captcha_token")?.value || "";
+  const captcha = (window.grecaptcha?.getResponse?.() || document.querySelector('[name="g-recaptcha-response"]')?.value || document.getElementById("captcha_token")?.value || "").trim();
+  if (!captcha) {
+    alert("Confirma primero la casilla 'No soy un robot'.");
+    return;
+  }
   const credenciales = {
     usuario: campoUsuario.value.trim(),
     contrasena: campoContrasena.value,

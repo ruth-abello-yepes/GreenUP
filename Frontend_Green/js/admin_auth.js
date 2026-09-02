@@ -31,7 +31,11 @@ async function iniciarSesionAdmin(evento) {
   const usuario = document.getElementById("usuario").value;
   const contrasena = document.getElementById("contrasena").value;
   const codigoAdmin = document.getElementById("codigo_admin").value;
-  const captcha = document.querySelector('[name="g-recaptcha-response"]')?.value || document.getElementById("captcha_token")?.value || "";
+  const captcha = (window.grecaptcha?.getResponse?.() || document.querySelector('[name="g-recaptcha-response"]')?.value || document.getElementById("captcha_token")?.value || "").trim();
+  if (!captcha) {
+    alert("Confirma primero la casilla 'No soy un robot'.");
+    return;
+  }
 
   const respuesta = await fetch(API_URL + "/api/admin/login", {
     method: "POST",

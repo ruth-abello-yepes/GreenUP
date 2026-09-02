@@ -40,6 +40,81 @@
       overflow: hidden;
     }
 
+    .registro-carousel {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    .registro-slide {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: registro-slide-in .45s ease both;
+    }
+
+    .registro-slide.is-active { display: flex; }
+
+    .registro-slide h2 {
+      max-width: 390px;
+      margin: 16px 0;
+      color: #fff;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.08;
+      font-weight: 900;
+    }
+
+    .slide-kicker {
+      display: inline-flex;
+      width: fit-content;
+      padding: 7px 12px;
+      border: 1px solid rgba(157, 242, 184, .5);
+      border-radius: 999px;
+      color: var(--verde-claro);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .registro-carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .registro-carousel-arrow {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .48);
+      border-radius: 50%;
+      background: rgba(4, 27, 43, .32);
+      color: #fff;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .registro-carousel-arrow:hover, .registro-carousel-arrow:focus-visible {
+      background: rgba(31, 143, 95, .72);
+      transform: scale(1.05);
+    }
+
+    .registro-carousel-dots { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .registro-carousel-dots button { width: 28px; height: 5px; padding: 0; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .48); }
+    .registro-carousel-dots button.is-active { background: var(--verde-claro); }
+
+    @keyframes registro-slide-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+    @media (prefers-reduced-motion: reduce) { .registro-slide { animation: none; } }
+
     .panel-lateral::after {
       content: "";
       position: absolute;

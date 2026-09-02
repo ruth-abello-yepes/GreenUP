@@ -20,21 +20,54 @@
 <body>
   <div class="container-fluid p-0 layout-registro">
     <div class="row g-0">
-      <aside class="col-md-4 d-none d-md-flex panel-lateral">
-        <div class="marca">
-          <h1>Green<span class="public_registro-inline-2">Up</span></h1>
-          <p>
-            Regístrate como ciudadano o como punto ecológico y empieza a
-            participar en la red de reciclaje.
-          </p>
-        </div>
-
-        <div class="tarjeta-impacto">
-          <h3>Registro según tu rol</h3>
-          <p>
-            Si eres ciudadano, pediremos tus datos básicos. Si eres recicladora,
-            pediremos únicamente la información de la empresa.
-          </p>
+      <aside class="col-md-4 d-none d-md-flex panel-lateral" aria-label="Información de GreenUp">
+        <div class="registro-carousel" data-registro-carousel aria-roledescription="carrusel" aria-label="Información de registro">
+          <div class="registro-slide is-active" data-registro-slide>
+            <div class="marca">
+              <h1>Green<span class="public_registro-inline-2">Up</span></h1>
+              <p>Regístrate como ciudadano o como punto ecológico y empieza a participar en la red de reciclaje.</p>
+            </div>
+            <div class="tarjeta-impacto">
+              <span class="slide-kicker">Únete a la comunidad</span>
+              <h3>Registro sencillo</h3>
+              <p>Crea tu cuenta en pocos pasos y comienza a darle una nueva vida a tus residuos.</p>
+            </div>
+          </div>
+          <div class="registro-slide" data-registro-slide>
+            <div class="marca">
+              <span class="slide-kicker">Ciudadano GreenUp</span>
+              <h2>Haz que cada entrega cuente</h2>
+              <p>Registra tus reciclajes, consulta tu historial y mide tu aporte a una ciudad más limpia.</p>
+            </div>
+            <div class="tarjeta-impacto">
+              <h3>Tu impacto, siempre contigo</h3>
+              <p>Consulta tus entregas confirmadas y sigue tu progreso desde cualquier dispositivo.</p>
+            </div>
+          </div>
+          <div class="registro-slide" data-registro-slide>
+            <div class="marca">
+              <span class="slide-kicker">Punto ecológico</span>
+              <h2>Conecta tu empresa con la comunidad</h2>
+              <p>Recibe entregas, confirma materiales y ayuda a mover la economía circular.</p>
+            </div>
+            <div class="tarjeta-impacto">
+              <h3>Gestiona con claridad</h3>
+              <p>La información de tu empresa se revisa para mantener una red confiable y organizada.</p>
+            </div>
+          </div>
+          <div class="registro-carousel-controls">
+            <button type="button" class="registro-carousel-arrow" data-registro-prev aria-label="Información anterior">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+            </button>
+            <div class="registro-carousel-dots" role="tablist" aria-label="Seleccionar información">
+              <button type="button" class="is-active" data-registro-dot="0" role="tab" aria-label="Mostrar información 1" aria-selected="true"></button>
+              <button type="button" data-registro-dot="1" role="tab" aria-label="Mostrar información 2" aria-selected="false"></button>
+              <button type="button" data-registro-dot="2" role="tab" aria-label="Mostrar información 3" aria-selected="false"></button>
+            </div>
+            <button type="button" class="registro-carousel-arrow" data-registro-next aria-label="Información siguiente">
+              <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -284,6 +317,7 @@
   <script src="../../js/modal_alerts.js?v=20260827"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/registro.js"></script>
+  <script src="../../js/registro_carousel.js"></script>
   <script src="../../js/public_ui_fix.js?v=20260901-a11y3"></script>
 </body>
 

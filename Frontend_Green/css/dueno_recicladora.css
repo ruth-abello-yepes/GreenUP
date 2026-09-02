@@ -2271,11 +2271,17 @@ body.recicladora-theme-dark .profile-photo-help {
 
 .residuos-clasificacion strong { display: block; color: #14783d; font-size: 20px; }
 
+.residuos-guia-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 18px 24px 24px; }
+.residuos-guia-grid div { display: grid; gap: 6px; padding: 14px; border: 1px solid #d7e9dc; border-radius: 10px; background: #f7fbf8; }
+.residuos-guia-grid strong { color: #14783d; }
+.residuos-guia-grid span { color: var(--greenup-muted); font-size: 13px; line-height: 1.45; }
+
 .admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 150px; }
 .admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 135px; white-space: nowrap; word-break: normal; }
 
 @media (max-width: 720px) {
   .residuos-clasificacion { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; }
+  .residuos-guia-grid { grid-template-columns: 1fr; padding: 14px; }
 }
 
 /* Cierre responsive para todas las pantallas de recicladora. */

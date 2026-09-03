@@ -127,11 +127,39 @@
         .card-highlight-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            background: linear-gradient(
+                to top,
+                rgba(3, 18, 31, 0.94) 0%,
+                rgba(3, 18, 31, 0.78) 58%,
+                rgba(3, 18, 31, 0.66) 100%
+            );
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             padding: 2rem;
+        }
+
+        .card-highlight-overlay .lead,
+        .card-highlight-overlay .text-white-50 {
+            color: #ffffff !important;
+            opacity: 1;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+        }
+
+        .card-highlight-overlay h2 {
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .featured-photo-credit {
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .featured-photo-credit a {
+            color: #ffffff;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
         }
 
         /* Glass Card */

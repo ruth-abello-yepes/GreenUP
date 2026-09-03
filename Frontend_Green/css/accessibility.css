@@ -194,6 +194,12 @@ body.ciudadano-pagina-historial-reciclaje .historial-hero p {
   color: #ffffff !important;
 }
 
+.public_educacion-inline-3 p,
+.public_educacion-inline-3 .text-white-50 {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
 /* Admin and recycler layouts use dark sidebars and hero panels. */
 .admin-app :where(.sidebar, .admin-sidebar, .page-hero) .muted,
 .admin-app :where(.sidebar, .admin-sidebar, .page-hero) p,
@@ -256,11 +262,24 @@ canvas {
   }
 
   .btn,
-  button,
   input,
   select,
   textarea {
     min-height: 44px;
+  }
+
+  .public-about-page .about-hero h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 9vw, 2.75rem) !important;
+    line-height: 1.08;
+    overflow-wrap: break-word;
+  }
+
+  .public-about-page .about-hero .container,
+  .public-about-page .about-section .container {
+    max-width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
   }
 
   .d-flex.justify-content-between,
@@ -287,9 +306,10 @@ canvas {
   }
 }
 
-/* Automatic dark theme: follows the operating system/browser preference.
-   No application switch is required. */
-@media (prefers-color-scheme: dark) {
+/* GreenUp deliberately keeps its verified light palette even when the device
+   requests a dark scheme. The previous automatic experiment is disabled
+   because several branded and map-adjacent surfaces became unreadable. */
+@media not all {
   :root {
     color-scheme: dark;
     --gu-a11y-text: #f1f5f9;

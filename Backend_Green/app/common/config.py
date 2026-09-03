@@ -24,3 +24,7 @@ JWT_EXPIRACION_MINUTOS = int(os.getenv("JWT_EXPIRACION_MINUTOS", "30"))
 INACTIVIDAD_MINUTOS = int(os.getenv("INACTIVIDAD_MINUTOS", "20"))
 LOGIN_IP_MAX_INTENTOS = int(os.getenv("LOGIN_IP_MAX_INTENTOS", "20"))
 LOGIN_IP_VENTANA_SEGUNDOS = int(os.getenv("LOGIN_IP_VENTANA_SEGUNDOS", "900"))
+
+# Configuración de bloqueo de IPs
+PAISES_PERMITIDOS = [p.strip().upper() for p in os.getenv("PAISES_PERMITIDOS", "CO").split(",") if p.strip()]
+BLOQUEAR_VPN = os.getenv("BLOQUEAR_VPN", "true").lower() == "true"

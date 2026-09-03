@@ -15,9 +15,16 @@ from flask_cors import CORS
 from flask_mail import Mail
 
 from app.common.swagger import configurar_swagger
-from app.common.config import LOGIN_IP_MAX_INTENTOS, LOGIN_IP_VENTANA_SEGUNDOS
+from app.common.config import (
+    LOGIN_IP_MAX_INTENTOS, 
+    LOGIN_IP_VENTANA_SEGUNDOS,
+    PAISES_PERMITIDOS,
+    BLOQUEAR_VPN
+)
+import requests
 
 _intentos_por_ip = {}
+_cache_reputacion_ip = {}
 _logger_seguridad = logging.getLogger("greenup.security")
 
 # Instancia global del correo
@@ -69,6 +76,31 @@ def crear_app():
             return None
         ahora = time.time()
         ip = request.headers.get("X-Forwarded-For", request.remote_addr or "desconocida").split(",")[0].strip()
+        
+        if ip and ip != "desconocida" and not ip.startswith("127.") and not ip.startswith("192.168.") and ip != "::1":
+            # Validacion de reputacion y pais
+            info_ip = _cache_reputacion_ip.get(ip)
+            if not info_ip:
+                try:
+                    respuesta = requests.get(f"http://ip-api.com/json/{ip}?fields=status,countryCode,proxy,hosting", timeout=3)
+                    if respuesta.status_code == 200:
+                        info_ip = respuesta.json()
+                        # Solo almacenar en cache si fue exitosa
+                        if info_ip.get("status") == "success":
+                            _cache_reputacion_ip[ip] = info_ip
+                except Exception as e:
+                    _logger_seguridad.error(f"Error al verificar IP {ip}: {e}")
+            
+            if info_ip and info_ip.get("status") == "success":
+                if BLOQUEAR_VPN and (info_ip.get("proxy") or info_ip.get("hosting")):
+                    _logger_seguridad.warning("login_vpn_blocked ip=%s", ip)
+                    return jsonify({"mensaje": "No se permite el acceso a través de VPN, Proxy o Hosting."}), 403
+                
+                pais = info_ip.get("countryCode")
+                if PAISES_PERMITIDOS and pais not in PAISES_PERMITIDOS:
+                    _logger_seguridad.warning("login_country_blocked ip=%s pais=%s", ip, pais)
+                    return jsonify({"mensaje": "Acceso denegado desde tu ubicación actual."}), 403
+
         registro = _intentos_por_ip.get(ip, [])
         registro = [marca for marca in registro if ahora - marca < LOGIN_IP_VENTANA_SEGUNDOS]
         if len(registro) >= LOGIN_IP_MAX_INTENTOS:

@@ -2335,12 +2335,15 @@ body.recicladora-theme-light .card-title-row h2,
 body.recicladora-theme-light .card-title-row h3,
 body.recicladora-theme-light .summary-value,
 body.recicladora-theme-light .map-side-stack h2,
-body.recicladora-theme-light .map-side-stack h3 { color: #10213b; }
-body.recicladora-theme-light .page-title strong { color: #086b2a; }
+body.recicladora-theme-light .map-side-stack h3 { color: #10213b !important; }
+body.recicladora-theme-light .page-title strong { color: #086b2a !important; }
 body.recicladora-theme-light .page-subtitle,
 body.recicladora-theme-light .summary-label,
-body.recicladora-theme-light .metric-change { color: #3f4b5a; }
-body.recicladora-theme-light .summary-card.blue .summary-value { color: #0757a6; }
+body.recicladora-theme-light .metric-change { color: #3f4b5a !important; }
+body.recicladora-theme-light .page-title { color: #10213b !important; }
+body.recicladora-theme-light .page-subtitle { color: #3f4b5a !important; }
+body.recicladora-theme-light .summary-value { color: #10213b !important; }
+body.recicladora-theme-light .summary-card.blue .summary-value { color: #0757a6 !important; }
 
 /* Materiales: la descripcion ocupa el espacio disponible sin empujar el estado. */
 .materiales-table { table-layout: fixed; min-width: 0; }

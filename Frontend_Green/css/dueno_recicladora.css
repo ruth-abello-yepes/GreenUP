@@ -538,9 +538,9 @@ body.recicladora-theme-dark .role-nav-menu {
   display: flex;
   align-items: center;
   gap: 24px;
-  width: 100%;
+  width: calc(100% - var(--sidebar-width));
   min-height: 82px;
-  margin: 0;
+  margin: 0 0 0 var(--sidebar-width);
   padding: 1.25rem 36px;
   border: 0;
   border-radius: 0;
@@ -1998,6 +1998,8 @@ body.recicladora-theme-dark .profile-photo-help {
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 12px 20px;
+    width: 100%;
+    margin: 0 0 108px;
     padding: 1.25rem 16px 5.5rem;
   }
   .recicladora-footer-copy { order: 3; width: 100%; }

@@ -16,6 +16,7 @@
 
   <link href="../../css/ciudadano.css?v=20260902-ayuda-flotante" rel="stylesheet">
   <link rel="stylesheet" href="../../css/accessibility.css?v=20260903-wcag-light">
+  <link rel="stylesheet" href="../../css/reportes_ciudadano.css?v=20260903">
 </head>
 
 <body class="ciudadano-pagina-estadisticas">
@@ -142,6 +143,20 @@
                 compite de manera saludable para un Valledupar más verde.</p>
         </section>
 
+        <section class="reporte-acceso mb-4" aria-labelledby="titulo-exportar">
+            <div>
+                <h2 id="titulo-exportar" class="h5 fw-bold mb-1">Mi reporte de reciclaje</h2>
+                <p class="text-secondary mb-0">Consulta un período y lleva tus resultados en PDF o Excel.</p>
+            </div>
+            <form id="filtros-reporte" class="reporte-filtros">
+                <div><label for="reporte-desde" class="form-label">Desde</label><input id="reporte-desde" type="date" class="form-control"></div>
+                <div><label for="reporte-hasta" class="form-label">Hasta</label><input id="reporte-hasta" type="date" class="form-control"></div>
+                <button type="submit" class="btn btn-outline-danger" data-reporte-formato="pdf"><span class="material-symbols-outlined" aria-hidden="true">picture_as_pdf</span> PDF</button>
+                <button type="submit" class="btn btn-outline-success" data-reporte-formato="excel"><span class="material-symbols-outlined" aria-hidden="true">table_view</span> Excel</button>
+            </form>
+            <p class="small text-secondary mb-0">Deja las fechas vacías para incluir todo tu historial.</p>
+        </section>
+
         <div id="estado-estadisticas" class="alert alert-danger mb-4" role="alert" hidden></div>
 
         <div class="row g-4 mb-5 fade-up ciudadano-estadisticas-estilo-8">
@@ -264,6 +279,50 @@
         </div>
     </main>
 
+    <div class="modal fade" id="modal-reporte" tabindex="-1" aria-labelledby="reporte-titulo" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div><p class="reporte-marca mb-1">GreenUp · Mi impacto</p><h2 class="modal-title fs-4" id="reporte-titulo">Exportar reporte</h2></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar vista previa"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="reporte-mensaje" role="status" aria-live="polite"></p>
+                    <div id="reporte-vista" hidden>
+                        <p id="reporte-periodo" class="text-secondary"></p>
+                        <div class="reporte-resumen">
+                            <article><span>Registros del período</span><strong id="reporte-registros">0</strong></article>
+                            <article><span>Reciclaje confirmado</span><strong id="reporte-kilos">0 kg</strong></article>
+                        </div>
+                        <p class="small text-secondary mt-3">Los kilogramos y el desglose de materiales incluyen solo entregas confirmadas. La tabla incluye todos los estados.</p>
+                        <div class="reporte-graficas">
+                            <section aria-labelledby="reporte-materiales-titulo"><h3 id="reporte-materiales-titulo" class="h6">Material confirmado (kg)</h3><div id="reporte-materiales"></div></section>
+                            <section aria-labelledby="reporte-estados-titulo"><h3 id="reporte-estados-titulo" class="h6">Estado de las entregas</h3><div id="reporte-estados"></div></section>
+                        </div>
+                        <div class="table-responsive mt-4" tabindex="0" aria-label="Registros incluidos en el reporte">
+                            <table class="table table-striped align-middle reporte-tabla">
+                                <caption>Fecha, material, cantidad, punto de reciclaje y estado de tus entregas.</caption>
+                                <thead><tr><th scope="col">Fecha</th><th scope="col">Material</th><th scope="col">Cantidad (kg)</th><th scope="col">Punto de reciclaje</th><th scope="col">Estado</th></tr></thead>
+                                <tbody id="reporte-filas"></tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2" id="reporte-paginacion">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="reporte-anterior">Anterior</button>
+                            <span id="reporte-pagina" class="small" aria-live="polite"></span>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="reporte-siguiente">Siguiente</button>
+                        </div>
+                        <p class="small text-secondary mt-2">La descarga incluye todos los registros del período.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-success" id="reporte-compartir" disabled>Compartir</button>
+                    <button type="button" class="btn btn-success" id="reporte-descargar" disabled>Descargar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-gu-dark text-white pt-5 pb-4 mt-auto rounded-footer-top" id="main-footer">
   <div class="container">
     <div class="row g-4 align-items-start">
@@ -324,6 +383,7 @@
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/logout.js"></script>
   <script src="../../js/estadisticas.js?v=20260813"></script>
+  <script src="../../js/reportes_ciudadano.js?v=20260903"></script>
   <script src="../../js/notificaciones_panel.js"></script>
   <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
   <script src="../../js/auth.js"></script>

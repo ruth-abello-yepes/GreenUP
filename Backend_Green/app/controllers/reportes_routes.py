@@ -4,7 +4,7 @@
 from io import BytesIO, StringIO
 
 import pandas as pd
-from flask import Blueprint, Response, jsonify, request, send_file
+from flask import Blueprint, Response, g, jsonify, request, send_file, current_app
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
@@ -14,6 +14,44 @@ from app.middlewares.roles_middleware import rol_requerido
 
 
 reportes_bp = Blueprint("reportes", __name__)
+
+
+@reportes_bp.route("/api/reportes/ciudadano", methods=["GET"])
+@login_requerido
+@rol_requerido([3])
+def ruta_reporte_ciudadano():
+    from app.services.reporte_ciudadano_service import (
+        preparar_reporte_ciudadano, generar_pdf_ciudadano, generar_excel_ciudadano,
+    )
+    formato = request.args.get("formato", "json").lower()
+    if formato not in ("json", "vista", "pdf", "excel", "xlsx"):
+        return jsonify({"mensaje": "Selecciona PDF o Excel."}), 400
+    tipo = request.args.get("tipo", "pdf").lower() if formato == "vista" else formato
+    if formato == "vista" and tipo not in ("pdf", "excel"):
+        return jsonify({"mensaje": "Selecciona PDF o Excel."}), 400
+    try:
+        reporte, estado = preparar_reporte_ciudadano(g.id_usuario, request.args)
+        if estado != 200:
+            return jsonify(reporte), estado
+        if formato == "json":
+            respuesta = jsonify(reporte)
+        else:
+            es_pdf = tipo == "pdf"
+            archivo = generar_pdf_ciudadano(reporte) if es_pdf else generar_excel_ciudadano(reporte)
+            nombre = "mi_reporte_greenup." + ("pdf" if es_pdf else "xlsx")
+            mime = "application/pdf" if es_pdf else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            if formato == "vista":
+                # La vista previa y el archivo representan exactamente la misma consulta.
+                from base64 import b64encode
+                reporte["archivo"] = {"nombre": nombre, "tipo": mime, "base64": b64encode(archivo.getvalue()).decode("ascii")}
+                respuesta = jsonify(reporte)
+            else:
+                respuesta = send_file(archivo, as_attachment=True, download_name=nombre, mimetype=mime)
+        respuesta.headers["Cache-Control"] = "private, no-store"
+        return respuesta
+    except Exception:
+        current_app.logger.exception("No se pudo generar el reporte ciudadano")
+        return jsonify({"mensaje": "No fue posible preparar tu reporte. Intenta nuevamente."}), 503
 
 
 @reportes_bp.route("/reportes/reciclaje", methods=["GET"])

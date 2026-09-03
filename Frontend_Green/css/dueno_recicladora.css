@@ -534,6 +534,23 @@ body.recicladora-theme-dark .role-nav-menu {
   font-size: 1.2rem;
 }
 
+.recicladora-about-footer.bg-gu-dark {
+  display: block;
+  margin: 0 0 32px calc(var(--sidebar-width) + 48px);
+  padding: 3rem 0 1.5rem;
+  border: 0;
+  border-radius: 18px 18px 0 0;
+  background: #08243a;
+  color: #ffffff;
+}
+.recicladora-about-footer.bg-gu-dark a { color: #dceeff; }
+.recicladora-about-footer.bg-gu-dark a:hover,
+.recicladora-about-footer.bg-gu-dark a:focus-visible { color: #a6f1b9; }
+.recicladora-about-footer.bg-gu-dark h2 { color: #ffffff; }
+.recicladora-about-footer.bg-gu-dark p,
+.recicladora-about-footer.bg-gu-dark .text-white-50,
+.recicladora-about-footer.bg-gu-dark hr { color: #d4e2ee !important; }
+
 .page-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1965,6 +1982,10 @@ body.recicladora-theme-dark .profile-photo-help {
 
   .recicladora-about-footer {
     margin: 0 16px 108px;
+  }
+  .recicladora-about-footer.bg-gu-dark {
+    margin: 0 16px 108px;
+    padding: 2rem 1.2rem 1.2rem;
   }
 
   .page-hero {

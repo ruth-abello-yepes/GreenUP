@@ -908,19 +908,47 @@ function crearMenuSuperiorRecicladora() {
 }
 
 function asegurarFooterRecicladora() {
-  if (document.querySelector(".recicladora-about-footer")) return;
   const navegacionMovil = document.querySelector(".mobile-bottom-nav");
   if (!navegacionMovil) return;
-
-  const footer = document.createElement("footer");
-  footer.className = "recicladora-about-footer";
+  const footer = document.querySelector(".recicladora-about-footer") || document.createElement("footer");
+  footer.className = "recicladora-about-footer bg-gu-dark text-white";
   footer.setAttribute("aria-label", "Informacion de GreenUp");
   footer.innerHTML = `
-    <span>GreenUp facilita la gestion de reciclaje en Valledupar.</span>
-    <a href="recicladora_panel.html"><span class="material-symbols-outlined">home</span>Volver al panel</a>
-    <span>© 2026 GreenUp</span>
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-5 col-md-12">
+          <a href="recicladora_panel.html" class="d-inline-flex align-items-center gap-2 text-white text-decoration-none fw-bold fs-4 mb-3" aria-label="Ir al panel de GreenUp">
+            <img src="../../img/logo-greenup.png" alt="" width="38" height="38" aria-hidden="true"><span>GreenUp</span>
+          </a>
+          <p class="text-white-50 small mb-0 pe-lg-5">Gestiona tus materiales, entregas y puntos ecológicos con GreenUp.</p>
+        </div>
+        <nav class="col-6 col-lg-3" aria-label="Navegacion del pie de pagina">
+          <h2 class="h6 text-white fw-bold text-uppercase mb-3">Mi recicladora</h2>
+          <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+            <li><a href="recicladora_panel.html">Panel de control</a></li>
+            <li><a href="recicladora_materiales.html">Materiales aceptados</a></li>
+            <li><a href="recicladora_pendientes.html">Registros pendientes</a></li>
+            <li><a href="mi_punto_ecologico.html">Mi punto ecologico</a></li>
+          </ul>
+        </nav>
+        <nav class="col-6 col-lg-4" aria-label="Recursos de GreenUp">
+          <h2 class="h6 text-white fw-bold text-uppercase mb-3">Recursos</h2>
+          <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+            <li><a href="recicladora_contenido_educativo.html">Contenido educativo</a></li>
+            <li><a href="recicladora_novedades.html">Novedades</a></li>
+            <li><a href="recicladora_faq.html">Preguntas frecuentes</a></li>
+            <li><a href="recicladora_configuracion.html">Configuracion</a></li>
+          </ul>
+        </nav>
+      </div>
+      <hr class="border-secondary my-4">
+      <div class="row align-items-center small text-white-50 g-2">
+        <div class="col-md-7 text-center text-md-start">© 2026 GreenUp. Todos los derechos reservados.</div>
+        <div class="col-md-5 text-center text-md-end">Valledupar, Cesar, Colombia</div>
+      </div>
+    </div>
   `;
-  navegacionMovil.before(footer);
+  if (!footer.parentElement) navegacionMovil.before(footer);
 }
 
 function obtenerTemaRecicladora() {

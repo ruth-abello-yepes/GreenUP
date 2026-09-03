@@ -1,0 +1,551 @@
+/* GreenUp accessibility layer
+   Shared WCAG 2.2 AA contrast, focus and responsive safeguards.
+   This file must be loaded after each page-specific stylesheet. */
+
+:root {
+  --gu-a11y-text: #243447;
+  --gu-a11y-muted: #465568;
+  --gu-a11y-primary: #003d6c;
+  --gu-a11y-green: #24621c;
+  --gu-a11y-green-dark: #174d22;
+  --gu-a11y-on-dark: #ffffff;
+  --gu-a11y-on-dark-muted: #e6edf5;
+  --gu-a11y-focus: #ffbf47;
+  --gu-a11y-border: #aab5c2;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  color: var(--gu-a11y-text);
+}
+
+/* Bootstrap's default secondary and muted colors become too pale in several
+   GreenUp cards. These values remain above 4.5:1 on white and light surfaces. */
+.text-secondary,
+.text-muted,
+.form-text,
+.card-text,
+.lead,
+td,
+.dropdown-item,
+.nav-link:not(.active):not(.active-custom) {
+  color: var(--gu-a11y-muted) !important;
+}
+
+a:not(.btn):not(.nav-link):not(.dropdown-item) {
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.16em;
+}
+
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder {
+  color: #586779 !important;
+  opacity: 1 !important;
+}
+
+input,
+select,
+textarea,
+.form-control,
+.form-select {
+  border-color: var(--gu-a11y-border) !important;
+  color: #172334 !important;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+.form-control:disabled,
+.form-select:disabled {
+  background-color: #e8edf2 !important;
+  color: #4b5868 !important;
+  opacity: 1 !important;
+}
+
+/* A strong, consistent keyboard indicator on light and dark backgrounds. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--gu-a11y-focus) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 2px #172334 !important;
+}
+
+.btn-success,
+.bg-success,
+.bg-gu-secondary,
+.btn-gu-secondary {
+  background-color: var(--gu-a11y-green) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-success {
+  border-color: var(--gu-a11y-green) !important;
+  color: var(--gu-a11y-green-dark) !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus-visible {
+  background-color: var(--gu-a11y-green) !important;
+  color: #ffffff !important;
+}
+
+.text-success,
+.text-gu-secondary {
+  color: var(--gu-a11y-green) !important;
+}
+
+.badge.bg-light,
+.badge.bg-success-subtle,
+.badge.bg-primary-subtle,
+.badge.bg-warning-subtle {
+  border: 1px solid currentColor;
+  color: #17314a !important;
+  font-weight: 800;
+}
+
+/* Content placed over GreenUp's blue/green surfaces must not inherit muted
+   greys or Bootstrap's translucent white. */
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer) .text-secondary,
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer) .text-muted,
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer) .text-white-50,
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer) p,
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer) small {
+  color: var(--gu-a11y-on-dark-muted) !important;
+  opacity: 1 !important;
+}
+
+:where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+  .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+  .about-vision, .about-cta, .hero-content, footer)
+  :where(h1, h2, h3, h4, h5, h6, .text-white) {
+  color: var(--gu-a11y-on-dark) !important;
+}
+
+footer a,
+#main-footer a,
+.ciudadano-about-footer a {
+  color: #ffffff !important;
+  text-decoration-color: #a9f295;
+}
+
+footer .brand-up,
+#main-footer .brand-up {
+  color: #baf8aa !important;
+}
+
+/* Specific low-contrast labels identified by WAVE in citizen screens. */
+body[class*="ciudadano-pagina-"] .hero-eyebrow,
+body[class*="ciudadano-pagina-"] .historial-resumen-etiqueta,
+body[class*="ciudadano-pagina-"] .metric-label,
+body[class*="ciudadano-pagina-"] .stat-label,
+body[class*="ciudadano-pagina-"] .gu-sidebar-meta {
+  color: #3d4d60 !important;
+}
+
+body.ciudadano-pagina-inicio .resource-card,
+body.ciudadano-pagina-inicio .resource-card p {
+  color: #172334 !important;
+}
+
+body.ciudadano-pagina-inicio .resource-card .text-success {
+  color: #1f5b19 !important;
+}
+
+body.ciudadano-pagina-estadisticas .bg-gu-primary,
+body.ciudadano-pagina-estadisticas .bg-gu-primary * {
+  color: #ffffff !important;
+}
+
+body.ciudadano-pagina-educacion .eco-gradient p,
+body.ciudadano-pagina-educacion .eco-gradient small,
+body.ciudadano-pagina-registrar-reciclaje .hero-panel p,
+body.ciudadano-pagina-historial-reciclaje .historial-hero p {
+  color: #ffffff !important;
+}
+
+/* Kicker text over saturated banners (the generic kicker is dark on light
+   panels, but these variants need a light foreground). */
+.contact-banner .section-kicker,
+.contact-banner .section-kicker-light,
+.impact-section .section-kicker,
+.section-kicker-light,
+.bg-gu-primary .section-kicker,
+.bg-gu-secondary .section-kicker {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.contact-banner p,
+.contact-banner h2 {
+  color: #ffffff !important;
+}
+
+/* Admin and recycler layouts use dark sidebars and hero panels. */
+.admin-app :where(.sidebar, .admin-sidebar, .page-hero) .muted,
+.admin-app :where(.sidebar, .admin-sidebar, .page-hero) p,
+.recicladora-app :where(.sidebar, .page-hero) .muted,
+.recicladora-app :where(.sidebar, .page-hero) p {
+  color: var(--gu-a11y-on-dark-muted) !important;
+}
+
+.admin-app :where(.sidebar, .admin-sidebar) a,
+.recicladora-app .sidebar a {
+  color: #f4f8fb !important;
+}
+
+/* The public about page used pale green as text on a pale card. */
+.public-about-page .about-question-kicker,
+.public-about-page .section-kicker:not(.section-kicker-light),
+.public-about-page .eyebrow {
+  color: var(--gu-a11y-green) !important;
+}
+
+.public-about-page .contact-banner .section-kicker,
+.public-about-page .contact-banner .section-kicker-light {
+  color: #ffffff !important;
+}
+
+/* Responsive safeguards: contrast remains unchanged and content must not be
+   clipped or force horizontal scrolling at phone/tablet widths. */
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+@media (max-width: 991.98px) {
+  .container,
+  .container-fluid,
+  main,
+  section,
+  article,
+  .card,
+  .row > * {
+    min-width: 0;
+  }
+
+  table {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  :where(h1, h2, h3, h4, p, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+  }
+
+  .btn,
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  .d-flex.justify-content-between,
+  .d-flex.align-items-center.justify-content-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid CanvasText !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Automatic dark theme: follows the operating system/browser preference.
+   No application switch is required. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --gu-a11y-text: #f1f5f9;
+    --gu-a11y-muted: #cbd5e1;
+    --gu-a11y-primary: #7cc8ff;
+    --gu-a11y-green: #9ee493;
+    --gu-a11y-green-dark: #baf8aa;
+    --gu-a11y-border: #718096;
+  }
+
+  html,
+  body,
+  main {
+    background-color: #0d1724 !important;
+    color: var(--gu-a11y-text) !important;
+  }
+
+  .bg-white,
+  .bg-light,
+  .card,
+  .modal-content,
+  .dropdown-menu,
+  .offcanvas,
+  .list-group-item,
+  .accordion-item,
+  section:not(.hero-gradient):not(.eco-gradient):not(.hero-panel):not(.historial-hero):not(.page-hero):not(.bg-gu-primary):not(.bg-gu-secondary):not(.bg-gu-dark),
+  article:not(.page-hero),
+  table,
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    background-color: #172334 !important;
+    border-color: #465568 !important;
+    color: #f1f5f9 !important;
+  }
+
+  .navbar,
+  header.bg-white,
+  nav.bg-white {
+    background-color: #121e2d !important;
+    border-color: #465568 !important;
+  }
+
+  .text-dark,
+  .text-body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  legend {
+    color: #f8fafc !important;
+  }
+
+  .text-secondary,
+  .text-muted,
+  .form-text,
+  .card-text,
+  .lead,
+  .nav-link:not(.active):not(.active-custom),
+  .dropdown-item {
+    color: #cbd5e1 !important;
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item:focus,
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    background-color: #26364a !important;
+    color: #ffffff !important;
+  }
+
+  .text-gu-primary,
+  a:not(.btn),
+  .btn-link {
+    color: #7cc8ff !important;
+  }
+
+  .text-success,
+  .text-gu-secondary,
+  .nav-link.active-custom {
+    color: #9ee493 !important;
+  }
+
+  input,
+  select,
+  textarea,
+  .form-control,
+  .form-select,
+  .input-group-text {
+    background-color: #101b29 !important;
+    border-color: #718096 !important;
+    color: #ffffff !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder,
+  .form-control::placeholder {
+    color: #b9c5d3 !important;
+  }
+
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  .form-control:disabled,
+  .form-select:disabled {
+    background-color: #26364a !important;
+    color: #d8e1eb !important;
+  }
+
+  .btn-light {
+    background-color: #e7edf4 !important;
+    border-color: #e7edf4 !important;
+    color: #102033 !important;
+  }
+
+  .btn-outline-secondary {
+    border-color: #aab7c7 !important;
+    color: #f1f5f9 !important;
+  }
+
+  .btn-outline-success {
+    border-color: #9ee493 !important;
+    color: #baf8aa !important;
+  }
+
+  .alert-warning,
+  .bg-warning-subtle {
+    background-color: #3d3108 !important;
+    border-color: #d9b949 !important;
+    color: #fff1b8 !important;
+  }
+
+  .alert-success,
+  .bg-success-subtle {
+    background-color: #12351f !important;
+    border-color: #5fbd78 !important;
+    color: #d9ffe2 !important;
+  }
+
+  .alert-danger,
+  .bg-danger-subtle {
+    background-color: #451b20 !important;
+    border-color: #ec7a86 !important;
+    color: #ffe1e4 !important;
+  }
+
+  .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: #1d2c3e;
+    color: #f1f5f9;
+  }
+
+  .shadow,
+  .shadow-sm,
+  .shadow-lg,
+  .card {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42) !important;
+  }
+
+  /* Preserve intentionally dark, branded hero regions. */
+  :where(.hero-gradient, .eco-gradient, .hero-panel, .historial-hero,
+    .page-hero, .bg-gu-primary, .bg-gu-secondary, .bg-gu-dark,
+    .about-vision, .about-cta, .hero-content, footer) {
+    color: #ffffff !important;
+  }
+
+  /* Light decorative panels need dark equivalents instead of glowing white. */
+  body[class*="ciudadano-pagina-"] .glass-card,
+  body[class*="ciudadano-pagina-"] .historial-panel,
+  body[class*="ciudadano-pagina-"] .content-section,
+  .public-about-page .about-question,
+  .public-about-page .about-purpose,
+  .map-preview-card,
+  .landing-history-card {
+    background: #172334 !important;
+    border-color: #465568 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* "Sobre GreenUp" has several custom light surfaces that are not Bootstrap
+     cards. Give each one an explicit dark counterpart so headings never become
+     white over a retained white background. */
+  .public-about-page .about-hero,
+  .public-about-page .about-section,
+  .public-about-page .about-section-soft,
+  .public-about-page .team-section {
+    background-color: #0d1724 !important;
+    background-image: none !important;
+    color: #f1f5f9 !important;
+  }
+
+  .public-about-page :where(.about-story-card, .about-question-card,
+    .purpose-card, .feature-card, .team-card, .scope-card,
+    .scope-limit-card) {
+    background: #172334 !important;
+    border-color: #526176 !important;
+    color: #f1f5f9 !important;
+  }
+
+  .public-about-page :where(.about-hero h1, .section-title,
+    .purpose-card h3, .feature-card h3, .team-card h3,
+    .scope-limit-card h2, .about-question-card blockquote) {
+    color: #ffffff !important;
+  }
+
+  .public-about-page :where(.about-hero-copy, .section-heading p,
+    .about-story-card p, .purpose-card p, .feature-card p,
+    .team-description, .scope-card p, .scope-limit-card p) {
+    color: #d4deea !important;
+  }
+
+  .public-about-page :where(.about-eyebrow, .section-kicker,
+    .about-card-kicker, .team-role) {
+    color: #baf8aa !important;
+  }
+
+  .public-about-page .contact-banner .section-kicker,
+  .public-about-page .contact-banner .section-kicker-light {
+    color: #ffffff !important;
+  }
+
+  .public-about-page .about-eyebrow,
+  .public-about-page .about-facts li,
+  .public-about-page .tech-list span,
+  .public-about-page .about-icon {
+    background: #24364a !important;
+    border-color: #718096 !important;
+    color: #dfffd8 !important;
+  }
+
+  .public-about-page .team-card > img {
+    background: #26364a !important;
+  }
+
+  .public-about-page .impact-section,
+  .public-about-page .contact-banner,
+  .public-about-page .about-hero-card {
+    background: linear-gradient(135deg, #003d6c, #174d22) !important;
+  }
+
+  body[class*="ciudadano-pagina-"] .hero-eyebrow,
+  body[class*="ciudadano-pagina-"] .historial-resumen-etiqueta,
+  body[class*="ciudadano-pagina-"] .metric-label,
+  body[class*="ciudadano-pagina-"] .stat-label,
+  body[class*="ciudadano-pagina-"] .gu-sidebar-meta,
+  body.ciudadano-pagina-inicio .resource-card,
+  body.ciudadano-pagina-inicio .resource-card p {
+    color: #d8e1eb !important;
+  }
+
+  hr {
+    border-color: #64748b;
+    opacity: 1;
+  }
+}

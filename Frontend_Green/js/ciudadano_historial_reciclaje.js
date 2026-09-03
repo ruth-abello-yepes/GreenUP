@@ -208,7 +208,7 @@
   function descargarCsv() {
     const registros = estadoPagina.registrosFiltrados;
     if (!registros.length) {
-      mostrarMensaje("No hay registros disponibles con los filtros actuales.", "warning");
+      window.greenupAlert("No hay registros disponibles con los filtros actuales.", "Atención");
       return;
     }
 

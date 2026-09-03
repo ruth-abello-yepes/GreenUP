@@ -177,7 +177,7 @@
     };
 
     if (!datos.id_tipo_material || !datos.id_punto || !datos.cantidad) {
-      mostrarMensaje("Debes completar material, punto ecológico y cantidad.", "warning");
+      window.greenupAlert("Debes completar material, punto ecológico y cantidad.", "Atención");
       return;
     }
 

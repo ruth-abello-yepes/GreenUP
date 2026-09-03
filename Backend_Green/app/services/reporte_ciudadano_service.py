@@ -18,6 +18,10 @@ def preparar_reporte_ciudadano(id_usuario, argumentos):
     perfil = obtener_perfil_usuario(id_usuario)
     if not perfil:
         return {"mensaje": "No se encontró el usuario del reporte."}, 404
+    # Mismo nombre corto que muestra el saludo del inicio: nombre y apellido.
+    nombres = (perfil.get("nombres") or "").split()
+    apellidos = (perfil.get("apellidos") or "").split()
+    nombre_mostrar = " ".join(nombres[:1] + apellidos[:1]) or perfil["usuario"]
     generado_en = datetime.now(timezone(timedelta(hours=-5)))
     filas, materiales, estados = [], defaultdict(float), Counter()
     for item in datos:
@@ -44,6 +48,7 @@ def preparar_reporte_ciudadano(id_usuario, argumentos):
         grafico.append(("Otros materiales", sum(valor for _, valor in desglose[10:])))
     return {
         "usuario": perfil["usuario"],
+        "nombre_mostrar": nombre_mostrar,
         "generado_en": generado_en.isoformat(timespec="seconds"),
         "fecha_inicio": filtros["fecha_inicio"], "fecha_fin": filtros["fecha_fin"],
         "periodo": f"{filtros['fecha_inicio'] or 'Desde el primer registro'} / {filtros['fecha_fin'] or 'Hasta hoy'}",
@@ -71,7 +76,7 @@ def generar_pdf_ciudadano(reporte):
     celda = lambda valor: Paragraph(escape(str(valor)), estilos["CeldaGreenUp"])
     generado_en = datetime.fromisoformat(reporte["generado_en"])
     contenido = [Paragraph("GreenUp | Mi reporte de reciclaje", estilos["Title"]),
-                 Paragraph(f"Usuario: {escape(reporte['usuario'])}", estilos["Normal"]),
+                 Paragraph(f"Usuario: <b>{escape(reporte.get('nombre_mostrar') or reporte['usuario'])}</b>", estilos["Normal"]),
                  Paragraph(f"Generado el {generado_en:%d/%m/%Y} a las {generado_en:%H:%M:%S} (Colombia, UTC-05:00)", estilos["Normal"]),
                  Spacer(1, 8),
                  Paragraph(escape(reporte["periodo"]), estilos["Normal"]), Spacer(1, 14),

@@ -117,7 +117,7 @@
           const generacion = new Intl.DateTimeFormat("es-CO", {
             timeZone: "America/Bogota", dateStyle: "short", timeStyle: "medium",
           }).format(new Date(reporte.generado_en));
-          $("reporte-autor").textContent = `Usuario: ${reporte.usuario} · Generado: ${generacion} (Colombia)`;
+          $("reporte-autor").textContent = `Usuario: ${reporte.nombre_mostrar || reporte.usuario} · Generado: ${generacion} (Colombia)`;
         }
         $("reporte-periodo").textContent = reporte.periodo;
         $("reporte-registros").textContent = numero.format(reporte.total_registros);

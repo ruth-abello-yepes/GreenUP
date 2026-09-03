@@ -28,7 +28,7 @@ class ReportesCiudadanoTest(unittest.TestCase):
         self.consulta = patch("app.services.reportes_service.listar_reporte_reciclaje")
         self.modelo = self.consulta.start()
         self.modelo.return_value = [self.fila(2, 12.5), self.fila(1, 7), self.fila(3, 3)]
-        self.perfiles = patch("app.services.reporte_ciudadano_service.obtener_perfil_usuario", return_value={"usuario": "laura.suarez"})
+        self.perfiles = patch("app.services.reporte_ciudadano_service.obtener_perfil_usuario", return_value={"usuario": "laura.suarez", "nombres": "Laura Sofia", "apellidos": "Suarez Perez"})
         self.perfil = self.perfiles.start()
 
     def tearDown(self):
@@ -80,6 +80,7 @@ class ReportesCiudadanoTest(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.perfil.assert_called_once_with(42)
         self.assertEqual(r.json["usuario"], "laura.suarez")
+        self.assertEqual(r.json["nombre_mostrar"], "Laura Suarez")
         self.assertEqual(r.json["generado_en"], "2026-09-03T16:25:40-05:00")
         self.assertTrue(base64.b64decode(r.json["archivo"]["base64"]).startswith(b"%PDF-"))
 

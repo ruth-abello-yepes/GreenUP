@@ -727,9 +727,25 @@ function bindUserMenu() {
   const dropdown = document.getElementById("userDropdown");
   if (!button || !dropdown) return;
 
-  button.addEventListener("click", () => dropdown.classList.toggle("open"));
+  button.setAttribute("aria-controls", dropdown.id);
+  button.setAttribute("aria-expanded", "false");
+  const mostrar = (abierto) => {
+    dropdown.classList.toggle("open", abierto);
+    button.setAttribute("aria-expanded", String(abierto));
+  };
+  button.addEventListener("click", () => {
+    const abierto = !dropdown.classList.contains("open");
+    mostrar(abierto);
+    if (abierto) dropdown.querySelector("a, button")?.focus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && dropdown.classList.contains("open")) {
+      mostrar(false);
+      button.focus();
+    }
+  });
   document.addEventListener("click", (event) => {
-    if (!event.target.closest(".user-menu")) dropdown.classList.remove("open");
+    if (!event.target.closest(".user-menu")) mostrar(false);
   });
 }
 
@@ -738,6 +754,7 @@ function mostrarNotificacionesRecicladora() {
   if (!menu) return;
   const isOpen = menu.classList.toggle("open");
   menu.setAttribute("aria-hidden", String(!isOpen));
+  document.querySelector('[aria-label="Notificaciones"]')?.setAttribute("aria-expanded", String(isOpen));
   if (isOpen) cargarNotificacionesRecicladora();
 }
 
@@ -794,12 +811,25 @@ async function cargarNotificacionesRecicladora() {
 function bindNotificationsMenu() {
   const menu = document.getElementById("notificationsMenu");
   if (!menu) return;
+  const boton = document.querySelector('[aria-label="Notificaciones"]');
+  boton?.setAttribute("aria-controls", menu.id);
+  boton?.setAttribute("aria-expanded", "false");
+  const cerrar = () => {
+    menu.classList.remove("open");
+    menu.setAttribute("aria-hidden", "true");
+    boton?.setAttribute("aria-expanded", "false");
+  };
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menu.classList.contains("open")) {
+      cerrar();
+      boton?.focus();
+    }
+  });
 
   document.addEventListener("click", (event) => {
     if (event.target.closest('[aria-label="Notificaciones"]')) return;
     if (event.target.closest("#notificationsMenu")) return;
-    menu.classList.remove("open");
-    menu.setAttribute("aria-hidden", "true");
+    cerrar();
   });
 }
 
@@ -888,6 +918,15 @@ function crearMenuSuperiorRecicladora() {
   boton.addEventListener("click", () => {
     const abierto = menu.classList.toggle("open");
     boton.setAttribute("aria-expanded", String(abierto));
+    if (abierto) menu.querySelector("a, button")?.focus();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menu.classList.contains("open")) {
+      menu.classList.remove("open");
+      boton.setAttribute("aria-expanded", "false");
+      boton.focus();
+    }
   });
 
   menu.addEventListener("click", (event) => {

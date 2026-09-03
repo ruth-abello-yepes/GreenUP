@@ -1,9 +1,11 @@
 """Reporte personal: una misma seleccion alimenta la vista previa, PDF y Excel."""
 from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from xml.sax.saxutils import escape
 
 from app.services.reportes_service import servicio_reporte_reciclaje
+from app.models.usuarios_model import obtener_perfil_usuario
 
 
 def preparar_reporte_ciudadano(id_usuario, argumentos):
@@ -13,6 +15,10 @@ def preparar_reporte_ciudadano(id_usuario, argumentos):
     datos, estado = servicio_reporte_reciclaje(filtros)
     if estado != 200:
         return datos, estado
+    perfil = obtener_perfil_usuario(id_usuario)
+    if not perfil:
+        return {"mensaje": "No se encontró el usuario del reporte."}, 404
+    generado_en = datetime.now(timezone(timedelta(hours=-5)))
     filas, materiales, estados = [], defaultdict(float), Counter()
     for item in datos:
         texto_estado = str(item.get("estado") or "").lower()
@@ -37,6 +43,8 @@ def preparar_reporte_ciudadano(id_usuario, argumentos):
     if len(desglose) > 10:
         grafico.append(("Otros materiales", sum(valor for _, valor in desglose[10:])))
     return {
+        "usuario": perfil["usuario"],
+        "generado_en": generado_en.isoformat(timespec="seconds"),
         "fecha_inicio": filtros["fecha_inicio"], "fecha_fin": filtros["fecha_fin"],
         "periodo": f"{filtros['fecha_inicio'] or 'Desde el primer registro'} / {filtros['fecha_fin'] or 'Hasta hoy'}",
         "total_registros": len(filas), "kg_confirmados": round(sum(materiales.values()), 2),
@@ -61,7 +69,11 @@ def generar_pdf_ciudadano(reporte):
     estilos = getSampleStyleSheet()
     estilos.add(ParagraphStyle(name="CeldaGreenUp", fontName="Helvetica", fontSize=8, leading=11, wordWrap="CJK"))
     celda = lambda valor: Paragraph(escape(str(valor)), estilos["CeldaGreenUp"])
+    generado_en = datetime.fromisoformat(reporte["generado_en"])
     contenido = [Paragraph("GreenUp | Mi reporte de reciclaje", estilos["Title"]),
+                 Paragraph(f"Usuario: {escape(reporte['usuario'])}", estilos["Normal"]),
+                 Paragraph(f"Generado el {generado_en:%d/%m/%Y} a las {generado_en:%H:%M:%S} (Colombia, UTC-05:00)", estilos["Normal"]),
+                 Spacer(1, 8),
                  Paragraph(escape(reporte["periodo"]), estilos["Normal"]), Spacer(1, 14),
                  Paragraph(f"{reporte['total_registros']} registros | {reporte['kg_confirmados']:g} kg confirmados", estilos["Heading2"]),
                  Paragraph("Los kilogramos y el grafico incluyen solo entregas confirmadas. La tabla incluye todos los estados.", estilos["Normal"]), Spacer(1, 14)]

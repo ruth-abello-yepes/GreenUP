@@ -28,9 +28,12 @@ class ReportesCiudadanoTest(unittest.TestCase):
         self.consulta = patch("app.services.reportes_service.listar_reporte_reciclaje")
         self.modelo = self.consulta.start()
         self.modelo.return_value = [self.fila(2, 12.5), self.fila(1, 7), self.fila(3, 3)]
+        self.perfiles = patch("app.services.reporte_ciudadano_service.obtener_perfil_usuario", return_value={"usuario": "laura.suarez"})
+        self.perfil = self.perfiles.start()
 
     def tearDown(self):
         self.consulta.stop()
+        self.perfiles.stop()
         self.env.stop()
 
     @staticmethod
@@ -67,6 +70,18 @@ class ReportesCiudadanoTest(unittest.TestCase):
         for query in ("?fecha_inicio=2026-02-30", "?fecha_inicio=2026-09-10&fecha_fin=2026-09-01", "?formato=html", "?formato=vista&tipo=html"):
             self.assertEqual(self.get(query).status_code, 400)
         self.modelo.assert_not_called()
+
+    def test_pdf_identifica_usuario_real_y_fecha_colombiana_incluso_sin_registros(self):
+        self.modelo.return_value = []
+        instante = datetime(2026, 9, 3, 16, 25, 40, tzinfo=timezone(timedelta(hours=-5)))
+        with patch("app.services.reporte_ciudadano_service.datetime", wraps=datetime) as reloj:
+            reloj.now.return_value = instante
+            r = self.get("?formato=vista&tipo=pdf&id_usuario=999&usuario=otro&generado_en=2000-01-01")
+        self.assertEqual(r.status_code, 200)
+        self.perfil.assert_called_once_with(42)
+        self.assertEqual(r.json["usuario"], "laura.suarez")
+        self.assertEqual(r.json["generado_en"], "2026-09-03T16:25:40-05:00")
+        self.assertTrue(base64.b64decode(r.json["archivo"]["base64"]).startswith(b"%PDF-"))
 
     def test_excel_conserva_filas_numeros_y_texto_sin_ejecutar_formulas(self):
         self.modelo.return_value = [dict(self.fila(), material="=1+1", punto="=HYPERLINK(\"https://example.com\")")] * 125

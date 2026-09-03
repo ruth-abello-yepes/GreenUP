@@ -45,7 +45,7 @@ body.public-about-page main {
   vertical-align: middle;
 }
 
-.navbar {
+body:not(.sobre-nosotros-ciudadano) .navbar {
   min-height: 72px;
 }
 
@@ -54,19 +54,19 @@ body.public-about-page main {
   object-fit: contain;
 }
 
-.navbar .nav-link {
+body:not(.sobre-nosotros-ciudadano) .navbar .nav-link {
   border-radius: 999px;
   font-weight: 600;
   padding: 0.55rem 0.75rem !important;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.navbar .nav-link:hover {
+body:not(.sobre-nosotros-ciudadano) .navbar .nav-link:hover {
   background: rgba(169, 242, 149, 0.24);
   color: var(--gu-secondary) !important;
 }
 
-.navbar .nav-link.active-custom {
+body:not(.sobre-nosotros-ciudadano) .navbar .nav-link.active-custom {
   background: rgba(169, 242, 149, 0.3);
   color: var(--gu-secondary) !important;
 }
@@ -614,7 +614,7 @@ body.public-about-page main {
     gap: 0.2rem !important;
   }
 
-  .navbar .nav-link {
+  body:not(.sobre-nosotros-ciudadano) .navbar .nav-link {
     font-size: 0.9rem;
     padding-left: 0.55rem !important;
     padding-right: 0.55rem !important;
@@ -641,7 +641,7 @@ body.public-about-page main {
     padding-top: 64px;
   }
 
-  .navbar {
+  body:not(.sobre-nosotros-ciudadano) .navbar {
     min-height: 64px;
   }
 

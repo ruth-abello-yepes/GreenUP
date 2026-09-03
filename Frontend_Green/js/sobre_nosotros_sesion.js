@@ -1,5 +1,70 @@
 // La pagina institucional es publica, pero conserva la navegacion del usuario.
 (() => {
+  const baseScripts = new URL(".", document.currentScript.src);
+
+  function cargarScript(nombre) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = new URL(nombre, baseScripts).href;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`No se pudo cargar ${nombre}`));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function conservarNavbarCiudadano() {
+    // Reutiliza el HTML del inicio y sus funciones; no mantiene otra copia del menu.
+    const inicio = new URL("../ciudadano/ciudadano_inicio.html", window.location.href);
+    const respuesta = await fetch(inicio);
+    if (!respuesta.ok) throw new Error("No se pudo cargar la navegacion ciudadana");
+    const pagina = new DOMParser().parseFromString(await respuesta.text(), "text/html");
+    const navbar = pagina.querySelector("nav.navbar");
+    const movil = pagina.getElementById("mobileMenuSidebar");
+    if (!navbar || !movil) throw new Error("Navegacion ciudadana incompleta");
+
+    // Estos scripts se cargan despues de DOMContentLoaded. Se inicializa solo
+    // la navegacion, sin cargar el dashboard ni modificar el contenido institucional.
+    await Promise.all([
+      "api.js", "auth.js", "cargar_usuario.js", "ciudadano_ui_fix.js",
+      "notificaciones_panel.js?v=20260903-navbar",
+    ].map(cargarScript));
+
+    const estilos = document.createElement("link");
+    estilos.rel = "stylesheet";
+    estilos.href = new URL("../css/ciudadano.css?v=20260902-ayuda-flotante", baseScripts).href;
+    document.head.insertBefore(estilos, document.querySelector('link[href*="public-pages/"]'));
+    document.body.classList.add("ciudadano-pagina-inicio", "sobre-nosotros-ciudadano");
+    document.querySelector("nav.navbar").replaceWith(navbar);
+    document.getElementById("mobileOffcanvas")?.replaceWith(movil);
+
+    navbar.querySelectorAll("img[src]").forEach((imagen) => {
+      imagen.src = new URL("../../img/logo-greenup.png", inicio).href;
+    });
+    movil.querySelectorAll("img[src]").forEach((imagen) => {
+      imagen.src = new URL("../../img/logo-greenup.png", inicio).href;
+    });
+    movil.querySelectorAll(".active-custom, .border-success").forEach((enlace) => {
+      enlace.classList.remove("active-custom", "border-success", "border-end", "border-4", "ciudadano-inicio-estilo-5");
+    });
+
+    completarNavegacionCiudadano();
+    crearMenuHamburguesaCiudadano();
+    normalizarNavegacionAprendeCiudadano();
+    cerrarOffcanvasViejoCiudadano();
+    estilizarBotonesCerrarSesionCiudadano();
+    mostrarDatosUsuario();
+    iniciarPanelNotificacionesCiudadano();
+
+    // Los enlaces del componente se resuelven desde la carpeta ciudadana.
+    [navbar, movil, document.getElementById("ciudadano-hamburger-panel")].forEach((menu) => {
+      menu?.querySelectorAll("a[href]").forEach((enlace) => {
+        const href = enlace.getAttribute("href");
+        if (href && !href.startsWith("#")) enlace.href = new URL(href, inicio).href;
+      });
+      if (menu) mejorarAccesibilidadCiudadano(menu);
+    });
+  }
+
   const paneles = {
     1: {
       inicio: "../admin_sistema/admin_panel.html",
@@ -64,5 +129,8 @@
         enlace.textContent = "Volver a mi panel";
       }
     });
+    if (Number(usuario.id_rol) === 3) {
+      conservarNavbarCiudadano().catch((error) => console.error(error.message));
+    }
   });
 })();

@@ -907,6 +907,22 @@ function crearMenuSuperiorRecicladora() {
   contenedorMarca.appendChild(menu);
 }
 
+function asegurarFooterRecicladora() {
+  if (document.querySelector(".recicladora-about-footer")) return;
+  const navegacionMovil = document.querySelector(".mobile-bottom-nav");
+  if (!navegacionMovil) return;
+
+  const footer = document.createElement("footer");
+  footer.className = "recicladora-about-footer";
+  footer.setAttribute("aria-label", "Informacion de GreenUp");
+  footer.innerHTML = `
+    <span>GreenUp facilita la gestion de reciclaje en Valledupar.</span>
+    <a href="recicladora_panel.html"><span class="material-symbols-outlined">home</span>Volver al panel</a>
+    <span>© 2026 GreenUp</span>
+  `;
+  navegacionMovil.before(footer);
+}
+
 function obtenerTemaRecicladora() {
   const tema = localStorage.getItem("recicladora_tema") || "claro";
   return tema === "oscuro" ? "oscuro" : "claro";
@@ -1648,6 +1664,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindUserMenu();
   bindNotificationsMenu();
   crearMenuSuperiorRecicladora();
+  asegurarFooterRecicladora();
   quitarTemaOscuroRecicladora();
   bindModalForms();
   bindProfilePhotoInput();

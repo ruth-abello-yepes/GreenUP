@@ -99,6 +99,7 @@
     "public_educacion.html": "educacion",
     "public_login.html": "perfil",
     "public_registro.html": "inicio",
+    "public_sobre_nosotros.html": "inicio",
   };
 
   document.addEventListener("DOMContentLoaded", () => {

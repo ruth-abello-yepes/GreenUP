@@ -959,6 +959,7 @@ function asegurarFooterRecicladora() {
       <a href="recicladora_configuracion.html">Privacidad</a>
       <a href="recicladora_faq.html">Ayuda</a>
       <a href="recicladora_novedades.html">Novedades</a>
+      <a href="../public/public_sobre_nosotros.html">Sobre nosotros</a>
     </nav>
     <span class="recicladora-footer-location">Valledupar, Cesar</span>
   `;

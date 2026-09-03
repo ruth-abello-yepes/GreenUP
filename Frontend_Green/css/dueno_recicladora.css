@@ -535,14 +535,25 @@ body.recicladora-theme-dark .role-nav-menu {
 }
 
 .recicladora-about-footer.bg-gu-dark {
-  display: block;
-  margin: 0 0 32px calc(var(--sidebar-width) + 48px);
-  padding: 3rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  min-height: 82px;
+  margin: 0;
+  padding: 1.25rem 36px;
   border: 0;
-  border-radius: 18px 18px 0 0;
+  border-radius: 0;
   background: #08243a;
   color: #ffffff;
 }
+.recicladora-footer-brand { flex: 0 0 auto; }
+.recicladora-footer-brand a { font-size: 1.35rem; font-weight: 900; }
+.recicladora-footer-brand a span { color: #a6f1b9; }
+.recicladora-footer-copy { color: #d4e2ee; font-size: .82rem; white-space: nowrap; }
+.recicladora-footer-links { display: flex; gap: 20px; margin-left: auto; }
+.recicladora-footer-links a { color: #dceeff; font-size: .82rem; }
+.recicladora-footer-location { color: #d4e2ee; font-size: .82rem; white-space: nowrap; }
 .recicladora-about-footer.bg-gu-dark a { color: #dceeff; }
 .recicladora-about-footer.bg-gu-dark a:hover,
 .recicladora-about-footer.bg-gu-dark a:focus-visible { color: #a6f1b9; }
@@ -1984,9 +1995,14 @@ body.recicladora-theme-dark .profile-photo-help {
     margin: 0 16px 108px;
   }
   .recicladora-about-footer.bg-gu-dark {
-    margin: 0 16px 108px;
-    padding: 2rem 1.2rem 1.2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    padding: 1.25rem 16px 5.5rem;
   }
+  .recicladora-footer-copy { order: 3; width: 100%; }
+  .recicladora-footer-links { margin-left: auto; }
+  .recicladora-footer-location { width: 100%; }
 
   .page-hero {
     grid-template-columns: 1fr;

@@ -103,6 +103,13 @@ Data/greenup.sql
 
 Ese archivo describe las tablas principales y datos iniciales. En produccion la base usada es PostgreSQL/Supabase.
 
+Para una base existente, el registro con verificacion de correo requiere aplicar
+`Data/2026_09_03_verificacion_correo.sql` y
+`Data/2026_09_03_codigos_recuperacion_hash.sql`. La primera migracion agrega
+`usuarios.correo_verificado`; la segunda amplia el campo del codigo para guardar
+su hash SHA-256 de 64 caracteres. Un `/health/db` exitoso confirma conexion,
+pero no comprueba que estas migraciones esten aplicadas.
+
 Para cargarlo en una base PostgreSQL local o en Supabase, usa el editor SQL de Supabase o `psql`:
 
 ```powershell

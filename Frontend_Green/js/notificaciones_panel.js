@@ -356,7 +356,7 @@ function prepararAccionesSoporteGreenUp() {
     document.getElementById("greenup-reciclaje-float")?.remove();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function iniciarPanelNotificacionesCiudadano() {
     asegurarPanelNotificacionesCiudadano();
     prepararAccionesSoporteGreenUp();
 
@@ -380,4 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (botonActual && botonActual.contains(evento.target)) return;
         panel.style.display = "none";
     });
-});
+}
+
+document.addEventListener("DOMContentLoaded", iniciarPanelNotificacionesCiudadano);

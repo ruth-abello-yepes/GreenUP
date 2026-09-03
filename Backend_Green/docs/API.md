@@ -409,3 +409,25 @@ Blueprint sin `url_prefix`.
 | `403` | Usuario sin permisos o inactivo |
 | `404` | Recurso no encontrado |
 | `500` | Error no controlado |
+
+
+## Reporte personal del ciudadano
+
+`GET /api/reportes/ciudadano` requiere un JWT de ciudadano (rol 3).
+El propietario se toma del token; `id_usuario` enviado en la URL no cambia el alcance.
+
+- `fecha_inicio`, `fecha_fin`: fechas opcionales `YYYY-MM-DD`, inclusivas.
+- `formato=json`: resumen, materiales, estados y registros personales.
+- `formato=pdf` o `formato=excel`: descarga el reporte completo.
+- `formato=vista&tipo=pdf` (o `tipo=excel`): devuelve la vista y `archivo`
+  (`nombre`, `tipo`, `base64`) generados desde la misma consulta.
+
+Los kilogramos y materiales suman solo entregas confirmadas; la tabla incluye
+pendientes, confirmadas y rechazadas. Los archivos conservan todas las filas,
+aunque la vista previa del navegador muestra 20 por página. Las respuestas
+correctas usan `Cache-Control: private, no-store`.
+
+La interfaz se encuentra en Estadísticas del ciudadano. Compartir usa el archivo
+ya preparado y el selector nativo del dispositivo; si el navegador no admite
+compartir archivos, ofrece la descarga para adjuntarlo manualmente. No se envían
+correos automáticamente ni se crea un enlace público al reporte.

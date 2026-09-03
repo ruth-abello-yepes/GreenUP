@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <link href="../../css/ciudadano.css" rel="stylesheet">
+    <link href="../../css/ciudadano.css?v=20260902-ayuda-flotante" rel="stylesheet">
 </head>
 
 <body class="ciudadano-pagina-faq">
@@ -59,7 +59,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-faq-estilo-4"></span>
+                        id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-faq-estilo-4" hidden></span>
                 </button>
 
                 <div class="dropdown border-start ps-2 ms-1">
@@ -130,15 +130,14 @@
     <header class="bg-primary-container text-white py-5 fade-up ciudadano-faq-estilo-5">
         <div class="container text-center py-4 py-md-5">
             <h1 class="display-5 fw-bold mb-3">Centro de Ayuda GreenUp</h1>
-            <p class="lead text-white-50 mb-4 ciudadano-faq-estilo-6">¿Tienes dudas sobre cómo
-                reciclar en Valledupar? Estamos aquí para ayudarte.</p>
+            <p class="lead mb-4 ciudadano-faq-estilo-6">Aprende para qué sirve cada sección y cómo usar GreenUp paso a paso.</p>
 
             <div class="position-relative mx-auto mt-4 ciudadano-faq-estilo-7">
                 <span
                     class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-white-50">search</span>
                 <input type="text" id="searchInput"
                     class="form-control form-control-lg rounded-pill ps-5 search-box py-3"
-                    placeholder="Busca una pregunta (ej. Reciclaje, Plásticos...)">
+                    placeholder="Busca una sección (ej. mapa, historial, notificaciones…)">
             </div>
             <a href="#"
                 class="btn btn-light text-danger fw-semibold rounded-pill px-4 py-2 mt-3 d-inline-flex align-items-center justify-content-center gap-2"
@@ -151,6 +150,22 @@
     <main class="flex-grow-1 container py-5 ciudadano-faq-estilo-8">
 
         <div id="faqContainer">
+
+            <section class="mb-5 fade-up faq-category">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <span class="material-symbols-outlined fs-3 text-gu-secondary">menu_book</span>
+                    <h3 class="fw-bold text-gu-primary mb-0">Cómo usar la aplicación</h3>
+                </div>
+                <div class="accordion" id="accordionGuide">
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#guideHome">¿Para qué sirve Inicio?</button></h2><div id="guideHome" class="accordion-collapse collapse show" data-bs-parent="#accordionGuide"><div class="accordion-body">Es el resumen principal. Desde allí puedes ver accesos rápidos, información ambiental y entrar a las funciones más usadas.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideMap">¿Cómo uso Mapa Eco y las rutas?</button></h2><div id="guideMap" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body">Abre <strong>Mapa Eco</strong>, elige una recicladora y pulsa <strong>Cómo llegar</strong>. Selecciona automóvil, bicicleta o caminando. Si caminas y cambias de calle, GreenUp mueve tu posición y vuelve a dibujar el recorrido. La ficha también indica si la recicladora ofrece recolección a domicilio.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideRegister">¿Cómo registro una entrega?</button></h2><div id="guideRegister" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body">Pulsa el botón verde <strong>+</strong>, selecciona el material, la cantidad y la recicladora. Al guardar, el registro queda pendiente hasta que la recicladora lo confirme.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideHistory">¿Para qué sirven Historial y Estadísticas?</button></h2><div id="guideHistory" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body"><strong>Historial</strong> muestra cada entrega y su estado. <strong>Estadísticas</strong> resume cuánto has reciclado y cómo cambia tu actividad con el tiempo.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideLearn">¿Qué encuentro en Aprende?</button></h2><div id="guideLearn" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body">Guías para separar, limpiar y entregar correctamente cada tipo de residuo antes de llevarlo a una recicladora.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideNotices">¿Qué aparece en Notificaciones?</button></h2><div id="guideNotices" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body">Verás cambios relacionados con tu actividad y avisos que las recicladoras decidan publicar, por ejemplo campañas, horarios especiales o disponibilidad de rutas de recolección. Las recicladoras publican estos avisos de manera voluntaria desde <strong>Novedades</strong>.</div></div></div>
+                    <div class="accordion-item faq-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideProfile">¿Qué puedo hacer en mi Perfil?</button></h2><div id="guideProfile" class="accordion-collapse collapse" data-bs-parent="#accordionGuide"><div class="accordion-body">Consultar y actualizar tus datos, cambiar tu foto o contraseña y cerrar sesión de forma segura.</div></div></div>
+                </div>
+            </section>
 
             <section class="mb-5 fade-up faq-category">
                 <div class="d-flex align-items-center gap-2 mb-4">
@@ -412,7 +427,7 @@
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

@@ -77,6 +77,11 @@ def listar_ubicaciones():
     cursor = conexion.cursor()
 
     tiene_id_punto = _tabla_tiene_columna(cursor, "recicladoras", "id_punto")
+    tiene_recoleccion = _tabla_tiene_columna(cursor, "recicladoras", "ofrece_recoleccion_domicilio")
+    recoleccion_select = (
+        "COALESCE(recicladoras.ofrece_recoleccion_domicilio, FALSE)"
+        if tiene_recoleccion else "FALSE"
+    )
     recicladora_join = (
         "LEFT JOIN recicladoras ON recicladoras.id_punto = puntos_reciclaje.id_punto"
         if tiene_id_punto else
@@ -121,6 +126,7 @@ def listar_ubicaciones():
             COALESCE(NULLIF(puntos_reciclaje.responsable, ''), NULLIF(recicladoras.nombre_empresa, ''), '') AS responsable,
             puntos_reciclaje.id_estado,
             COALESCE(usuarios.correo, '') AS correo,
+            {recoleccion_select} AS ofrece_recoleccion_domicilio,
             COALESCE(
                 string_agg(DISTINCT tipo_material.nombre, ', ')
                     FILTER (WHERE tipo_material.nombre IS NOT NULL),
@@ -149,6 +155,7 @@ def listar_ubicaciones():
             recicladoras.horario,
             recicladoras.telefono_empresa,
             usuarios.correo
+            {', recicladoras.ofrece_recoleccion_domicilio' if tiene_recoleccion else ''}
         ORDER BY puntos_reciclaje.id_punto DESC
     """)
 
@@ -178,6 +185,7 @@ def listar_ubicaciones():
             COALESCE(NULLIF(recicladoras.nombre_empresa, ''), usuarios.usuario, '') AS responsable,
             recicladoras.id_estado,
             COALESCE(usuarios.correo, '') AS correo,
+            {recoleccion_select} AS ofrece_recoleccion_domicilio,
             '' AS materiales_aceptados
         FROM recicladoras
         LEFT JOIN usuarios

@@ -46,8 +46,8 @@ def registrar_usuario(nombres, apellidos, correo, usuario, contrasena, numero_do
 
     sql = """
     INSERT INTO usuarios
-    (nombres, apellidos, correo, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado, genero)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    (nombres, apellidos, correo, correo_verificado, usuario, contrasena, numero_documento, celular, foto_perfil, id_tipo_documento, id_rol, id_estado, genero)
+    VALUES (%s, %s, %s, FALSE, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING id_usuario
     """
 
@@ -575,6 +575,25 @@ def obtener_codigo_recuperacion_db(id_usuario, codigo):
     conexion.close()
 
     return registro_codigo
+
+
+def confirmar_correo_usuario_db(id_usuario):
+    """Marca el correo como verificado y consume el código utilizado."""
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            "UPDATE usuarios SET correo_verificado = TRUE WHERE id_usuario = %s",
+            (id_usuario,),
+        )
+        cursor.execute("DELETE FROM codigos_recuperacion WHERE id_usuario = %s", (id_usuario,))
+        conexion.commit()
+    except Exception:
+        conexion.rollback()
+        raise
+    finally:
+        cursor.close()
+        conexion.close()
 
 
 def actualizar_contrasena_db(id_usuario, nueva_contrasena):

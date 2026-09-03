@@ -209,6 +209,29 @@ function crearBotonFlotanteReciclajeCiudadano() {
 }
 
 /**
+ * Mantiene las preguntas frecuentes visibles sin depender del menu de perfil.
+ * Se muestra encima del boton flotante de registro de reciclaje.
+ */
+function crearBotonFlotanteAyudaCiudadano() {
+    if (document.getElementById("greenup-ayuda-float")) {
+        return;
+    }
+
+    const boton = document.createElement("a");
+    boton.id = "greenup-ayuda-float";
+    boton.className = "greenup-ayuda-float";
+    boton.href = "ciudadano_faq.html";
+    boton.setAttribute("aria-label", "Ayuda y preguntas frecuentes");
+    boton.setAttribute("data-tooltip", "Ayuda");
+    boton.innerHTML = `
+        <span class="material-symbols-outlined" aria-hidden="true">question_mark</span>
+        <span class="greenup-ayuda-float__texto">Ayuda</span>
+    `;
+
+    document.body.appendChild(boton);
+}
+
+/**
  * Crea un menú pequeño para el botón hamburguesa en móvil.
  * Este menú reemplaza la barra lateral antigua y muestra rutas reales.
  */
@@ -923,6 +946,7 @@ document.addEventListener("DOMContentLoaded", () => {
     completarNavegacionCiudadano();
     crearMenuHamburguesaCiudadano();
     crearBotonFlotanteReciclajeCiudadano();
+    crearBotonFlotanteAyudaCiudadano();
     normalizarNavegacionAprendeCiudadano();
     cerrarOffcanvasViejoCiudadano();
     quitarModulosNoDeseadosCiudadano();

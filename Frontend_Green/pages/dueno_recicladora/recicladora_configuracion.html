@@ -235,14 +235,16 @@
       </article>
       <article class="admin-card span-6">
         <div class="card-title-row">
-          <h2>Preferencias</h2>
+          <h2>Servicio de recolección</h2>
         </div>
         <div class="stack-list">
-          <label class="switch-row"><input type="checkbox" checked> Alertas de rutas y contenedores</label>
-          <label class="switch-row"><input type="checkbox" checked> Envio automatico de reportes</label>
-          <label class="switch-row"><input type="checkbox"> Modo revision para registros nuevos</label>
-          <button class="btn-greenup" type="button"><span class="material-symbols-outlined">save</span>Guardar
-            configuracion</button>
+          <p class="security-copy">Activa esta opción únicamente si tu recicladora recoge materiales reciclables en las casas.</p>
+          <label class="switch-row" for="homePickupToggle">
+            <input id="homePickupToggle" type="checkbox">
+            Ofrecemos rutas de recolección a domicilio
+          </label>
+          <p id="homePickupStatus" class="route-service-status" role="status">Consultando disponibilidad…</p>
+          <button class="btn-greenup" id="saveHomePickup" type="button"><span class="material-symbols-outlined">save</span>Guardar configuración</button>
         </div>
       </article>
     </section>

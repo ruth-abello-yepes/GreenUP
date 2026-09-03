@@ -28,6 +28,53 @@ function getSessionHeaders() {
   };
 }
 
+function crearBotonAyudaRecicladora() {
+  if (document.getElementById("greenup-ayuda-float")) return;
+  const enlace = document.createElement("a");
+  enlace.id = "greenup-ayuda-float";
+  enlace.className = "greenup-ayuda-float";
+  enlace.href = "recicladora_faq.html";
+  enlace.setAttribute("aria-label", "Ayuda sobre el uso de GreenUp");
+  enlace.setAttribute("title", "Ayuda");
+  enlace.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">question_mark</span><span class="visually-hidden">Ayuda</span>';
+  document.body.appendChild(enlace);
+}
+
+async function configurarRecoleccionDomicilio() {
+  const toggle = document.getElementById("homePickupToggle");
+  const save = document.getElementById("saveHomePickup");
+  const status = document.getElementById("homePickupStatus");
+  if (!toggle || !save || !status) return;
+
+  try {
+    const profile = await fetchJson("/api/recicladoras/perfil");
+    toggle.checked = Boolean(profile.ofrece_recoleccion_domicilio);
+    status.textContent = toggle.checked
+      ? "Activo: los ciudadanos verán que recoges reciclables en sus casas."
+      : "Inactivo: los ciudadanos llevarán sus materiales directamente al punto.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+
+  save.addEventListener("click", async () => {
+    save.disabled = true;
+    try {
+      const result = await fetchJson("/api/recicladoras/recoleccion-domicilio", {
+        method: "PUT",
+        body: JSON.stringify({ activa: toggle.checked }),
+      });
+      status.textContent = toggle.checked
+        ? "Activo: los ciudadanos verán que recoges reciclables en sus casas."
+        : "Inactivo: los ciudadanos llevarán sus materiales directamente al punto.";
+      alert(result.mensaje);
+    } catch (error) {
+      alert(error.message || "No se pudo guardar la configuración");
+    } finally {
+      save.disabled = false;
+    }
+  });
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -1555,7 +1602,7 @@ async function initRecicladoraMap() {
 
   await loadScriptOnce("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
   await loadScriptOnce("https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js");
-  await loadScriptOnce("../../js/mapa.js");
+  await loadScriptOnce("../../js/mapa.js?v=20260903-rutas-transporte");
 
   if (typeof window.initGreenupMap === "function") {
     window.initGreenupMap({ scope: "recicladora" });
@@ -1610,6 +1657,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bindProfileSave();
   bindReportExports();
   crearFooterSobreGreenUpRecicladora();
+  crearBotonAyudaRecicladora();
   normalizarFooterRecicladora();
   prepararTablasResponsivasRecicladora();
 
@@ -1634,6 +1682,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   if (current === "recicladora_configuracion.html") {
     hydrateProfilePhotoOnly();
+    configurarRecoleccionDomicilio();
   }
 
   if (document.getElementById("eco-map")) {

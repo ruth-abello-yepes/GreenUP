@@ -2805,3 +2805,27 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
     border-bottom: 0;
   }
 }
+
+.greenup-ayuda-float {
+  align-items: center; background: #003d6c; border: 2px solid #fff; border-radius: 50%;
+  bottom: 28px; box-shadow: 0 12px 28px rgba(0,61,108,.28); color: #fff; display: flex;
+  height: 58px; justify-content: center; position: fixed; right: 24px; text-decoration: none;
+  width: 58px; z-index: 2400;
+}
+.greenup-ayuda-float:hover, .greenup-ayuda-float:focus-visible { background: #296c1f; color: #fff; transform: translateY(-2px); }
+.greenup-ayuda-float .material-symbols-outlined { font-size: 30px; font-weight: 700; }
+@media (max-width: 767px) { .greenup-ayuda-float { bottom: 88px; right: 16px; } }
+
+.admin-routes-panel { background:#fff; border:1px solid #d9e2ec; border-radius:20px; bottom:24px; box-shadow:0 18px 45px rgba(15,23,42,.22); left:max(280px, calc(50% - 360px)); padding:18px; position:fixed; width:min(720px, calc(100vw - 320px)); z-index:2500; }
+.admin-routes-head { align-items:center; display:flex; justify-content:space-between; margin-bottom:12px; }
+.admin-routes-head > div { display:flex; flex-direction:column; }
+.admin-routes-head strong { color:#003d6c; font-size:1.05rem; }
+.admin-routes-head small { color:#526171; }
+.admin-routes-head button { background:#eef2f6; border:0; border-radius:50%; color:#334155; font-size:26px; height:40px; line-height:1; width:40px; }
+.admin-routes-options { display:grid; gap:10px; grid-template-columns:repeat(3,1fr); }
+.admin-routes-options button { align-items:start; background:#fff; border:1px solid #d7e0ea; border-radius:14px; color:#26364a; display:grid; gap:2px; grid-template-columns:auto 1fr; padding:12px; text-align:left; }
+.admin-routes-options button.is-selected { background:#eef9f0; border-color:#1f8a3b; }
+.admin-routes-options .material-symbols-outlined { color:#296c1f; grid-row:1 / 3; margin-right:5px; }
+.admin-routes-options small { color:#526171; }
+@media (max-width:900px) { .admin-routes-panel { bottom:84px; left:12px; width:calc(100vw - 24px); } }
+@media (max-width:620px) { .admin-routes-options { grid-template-columns:1fr; } }

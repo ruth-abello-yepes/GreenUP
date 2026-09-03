@@ -13,6 +13,7 @@ from reportlab.pdfgen import canvas
 from app.services.recicladoras_service import (
     servicio_actualizar_materiales_recicladora,
     servicio_actualizar_perfil_recicladora,
+    servicio_actualizar_recoleccion_domicilio,
     servicio_actualizar_punto_recicladora,
     servicio_cambiar_estado_punto_recicladora,
     servicio_cambiar_estado_registro_recicladora,
@@ -187,6 +188,16 @@ def ruta_obtener_perfil_recicladora():
 def ruta_actualizar_perfil_recicladora():
     datos = request.get_json() or {}
     respuesta, estado = servicio_actualizar_perfil_recicladora(g.id_usuario, datos)
+    return jsonify(respuesta), estado
+
+
+@recicladoras_bp.route("/recoleccion-domicilio", methods=["PUT"])
+@login_requerido
+@rol_requerido([2])
+def ruta_actualizar_recoleccion_domicilio():
+    respuesta, estado = servicio_actualizar_recoleccion_domicilio(
+        g.id_usuario, request.get_json() or {}
+    )
     return jsonify(respuesta), estado
 @recicladoras_bp.route("/mi-punto", methods=["GET"])
 @login_requerido

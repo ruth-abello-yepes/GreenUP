@@ -677,9 +677,19 @@ async function registrarCuenta() {
     const respuesta = await peticionSegura(ruta, "POST", datosEnviar);
 
     if (respuesta.ok) {
-      // Si todo sale bien, muestra el mensaje de Flask y redirige al login
+      // Las cuentas nuevas deben demostrar que pueden recibir correo.
       alert(respuesta.datos.mensaje || "Registro exitoso");
-      window.location.href = "public_login.html";
+      if (respuesta.datos.verificacion_requerida) {
+        localStorage.setItem("correo_verificacion", respuesta.datos.correo || correo.trim().toLowerCase());
+        if (respuesta.datos.codigo_enviado) {
+          localStorage.setItem("codigo_recuperacion_expira", String(Date.now() + 5 * 60 * 1000));
+        } else {
+          localStorage.removeItem("codigo_recuperacion_expira");
+        }
+        window.location.href = "public_verificar_codigo.html?modo=registro";
+      } else {
+        window.location.href = "public_login.html";
+      }
     } else {
       // Si el servidor envía un error (Ej. el correo ya existe)
       alert(respuesta.datos.mensaje || "Ocurrió un error en el registro");

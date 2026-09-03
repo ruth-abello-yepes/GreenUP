@@ -11,6 +11,7 @@ from app.models.usuarios_model import buscar_usuario_por_correo, buscar_usuario_
 from app.models.usuarios_model import buscar_usuario_por_id
 from app.models.recicladoras_model import (
     actualizar_perfil_recicladora,
+    actualizar_recoleccion_domicilio,
     actualizar_punto_recicladora,
     actualizar_validacion_recicladora,
     asociar_punto_a_recicladora,
@@ -32,13 +33,11 @@ from app.models.recicladoras_model import (
 from app.models.ubicaciones_model import crear_ubicacion
 from app.models.novedades_model import crear_novedad
 from app.models.notificaciones_model import crear_notificacion
-from app.common.security import cifrar_contrasena, validar_contrasena_segura
+from app.common.security import cifrar_contrasena, validar_contrasena_segura, validar_correo
 
 
 def _correo_valido(correo):
-    """Valida un correo con una regla sencilla y entendible."""
-
-    return bool(correo and "@" in correo and "." in correo)
+    return validar_correo(correo) is not None
 
 
 def _texto_limpio(datos, *llaves):
@@ -335,10 +334,15 @@ def servicio_registrar_dueno_recicladora(datos):
         print(f"Error completando registro de recicladora: {error}")
         return {"mensaje": "No se pudo completar el registro de la recicladora. Intentalo de nuevo."}, 500
 
+    from app.services.auth_service import solicitar_codigo_verificacion_correo
+    envio, estado_envio = solicitar_codigo_verificacion_correo({"correo": correo})
     return {
-        "mensaje": "Registro recibido correctamente. La cuenta queda pendiente hasta que el administrador valide la Camara de Comercio.",
+        "mensaje": "Registro recibido. Verifica tu correo y luego espera la validacion de la Camara de Comercio.",
         "id_usuario": id_usuario_creado,
-        "id_punto": id_punto_creado
+        "id_punto": id_punto_creado,
+        "correo": correo,
+        "verificacion_requerida": True,
+        "codigo_enviado": estado_envio == 200 and bool(envio.get("enviado")),
     }, 201
 
 
@@ -537,6 +541,19 @@ def servicio_actualizar_perfil_recicladora(id_usuario, datos):
     actualizar_perfil_recicladora(id_usuario, datos)
     _activar_si_datos_completos(id_usuario)
     return {"mensaje": "Perfil de recicladora actualizado correctamente"}, 200
+
+
+def servicio_actualizar_recoleccion_domicilio(id_usuario, datos):
+    activa = (datos or {}).get("activa")
+    if not isinstance(activa, bool):
+        return {"mensaje": "El campo activa debe ser verdadero o falso"}, 400
+    if not actualizar_recoleccion_domicilio(id_usuario, activa):
+        return {"mensaje": "No se encontro una recicladora asociada a este usuario"}, 404
+    estado = "activadas" if activa else "desactivadas"
+    return {
+        "mensaje": f"Rutas de recoleccion a domicilio {estado}",
+        "ofrece_recoleccion_domicilio": activa,
+    }, 200
 def servicio_obtener_punto_recicladora(id_usuario):
     recicladora = buscar_recicladora_por_usuario(id_usuario)
     punto = buscar_punto_por_usuario_recicladora(id_usuario)

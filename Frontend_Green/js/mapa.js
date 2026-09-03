@@ -15,11 +15,47 @@
   const DEFAULT_CENTER = [10.4631, -73.2532];
   const DEFAULT_CITY = "Valledupar, Cesar, Colombia";
   const EMPTY_ADDRESS_LABEL = "Direccion por confirmar";
+  const ROUTE_MODES = [
+    {
+      id: "car",
+      label: "En automovil",
+      icon: "directions_car",
+      color: "#2563eb",
+      serviceUrl: "https://routing.openstreetmap.de/routed-car/route/v1",
+    },
+    {
+      id: "bike",
+      label: "En bicicleta",
+      icon: "directions_bike",
+      color: "#d97706",
+      serviceUrl: "https://routing.openstreetmap.de/routed-bike/route/v1",
+    },
+    {
+      id: "foot",
+      label: "Caminando",
+      icon: "directions_walk",
+      color: "#7c3aed",
+      serviceUrl: "https://routing.openstreetmap.de/routed-foot/route/v1",
+    },
+  ];
+  const WALKING_REROUTE_DISTANCE_KM = 0.02;
+  const WALKING_REROUTE_INTERVAL_MS = 12000;
 
   let map = null;
-  let controlRutaActual = null;
   let capasRutasActuales = [];
+  let rutasAlternativasActuales = [];
+  let indiceRutaSeleccionada = 0;
+  let panelRutas = null;
+  let destinoRutaActual = null;
+  let seguimientoUbicacionId = null;
+  let ultimaUbicacionRutaAPie = null;
+  let ultimaActualizacionRutaAPie = 0;
+  let actualizandoRutaAPie = false;
+  let solicitudRutasId = 0;
+  let indicePasoAPie = 0;
+  let modoRutaActivo = null;
   let userLocation = null;
+  let hasRealUserLocation = false;
   let userMarker = null;
   let initialized = false;
   let ownerMode = false;
@@ -89,6 +125,7 @@
       owner: point.responsable || "Responsable por confirmar",
       phone: point.telefono || "Telefono por confirmar",
       email: point.correo || point.email || point.correo_empresa || "Correo no registrado",
+      homePickup: point.ofrece_recoleccion_domicilio === true || point.ofrece_recoleccion_domicilio === "true",
       hasCoords,
       hasRegisteredAddress: Boolean(registeredAddress),
       inactive,
@@ -276,28 +313,22 @@
   function requestCurrentLocation(centerOnUser = true) {
     return new Promise((resolve) => {
       if (!("geolocation" in navigator)) {
-        if (!ownerMode) {
-          userLocation = DEFAULT_CENTER;
-          updateUserMarker(centerOnUser);
-        }
-        resolve(Boolean(userLocation));
+        resolve(false);
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
           userLocation = [position.coords.latitude, position.coords.longitude];
+          hasRealUserLocation = true;
           updateUserMarker(centerOnUser);
           resolve(true);
         },
         () => {
-          if (!ownerMode) {
-            userLocation = DEFAULT_CENTER;
-            updateUserMarker(centerOnUser);
-          }
-          resolve(Boolean(userLocation));
+          hasRealUserLocation = false;
+          resolve(false);
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
       );
     });
   }
@@ -311,6 +342,7 @@
       ["schedule", point.schedule],
       ["delete", ownerMode ? point.type : point.materialsPreview],
       ["call", point.phone],
+      ["local_shipping", point.homePickup ? "Ofrece recolección a domicilio" : "Recibe materiales únicamente en el punto"],
     ];
 
     return rows.map(([icon, value]) => `
@@ -407,6 +439,7 @@
           <span><span class="material-symbols-outlined">schedule</span>${escapeHtml(point.schedule)}</span>
           <span><span class="material-symbols-outlined">delete</span>${escapeHtml(materialsText)}</span>
           <span><span class="material-symbols-outlined">call</span>${escapeHtml(point.phone)}</span>
+          <span><span class="material-symbols-outlined">local_shipping</span>${point.homePickup ? "Recolección a domicilio disponible" : "Entrega directamente en el punto"}</span>
         </span>
       </span>
     `;
@@ -422,7 +455,7 @@
     sidebarList.appendChild(item);
   }
   window.centerMap = async function () {
-    if (userLocation && map) {
+    if (hasRealUserLocation && userLocation && map) {
       map.setView(userLocation, 15, { animate: true });
       if (userMarker) userMarker.openPopup();
       return;
@@ -458,29 +491,374 @@
   function limpiarCapasRutas() {
     capasRutasActuales.forEach((layer) => map?.removeLayer(layer));
     capasRutasActuales = [];
+    rutasAlternativasActuales = [];
+    indiceRutaSeleccionada = 0;
   }
 
-  function pintarRutasAlternativas(event) {
+  function formatRouteDuration(seconds) {
+    const totalMinutes = Math.max(1, Math.round(Number(seconds || 0) / 60));
+    if (totalMinutes < 60) return `${totalMinutes} min`;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return minutes ? `${hours} h ${minutes} min` : `${hours} h`;
+  }
+
+  function formatRouteDistance(meters) {
+    const value = Number(meters || 0);
+    if (value < 1000) return `${Math.max(1, Math.round(value))} m`;
+    return `${(value / 1000).toLocaleString("es-CO", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    })} km`;
+  }
+
+  function ensureRoutesPanel() {
+    if (panelRutas?.isConnected) return panelRutas;
+
+    panelRutas = document.createElement("section");
+    panelRutas.id = "greenup-routes-panel";
+    panelRutas.className = "greenup-routes-panel";
+    panelRutas.setAttribute("aria-live", "polite");
+    panelRutas.innerHTML = `
+      <div class="greenup-routes-header">
+        <div>
+          <strong>Calculando rutas...</strong>
+          <small>Desde tu ubicacion hasta la recicladora</small>
+        </div>
+        <button type="button" class="greenup-routes-close" aria-label="Cerrar rutas">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="greenup-routes-list"></div>
+    `;
+    panelRutas.querySelector(".greenup-routes-close")?.addEventListener("click", () => {
+      window.cerrarRutas();
+    });
+    document.querySelector("body.ciudadano-pagina-mapa main")?.appendChild(panelRutas);
+    return panelRutas;
+  }
+
+  function setRoutesPanelStatus(title, message) {
+    const panel = ensureRoutesPanel();
+    const headerTitle = panel?.querySelector(".greenup-routes-header strong");
+    const headerMessage = panel?.querySelector(".greenup-routes-header small");
+    const list = panel?.querySelector(".greenup-routes-list");
+    if (headerTitle) headerTitle.textContent = title;
+    if (headerMessage) headerMessage.textContent = message;
+    if (list) list.replaceChildren();
+  }
+
+  function routeColor(index, selected) {
+    if (selected) return "#16752b";
+    return rutasAlternativasActuales[index]?.mode?.color || "#64748b";
+  }
+
+  function buildStepInstruction(step) {
+    const road = String(step.name || "").trim();
+    const roadText = road ? ` por ${road}` : "";
+    const type = step.maneuver?.type;
+    const modifier = step.maneuver?.modifier;
+    const turns = {
+      left: "Gira a la izquierda",
+      right: "Gira a la derecha",
+      "slight left": "Gira levemente a la izquierda",
+      "slight right": "Gira levemente a la derecha",
+      "sharp left": "Gira pronunciadamente a la izquierda",
+      "sharp right": "Gira pronunciadamente a la derecha",
+      straight: "Continua recto",
+      uturn: "Haz un giro en U",
+    };
+
+    if (type === "depart") return `Inicia${roadText}`;
+    if (type === "arrive") return "Llegaste a la recicladora";
+    if (type === "roundabout" || type === "rotary") {
+      const exit = step.maneuver?.exit;
+      return `${exit ? `Toma la salida ${exit}` : "Continua en la glorieta"}${roadText}`;
+    }
+    if (type === "merge") return `Incorporate${roadText}`;
+    if (type === "fork") return `${modifier?.includes("left") ? "Toma el desvio izquierdo" : "Toma el desvio derecho"}${roadText}`;
+    if (type === "new name" || type === "continue") return `Continua${roadText}`;
+    return `${turns[modifier] || "Continua"}${roadText}`;
+  }
+
+  function renderWalkingInstruction(position) {
+    const status = panelRutas?.querySelector(".greenup-navigation-status");
+    const footRoute = rutasAlternativasActuales.find((route) => route.mode.id === "foot");
+    if (!status || modoRutaActivo !== "foot" || !footRoute?.steps?.length || !position) {
+      if (status) status.hidden = true;
+      return;
+    }
+
+    while (indicePasoAPie < footRoute.steps.length - 1) {
+      const currentStep = footRoute.steps[indicePasoAPie];
+      const distanceToStep = calculateDistance(
+        position[0],
+        position[1],
+        currentStep.location[0],
+        currentStep.location[1]
+      );
+      if (distanceToStep > 0.025) break;
+      indicePasoAPie += 1;
+    }
+
+    const step = footRoute.steps[indicePasoAPie];
+    const distanceMeters = calculateDistance(
+      position[0],
+      position[1],
+      step.location[0],
+      step.location[1]
+    ) * 1000;
+    const instruction = status.querySelector("strong");
+    const distance = status.querySelector("div > span");
+    if (instruction) instruction.textContent = step.instruction;
+    if (distance) {
+      distance.textContent = step.maneuverType === "arrive"
+        ? "Destino"
+        : `En ${formatRouteDistance(distanceMeters)}`;
+    }
+    status.hidden = false;
+  }
+
+  function detenerSeguimientoAPie() {
+    if (seguimientoUbicacionId !== null && "geolocation" in navigator) {
+      navigator.geolocation.clearWatch(seguimientoUbicacionId);
+    }
+    seguimientoUbicacionId = null;
+    ultimaUbicacionRutaAPie = null;
+    ultimaActualizacionRutaAPie = 0;
+    actualizandoRutaAPie = false;
+  }
+
+  async function fetchRouteForMode(mode, origin, destination) {
+    const coordinates = [
+      `${origin[1]},${origin[0]}`,
+      `${destination[1]},${destination[0]}`,
+    ].join(";");
+    const url = `${mode.serviceUrl}/driving/${coordinates}`
+      + "?alternatives=false&overview=full&geometries=geojson&steps=true";
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`No se pudo calcular la ruta ${mode.id}`);
+
+    const data = await response.json();
+    const result = data.routes?.[0];
+    if (data.code !== "Ok" || !result?.geometry?.coordinates?.length) {
+      throw new Error(`No se encontro la ruta ${mode.id}`);
+    }
+
+    return {
+      mode,
+      coordinates: result.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+      summary: {
+        totalDistance: result.distance,
+        totalTime: result.duration,
+      },
+      steps: (result.legs || []).flatMap((leg) => (leg.steps || []).map((step) => ({
+        instruction: buildStepInstruction(step),
+        maneuverType: step.maneuver?.type,
+        location: [step.maneuver.location[1], step.maneuver.location[0]],
+      }))),
+    };
+  }
+
+  async function actualizarRutaAPie(position) {
+    const footIndex = rutasAlternativasActuales.findIndex((route) => route.mode.id === "foot");
+    if (footIndex < 0 || !destinoRutaActual || actualizandoRutaAPie) return;
+
+    const destinationAtRequest = [...destinoRutaActual];
+    actualizandoRutaAPie = true;
+    try {
+      const updatedRoute = await fetchRouteForMode(
+        ROUTE_MODES.find((mode) => mode.id === "foot"),
+        position,
+        destinationAtRequest
+      );
+      if (!destinoRutaActual
+        || destinoRutaActual[0] !== destinationAtRequest[0]
+        || destinoRutaActual[1] !== destinationAtRequest[1]
+        || rutasAlternativasActuales[indiceRutaSeleccionada]?.mode.id !== "foot") return;
+
+      const routes = [...rutasAlternativasActuales];
+      routes[footIndex] = updatedRoute;
+      indicePasoAPie = 0;
+      pintarRutasPorTransporte(routes, { selectedIndex: footIndex, fitAll: false });
+    } catch (error) {
+      console.warn("No se pudo actualizar la ruta a pie:", error);
+    } finally {
+      actualizandoRutaAPie = false;
+    }
+  }
+
+  function iniciarSeguimientoAPie() {
+    if (seguimientoUbicacionId !== null || !("geolocation" in navigator)) return;
+
+    ultimaUbicacionRutaAPie = userLocation ? [...userLocation] : null;
+    ultimaActualizacionRutaAPie = Date.now();
+    seguimientoUbicacionId = navigator.geolocation.watchPosition(
+      (position) => {
+        const nextLocation = [position.coords.latitude, position.coords.longitude];
+        userLocation = nextLocation;
+        hasRealUserLocation = true;
+        updateUserMarker(false);
+
+        const movedEnough = !ultimaUbicacionRutaAPie
+          || calculateDistance(
+            ultimaUbicacionRutaAPie[0],
+            ultimaUbicacionRutaAPie[1],
+            nextLocation[0],
+            nextLocation[1]
+          ) >= WALKING_REROUTE_DISTANCE_KM;
+        const waitedEnough = Date.now() - ultimaActualizacionRutaAPie >= WALKING_REROUTE_INTERVAL_MS;
+        if (!movedEnough || !waitedEnough || actualizandoRutaAPie) return;
+
+        ultimaUbicacionRutaAPie = [...nextLocation];
+        ultimaActualizacionRutaAPie = Date.now();
+        actualizarRutaAPie(nextLocation);
+      },
+      (error) => console.warn("Seguimiento de ubicacion no disponible:", error.message),
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+    );
+  }
+
+  function updateRouteSelection(index, fitRoute = true) {
+    if (!rutasAlternativasActuales[index]) return;
+    indiceRutaSeleccionada = index;
+    const selectedRoute = rutasAlternativasActuales[index];
+    const modeChanged = modoRutaActivo !== selectedRoute.mode.id;
+    modoRutaActivo = selectedRoute.mode.id;
+
+    capasRutasActuales.forEach((layer, layerIndex) => {
+      const selected = layerIndex === index;
+      layer.setStyle({
+        color: routeColor(layerIndex, selected),
+        weight: selected ? 8 : 5,
+        opacity: selected ? 0.95 : 0.58,
+        dashArray: selected ? null : "10 8",
+      });
+      if (selected) layer.bringToFront();
+    });
+
+    panelRutas?.querySelectorAll(".greenup-route-option").forEach((button, buttonIndex) => {
+      const selected = buttonIndex === index;
+      button.classList.toggle("is-selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+      const swatch = button.querySelector(".greenup-route-swatch");
+      if (swatch) swatch.style.backgroundColor = routeColor(buttonIndex, selected);
+    });
+
+    const panelMessage = panelRutas?.querySelector(".greenup-routes-header small");
+    if (selectedRoute.mode.id === "foot") {
+      if (modeChanged) indicePasoAPie = 0;
+      iniciarSeguimientoAPie();
+      if (panelMessage) panelMessage.textContent = "Seguimiento activo: la ruta se actualiza mientras caminas";
+    } else {
+      detenerSeguimientoAPie();
+      if (panelMessage) panelMessage.textContent = "Una ruta por cada medio de transporte";
+    }
+
+    if (fitRoute) {
+      const bounds = L.latLngBounds(selectedRoute.coordinates);
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, {
+          paddingTopLeft: [window.innerWidth >= 768 ? 350 : 24, 24],
+          paddingBottomRight: [24, 190],
+          maxZoom: 17,
+        });
+      }
+    }
+  }
+
+  function renderRoutesPanel(routes) {
+    const panel = ensureRoutesPanel();
+    if (!panel) return;
+
+    const title = panel.querySelector(".greenup-routes-header strong");
+    const message = panel.querySelector(".greenup-routes-header small");
+    const list = panel.querySelector(".greenup-routes-list");
+    if (title) title.textContent = routes.length === ROUTE_MODES.length
+      ? "Rutas por transporte"
+      : `${routes.length} de ${ROUTE_MODES.length} rutas disponibles`;
+    if (message) {
+      message.textContent = "Una ruta por cada medio de transporte";
+    }
+    if (!list) return;
+
+    list.replaceChildren();
+    routes.forEach((route, index) => {
+      const option = document.createElement("button");
+      option.type = "button";
+      option.className = "greenup-route-option";
+      option.setAttribute("aria-pressed", String(index === 0));
+      option.setAttribute(
+        "aria-label",
+        `${route.mode.label}: ${formatRouteDuration(route.summary?.totalTime)}, ${formatRouteDistance(route.summary?.totalDistance)}`
+      );
+      option.innerHTML = `
+        <span class="greenup-route-swatch" aria-hidden="true"></span>
+        <span>
+          <strong><span class="material-symbols-outlined">${route.mode.icon}</span>${route.mode.label}</strong>
+          <small>${formatRouteDuration(route.summary?.totalTime)} · ${formatRouteDistance(route.summary?.totalDistance)}</small>
+        </span>
+      `;
+      option.addEventListener("click", () => updateRouteSelection(index));
+      list.appendChild(option);
+    });
+  }
+
+  function pintarRutasPorTransporte(routes, options = {}) {
+    const selectedIndex = Math.min(options.selectedIndex || 0, Math.max(0, routes.length - 1));
     limpiarCapasRutas();
-    const colors = ["#296c1f", "#065591", "#d18b00", "#7c3aed"];
-    const routes = (event.routes || []).slice(0, 4);
+    rutasAlternativasActuales = routes;
 
     routes.forEach((route, index) => {
       const coordinates = route.coordinates || [];
       if (!coordinates.length) return;
 
       const layer = L.polyline(coordinates, {
-        color: colors[index % colors.length],
-        weight: index === 0 ? 7 : 5,
-        opacity: index === 0 ? 0.9 : 0.7,
-        dashArray: index === 0 ? null : "10 8",
-      }).addTo(map);
+        color: routeColor(index, index === selectedIndex),
+        weight: index === selectedIndex ? 8 : 5,
+        opacity: index === selectedIndex ? 0.95 : 0.58,
+        dashArray: index === selectedIndex ? null : "10 8",
+      })
+        .addTo(map)
+        .on("click", () => updateRouteSelection(index));
       capasRutasActuales.push(layer);
     });
+
+    if (!routes.length) {
+      setRoutesPanelStatus("No encontramos una ruta", "Prueba con otra recicladora o ubicacion");
+      return;
+    }
+
+    renderRoutesPanel(routes);
+    updateRouteSelection(selectedIndex, false);
+
+    if (options.fitAll !== false) {
+      const allBounds = L.latLngBounds([]);
+      routes.forEach((route) => allBounds.extend(route.coordinates || []));
+      if (allBounds.isValid()) {
+        map.fitBounds(allBounds, {
+          paddingTopLeft: [window.innerWidth >= 768 ? 350 : 24, 24],
+          paddingBottomRight: [24, 190],
+          maxZoom: 17,
+        });
+      }
+    }
   }
 
-  window.trazarRuta = async function (destinoLat, destinoLng, options = {}) {
-    if (!userLocation) {
+  window.cerrarRutas = function () {
+    solicitudRutasId += 1;
+    detenerSeguimientoAPie();
+    destinoRutaActual = null;
+    modoRutaActivo = null;
+    indicePasoAPie = 0;
+    limpiarCapasRutas();
+    panelRutas?.remove();
+    panelRutas = null;
+  };
+
+  window.trazarRuta = async function (destinoLat, destinoLng) {
+    if (!hasRealUserLocation || !userLocation) {
       const located = await requestCurrentLocation(false);
       if (!located) {
         alert("No pudimos obtener tu ubicacion actual. Activa los permisos de ubicacion para calcular la ruta.");
@@ -488,34 +866,28 @@
       }
     }
 
-    if (!L.Routing) {
-      map.setView([destinoLat, destinoLng], 16, { animate: true });
+    detenerSeguimientoAPie();
+    limpiarCapasRutas();
+    modoRutaActivo = null;
+    indicePasoAPie = 0;
+    destinoRutaActual = [Number(destinoLat), Number(destinoLng)];
+    const currentRequestId = ++solicitudRutasId;
+    setRoutesPanelStatus("Calculando rutas...", "Automovil, bicicleta y caminando");
+
+    const results = await Promise.allSettled(
+      ROUTE_MODES.map((mode) => fetchRouteForMode(mode, userLocation, destinoRutaActual))
+    );
+    if (currentRequestId !== solicitudRutasId) return;
+
+    const routes = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+    if (!routes.length) {
+      setRoutesPanelStatus("No pudimos calcular las rutas", "Revisa tu conexion o intenta nuevamente");
       return;
     }
 
-    if (controlRutaActual !== null) {
-      map.removeControl(controlRutaActual);
-    }
-    limpiarCapasRutas();
-
-    controlRutaActual = L.Routing.control({
-      waypoints: [
-        L.latLng(userLocation[0], userLocation[1]),
-        L.latLng(destinoLat, destinoLng),
-      ],
-      show: false,
-      addWaypoints: false,
-      routeWhileDragging: false,
-      fitSelectedRoutes: true,
-      showAlternatives: true,
-      lineOptions: {
-        styles: [{ color: "transparent", opacity: 0, weight: 0 }],
-      },
-      altLineOptions: {
-        styles: [{ color: "transparent", opacity: 0, weight: 0 }],
-      },
-    }).addTo(map);
-    controlRutaActual.on("routesfound", pintarRutasAlternativas);
+    pintarRutasPorTransporte(routes);
 
     if (window.innerWidth < 768) {
       document.getElementById("sidebar-panel")?.classList.add("collapsed");

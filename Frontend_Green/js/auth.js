@@ -71,6 +71,11 @@ async function iniciarSesion(evento) {
 
     } else {
       // El backend rechazó las credenciales (Contraseña incorrecta, etc.)
+      if (respuesta.datos.correo_pendiente) {
+        localStorage.setItem("correo_verificacion", respuesta.datos.correo_pendiente);
+        window.location.href = "public_verificar_codigo.html?modo=registro";
+        return;
+      }
       alert(`Error de acceso: ${respuesta.datos.mensaje || "Credenciales inválidas"}`);
     }
   } catch (error) {

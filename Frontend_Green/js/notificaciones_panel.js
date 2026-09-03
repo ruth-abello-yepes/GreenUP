@@ -266,6 +266,11 @@ async function cargarPanelNotificacionesCiudadano() {
     const indicador = obtenerIndicadorNotificacionesCiudadano();
     if (!lista || !badge) return;
 
+    // El indicador parte siempre apagado y solo se enciende después de recibir
+    // una respuesta válida con notificaciones realmente no leídas.
+    badge.textContent = "0";
+    if (indicador) indicador.hidden = true;
+
     try {
         if (typeof peticionSegura !== "function") {
             throw new Error("No se cargó el archivo api.js en esta pantalla");
@@ -273,8 +278,10 @@ async function cargarPanelNotificacionesCiudadano() {
 
         const respuesta = await peticionSegura("/api/notificaciones", "GET");
         if (!respuesta.ok) throw new Error(respuesta.datos.mensaje || "No fue posible cargar las notificaciones");
-        const notificaciones = respuesta.datos || [];
-        const noLeidas = notificaciones.filter((item) => !item.leida).length;
+        const notificaciones = Array.isArray(respuesta.datos) ? respuesta.datos : [];
+        const noLeidas = notificaciones.filter((item) => (
+            item.leida === false || item.leida === 0 || item.leida === "false" || item.leida === "0"
+        )).length;
 
         badge.textContent = String(noLeidas);
         if (indicador) indicador.hidden = noLeidas === 0;
@@ -311,6 +318,8 @@ async function cargarPanelNotificacionesCiudadano() {
             });
         });
     } catch (error) {
+        badge.textContent = "0";
+        if (indicador) indicador.hidden = true;
         lista.innerHTML = `
             <article class="notification-item empty">
                 <span class="material-symbols-outlined">wifi_off</span>
@@ -353,6 +362,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const boton = obtenerBotonNotificacionesCiudadano();
     if (boton) {
+        const indicador = obtenerIndicadorNotificacionesCiudadano();
+        if (indicador) indicador.hidden = true;
         cargarPanelNotificacionesCiudadano();
         boton.addEventListener("click", async (evento) => {
             evento.preventDefault();

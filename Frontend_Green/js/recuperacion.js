@@ -3,6 +3,20 @@ const RECUPERACION_API = `${RECUPERACION_API_BASE}/api/recuperar-contrasena`;
 const RECUPERACION_TIMEOUT_MS = 45000;
 const RECUPERACION_EXPIRA_SEGUNDOS = 300;
 
+function esVerificacionRegistro() {
+  return new URLSearchParams(window.location.search).get("modo") === "registro";
+}
+
+async function enviarVerificacionCorreo(endpoint, datos) {
+  const respuesta = await fetch(`${RECUPERACION_API_BASE}/api/verificar-correo/${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos),
+  });
+  const data = await respuesta.json().catch(() => ({}));
+  return { ok: respuesta.ok, data };
+}
+
 async function enviarRecuperacion(endpoint, datos) {
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), RECUPERACION_TIMEOUT_MS);
@@ -259,11 +273,36 @@ function configurarVerificacionCodigo() {
   const formVerificar = document.getElementById("formVerificarCodigo");
   if (!formVerificar) return;
 
-  const correo = getCorreoRecuperacion();
+  const modoRegistro = esVerificacionRegistro();
+  const correo = modoRegistro
+    ? localStorage.getItem("correo_verificacion") || ""
+    : getCorreoRecuperacion();
   if (!correo) {
-    alert("Primero debes solicitar un codigo de recuperacion.");
-    window.location.href = "public_recuperar_contrasena.html";
+    alert(modoRegistro ? "Primero debes crear tu cuenta." : "Primero debes solicitar un codigo de recuperacion.");
+    window.location.href = modoRegistro ? "public_registro.html" : "public_recuperar_contrasena.html";
     return;
+  }
+
+  if (modoRegistro) {
+    document.querySelector(".recovery-title").textContent = "Verifica tu correo";
+    const volver = document.querySelector(".btn-back");
+    if (volver) {
+      volver.href = "public_registro.html";
+      volver.lastChild.textContent = " Cambiar correo";
+    }
+    const reenviar = document.getElementById("solicitarNuevoCodigo");
+    if (reenviar) {
+      reenviar.href = "#";
+      reenviar.addEventListener("click", async (evento) => {
+        evento.preventDefault();
+        const respuesta = await enviarVerificacionCorreo("solicitar", { correo });
+        alert(respuesta.data.mensaje || (respuesta.ok ? "Código enviado" : "No se pudo enviar el código"));
+        if (respuesta.ok) {
+          guardarExpiracionCodigo(respuesta.data.expira_en_segundos || RECUPERACION_EXPIRA_SEGUNDOS);
+          window.location.reload();
+        }
+      });
+    }
   }
 
   const textoAyuda = formVerificar.previousElementSibling?.querySelector("p");
@@ -292,9 +331,18 @@ function configurarVerificacionCodigo() {
     }
 
     try {
-      const respuesta = await enviarRecuperacion("verificar", { correo, codigo });
+      const respuesta = modoRegistro
+        ? await enviarVerificacionCorreo("confirmar", { correo, codigo })
+        : await enviarRecuperacion("verificar", { correo, codigo });
 
       if (respuesta.ok) {
+        if (modoRegistro) {
+          localStorage.removeItem("correo_verificacion");
+          limpiarExpiracionCodigo();
+          alert(respuesta.data.mensaje || "Correo verificado correctamente.");
+          window.location.href = "public_login.html?correo=verificado";
+          return;
+        }
         localStorage.setItem("codigo_recuperacion", codigo);
         limpiarExpiracionCodigo();
         window.location.href = "public_nueva_contrasena.html";

@@ -37,6 +37,7 @@ from app.models.usuarios_model import (
     buscar_usuario_por_correo,
     guardar_codigo_recuperacion_db,
     obtener_codigo_recuperacion_db,
+    confirmar_correo_usuario_db,
     actualizar_contrasena_db
 )
 from app.common.security import (
@@ -243,6 +244,12 @@ def servicio_login(datos):
         _registrar_fallo_login(usuario)
         return {"mensaje": "Credenciales incorrectas"}, 401
 
+    if usuario_encontrado.get("correo_verificado") is False:
+        return {
+            "mensaje": "Debes verificar tu correo antes de iniciar sesion",
+            "correo_pendiente": usuario_encontrado.get("correo"),
+        }, 403
+
     es_recicladora_pendiente = int(usuario_encontrado.get("id_rol") or 0) == 2 and int(usuario_encontrado.get("id_estado") or 0) == 2
     if usuario_encontrado["id_estado"] != 1 and not es_recicladora_pendiente:
         return {"mensaje": "Usuario inactivo"}, 403
@@ -334,7 +341,7 @@ def servicio_login_admin(datos):
     }, 200
 
 
-def solicitar_codigo_recuperacion(datos):
+def solicitar_codigo_recuperacion(datos, proposito="recuperacion"):
     correo = validar_correo(datos.get("correo"))
 
     if not correo:
@@ -348,8 +355,6 @@ def solicitar_codigo_recuperacion(datos):
             "enviado": True,
             "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION,
         }, 200
-    SOLICITUDES_RECUPERACION[correo] = ahora
-
     usuario = buscar_usuario_por_correo(correo)
 
     if not usuario:
@@ -377,6 +382,7 @@ def solicitar_codigo_recuperacion(datos):
     if not usa_apps_script and not usa_brevo and not usa_resend and not usa_smtp:
         if _variable_activa("EMAIL_DEBUG_CODES"):
             print(f"Codigo de recuperacion de desarrollo para {correo}: {codigo}", flush=True)
+            SOLICITUDES_RECUPERACION[correo] = ahora
             return {
                 "mensaje": "Codigo generado en modo de desarrollo. Revisa la consola local.",
                 "enviado": True,
@@ -389,18 +395,20 @@ def solicitar_codigo_recuperacion(datos):
         }, 503
 
     nombre_usuario = usuario.get("usuario") or usuario.get("nombres") or "usuario"
-    asunto = "Codigo para restablecer tu contrasena - GreenUP"
+    es_registro = proposito == "registro"
+    asunto = "Verifica tu correo - GreenUP" if es_registro else "Codigo para restablecer tu contrasena - GreenUP"
+    accion = "confirmar tu nueva cuenta" if es_registro else "restablecer la contrasena de tu cuenta"
     texto = (
         f"Sr(a) {nombre_usuario},\n\n"
-        "Recibimos una solicitud para restablecer la contrasena de tu cuenta GreenUP.\n\n"
+        f"Recibimos una solicitud para {accion} GreenUP.\n\n"
         f"Tu codigo de verificacion es: {codigo}\n\n"
         "Tienes 5 minutos para ingresar este codigo. Si no solicitaste este cambio, puedes ignorar este correo.\n\n"
         "Equipo GreenUP"
     )
     html = f"""
     <div style="font-family:Arial,sans-serif;color:#102033;line-height:1.5">
-      <h2 style="color:#003d6c;margin-bottom:8px">Restablecer contrasena GreenUP</h2>
-      <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para restablecer la contrasena de tu cuenta.</p>
+      <h2 style="color:#003d6c;margin-bottom:8px">{"Confirma tu cuenta GreenUP" if es_registro else "Restablecer contrasena GreenUP"}</h2>
+      <p>Sr(a) <strong>{nombre_usuario}</strong>, recibimos una solicitud para {accion}.</p>
       <p style="margin:20px 0 8px">Tu codigo de verificacion es:</p>
       <p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#296c1f;margin:0">{codigo}</p>
       <p style="margin-top:20px">Tienes <strong>5 minutos</strong> para ingresar este codigo.</p>
@@ -425,11 +433,37 @@ def solicitar_codigo_recuperacion(datos):
             "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
         }, 502
 
+    SOLICITUDES_RECUPERACION[correo] = ahora
     return {
         "mensaje": "Codigo enviado correctamente. Revisa tu correo electronico.",
         "enviado": True,
         "expira_en_segundos": SEGUNDOS_EXPIRACION_RECUPERACION
     }, 200
+
+
+def solicitar_codigo_verificacion_correo(datos):
+    correo = validar_correo((datos or {}).get("correo"))
+    usuario = buscar_usuario_por_correo(correo) if correo else None
+    if not correo or not usuario:
+        return {"mensaje": "No se encontro una cuenta pendiente para ese correo"}, 404
+    if usuario.get("correo_verificado") is True:
+        return {"mensaje": "Este correo ya fue verificado"}, 409
+    return solicitar_codigo_recuperacion({"correo": correo}, proposito="registro")
+
+
+def confirmar_codigo_verificacion_correo(datos):
+    correo = validar_correo((datos or {}).get("correo"))
+    codigo = str((datos or {}).get("codigo") or "").strip()
+    if not correo or not codigo:
+        return {"mensaje": "Correo y codigo son obligatorios"}, 400
+    usuario = buscar_usuario_por_correo(correo)
+    if not usuario:
+        return {"mensaje": "Codigo invalido o expirado"}, 400
+    registro = obtener_codigo_recuperacion_db(usuario["id_usuario"], codigo)
+    if not registro or datetime.now() > registro["expiracion"]:
+        return {"mensaje": "Codigo invalido o expirado"}, 400
+    confirmar_correo_usuario_db(usuario["id_usuario"])
+    return {"mensaje": "Correo verificado correctamente. Ya puedes iniciar sesion."}, 200
 
 
 def restablecer_contrasena(datos):

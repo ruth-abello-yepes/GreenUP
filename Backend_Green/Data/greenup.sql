@@ -24,6 +24,7 @@ CREATE TABLE usuarios (
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     correo VARCHAR(100) NOT NULL UNIQUE,
+    correo_verificado BOOLEAN NOT NULL DEFAULT TRUE,
     usuario VARCHAR(50) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
     numero_documento VARCHAR(20) NOT NULL UNIQUE,
@@ -143,6 +144,7 @@ CREATE TABLE recicladoras (
     direccion_empresa VARCHAR(200) NOT NULL,
     telefono_empresa VARCHAR(20),
     camara_comercio VARCHAR(255),
+    ofrece_recoleccion_domicilio BOOLEAN NOT NULL DEFAULT FALSE,
     id_estado INT NOT NULL DEFAULT 1,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
     FOREIGN KEY (id_estado) REFERENCES estado(id_estado)

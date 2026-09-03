@@ -30,6 +30,15 @@ let adminUserLocation = null;
 let adminRouteControl = null;
 let adminRouteLines = [];
 let adminWatchId = null;
+let adminRouteDestination = null;
+let adminRouteMode = "car";
+let adminLastWalkingRoute = null;
+let adminWalkingUpdateAt = 0;
+const ADMIN_ROUTE_MODES = [
+  { id: "car", label: "En automóvil", icon: "directions_car", color: "#1f8a3b", url: "https://routing.openstreetmap.de/routed-car/route/v1" },
+  { id: "bike", label: "En bicicleta", icon: "directions_bike", color: "#e57c00", url: "https://routing.openstreetmap.de/routed-bike/route/v1" },
+  { id: "foot", label: "Caminando", icon: "directions_walk", color: "#7c3aed", url: "https://routing.openstreetmap.de/routed-foot/route/v1" },
+];
 
 const adminPrimaryNav = [
   { href: "admin_panel.html", module: "panel", label: "Panel", icon: "dashboard" },
@@ -217,11 +226,24 @@ function iniciarCarruselHero() {
 
 document.addEventListener("DOMContentLoaded", iniciarAdminSistema);
 
+function crearBotonAyudaAdmin() {
+  if (document.getElementById("greenup-ayuda-float")) return;
+  const enlace = document.createElement("a");
+  enlace.id = "greenup-ayuda-float";
+  enlace.className = "greenup-ayuda-float";
+  enlace.href = "admin_faq.html";
+  enlace.title = "Ayuda";
+  enlace.setAttribute("aria-label", "Ayuda sobre el uso de GreenUp");
+  enlace.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">question_mark</span>';
+  document.body.appendChild(enlace);
+}
+
 async function iniciarAdminSistema() {
   if (!protegerAdminSistema()) return;
   quitarModoOscuroAdminSistema();
   normalizarEnlacesBaseAdminSistema();
   pintarEstructuraBase();
+  crearBotonAyudaAdmin();
   await cargarModuloAdmin();
   iniciarMonitoreoAdmin();
 }
@@ -1598,6 +1620,15 @@ function iniciarGeolocalizacionAdmin() {
       } else {
         adminUserMarker.setLatLng(adminUserLocation);
       }
+      if (adminRouteMode === "foot" && adminRouteDestination) {
+        const movio = !adminLastWalkingRoute || distanciaAdminKm(adminLastWalkingRoute, adminUserLocation) >= 0.02;
+        const espero = Date.now() - adminWalkingUpdateAt >= 12000;
+        if (movio && espero) {
+          adminLastWalkingRoute = [...adminUserLocation];
+          adminWalkingUpdateAt = Date.now();
+          actualizarRutaSeleccionadaAdmin(false);
+        }
+      }
     },
     () => mostrarToast("Ubicacion", "No fue posible obtener tu ubicacion actual."),
     { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 },
@@ -1618,63 +1649,79 @@ function centrarUbicacionAdmin() {
   centerMap();
 }
 
-function limpiarRutasAdmin(quitarControl = true) {
+function limpiarRutasAdmin() {
   adminRouteLines.forEach((linea) => {
     if (adminMap && linea) adminMap.removeLayer(linea);
   });
   adminRouteLines = [];
 
-  if (quitarControl && adminRouteControl && adminMap) {
-    adminMap.removeControl(adminRouteControl);
-    adminRouteControl = null;
+}
+
+function distanciaAdminKm(origen, destino) {
+  const rad = (valor) => valor * Math.PI / 180;
+  const dLat = rad(destino[0] - origen[0]);
+  const dLng = rad(destino[1] - origen[1]);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(rad(origen[0])) * Math.cos(rad(destino[0])) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+async function obtenerRutaAdmin(modo) {
+  const puntos = `${adminUserLocation[1]},${adminUserLocation[0]};${adminRouteDestination[1]},${adminRouteDestination[0]}`;
+  const respuesta = await fetch(`${modo.url}/driving/${puntos}?alternatives=false&overview=full&geometries=geojson`);
+  const datos = await respuesta.json();
+  const ruta = datos.routes?.[0];
+  if (!respuesta.ok || !ruta) throw new Error(`No se pudo calcular ${modo.label.toLowerCase()}`);
+  return { modo, distancia: ruta.distance, duracion: ruta.duration, coordenadas: ruta.geometry.coordinates.map(([lng, lat]) => [lat, lng]) };
+}
+
+async function actualizarRutaSeleccionadaAdmin(ajustar = true) {
+  const modo = ADMIN_ROUTE_MODES.find((item) => item.id === adminRouteMode);
+  if (!modo || !adminRouteDestination || !adminUserLocation) return;
+  try {
+    const ruta = await obtenerRutaAdmin(modo);
+    limpiarRutasAdmin();
+    const linea = L.polyline(ruta.coordenadas, { color: modo.color, weight: 7, opacity: 0.92 }).addTo(adminMap);
+    adminRouteLines.push(linea);
+    if (ajustar) adminMap.fitBounds(linea.getBounds(), { padding: [45, 45], maxZoom: 17 });
+    const tarjeta = document.querySelector(`[data-admin-route-mode="${modo.id}"]`);
+    if (tarjeta) tarjeta.querySelector("small").textContent = `${Math.max(1, Math.round(ruta.duracion / 60))} min · ${(ruta.distancia / 1000).toFixed(1)} km`;
+  } catch (error) {
+    mostrarToast("Ruta", error.message);
   }
 }
 
-function pintarRutasAdmin(evento) {
-  limpiarRutasAdmin(false);
-  const colores = ["#296c1f", "#0d6efd", "#f59e0b", "#dc3545"];
-
-  evento.routes.forEach((ruta, indice) => {
-    const linea = L.polyline(ruta.coordinates, {
-      color: colores[indice % colores.length],
-      weight: indice === 0 ? 7 : 5,
-      opacity: indice === 0 ? 0.9 : 0.72,
-      dashArray: indice === 0 ? null : "10 8",
-    }).addTo(adminMap);
-
-    linea.bindTooltip(
-      `${(ruta.summary.totalDistance / 1000).toFixed(1)} km - ${Math.round(ruta.summary.totalTime / 60)} min`,
-      { sticky: true },
-    );
-    adminRouteLines.push(linea);
-  });
-}
-
-function trazarRutaAdmin(destinoLat, destinoLng) {
-  /* BOTON COMO LLEGAR: usa Leaflet Routing Machine igual que ciudadano. */
+async function trazarRutaAdmin(destinoLat, destinoLng) {
   if (!adminUserLocation) {
     mostrarToast("Ruta", "Primero permite la ubicacion para calcular la ruta.");
     return;
   }
-  if (!window.L || !L.Routing) {
-    mostrarToast("Ruta", "El motor de rutas aun se esta cargando.");
-    return;
+  adminRouteDestination = [Number(destinoLat), Number(destinoLng)];
+  let panel = document.getElementById("admin-routes-panel");
+  if (!panel) {
+    panel = document.createElement("section");
+    panel.id = "admin-routes-panel";
+    panel.className = "admin-routes-panel";
+    document.body.appendChild(panel);
   }
-  limpiarRutasAdmin();
-
-  adminRouteControl = L.Routing.control({
-    waypoints: [L.latLng(adminUserLocation[0], adminUserLocation[1]), L.latLng(destinoLat, destinoLng)],
-    show: false,
-    addWaypoints: false,
-    routeWhileDragging: false,
-    fitSelectedRoutes: true,
-    showAlternatives: true,
-    createMarker: () => null,
-    lineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
-    altLineOptions: { styles: [{ color: "transparent", opacity: 0, weight: 0 }] },
-  }).addTo(adminMap);
-
-  adminRouteControl.on("routesfound", pintarRutasAdmin);
+  panel.innerHTML = `<div class="admin-routes-head"><div><strong>Rutas por transporte</strong><small>Selecciona cómo vas a llegar</small></div><button type="button" aria-label="Cerrar rutas">×</button></div><div class="admin-routes-options">${ADMIN_ROUTE_MODES.map((modo) => `<button type="button" data-admin-route-mode="${modo.id}" class="${modo.id === adminRouteMode ? "is-selected" : ""}"><span class="material-symbols-outlined">${modo.icon}</span><strong>${modo.label}</strong><small>Calculando…</small></button>`).join("")}</div>`;
+  panel.querySelector(".admin-routes-head button").addEventListener("click", () => {
+    limpiarRutasAdmin(); adminRouteDestination = null; panel.remove();
+  });
+  panel.querySelectorAll("[data-admin-route-mode]").forEach((boton) => boton.addEventListener("click", async () => {
+    adminRouteMode = boton.dataset.adminRouteMode;
+    panel.querySelectorAll("[data-admin-route-mode]").forEach((item) => item.classList.toggle("is-selected", item === boton));
+    adminLastWalkingRoute = adminRouteMode === "foot" ? [...adminUserLocation] : null;
+    adminWalkingUpdateAt = Date.now();
+    await actualizarRutaSeleccionadaAdmin();
+  }));
+  const resultados = await Promise.allSettled(ADMIN_ROUTE_MODES.map(obtenerRutaAdmin));
+  resultados.forEach((resultado) => {
+    if (resultado.status !== "fulfilled") return;
+    const ruta = resultado.value;
+    const tarjeta = panel.querySelector(`[data-admin-route-mode="${ruta.modo.id}"] small`);
+    if (tarjeta) tarjeta.textContent = `${Math.max(1, Math.round(ruta.duracion / 60))} min · ${(ruta.distancia / 1000).toFixed(1)} km`;
+  });
+  await actualizarRutaSeleccionadaAdmin();
 }
 
 function cargarRecursoCss(href) {

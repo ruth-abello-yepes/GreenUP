@@ -29,6 +29,8 @@ from app.services.auth_service import (
     servicio_login, 
     servicio_login_admin,
     solicitar_codigo_recuperacion,
+    solicitar_codigo_verificacion_correo,
+    confirmar_codigo_verificacion_correo,
     verificar_codigo_recuperacion,
     restablecer_contrasena
 )
@@ -185,6 +187,18 @@ def ruta_solicitar_codigo():
     """
     datos = request.get_json() or {}
     respuesta, estado = solicitar_codigo_recuperacion(datos)
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/verificar-correo/solicitar", methods=["POST"])
+def ruta_solicitar_verificacion_correo():
+    respuesta, estado = solicitar_codigo_verificacion_correo(request.get_json() or {})
+    return jsonify(respuesta), estado
+
+
+@auth_bp.route("/verificar-correo/confirmar", methods=["POST"])
+def ruta_confirmar_verificacion_correo():
+    respuesta, estado = confirmar_codigo_verificacion_correo(request.get_json() or {})
     return jsonify(respuesta), estado
 
 

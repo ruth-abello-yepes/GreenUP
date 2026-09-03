@@ -16,10 +16,7 @@
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- NUEVO: Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
-    <link href="../../css/ciudadano.css?v=20260901-a11y" rel="stylesheet">
+    <link href="../../css/ciudadano.css?v=20260902-rutas-transporte" rel="stylesheet">
 </head>
 
 <body class="ciudadano-pagina-mapa">
@@ -58,7 +55,7 @@
                     class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
                     <span class="material-symbols-outlined text-gu-primary">notifications</span>
                     <span
-                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-mapa-estilo-4"></span>
+                        id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-mapa-estilo-4" hidden></span>
                 </button>
                 <div class="dropdown border-start ps-2 ms-1">
                     <button class="btn btn-light border-0 d-flex align-items-center gap-2 rounded-3 hover-bg-light"
@@ -264,15 +261,12 @@
 <script src="../../js/modal_alerts.js?v=20260827"></script>
     <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- NUEVO: Leaflet Routing Machine JS -->
-  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
     <!-- Scripts Propios -->
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/api.js"></script>
-  <script src="../../js/mapa.js?v=20260901-a11y"></script> <!-- Aquí se conecta el JS actualizado -->
+  <script src="../../js/mapa.js?v=20260903-rutas-transporte"></script> <!-- Aquí se conecta el JS actualizado -->
   <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js?v=20260901-a11y3"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

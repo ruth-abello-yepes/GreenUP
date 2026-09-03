@@ -1854,6 +1854,18 @@ body.recicladora-theme-dark .profile-photo-help {
   accent-color: var(--greenup-green);
 }
 
+.route-service-status { margin: 0; color: #334155; line-height: 1.5; }
+
+.greenup-ayuda-float {
+  align-items: center; background: #003d6c; border: 2px solid #fff; border-radius: 50%;
+  bottom: 28px; box-shadow: 0 12px 28px rgba(0,61,108,.28); color: #fff; display: flex;
+  height: 58px; justify-content: center; position: fixed; right: 24px; text-decoration: none;
+  width: 58px; z-index: 2400;
+}
+.greenup-ayuda-float:hover, .greenup-ayuda-float:focus-visible { background: #296c1f; color: #fff; transform: translateY(-2px); }
+.greenup-ayuda-float .material-symbols-outlined { font-size: 30px; font-weight: 700; }
+@media (max-width: 767px) { .greenup-ayuda-float { bottom: 88px; right: 16px; } }
+
 .mobile-bottom-nav {
   display: none;
 }

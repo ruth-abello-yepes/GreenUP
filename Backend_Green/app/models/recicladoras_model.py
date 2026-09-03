@@ -266,6 +266,10 @@ def buscar_recicladora_por_usuario(id_usuario):
     cursor = conexion.cursor()
     tiene_id_punto = _tabla_tiene_columna(cursor, "recicladoras", "id_punto")
     id_punto_select = "recicladoras.id_punto," if tiene_id_punto else "puntos_reciclaje.id_punto,"
+    if _tabla_tiene_columna(cursor, "recicladoras", "ofrece_recoleccion_domicilio"):
+        recoleccion_select = "COALESCE(recicladoras.ofrece_recoleccion_domicilio, FALSE) AS ofrece_recoleccion_domicilio,"
+    else:
+        recoleccion_select = "FALSE AS ofrece_recoleccion_domicilio,"
     id_punto_join = (
         """
         LEFT JOIN puntos_reciclaje
@@ -316,6 +320,7 @@ def buscar_recicladora_por_usuario(id_usuario):
         recicladoras.estado_validacion_nit,
         recicladoras.estado_camara_comercio,
         recicladoras.id_estado AS id_estado_recicladora,
+        {recoleccion_select}
         {id_punto_select}
         puntos_reciclaje.nombre AS nombre_punto,
         puntos_reciclaje.direccion AS direccion_punto,
@@ -456,6 +461,29 @@ def actualizar_perfil_recicladora(id_usuario, datos):
     conexion.commit()
     cursor.close()
     conexion.close()
+
+
+def actualizar_recoleccion_domicilio(id_usuario, activa):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    if not _tabla_tiene_columna(cursor, "recicladoras", "ofrece_recoleccion_domicilio"):
+        cursor.close()
+        conexion.close()
+        raise RuntimeError("Falta ejecutar la migracion de recoleccion a domicilio")
+
+    cursor.execute(
+        """
+        UPDATE recicladoras
+        SET ofrece_recoleccion_domicilio = %s
+        WHERE id_usuario = %s
+        """,
+        (activa, id_usuario),
+    )
+    actualizado = cursor.rowcount > 0
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return actualizado
 def actualizar_punto_recicladora(id_usuario, datos):
     perfil = buscar_recicladora_por_usuario(id_usuario)
     if not perfil or not perfil.get("id_punto"):

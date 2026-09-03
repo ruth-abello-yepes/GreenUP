@@ -27,15 +27,14 @@ from app.common.security import (
     cifrar_contrasena,
     validar_contrasena_segura,
     verificar_contrasena
+    , validar_correo
 )
 from app.models.notificaciones_model import crear_notificacion
 import re
 
 
 def _correo_valido(correo):
-    """Valida un correo con una regla sencilla y entendible."""
-
-    return bool(correo and "@" in correo and "." in correo)
+    return validar_correo(correo) is not None
 
 
 def _texto_limpio(datos, *llaves):
@@ -178,8 +177,15 @@ def servicio_registrar_usuario(datos):
         None,
         1,
     )
-
-    return {"mensaje": "Ciudadano registrado correctamente", "id_usuario": id_usuario_creado}, 201
+    from app.services.auth_service import solicitar_codigo_verificacion_correo
+    envio, estado_envio = solicitar_codigo_verificacion_correo({"correo": correo})
+    return {
+        "mensaje": "Cuenta creada. Revisa tu correo para ingresar el codigo de verificacion.",
+        "id_usuario": id_usuario_creado,
+        "correo": correo,
+        "verificacion_requerida": True,
+        "codigo_enviado": estado_envio == 200 and bool(envio.get("enviado")),
+    }, 201
 
 
 def servicio_validar_disponibilidad_registro(datos):

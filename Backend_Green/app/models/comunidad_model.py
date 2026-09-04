@@ -348,6 +348,28 @@ def obtener_puntaje_ciudadano(id_usuario):
         conexion.close()
 
 
+def listar_noticias_completadas_ciudadano(id_usuario):
+    """Obtiene las noticias que el ciudadano ya respondió."""
+
+    asegurar_tablas_comunidad()
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT id_noticia
+            FROM noticia_juego_intentos
+            WHERE id_usuario = %s
+            ORDER BY fecha_resolucion DESC
+            """,
+            (id_usuario,),
+        )
+        return [int(fila["id_noticia"]) for fila in cursor.fetchall()]
+    finally:
+        cursor.close()
+        conexion.close()
+
+
 def listar_preguntas_noticia(id_noticia):
     """Obtiene las preguntas guardadas para una noticia."""
 

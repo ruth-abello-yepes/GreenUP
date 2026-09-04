@@ -5,6 +5,7 @@ const IMAGEN_NOTICIA_FALLBACK =
 const MODO_NOTICIAS_PUBLICO = document.body.dataset.newsMode === "public";
 let paginaNoticias = 1;
 let temporizadorBusqueda = null;
+const noticiasCompletadas = new Set();
 
 function formatearFechaNoticia(fecha) {
     const valor = new Date(fecha);
@@ -83,6 +84,7 @@ function crearTarjetaNoticia(noticia) {
         );
         juego.type = "button";
         juego.addEventListener("click", () => {
+            if (noticiasCompletadas.has(Number(noticia.id_noticia))) return;
             if (typeof abrirQuizNoticia === "function") {
                 abrirQuizNoticia(noticia.id_noticia, noticia.titulo || "Noticia ambiental");
             }
@@ -226,6 +228,13 @@ async function abrirDetalleNoticia(noticia) {
             bloque.innerHTML = `<strong>${indice + 1}. ${escaparTextoNoticia(pregunta.pregunta)}</strong><p class="small text-secondary mb-0 mt-2">Lee la noticia y luego responde el cuestionario desde tu cuenta.</p>`;
             preguntas.appendChild(bloque);
         });
+        if (noticiasCompletadas.has(Number(noticia.id_noticia))) {
+            juego.disabled = true;
+            juego.classList.remove("btn-gu-primary");
+            juego.classList.add("btn-outline-secondary");
+            juego.textContent = "Preguntas respondidas";
+            juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "check_circle"));
+        }
     } catch (error) {
         estado.className = "alert alert-warning";
         estado.textContent = error.message || "No fue posible cargar las preguntas relacionadas.";
@@ -302,6 +311,14 @@ function pintarRespuestaNoticias(datos, pagina, busqueda) {
 async function cargarNoticias(pagina = 1) {
     const grid = document.getElementById("noticias-grid");
     const busqueda = document.getElementById("buscar-noticias").value.trim();
+    if (!MODO_NOTICIAS_PUBLICO && !noticiasCompletadas.size) {
+        try {
+            const progreso = await peticionSegura("/api/comunidad/juego/mi-puntaje", "GET");
+            if (progreso.ok) (progreso.datos.noticias_completadas_ids || []).forEach((id) => noticiasCompletadas.add(Number(id)));
+        } catch (error) {
+            console.warn("No se pudo cargar el progreso de noticias", error);
+        }
+    }
     const parametros = new URLSearchParams({ pagina: String(pagina), por_pagina: "10" });
     if (busqueda) parametros.set("buscar", busqueda);
     const claveCache = `greenup:noticias:${parametros}`;

@@ -9,6 +9,7 @@ from app.models.comunidad_model import (
     listar_respuestas_tema,
     buscar_preguntas_duplicadas_otras_noticias,
     listar_preguntas_noticia,
+    listar_noticias_completadas_ciudadano,
     listar_puntajes_juego,
     listar_temas_foro,
     marcar_respuesta_moderada,
@@ -604,5 +605,6 @@ def servicio_puntaje_ciudadano(id_usuario):
             "puntos_total": 0,
             "noticias_completadas": 0,
             "ultima_actualizacion": None,
-        }
+        },
+        "noticias_completadas_ids": listar_noticias_completadas_ciudadano(id_usuario),
     }, 200

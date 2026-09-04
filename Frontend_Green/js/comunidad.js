@@ -486,6 +486,7 @@ async function resolverJuegoNoticias(evento) {
             throw errorControlado;
         }
         const datos = respuesta.datos;
+        window.dispatchEvent(new CustomEvent("noticia-respondida", { detail: { idNoticia: Number(idNoticia) } }));
         const modalJuego = document.getElementById("modalJuegoNoticias");
         const instanciaJuego = bootstrap.Modal.getInstance(modalJuego);
         instanciaJuego?.hide();

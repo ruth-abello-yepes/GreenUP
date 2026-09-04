@@ -7,6 +7,19 @@ let paginaNoticias = 1;
 let temporizadorBusqueda = null;
 const noticiasCompletadas = new Set();
 
+window.addEventListener("noticia-respondida", (evento) => {
+    const idNoticia = Number(evento.detail?.idNoticia);
+    if (!idNoticia) return;
+    noticiasCompletadas.add(idNoticia);
+    const boton = document.querySelector(`[data-noticia-id="${idNoticia}"]`);
+    if (!boton) return;
+    boton.disabled = true;
+    boton.classList.remove("btn-gu-primary", "btn-outline-secondary");
+    boton.classList.add("btn-success");
+    boton.textContent = "Ya respondiste esta noticia";
+    boton.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "check_circle"));
+});
+
 function formatearFechaNoticia(fecha) {
     const valor = new Date(fecha);
     if (Number.isNaN(valor.getTime())) return "Fecha no disponible";
@@ -83,6 +96,7 @@ function crearTarjetaNoticia(noticia) {
             "Responde las preguntas"
         );
         juego.type = "button";
+        juego.dataset.noticiaId = String(noticia.id_noticia);
         juego.addEventListener("click", () => {
             if (noticiasCompletadas.has(Number(noticia.id_noticia))) return;
             if (typeof abrirQuizNoticia === "function") {
@@ -93,8 +107,8 @@ function crearTarjetaNoticia(noticia) {
         if (noticiasCompletadas.has(Number(noticia.id_noticia))) {
             juego.disabled = true;
             juego.classList.remove("btn-gu-primary");
-            juego.classList.add("btn-outline-secondary");
-            juego.textContent = "Preguntas respondidas";
+            juego.classList.add("btn-success");
+            juego.textContent = "Ya respondiste esta noticia";
             juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "check_circle"));
         }
         acciones.appendChild(juego);

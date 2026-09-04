@@ -357,6 +357,23 @@ def listar_noticias_completadas_ciudadano(id_usuario):
     try:
         cursor.execute(
             """
+            INSERT INTO ciudadano_puntos_juego (id_usuario, puntos_total, noticias_completadas, ultima_actualizacion)
+            SELECT %s,
+                   COALESCE(SUM(respuestas_correctas * 10), 0)::int,
+                   COUNT(id_noticia)::int,
+                   MAX(fecha_resolucion)
+            FROM noticia_juego_intentos
+            WHERE id_usuario = %s
+            ON CONFLICT (id_usuario) DO UPDATE SET
+                puntos_total = EXCLUDED.puntos_total,
+                noticias_completadas = EXCLUDED.noticias_completadas,
+                ultima_actualizacion = COALESCE(EXCLUDED.ultima_actualizacion, ciudadano_puntos_juego.ultima_actualizacion)
+            """,
+            (id_usuario, id_usuario),
+        )
+        conexion.commit()
+        cursor.execute(
+            """
             SELECT id_noticia
             FROM noticia_juego_intentos
             WHERE id_usuario = %s

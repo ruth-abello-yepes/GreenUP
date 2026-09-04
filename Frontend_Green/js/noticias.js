@@ -90,6 +90,13 @@ function crearTarjetaNoticia(noticia) {
             }
         });
         juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "quiz"));
+        if (noticiasCompletadas.has(Number(noticia.id_noticia))) {
+            juego.disabled = true;
+            juego.classList.remove("btn-gu-primary");
+            juego.classList.add("btn-outline-secondary");
+            juego.textContent = "Preguntas respondidas";
+            juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "check_circle"));
+        }
         acciones.appendChild(juego);
     }
 
@@ -228,13 +235,6 @@ async function abrirDetalleNoticia(noticia) {
             bloque.innerHTML = `<strong>${indice + 1}. ${escaparTextoNoticia(pregunta.pregunta)}</strong><p class="small text-secondary mb-0 mt-2">Lee la noticia y luego responde el cuestionario desde tu cuenta.</p>`;
             preguntas.appendChild(bloque);
         });
-        if (noticiasCompletadas.has(Number(noticia.id_noticia))) {
-            juego.disabled = true;
-            juego.classList.remove("btn-gu-primary");
-            juego.classList.add("btn-outline-secondary");
-            juego.textContent = "Preguntas respondidas";
-            juego.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "check_circle"));
-        }
     } catch (error) {
         estado.className = "alert alert-warning";
         estado.textContent = error.message || "No fue posible cargar las preguntas relacionadas.";

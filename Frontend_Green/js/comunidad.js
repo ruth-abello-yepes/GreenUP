@@ -486,8 +486,10 @@ async function resolverJuegoNoticias(evento) {
             throw errorControlado;
         }
         const datos = respuesta.datos;
-        mostrarAvisoComunidad("#estado-juego-noticias", "success", `Acertaste ${datos.respuestas_correctas} de ${datos.total_preguntas} preguntas.`);
-        document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        const modalJuego = document.getElementById("modalJuegoNoticias");
+        const instanciaJuego = bootstrap.Modal.getInstance(modalJuego);
+        instanciaJuego?.hide();
+        mostrarModalPuntuacionNoticias(datos);
         formulario.querySelectorAll(".pregunta-juego").forEach((bloque) => {
             bloque.classList.remove("border-danger", "bg-danger-subtle");
         });
@@ -517,7 +519,6 @@ async function resolverJuegoNoticias(evento) {
                 <strong class="d-block mb-2">Excelente</strong>
                 <span>Respondiste correctamente las ${detalle.length} preguntas de esta noticia.</span>
             `;
-        formulario.appendChild(panelResultado);
         await cargarResumenJuegoCiudadano();
     } catch (error) {
         const respuestaError = error?.detalles || {};
@@ -538,6 +539,46 @@ async function resolverJuegoNoticias(evento) {
         mostrarAvisoComunidad("#estado-juego-noticias", "warning", error.message || "No se pudo enviar el juego.");
         document.getElementById("estado-juego-noticias")?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+}
+
+/** Muestra la puntuación después de cerrar el cuestionario. */
+function mostrarModalPuntuacionNoticias(datos) {
+    let modal = document.getElementById("modalPuntuacionNoticias");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "modalPuntuacionNoticias";
+        modal.className = "modal fade";
+        modal.tabIndex = -1;
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 rounded-4 shadow">
+                    <div class="modal-header border-0">
+                        <h2 class="modal-title h4">Resultado del juego</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body text-center pt-0">
+                        <span id="iconoPuntuacionNoticias" class="material-symbols-outlined display-3 text-success">emoji_events</span>
+                        <p id="mensajePuntuacionNoticias" class="lead fw-semibold mb-4"></p>
+                        <div class="row g-3">
+                            <div class="col-6"><div class="rounded-4 bg-success-subtle p-3"><strong id="aciertosPuntuacionNoticias" class="d-block fs-2 text-success"></strong><span>Aciertos</span></div></div>
+                            <div class="col-6"><div class="rounded-4 bg-light p-3"><strong id="totalPuntuacionNoticias" class="d-block fs-2 text-gu-primary"></strong><span>Total</span></div></div>
+                        </div>
+                        <button type="button" class="btn btn-success rounded-pill px-4 mt-4" data-bs-dismiss="modal">Continuar</button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+    const aciertos = Number(datos.respuestas_correctas) || 0;
+    const total = Number(datos.total_preguntas) || 0;
+    const perfecto = total > 0 && aciertos === total;
+    document.getElementById("iconoPuntuacionNoticias").textContent = perfecto ? "emoji_events" : "school";
+    document.getElementById("mensajePuntuacionNoticias").textContent = perfecto
+        ? "¡Excelente trabajo!"
+        : "¡Buen intento! Sigue aprendiendo sobre reciclaje.";
+    document.getElementById("aciertosPuntuacionNoticias").textContent = String(aciertos);
+    document.getElementById("totalPuntuacionNoticias").textContent = String(total);
+    bootstrap.Modal.getOrCreateInstance(modal).show();
 }
 
 /**

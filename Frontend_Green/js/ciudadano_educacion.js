@@ -59,8 +59,10 @@
 
   function renderResumen() {
     const resumen = estado.datos?.resumen || {};
-    const completados = Number(resumen.contenidos_completados || 0);
-    const total = Math.max(estado.datos?.contenidos?.length || 0, 1);
+    const contenidosCompletados = Number(resumen.contenidos_completados || 0);
+    const noticiasCompletadas = Number(resumen.noticias_completadas || 0);
+    const completados = contenidosCompletados + noticiasCompletadas;
+    const total = Math.max((estado.datos?.contenidos?.length || 0) + noticiasCompletadas, 1);
 
     if ($("#lessons-completed-display")) {
       $("#lessons-completed-display").textContent = completados.toLocaleString("es-CO");

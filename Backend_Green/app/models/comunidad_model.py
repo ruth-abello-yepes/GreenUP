@@ -333,14 +333,14 @@ def obtener_puntaje_ciudadano(id_usuario):
         cursor.execute(
             """
             SELECT
-                id_usuario,
-                puntos_total,
-                noticias_completadas,
-                ultima_actualizacion
-            FROM ciudadano_puntos_juego
-            WHERE id_usuario = %s
+                %s AS id_usuario,
+                COALESCE(SUM(noticia_juego_intentos.respuestas_correctas * 10), 0)::int AS puntos_total,
+                COUNT(noticia_juego_intentos.id_noticia)::int AS noticias_completadas,
+                MAX(noticia_juego_intentos.fecha_resolucion) AS ultima_actualizacion
+            FROM noticia_juego_intentos
+            WHERE noticia_juego_intentos.id_usuario = %s
             """,
-            (id_usuario,),
+            (id_usuario, id_usuario),
         )
         return cursor.fetchone()
     finally:

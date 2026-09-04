@@ -60,15 +60,17 @@ function crearTarjetaNoticia(noticia) {
 
     const acciones = crearElemento("div", "d-flex flex-wrap gap-2 mt-auto");
 
-    if (noticia.url_original) {
+    if (noticia.id_noticia) {
         const enlace = crearElemento(
             "a",
             "btn btn-outline-success rounded-pill d-inline-flex align-items-center gap-1",
             "Leer noticia"
         );
-        enlace.href = noticia.url_original;
-        enlace.target = "_blank";
-        enlace.rel = "noopener noreferrer";
+        enlace.href = "#";
+        enlace.addEventListener("click", (evento) => {
+            evento.preventDefault();
+            abrirDetalleNoticia(noticia);
+        });
         enlace.appendChild(crearElemento("span", "material-symbols-outlined fs-5", "chevron_right"));
         acciones.appendChild(enlace);
     }
@@ -175,6 +177,65 @@ function pintarPaginacion(paginacion) {
         agregarBoton(String(pagina), pagina, false, pagina === paginaActual, `Página ${pagina}`);
     });
     agregarBoton("›", paginaActual + 1, paginaActual >= totalPaginas, false, "Página siguiente");
+}
+
+function prepararModalNoticia() {
+    if (document.getElementById("modalDetalleNoticia")) return;
+    const modal = document.createElement("div");
+    modal.id = "modalDetalleNoticia";
+    modal.className = "modal fade";
+    modal.tabIndex = -1;
+    modal.innerHTML = `<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header"><h2 id="detalleNoticiaTitulo" class="modal-title h4"></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+            <div class="modal-body"><img id="detalleNoticiaImagen" class="w-100 rounded-4 mb-3" style="max-height:280px;object-fit:cover" alt="">
+                <p id="detalleNoticiaMeta" class="small text-secondary mb-2"></p><p id="detalleNoticiaDescripcion" class="mb-4"></p>
+                <div id="detalleNoticiaEstado" class="alert alert-info">Cargando las 3 preguntas relacionadas...</div>
+                <div id="detalleNoticiaPreguntas" class="d-grid gap-3"></div>
+                <a id="detalleNoticiaFuente" class="btn btn-outline-success rounded-pill mt-4" target="_blank" rel="noopener noreferrer">Ver fuente original</a>
+            </div></div></div>`;
+    document.body.appendChild(modal);
+}
+
+async function abrirDetalleNoticia(noticia) {
+    prepararModalNoticia();
+    document.getElementById("detalleNoticiaTitulo").textContent = noticia.titulo || "Noticia ambiental";
+    const imagen = document.getElementById("detalleNoticiaImagen");
+    imagen.src = noticia.imagen || IMAGEN_NOTICIA_FALLBACK;
+    imagen.alt = noticia.titulo || "Noticia ambiental";
+    document.getElementById("detalleNoticiaMeta").textContent = `${formatearFechaNoticia(noticia.fecha_publicacion)} · ${noticia.fuente || "GreenUp"}`;
+    document.getElementById("detalleNoticiaDescripcion").textContent = noticia.descripcion || "Esta noticia no tiene una descripción adicional.";
+    const fuente = document.getElementById("detalleNoticiaFuente");
+    fuente.href = noticia.url_original || "#";
+    fuente.hidden = !noticia.url_original;
+    const estado = document.getElementById("detalleNoticiaEstado");
+    const preguntas = document.getElementById("detalleNoticiaPreguntas");
+    preguntas.replaceChildren();
+    new bootstrap.Modal(document.getElementById("modalDetalleNoticia")).show();
+    try {
+        const respuesta = await fetch(`/api/comunidad/juego/noticias/${noticia.id_noticia}/preguntas`, { headers: { Accept: "application/json" } });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) throw new Error(datos.mensaje || "No se pudieron cargar las preguntas.");
+        const tres = (datos.preguntas || []).slice(0, 3);
+        if (tres.length < 3) throw new Error("Esta noticia aún no tiene sus 3 preguntas relacionadas.");
+        estado.className = "alert alert-success";
+        estado.textContent = "Comprueba lo aprendido con estas 3 preguntas relacionadas:";
+        tres.forEach((pregunta, indice) => {
+            const bloque = document.createElement("article");
+            bloque.className = "border rounded-4 p-3";
+            bloque.innerHTML = `<strong>${indice + 1}. ${escaparTextoNoticia(pregunta.pregunta)}</strong><p class="small text-secondary mb-0 mt-2">Lee la noticia y luego responde el cuestionario desde tu cuenta.</p>`;
+            preguntas.appendChild(bloque);
+        });
+    } catch (error) {
+        estado.className = "alert alert-warning";
+        estado.textContent = error.message || "No fue posible cargar las preguntas relacionadas.";
+    }
+}
+
+function escaparTextoNoticia(valor) {
+    const div = document.createElement("div");
+    div.textContent = valor || "";
+    return div.innerHTML;
 }
 
 function pintarEstadoNoticias(mensaje, tipo = "info") {

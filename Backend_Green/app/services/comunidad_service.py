@@ -371,7 +371,7 @@ def servicio_responder_tema_foro(id_tema, id_usuario, id_rol, datos):
 
 def _preguntas_generadas_desde_noticia(noticia):
     """
-    Crea seis preguntas educativas usando el contenido real de la noticia.
+    Crea tres preguntas educativas usando el contenido real de la noticia.
 
     El objetivo es que el cuestionario se sienta más ligado al artículo,
     pero sin depender de servicios externos adicionales.
@@ -414,17 +414,14 @@ def _preguntas_generadas_desde_noticia(noticia):
     return [
         _construir_pregunta_de_titulo(titulo_pregunta, palabras_clave, titulo),
         _construir_pregunta_desde_resumen(titulo_pregunta, _resumir_texto(primera_oracion, 160)),
-        _construir_pregunta_de_oracion(segunda_oracion, titulo_pregunta, 2),
-        _construir_pregunta_de_palabra_clave(palabra_principal, titulo_pregunta, palabras_clave),
         _construir_pregunta_de_accion(accion_positiva, titulo_pregunta),
-        _construir_pregunta_de_beneficio(beneficio, titulo_pregunta),
     ]
 
 
 def _preguntas_necesitan_actualizacion(preguntas_guardadas):
     """Detecta si el cuestionario viejo debe regenerarse."""
 
-    if len(preguntas_guardadas) != 6:
+    if len(preguntas_guardadas) != 3:
         return True
 
     patrones_viejos = (
@@ -466,14 +463,14 @@ def servicio_listar_preguntas_noticia(id_noticia):
 
 
 def servicio_registrar_preguntas_noticia(id_noticia, datos):
-    """Permite guardar manualmente un cuestionario de seis preguntas para una noticia."""
+    """Permite guardar manualmente un cuestionario de tres preguntas para una noticia."""
 
     preguntas = datos.get("preguntas") or []
     if not isinstance(preguntas, list):
         return {"mensaje": "Las preguntas deben enviarse en una lista"}, 400
 
-    if len(preguntas) != 6:
-        return {"mensaje": "Debes registrar exactamente 6 preguntas por noticia"}, 400
+    if len(preguntas) != 3:
+        return {"mensaje": "Debes registrar exactamente 3 preguntas por noticia"}, 400
 
     errores = []
     preguntas_limpias = []

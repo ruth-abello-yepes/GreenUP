@@ -46,7 +46,6 @@ def ruta_responder_tema_foro(id_tema):
 
 
 @comunidad_bp.route("/juego/noticias/<int:id_noticia>/preguntas", methods=["GET"])
-@login_requerido
 def ruta_listar_preguntas_noticia(id_noticia):
     respuesta, estado = servicio_listar_preguntas_noticia(id_noticia)
     return jsonify(respuesta), estado

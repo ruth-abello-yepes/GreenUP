@@ -215,8 +215,8 @@ async function abrirDetalleNoticia(noticia) {
     preguntas.replaceChildren();
     new bootstrap.Modal(document.getElementById("modalDetalleNoticia")).show();
     try {
-        const respuesta = await fetch(`/api/comunidad/juego/noticias/${noticia.id_noticia}/preguntas`, { headers: { Accept: "application/json" } });
-        const datos = await respuesta.json();
+        const respuesta = await peticionSegura(`/api/comunidad/juego/noticias/${noticia.id_noticia}/preguntas`, "GET");
+        const datos = respuesta.datos || {};
         if (!respuesta.ok) throw new Error(datos.mensaje || "No se pudieron cargar las preguntas.");
         const tres = (datos.preguntas || []).slice(0, 3);
         if (tres.length < 3) throw new Error("Esta noticia aún no tiene sus 3 preguntas relacionadas.");

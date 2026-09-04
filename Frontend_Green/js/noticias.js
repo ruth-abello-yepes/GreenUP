@@ -79,7 +79,7 @@ function crearTarjetaNoticia(noticia) {
         const juego = crearElemento(
             "button",
             "btn btn-gu-primary rounded-pill d-inline-flex align-items-center gap-1",
-            "Responder quiz"
+            "Responde las preguntas"
         );
         juego.type = "button";
         juego.addEventListener("click", () => {

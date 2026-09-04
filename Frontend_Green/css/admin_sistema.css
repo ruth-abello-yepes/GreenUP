@@ -2034,6 +2034,53 @@ body.admin-theme-dark .admin-user-menu .dropdown-item:hover {
   }
 }
 
+/* Ajustes globales de accesibilidad y acciones en pantallas pequeñas. */
+body.admin-theme-light .page-hero h1,
+body.admin-theme-light .card-title-row h2,
+body.admin-theme-light .card-title-row h3,
+body.admin-theme-light .metric-card strong,
+body.admin-theme-light .summary-value { color: #10213b !important; }
+body.admin-theme-light .page-hero p,
+body.admin-theme-light .card-title-row p,
+body.admin-theme-light .metric-card span,
+body.admin-theme-light .metric-card p,
+body.admin-theme-light .summary-label,
+body.admin-theme-light .admin-table td { color: #3f4b5a !important; }
+body.admin-theme-light .page-hero h1 strong,
+body.admin-theme-light .sidebar-link.active,
+body.admin-theme-light .sidebar-link.active .material-symbols-outlined { color: #086b2a !important; }
+
+@media (max-width: 1200px) {
+  .admin-table.has-actions td:last-child .row-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .admin-table.has-actions td:last-child .small-button,
+  .admin-table.has-actions td:last-child .primary-button,
+  .admin-table.has-actions td:last-child .danger-button {
+    width: auto;
+    min-width: 0;
+    min-height: 38px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-table.has-actions td:last-child .small-button,
+  .admin-table.has-actions td:last-child .primary-button,
+  .admin-table.has-actions td:last-child .danger-button {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+}
+
 /* =====================================================================
    MAPA DEL ADMINISTRADOR
    Este bloque replica la experiencia del mapa ciudadano con Leaflet:

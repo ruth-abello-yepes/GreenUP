@@ -92,13 +92,14 @@ def obtener_panel_educacion(id_usuario):
                WHERE id_usuario = %s AND estado = 'aceptado') AS desafios_activos,
               (SELECT COUNT(*)::int FROM usuario_desafio
                WHERE id_usuario = %s AND estado = 'completado') AS desafios_reportados,
-              (SELECT COUNT(*)::int FROM progreso_contenido) AS lecturas_comunidad,
+              (SELECT COUNT(*)::int FROM progreso_contenido
+               WHERE id_usuario = %s) AS lecturas_comunidad,
               (SELECT COUNT(*)::int FROM usuario_desafio
-               WHERE estado = 'completado') AS desafios_comunidad
+               WHERE id_usuario = %s AND estado = 'completado') AS desafios_comunidad
               ,(SELECT COUNT(*)::int FROM noticia_juego_intentos
                 WHERE id_usuario = %s) AS noticias_completadas
             """,
-            (id_usuario, id_usuario, id_usuario, id_usuario),
+            (id_usuario, id_usuario, id_usuario, id_usuario, id_usuario, id_usuario),
         )
         resumen = cursor.fetchone()
 

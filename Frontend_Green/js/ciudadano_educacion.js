@@ -163,10 +163,6 @@
             <p class="text-secondary small mb-4 flex-grow-1">${escapar(item.descripcion || "Contenido educativo ambiental.")}</p>
             <div class="d-flex flex-column gap-2">
               ${abrir}
-              <button type="button" class="btn ${completado ? "btn-success" : "btn-outline-primary"} w-100 rounded-3 fw-bold content-complete" data-content-id="${item.id_contenido}" ${completado ? "disabled" : ""}>
-                <span class="material-symbols-outlined fs-6">${completado ? "verified" : "check_circle"}</span>
-                ${completado ? "Lección registrada" : "Registrar como visto"}
-              </button>
             </div>
           </div>
         </article>

@@ -527,7 +527,7 @@ def servicio_registrar_preguntas_noticia(id_noticia, datos):
 
 
 def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
-    """Califica las respuestas del ciudadano y registra progreso educativo sin sumar puntos."""
+    """Califica las respuestas y registra 10 puntos por cada acierto."""
 
     respuestas = datos.get("respuestas") or {}
     if not isinstance(respuestas, dict):
@@ -572,7 +572,7 @@ def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
         }, 400
 
     total = len(preguntas)
-    puntaje = 0
+    puntaje = correctas * 10
     puntaje_nuevo = registrar_resultado_juego(id_noticia, id_usuario, puntaje, correctas, total)
     puntaje_actual = obtener_puntaje_ciudadano(id_usuario) or {
         "puntos_total": puntaje,
@@ -582,7 +582,7 @@ def servicio_resolver_juego_noticia(id_usuario, id_noticia, datos):
     return {
         "mensaje": "Juego calificado correctamente",
         "puntaje_obtenido": puntaje,
-        "puntos_sumados": 0,
+        "puntos_sumados": puntaje_nuevo,
         "respuestas_correctas": correctas,
         "total_preguntas": total,
         "detalle": detalle,

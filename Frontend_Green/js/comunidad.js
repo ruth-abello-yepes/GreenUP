@@ -592,6 +592,9 @@ async function cargarResumenJuegoCiudadano() {
         const respuesta = await peticionSegura("/api/comunidad/juego/mi-puntaje", "GET");
         if (!respuesta.ok) throw new Error();
         const puntaje = respuesta.datos.puntaje || {};
+        const puntos = Number(puntaje.puntos_total) || 0;
+        document.getElementById("lessons-completed-display")?.replaceChildren(document.createTextNode(String(puntos)));
+        document.getElementById("community-reads")?.replaceChildren(document.createTextNode(String(puntos)));
         tarjeta.innerHTML = `
             <strong class="d-block fs-4 text-gu-primary mb-1">${escaparComunidad(Number(puntaje.noticias_completadas) || 0)}</strong>
             <span class="text-secondary">Noticias educativas completadas</span>

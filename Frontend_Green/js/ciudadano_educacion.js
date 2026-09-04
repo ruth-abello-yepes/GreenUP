@@ -59,19 +59,16 @@
 
   function renderResumen() {
     const resumen = estado.datos?.resumen || {};
-    const contenidosCompletados = Number(resumen.contenidos_completados || 0);
-    const noticiasCompletadas = Number(resumen.noticias_completadas || 0);
-    const completados = contenidosCompletados + noticiasCompletadas;
-    const total = Math.max((estado.datos?.contenidos?.length || 0) + noticiasCompletadas, 1);
+    const completados = 0;
+    const total = 1;
 
     if ($("#lessons-completed-display")) {
       $("#lessons-completed-display").textContent = completados.toLocaleString("es-CO");
     }
     if ($("#community-reads")) {
-      $("#community-reads").textContent = Number(resumen.lecturas_comunidad || 0).toLocaleString("es-CO");
+      $("#community-reads").textContent = "0";
     }
     if ($("#community-challenges")) {
-      $("#community-challenges").textContent = Number(resumen.desafios_comunidad || 0).toLocaleString("es-CO");
     }
     if ($("#education-progress-bar")) {
       $("#education-progress-bar").style.width = `${Math.min(100, Math.round((completados / total) * 100))}%`;

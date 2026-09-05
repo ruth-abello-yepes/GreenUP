@@ -3067,6 +3067,39 @@ body.ciudadano-pagina-faq header .form-control {
     white-space: nowrap;
   }
 
+  body[class*="ciudadano-pagina-"] .navbar.fixed-top > .container-fluid > .d-flex:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar.fixed-top > .container-fluid > .d-flex:last-child {
+    flex: 0 0 auto;
+    margin-left: 4px;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar-brand > span {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 340px) {
+    body[class*="ciudadano-pagina-"] .navbar-brand {
+      font-size: 0.98rem;
+    }
+    body[class*="ciudadano-pagina-"] .navbar-brand img {
+      width: 30px !important;
+      height: 30px !important;
+      margin-right: 4px !important;
+    }
+    body[class*="ciudadano-pagina-"] .navbar.fixed-top > .container-fluid {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      gap: 4px;
+    }
+  }
+
   body[class*="ciudadano-pagina-"] .navbar-brand img {
     width: 34px !important;
     height: 34px !important;

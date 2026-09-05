@@ -3044,4 +3044,82 @@ body.ciudadano-pagina-faq header .form-control {
   .hero-panel .btn, .card .btn, form .btn { max-width: 100%; white-space: normal; }
   .d-flex.justify-content-between { flex-wrap: wrap; gap: 12px; }
   .map-container, .map-wrapper, #map { width: 100%; max-width: 100%; min-height: 360px; }
+
+  /* Navbar compacto: conserva logo, menú y perfil sin superponerlos. */
+  body[class*="ciudadano-pagina-"] .navbar.fixed-top {
+    min-height: 64px;
+    height: auto;
+    z-index: 1200;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar.fixed-top > .container,
+  body[class*="ciudadano-pagina-"] .navbar.fixed-top > .container-fluid {
+    min-height: 64px;
+    padding: 8px 12px !important;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar-brand {
+    min-width: 0;
+    margin-right: auto !important;
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar-brand img {
+    width: 34px !important;
+    height: 34px !important;
+    object-fit: contain;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar .dropdown {
+    position: relative;
+    border-left: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  body[class*="ciudadano-pagina-"] .navbar .dropdown-menu {
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    top: calc(100% + 8px) !important;
+    width: min(250px, calc(100vw - 24px));
+    margin: 0 !important;
+    z-index: 1300;
+  }
+
+  body[class*="ciudadano-pagina-"] #mobileMenuSidebar {
+    width: min(290px, 86vw);
+    z-index: 1400;
+  }
+
+  body.ciudadano-pagina-mapa main {
+    position: relative;
+    z-index: 1;
+    padding-top: 8px;
+  }
+
+  body.ciudadano-pagina-mapa .map-floating-controls {
+    top: 76px;
+    right: 10px;
+    z-index: 1050;
+  }
+
+  body[class*="ciudadano-pagina-"] footer#main-footer {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body[class*="ciudadano-pagina-"] footer#main-footer .container {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  body[class*="ciudadano-pagina-"] footer#main-footer .row {
+    row-gap: 18px;
+  }
 }

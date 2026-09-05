@@ -77,9 +77,15 @@ async function iniciarSesion(evento) {
         return;
       }
       alert(`Error de acceso: ${respuesta.datos.mensaje || "Credenciales inválidas"}`);
+      if (window.grecaptcha && window.grecaptcha.reset) {
+        window.grecaptcha.reset();
+      }
     }
   } catch (error) {
     alert("Ocurrió un error al intentar comunicarse con el servidor. Intente más tarde.");
+    if (window.grecaptcha && window.grecaptcha.reset) {
+      window.grecaptcha.reset();
+    }
   }
 }
 

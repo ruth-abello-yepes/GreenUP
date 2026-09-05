@@ -63,10 +63,16 @@ async function iniciarSesionAdmin(evento) {
       window.location.href = "../admin_sistema/admin_panel.html";
     } else {
       alert(datos.mensaje || "No se pudo iniciar la sesión administrativa.");
+      if (window.grecaptcha && window.grecaptcha.reset) {
+        window.grecaptcha.reset();
+      }
     }
   } catch (error) {
     console.error("Error en login administrativo:", error);
     alert("No se pudo conectar con el servidor. Intenta nuevamente.");
+    if (window.grecaptcha && window.grecaptcha.reset) {
+      window.grecaptcha.reset();
+    }
   }
 }
 

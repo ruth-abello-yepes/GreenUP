@@ -21,7 +21,16 @@
       label: "En automovil",
       icon: "directions_car",
       color: "#2563eb",
-      serviceUrl: "https://routing.openstreetmap.de/routed-car/route/v1",
+      serviceUrl: "https://routing.openstreetmap.de/routed-car/route/v1", // OSRM car profile
+      desvioMaximoKm: 0.040, // 40 meters
+    },
+    {
+      id: "moto",
+      label: "En motocicleta",
+      icon: "two_wheeler",
+      color: "#059669",
+      serviceUrl: "https://routing.openstreetmap.de/routed-car/route/v1", // Motos use car profile usually
+      desvioMaximoKm: 0.035, // 35 meters
     },
     {
       id: "bike",
@@ -29,6 +38,7 @@
       icon: "directions_bike",
       color: "#d97706",
       serviceUrl: "https://routing.openstreetmap.de/routed-bike/route/v1",
+      desvioMaximoKm: 0.025, // 25 meters
     },
     {
       id: "foot",
@@ -36,10 +46,10 @@
       icon: "directions_walk",
       color: "#7c3aed",
       serviceUrl: "https://routing.openstreetmap.de/routed-foot/route/v1",
+      desvioMaximoKm: 0.015, // 15 meters
     },
   ];
-  const WALKING_REROUTE_DISTANCE_KM = 0.02;
-  const WALKING_REROUTE_INTERVAL_MS = 12000;
+  const REROUTE_COOLDOWN_MS = 15000; // 15 seconds cooldown between API requests
 
   let map = null;
   let capasRutasActuales = [];
@@ -324,36 +334,39 @@
 
       let positionResolved = false;
 
-      seguimientoUbicacionId = navigator.geolocation.watchPosition(
-        (position) => {
-          const nextLocation = [position.coords.latitude, position.coords.longitude];
-          userLocation = nextLocation;
-          hasRealUserLocation = true;
+      const handlePositionUpdate = (position) => {
+        const nextLocation = [position.coords.latitude, position.coords.longitude];
+        userLocation = nextLocation;
+        hasRealUserLocation = true;
+        
+        updateUserMarker(!positionResolved ? centerOnUser : false);
+
+        if (!positionResolved) {
+          positionResolved = true;
+          resolve(true);
+        }
+
+        if (modoRutaActivo && destinoRutaActual && rutasAlternativasActuales[indiceRutaSeleccionada]) {
+          const rutaActiva = rutasAlternativasActuales[indiceRutaSeleccionada];
+          const modoConfig = ROUTE_MODES.find(m => m.id === modoRutaActivo);
+          const desvioMaximoKm = modoConfig ? modoConfig.desvioMaximoKm : 0.030;
           
-          updateUserMarker(!positionResolved ? centerOnUser : false);
-
-          if (!positionResolved) {
-            positionResolved = true;
-            resolve(true);
+          const distanciaRutaKm = distanciaPuntoAPolilineaKm(
+              nextLocation[0], nextLocation[1], rutaActiva.coordinates
+          );
+          
+          const tiempoSuficiente = Date.now() - ultimaActualizacionRutaAPie >= REROUTE_COOLDOWN_MS;
+          
+          if (distanciaRutaKm > desvioMaximoKm && tiempoSuficiente && !actualizandoRutaAPie) {
+            ultimaUbicacionRutaAPie = [...nextLocation];
+            ultimaActualizacionRutaAPie = Date.now();
+            actualizarRutaActiva(nextLocation);
           }
+        }
+      };
 
-          if (modoRutaActivo === "foot" && destinoRutaActual) {
-            const movedEnough = !ultimaUbicacionRutaAPie
-              || calculateDistance(
-                ultimaUbicacionRutaAPie[0],
-                ultimaUbicacionRutaAPie[1],
-                nextLocation[0],
-                nextLocation[1]
-              ) >= WALKING_REROUTE_DISTANCE_KM;
-            const waitedEnough = Date.now() - ultimaActualizacionRutaAPie >= WALKING_REROUTE_INTERVAL_MS;
-            
-            if (movedEnough && waitedEnough && !actualizandoRutaAPie) {
-              ultimaUbicacionRutaAPie = [...nextLocation];
-              ultimaActualizacionRutaAPie = Date.now();
-              actualizarRutaAPie(nextLocation);
-            }
-          }
-        },
+      seguimientoUbicacionId = navigator.geolocation.watchPosition(
+        handlePositionUpdate,
         (error) => {
           console.warn("Ubicación no disponible:", error.message);
           if (!positionResolved) {
@@ -560,14 +573,26 @@
           <strong>Calculando rutas...</strong>
           <small>Desde tu ubicacion hasta la recicladora</small>
         </div>
-        <button type="button" class="greenup-routes-close" aria-label="Cerrar rutas">
-          <span class="material-symbols-outlined">close</span>
-        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="greenup-routes-minimize" aria-label="Minimizar panel" style="border: none; background: #f1f5f9; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-symbols-outlined">expand_more</span>
+          </button>
+          <button type="button" class="greenup-routes-close" aria-label="Cerrar rutas" style="border: none; background: #f1f5f9; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
       </div>
       <div class="greenup-routes-list"></div>
     `;
     panelRutas.querySelector(".greenup-routes-close")?.addEventListener("click", () => {
       window.cerrarRutas();
+    });
+    panelRutas.querySelector(".greenup-routes-minimize")?.addEventListener("click", (e) => {
+      const isMinimized = panelRutas.classList.toggle("is-minimized");
+      const icon = e.currentTarget.querySelector(".material-symbols-outlined");
+      if (icon) {
+        icon.textContent = isMinimized ? "expand_less" : "expand_more";
+      }
     });
     document.querySelector("body.ciudadano-pagina-mapa main")?.appendChild(panelRutas);
     return panelRutas;
@@ -691,29 +716,33 @@
     };
   }
 
-  async function actualizarRutaAPie(position) {
-    const footIndex = rutasAlternativasActuales.findIndex((route) => route.mode.id === "foot");
-    if (footIndex < 0 || !destinoRutaActual || actualizandoRutaAPie) return;
+  async function actualizarRutaActiva(position) {
+    if (!modoRutaActivo || !destinoRutaActual || actualizandoRutaAPie) return;
+    const indexActual = indiceRutaSeleccionada;
+    if (indexActual < 0) return;
 
     const destinationAtRequest = [...destinoRutaActual];
     actualizandoRutaAPie = true;
     try {
+      const modeConfig = ROUTE_MODES.find((mode) => mode.id === modoRutaActivo);
       const updatedRoute = await fetchRouteForMode(
-        ROUTE_MODES.find((mode) => mode.id === "foot"),
+        modeConfig,
         position,
         destinationAtRequest
       );
+      
+      // Validar si el usuario cambió de destino o modo mientras se calculaba
       if (!destinoRutaActual
         || destinoRutaActual[0] !== destinationAtRequest[0]
         || destinoRutaActual[1] !== destinationAtRequest[1]
-        || rutasAlternativasActuales[indiceRutaSeleccionada]?.mode.id !== "foot") return;
+        || rutasAlternativasActuales[indiceRutaSeleccionada]?.mode.id !== modoRutaActivo) return;
 
       const routes = [...rutasAlternativasActuales];
-      routes[footIndex] = updatedRoute;
-      indicePasoAPie = 0;
-      pintarRutasPorTransporte(routes, { selectedIndex: footIndex, fitAll: false });
+      routes[indexActual] = updatedRoute;
+      indicePasoAPie = 0; // Se reinicia el índice del paso actual
+      pintarRutasPorTransporte(routes, { selectedIndex: indexActual, fitAll: false });
     } catch (error) {
-      console.warn("No se pudo actualizar la ruta a pie:", error);
+      console.warn("No se pudo actualizar la ruta activa:", error);
     } finally {
       actualizandoRutaAPie = false;
     }
@@ -919,6 +948,19 @@
                 Math.sin(dLon/2) * Math.sin(dLon/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       return R * c;
+  }
+
+  // Calcula la distancia más corta (en km) desde un punto GPS a una polilínea (ruta)
+  function distanciaPuntoAPolilineaKm(lat, lng, coordenadasPolilinea) {
+      if (!coordenadasPolilinea || coordenadasPolilinea.length === 0) return Infinity;
+      let distanciaMinima = Infinity;
+      // Simplificación para rendimiento: medir contra los puntos del segmento
+      // OSRM devuelve puntos muy densos, por lo que es suficientemente preciso.
+      for (let i = 0; i < coordenadasPolilinea.length; i++) {
+          const d = calculateDistance(lat, lng, coordenadasPolilinea[i][0], coordenadasPolilinea[i][1]);
+          if (d < distanciaMinima) distanciaMinima = d;
+      }
+      return distanciaMinima;
   }
 
   async function performSearch() {

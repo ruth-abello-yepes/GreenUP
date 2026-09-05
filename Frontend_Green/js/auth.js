@@ -193,13 +193,29 @@ function cerrarSesion() {
     temporizadorCierre = setTimeout(() => {
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
-      // Ocultar modal si esta abierto
+      
       const modal = document.getElementById("modal-inactividad");
-      if (modal && window.bootstrap && window.bootstrap.Modal) {
-        const instanciaModal = window.bootstrap.Modal.getInstance(modal);
-        if (instanciaModal) instanciaModal.hide();
+      if (modal) {
+        // Transformar el modal en un aviso final
+        const titulo = modal.querySelector(".modal-title");
+        const cuerpo = modal.querySelector(".modal-body");
+        const boton = modal.querySelector(".btn-primary");
+        
+        if (titulo) titulo.textContent = "🔒 Sesión cerrada";
+        if (cuerpo) cuerpo.innerHTML = "Tu sesión se ha cerrado automáticamente por inactividad.<br>Serás redirigido a la pantalla de inicio de sesión en 10 segundos.";
+        if (boton) {
+          boton.textContent = "Ir a inicio de sesión";
+          // Redirigir de inmediato si hacen clic
+          boton.onclick = () => window.location.href = "../public/public_login.html?sesion=expirada";
+        }
+      } else {
+        alert("Tu sesión se ha cerrado por inactividad.");
       }
-      window.location.href = "../public/public_login.html?sesion=expirada";
+      
+      // Redirigir automáticamente después de 10 segundos
+      setTimeout(() => {
+        window.location.href = "../public/public_login.html?sesion=expirada";
+      }, 10000);
     }, LIMITE);
   };
 

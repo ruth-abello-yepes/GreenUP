@@ -1898,6 +1898,17 @@ body.ciudadano-pagina-mapa .point-card-copy small {
             background: rgba(255, 255, 255, 0.97);
             box-shadow: 0 16px 38px rgba(15, 23, 42, 0.2);
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        body.ciudadano-pagina-mapa .greenup-routes-panel.is-minimized {
+            width: 320px;
+        }
+        body.ciudadano-pagina-mapa .greenup-routes-panel.is-minimized .greenup-routes-list {
+            display: none;
+        }
+        body.ciudadano-pagina-mapa .greenup-routes-panel.is-minimized .greenup-cancel-route-btn {
+            display: none;
         }
 
         body.ciudadano-pagina-mapa .greenup-routes-header {
@@ -2816,6 +2827,10 @@ body[class*="ciudadano-pagina-"] textarea {
   body.ciudadano-pagina-mapa #sidebar-collapse-trigger {
     right: -36px;
     width: 36px;
+  }
+
+  body.ciudadano-pagina-mapa .map-floating-controls {
+    top: 72px;
   }
 
   .table-responsive:has(.responsive-table-ready) {

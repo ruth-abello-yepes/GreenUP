@@ -247,12 +247,11 @@ function crearMenuHamburguesaCiudadano() {
     const archivoActual = window.location.pathname.split("/").pop() || "ciudadano_inicio.html";
     const rutasMenu = [
         { href: "ciudadano_inicio.html", icono: "home", texto: "Inicio" },
-        { href: "ciudadano_mapa.html", icono: "recycling", texto: "Recicladoras" },
+        { href: "ciudadano_mapa.html", icono: "map", texto: "Mapa Eco" },
         { href: "ciudadano_estadisticas.html", icono: "trending_up", texto: "Estadísticas" },
         { href: "ciudadano_educacion.html", icono: "menu_book", texto: "Aprende" },
         { href: "ciudadano_registrar_reciclaje.html", icono: "add_circle", texto: "Registrar reciclaje", requiereSesion: true },
         { href: "ciudadano_historial_reciclaje.html", icono: "history", texto: "Mi historial", requiereSesion: true },
-        { href: "ciudadano_ajustes.html", icono: "account_circle", texto: "Tu Perfil" },
     ];
 
     botonMenu.removeAttribute("data-bs-toggle");

@@ -523,6 +523,20 @@ function pasoAnterior() {
 }
 
 /**
+ * Intercepta el clic en el enlace superior de "Volver".
+ * Si estamos en un paso avanzado (>1), retrocede un paso y cancela la navegación.
+ * Si estamos en el paso 1, permite que el enlace actúe normalmente (ir a inicio).
+ * @function manejarVolver
+ * @param {Event} event - El evento click del enlace
+ */
+window.manejarVolver = function(event) {
+  if (pasoActual > 1) {
+    event.preventDefault();
+    pasoAnterior();
+  }
+};
+
+/**
  * Actualiza el estado visual del progreso del formulario (barras superiores,
  * visibilidad del botón de retroceso y texto del botón de continuación).
  * @function actualizarVistaPasos

@@ -193,10 +193,12 @@
       }
 
       document.getElementById("form-reciclaje")?.reset();
-      mostrarMensaje("Tu reciclaje quedó registrado como pendiente de confirmación.", "success");
+      ocultarMensaje();
+      window.greenupAlert("Tu reciclaje quedó registrado como pendiente de confirmación.", "Registro exitoso");
       await cargarHistorial();
     } catch (error) {
-      mostrarMensaje(error.message || "No se pudo registrar el reciclaje.", "danger");
+      ocultarMensaje();
+      window.greenupAlert(error.message || "No se pudo registrar el reciclaje.", "Error");
     } finally {
       if (boton) {
         boton.disabled = false;

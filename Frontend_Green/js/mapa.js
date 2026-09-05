@@ -317,18 +317,52 @@
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
+      if (seguimientoUbicacionId !== null) {
+        resolve(hasRealUserLocation);
+        return;
+      }
+
+      let positionResolved = false;
+
+      seguimientoUbicacionId = navigator.geolocation.watchPosition(
         (position) => {
-          userLocation = [position.coords.latitude, position.coords.longitude];
+          const nextLocation = [position.coords.latitude, position.coords.longitude];
+          userLocation = nextLocation;
           hasRealUserLocation = true;
-          updateUserMarker(centerOnUser);
-          resolve(true);
+          
+          updateUserMarker(!positionResolved ? centerOnUser : false);
+
+          if (!positionResolved) {
+            positionResolved = true;
+            resolve(true);
+          }
+
+          if (modoRutaActivo === "foot" && destinoRutaActual) {
+            const movedEnough = !ultimaUbicacionRutaAPie
+              || calculateDistance(
+                ultimaUbicacionRutaAPie[0],
+                ultimaUbicacionRutaAPie[1],
+                nextLocation[0],
+                nextLocation[1]
+              ) >= WALKING_REROUTE_DISTANCE_KM;
+            const waitedEnough = Date.now() - ultimaActualizacionRutaAPie >= WALKING_REROUTE_INTERVAL_MS;
+            
+            if (movedEnough && waitedEnough && !actualizandoRutaAPie) {
+              ultimaUbicacionRutaAPie = [...nextLocation];
+              ultimaActualizacionRutaAPie = Date.now();
+              actualizarRutaAPie(nextLocation);
+            }
+          }
         },
-        () => {
-          hasRealUserLocation = false;
-          resolve(false);
+        (error) => {
+          console.warn("Ubicación no disponible:", error.message);
+          if (!positionResolved) {
+            hasRealUserLocation = false;
+            positionResolved = true;
+            resolve(false);
+          }
         },
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
       );
     });
   }
@@ -621,10 +655,6 @@
   }
 
   function detenerSeguimientoAPie() {
-    if (seguimientoUbicacionId !== null && "geolocation" in navigator) {
-      navigator.geolocation.clearWatch(seguimientoUbicacionId);
-    }
-    seguimientoUbicacionId = null;
     ultimaUbicacionRutaAPie = null;
     ultimaActualizacionRutaAPie = 0;
     actualizandoRutaAPie = false;
@@ -690,34 +720,8 @@
   }
 
   function iniciarSeguimientoAPie() {
-    if (seguimientoUbicacionId !== null || !("geolocation" in navigator)) return;
-
     ultimaUbicacionRutaAPie = userLocation ? [...userLocation] : null;
     ultimaActualizacionRutaAPie = Date.now();
-    seguimientoUbicacionId = navigator.geolocation.watchPosition(
-      (position) => {
-        const nextLocation = [position.coords.latitude, position.coords.longitude];
-        userLocation = nextLocation;
-        hasRealUserLocation = true;
-        updateUserMarker(false);
-
-        const movedEnough = !ultimaUbicacionRutaAPie
-          || calculateDistance(
-            ultimaUbicacionRutaAPie[0],
-            ultimaUbicacionRutaAPie[1],
-            nextLocation[0],
-            nextLocation[1]
-          ) >= WALKING_REROUTE_DISTANCE_KM;
-        const waitedEnough = Date.now() - ultimaActualizacionRutaAPie >= WALKING_REROUTE_INTERVAL_MS;
-        if (!movedEnough || !waitedEnough || actualizandoRutaAPie) return;
-
-        ultimaUbicacionRutaAPie = [...nextLocation];
-        ultimaActualizacionRutaAPie = Date.now();
-        actualizarRutaAPie(nextLocation);
-      },
-      (error) => console.warn("Seguimiento de ubicacion no disponible:", error.message),
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
-    );
   }
 
   function updateRouteSelection(index, fitRoute = true) {

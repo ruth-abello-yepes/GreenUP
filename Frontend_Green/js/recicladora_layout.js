@@ -801,6 +801,19 @@ async function cargarNotificacionesRecicladora() {
         await fetchJson(`/api/notificaciones/${id}/leida`, { method: "PUT" });
         item.classList.remove("unread");
         cargarNotificacionesRecicladora();
+        
+        const titulo = item.querySelector("strong").textContent.toLowerCase();
+        let urlDestino = "";
+        
+        if (titulo.includes("activada") || titulo.includes("aprobada") || titulo.includes("punto ecológico")) urlDestino = "mi_punto_ecologico.html";
+        else if (titulo.includes("rechazada") || titulo.includes("configuración")) urlDestino = "recicladora_configuracion.html";
+        else if (titulo.includes("educación") || titulo.includes("material")) urlDestino = "recicladora_contenido_educativo.html";
+        else if (titulo.includes("reciclaje") || titulo.includes("entrega") || titulo.includes("validado")) urlDestino = "recicladora_registros_reciclaje.html";
+        else urlDestino = "recicladora_panel.html"; // fallback
+        
+        if (urlDestino && !window.location.pathname.endsWith(urlDestino)) {
+            window.location.href = urlDestino;
+        }
       });
     });
   } catch (error) {

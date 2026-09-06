@@ -79,7 +79,9 @@
 
   function renderResumen() {
     const registros = estadoPagina.registros;
-    const totalKilos = registros.reduce((suma, registro) => suma + Number(registro.cantidad || 0), 0);
+    const totalKilos = registros.reduce((suma, registro) => {
+      return obtenerEstado(registro) === "confirmado" ? suma + Number(registro.cantidad || 0) : suma;
+    }, 0);
     const conteos = registros.reduce((resultado, registro) => {
       resultado[obtenerEstado(registro)] += 1;
       return resultado;

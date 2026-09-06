@@ -3,6 +3,10 @@
   "use strict";
 
   const STYLE_ID = "greenup-accessibility-styles";
+  const seleccionar = (root, selector) => [
+    ...(root.matches?.(selector) ? [root] : []),
+    ...root.querySelectorAll(selector)
+  ];
 
   function instalarEstilos() {
     if (document.getElementById(STYLE_ID)) return;
@@ -14,7 +18,7 @@
       .greenup-skip-link:focus { transform: translateY(0); }
       :where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 3px solid var(--greenup-focus) !important; outline-offset: 3px !important; }
       :where(p, td, th, a, button, label, input, select, textarea) { overflow-wrap: anywhere; }
-      .text-success:not(.brand-name), footer h1, footer h2, footer h3, footer h4 { color: var(--greenup-accessible-green) !important; }
+      .text-success:not(.brand-name) { color: var(--greenup-accessible-green) !important; }
       .greenup-table-scroll { max-width: 100%; overflow-x: auto !important; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -44,6 +48,7 @@
     if (!main) return;
     main.id ||= "contenido-principal";
     main.setAttribute("role", "main");
+    main.tabIndex = -1;
     if (!document.querySelector(".greenup-skip-link")) {
       const link = document.createElement("a");
       link.className = "greenup-skip-link";
@@ -54,7 +59,7 @@
   }
 
   function etiquetarControles(root = document) {
-    root.querySelectorAll?.("input:not([type='hidden']), select, textarea").forEach((control, index) => {
+    seleccionar(root, "input:not([type='hidden']), select, textarea").forEach((control, index) => {
       if (control.closest("label") || control.getAttribute("aria-label") || control.getAttribute("aria-labelledby")) return;
       control.id ||= `greenup-control-${index}-${Math.random().toString(36).slice(2, 7)}`;
       let label = document.querySelector(`label[for='${CSS.escape(control.id)}']`);
@@ -75,6 +80,14 @@
       if (!headers.length || !tabla.querySelector("tbody")) return;
       tabla.classList.add("greenup-responsive-table");
       tabla.parentElement?.classList.add("greenup-table-scroll");
+      const contenedor = tabla.parentElement;
+      if (contenedor && !contenedor.matches("main, [role='main']")) {
+        contenedor.tabIndex = 0;
+        contenedor.setAttribute("role", "region");
+        if (!contenedor.hasAttribute("aria-label") && !contenedor.hasAttribute("aria-labelledby")) {
+          contenedor.setAttribute("aria-label", tabla.caption?.textContent.trim() || `Tabla: ${headers.join(", ")}`);
+        }
+      }
       tabla.querySelectorAll("tbody tr").forEach((row) => {
         Array.from(row.children).forEach((cell, index) => {
           if (cell.tagName === "TD" && !cell.hasAttribute("colspan")) cell.dataset.label ||= headers[index] || "Dato";
@@ -84,7 +97,7 @@
   }
 
   function mejorarMensajes(root = document) {
-    root.querySelectorAll?.(".alert, .error-message, [data-error]").forEach((item) => {
+    seleccionar(root, ".alert, .error-message, [data-error]").forEach((item) => {
       item.setAttribute("role", item.classList.contains("alert-danger") ? "alert" : "status");
       item.setAttribute("aria-live", "polite");
     });
@@ -121,7 +134,7 @@
   }
 
   function mejorarBotonesEIconos(root = document) {
-    root.querySelectorAll?.("button, a").forEach((control) => {
+    seleccionar(root, "button, a").forEach((control) => {
       const texto = (control.textContent || "").trim();
       const icono = (control.querySelector(".material-symbols-outlined, .material-icons")?.textContent || "").trim();
       if (!control.getAttribute("aria-label") && !control.getAttribute("aria-labelledby") && (!texto || texto === icono) && icono) {
@@ -129,11 +142,11 @@
       }
     });
 
-    root.querySelectorAll?.(".material-symbols-outlined, .material-icons").forEach((icono) => {
+    seleccionar(root, ".material-symbols-outlined, .material-icons").forEach((icono) => {
       icono.setAttribute("aria-hidden", "true");
     });
 
-    root.querySelectorAll?.("img").forEach((imagen) => {
+    seleccionar(root, "img").forEach((imagen) => {
       const alt = (imagen.getAttribute("alt") || "").trim().toLowerCase();
       if (alt === "logo") imagen.setAttribute("alt", "GreenUp");
       if (!imagen.getAttribute("alt")) imagen.setAttribute("alt", "");

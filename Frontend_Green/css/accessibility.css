@@ -11,7 +11,7 @@
   --gu-a11y-on-dark: #ffffff;
   --gu-a11y-on-dark-muted: #e6edf5;
   --gu-a11y-focus: #ffbf47;
-  --gu-a11y-border: #aab5c2;
+  --gu-a11y-border: #718096;
 }
 
 html {
@@ -159,7 +159,8 @@ body[class*="ciudadano-pagina-"] .hero-eyebrow,
 body[class*="ciudadano-pagina-"] .historial-resumen-etiqueta,
 body[class*="ciudadano-pagina-"] .metric-label,
 body[class*="ciudadano-pagina-"] .stat-label,
-body[class*="ciudadano-pagina-"] .gu-sidebar-meta {
+body[class*="ciudadano-pagina-"] .gu-sidebar-meta,
+.id-chip {
   color: #3d4d60 !important;
 }
 
@@ -207,17 +208,87 @@ body.ciudadano-pagina-historial-reciclaje .historial-hero p {
   opacity: 1 !important;
 }
 
-/* Admin and recycler layouts use dark sidebars and hero panels. */
-.admin-app :where(.sidebar, .admin-sidebar, .page-hero) .muted,
-.admin-app :where(.sidebar, .admin-sidebar, .page-hero) p,
-.recicladora-app :where(.sidebar, .page-hero) .muted,
-.recicladora-app :where(.sidebar, .page-hero) p {
-  color: var(--gu-a11y-on-dark-muted) !important;
+/* Role heroes and sidebars follow the user's selected theme. */
+.admin-app .page-hero :where(h1, h2, h3) {
+  color: var(--admin-ink) !important;
+}
+.admin-app .page-hero p,
+.admin-app :where(.brand-kicker, .sidebar-section-title, .summary-label),
+.recicladora-app :where(.brand-kicker, .search-shell > .material-symbols-outlined, .chart-bar > span) {
+  color: var(--gu-a11y-muted) !important;
 }
 
-.admin-app :where(.sidebar, .admin-sidebar) a,
-.recicladora-app .sidebar a {
-  color: #f4f8fb !important;
+body:is(.admin-theme-dark, .recicladora-theme-dark) {
+  color-scheme: dark;
+  --gu-a11y-muted: #c3cfde;
+  --greenup-accessible-green: #8df2aa;
+  --greenup-focus: #ffbf47;
+}
+body:is(.admin-theme-dark, .recicladora-theme-dark) :is(input, select, textarea, .form-control, .form-select):not(:disabled) {
+  background-color: #101b2a;
+  color: #eef6ff !important;
+}
+body:is(.admin-theme-dark, .recicladora-theme-dark) :is(input, textarea)::placeholder {
+  color: #a8b5c5 !important;
+}
+body.recicladora-theme-dark .btn-greenup,
+body.admin-theme-dark .profile-mode-toggle button.active {
+  color: #081b11 !important;
+}
+body.admin-theme-dark .primary-button {
+  background: #176b2c;
+  color: #ffffff;
+}
+body:is(.admin-theme-dark, .recicladora-theme-dark) table.greenup-responsive-table tbody tr {
+  background: #101b2a;
+}
+body:is(.admin-theme-dark, .recicladora-theme-dark) table.greenup-responsive-table tbody td::before {
+  color: #c3cfde;
+}
+
+/* Keep the green wordmark legible on pale citizen surfaces. */
+body[class*="ciudadano-pagina-"] [class$="-estilo-3"] {
+  color: #24621c;
+}
+body.ciudadano-pagina-registrar-reciclaje .estado-inicial-box .material-symbols-outlined {
+  color: #9a4e00;
+}
+
+body[class*="ciudadano-pagina-"] .navbar-brand .marca-up {
+  color: #24621c;
+}
+body.ciudadano-pagina-educacion #featured-duration {
+  background: #212529 !important;
+  color: #ffffff !important;
+}
+body[class*="ciudadano-pagina-"] .btn-light.text-danger {
+  color: #b42332 !important;
+}
+body.ciudadano-pagina-mapa .leaflet-marker-icon .material-symbols-outlined {
+  color: #24621c;
+}
+@media (max-width: 767.98px) {
+  body[class*="ciudadano-pagina-"] button[aria-controls="ciudadano-hamburger-panel"] {
+    min-width: 48px;
+    min-height: 48px;
+    margin-right: 16px !important;
+    flex: 0 0 48px;
+    border-radius: 12px !important;
+  }
+}
+body.recicladora-theme-dark .status-success {
+  background: #123322;
+  color: #9bf3b6;
+}
+body.recicladora-theme-dark .route-service-status {
+  color: #c3cfde;
+}
+body.recicladora-theme-dark .residuos-guia-grid span {
+  color: #465568;
+}
+body.recicladora-theme-dark .metric-icon.blue {
+  background: #17384a !important;
+  color: #78f0a8 !important;
 }
 
 /* The public about page used pale green as text on a pale card. */

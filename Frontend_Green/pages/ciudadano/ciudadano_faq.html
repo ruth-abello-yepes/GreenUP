@@ -15,7 +15,7 @@
         rel="stylesheet">
 
     <link href="../../css/ciudadano.css?v=20260902-ayuda-flotante" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/accessibility.css?v=20260903-wcag-light">
+  <link rel="stylesheet" href="../../css/accessibility.css?v=20260906-a11y">
 </head>
 
 <body class="ciudadano-pagina-faq">
@@ -26,7 +26,7 @@
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
                     type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar"
-                    aria-controls="mobileMenuSidebar">
+                    aria-controls="mobileMenuSidebar" aria-label="Abrir menú">
                     <span class="material-symbols-outlined text-gu-primary">menu</span>
                 </button>
 
@@ -57,8 +57,8 @@
 
             <div class="d-flex align-items-center gap-2">
                 <button
-                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
-                    <span class="material-symbols-outlined text-gu-primary">notifications</span>
+                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative" aria-label="Notificaciones">
+                    <span class="material-symbols-outlined text-gu-primary" aria-hidden="true">notifications</span>
                     <span
                         id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-faq-estilo-4" hidden></span>
                 </button>
@@ -138,7 +138,7 @@
                     class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-white-50">search</span>
                 <input type="text" id="searchInput"
                     class="form-control form-control-lg rounded-pill ps-5 search-box py-3"
-                    placeholder="Busca una sección (ej. mapa, historial, notificaciones…)">
+                    placeholder="Busca una sección (ej. mapa, historial, notificaciones…)" aria-label="Buscar en Centro de Ayuda">
             </div>
             <a href="#"
                 class="btn btn-light text-danger fw-semibold rounded-pill px-4 py-2 mt-3 d-inline-flex align-items-center justify-content-center gap-2"
@@ -392,7 +392,7 @@
   </div>
 </footer>
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../../js/modal_alerts.js?v=20260827"></script>
+<script src="../../js/modal_alerts.js?v=20260906-a11y"></script>
   <script>
         document.addEventListener("DOMContentLoaded", function () {
 
@@ -441,8 +441,8 @@
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/ciudadano_faq.js?v=20260904"></script>
-  <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
+  <script src="../../js/notificaciones_panel.js?v=20260906-a11y"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260906-a11y"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

@@ -131,6 +131,7 @@
   function crearModal({ titulo = "GreenUp", mensaje = "", tipo = "info", input = false, valor = "", textoAceptar = "Aceptar", textoCancelar = "Cancelar" }) {
     asegurarEstilos();
     return new Promise((resolve) => {
+      const focoAnterior = document.activeElement;
       const backdrop = document.createElement("div");
       const icono = tipo === "danger" ? "!" : tipo === "confirm" ? "?" : "✓";
       backdrop.className = "greenup-modal-backdrop";
@@ -143,7 +144,7 @@
               <p class="greenup-modal-message">${escapar(mensaje)}</p>
             </div>
           </header>
-          ${input ? `<div class="greenup-modal-body"><input class="greenup-modal-input" value="${escapar(valor)}"></div>` : ""}
+          ${input ? `<div class="greenup-modal-body"><input class="greenup-modal-input" aria-label="${escapar(mensaje || titulo)}" value="${escapar(valor)}"></div>` : ""}
           <footer class="greenup-modal-actions">
             ${tipo === "confirm" || input ? `<button class="greenup-modal-button" type="button" data-modal-cancel>${escapar(textoCancelar)}</button>` : ""}
             <button class="greenup-modal-button ${tipo === "danger" ? "danger" : "primary"}" type="button" data-modal-ok>${escapar(textoAceptar)}</button>
@@ -151,9 +152,14 @@
         </section>
       `;
       document.body.appendChild(backdrop);
+      const fondo = Array.from(document.body.children).filter(n => n !== backdrop && !n.inert);
+      fondo.forEach(n => { n.inert = true; });
       const campo = backdrop.querySelector(".greenup-modal-input");
       const cerrar = (resultado) => {
+        document.removeEventListener("keydown", manejarTeclado);
         backdrop.remove();
+        fondo.forEach(n => { n.inert = false; });
+        if (focoAnterior?.isConnected) focoAnterior.focus();
         resolve(resultado);
       };
       backdrop.querySelector("[data-modal-ok]").addEventListener("click", () => cerrar(input ? campo.value : true));
@@ -161,11 +167,21 @@
       backdrop.addEventListener("click", (evento) => {
         if (evento.target === backdrop) cerrar(input ? null : false);
       });
-      document.addEventListener("keydown", function escapeModal(evento) {
-        if (evento.key !== "Escape") return;
-        document.removeEventListener("keydown", escapeModal);
-        cerrar(input ? null : false);
-      });
+      function manejarTeclado(evento) {
+        if (evento.key === "Escape") {
+          evento.preventDefault();
+          cerrar(input ? null : false);
+        } else if (evento.key === "Tab") {
+          const controles = [...backdrop.querySelectorAll("input, button")];
+          const primero = controles[0], ultimo = controles.at(-1);
+          if (evento.shiftKey && document.activeElement === primero) {
+            evento.preventDefault(); ultimo.focus();
+          } else if (!evento.shiftKey && document.activeElement === ultimo) {
+            evento.preventDefault(); primero.focus();
+          }
+        }
+      }
+      document.addEventListener("keydown", manejarTeclado);
       setTimeout(() => (campo || backdrop.querySelector("[data-modal-ok]"))?.focus(), 30);
     });
   }

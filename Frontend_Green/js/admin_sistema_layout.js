@@ -467,7 +467,7 @@ function pintarEstructuraBase() {
         </section>
       </div>
       <div class="topbar-actions">
-        <button class="icon-button btn btn-light" type="button" title="Notificaciones" onclick="mostrarPanelNotificacionesAdmin()">
+        <button class="icon-button btn btn-light" type="button" title="Notificaciones" aria-controls="adminNotificationsMenu" aria-expanded="false" onclick="mostrarPanelNotificacionesAdmin()">
           <span class="material-symbols-outlined">notifications</span>
         </button>
         <section class="notifications-menu" id="adminNotificationsMenu" aria-hidden="true" aria-label="Panel de notificaciones del administrador">
@@ -597,6 +597,15 @@ function prepararMenuSuperiorAdmin() {
   boton.addEventListener("click", () => {
     const abierto = menu.classList.toggle("open");
     boton.setAttribute("aria-expanded", String(abierto));
+    if (abierto) menu.querySelector("a, button")?.focus();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menu.classList.contains("open")) {
+      menu.classList.remove("open");
+      boton.setAttribute("aria-expanded", "false");
+      boton.focus();
+    }
   });
 
   menu.addEventListener("click", (event) => {
@@ -1506,7 +1515,11 @@ async function pintarPuntosMapa(puntos, ajustarVista = false) {
     if (marker) {
       marker.setLatLng([coords.lat, coords.lng]).setIcon(iconoPunto).setPopupContent(popupHtml);
     } else {
-      marker = L.marker([coords.lat, coords.lng], { icon: iconoPunto }).addTo(adminMap).bindPopup(popupHtml);
+      marker = L.marker([coords.lat, coords.lng], {
+        icon: iconoPunto,
+        title: `Punto ecológico: ${puntoNombre(punto)}`,
+        alt: `Punto ecológico: ${puntoNombre(punto)}`,
+      }).addTo(adminMap).bindPopup(popupHtml);
       adminMarkers.set(punto.id_punto, marker);
     }
 
@@ -1616,7 +1629,11 @@ function iniciarGeolocalizacionAdmin() {
           iconSize: [18, 18],
           iconAnchor: [9, 9],
         });
-        adminUserMarker = L.marker(adminUserLocation, { icon: userIcon }).addTo(adminMap).bindPopup("Tu estas aqui");
+        adminUserMarker = L.marker(adminUserLocation, {
+          icon: userIcon,
+          title: "Tu ubicación actual",
+          alt: "Tu ubicación actual",
+        }).addTo(adminMap).bindPopup("Tu estas aqui");
       } else {
         adminUserMarker.setLatLng(adminUserLocation);
       }
@@ -2439,12 +2456,12 @@ function renderModalEditarPerfilAdmin(admin) {
     No crea usuarios nuevos; solo actualiza la cuenta administrativa actual.
   */
   return `
-    <div class="modal fade admin-modal" id="modal-editar-perfil-admin" tabindex="-1" aria-hidden="true">
+    <div class="modal fade admin-modal" id="modal-editar-perfil-admin" tabindex="-1" aria-hidden="true" aria-labelledby="titulo-editar-perfil-admin">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <div>
-              <h2 class="modal-title fs-5">Editar perfil administrador</h2>
+              <h2 class="modal-title fs-5" id="titulo-editar-perfil-admin">Editar perfil administrador</h2>
               <p class="modal-subtitle">Estos datos se guardan en Supabase y actualizan la sesion local.</p>
             </div>
             <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -2708,12 +2725,12 @@ function renderFormModal(modalId, titulo, subtitulo, formId, campos, accion, tex
     en la pagina. Se reutiliza en catalogos, noticias, FAQ y contenido.
   */
   return `
-    <div class="modal fade admin-modal" id="${modalId}" tabindex="-1" aria-hidden="true">
+    <div class="modal fade admin-modal" id="${modalId}" tabindex="-1" aria-hidden="true" aria-labelledby="${modalId}-titulo">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <div>
-              <h2 class="modal-title fs-5">${titulo}</h2>
+              <h2 class="modal-title fs-5" id="${modalId}-titulo">${titulo}</h2>
               <p class="modal-subtitle">${subtitulo}</p>
             </div>
             <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -2921,6 +2938,7 @@ function mostrarPanelNotificacionesAdmin() {
   if (!panel) return;
   const abierto = panel.classList.toggle("open");
   panel.setAttribute("aria-hidden", String(!abierto));
+  document.querySelector('[title="Notificaciones"]')?.setAttribute("aria-expanded", String(abierto));
   if (abierto) {
     cargarNotificacionesAdmin();
   }
@@ -3041,6 +3059,17 @@ document.addEventListener("click", (event) => {
   if (event.target.closest('[title="Notificaciones"]')) return;
   panel.classList.remove("open");
   panel.setAttribute("aria-hidden", "true");
+  document.querySelector('[title="Notificaciones"]')?.setAttribute("aria-expanded", "false");
+});
+
+document.addEventListener("keydown", (event) => {
+  const panel = document.getElementById("adminNotificationsMenu");
+  if (event.key !== "Escape" || !panel?.classList.contains("open")) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  const boton = document.querySelector('[title="Notificaciones"]');
+  boton?.setAttribute("aria-expanded", "false");
+  boton?.focus();
 });
 
 function exportarTablaCSV(nombreArchivo) {

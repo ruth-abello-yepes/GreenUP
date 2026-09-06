@@ -255,6 +255,7 @@ function alternarPanelNotificacionesCiudadano() {
     const abrir = panel.style.display === "none";
     panel.style.display = abrir ? "block" : "none";
     panel.setAttribute("aria-hidden", String(!abrir));
+    obtenerBotonNotificacionesCiudadano()?.setAttribute("aria-expanded", String(abrir));
 }
 
 /**
@@ -385,6 +386,8 @@ function iniciarPanelNotificacionesCiudadano() {
 
     const boton = obtenerBotonNotificacionesCiudadano();
     if (boton) {
+        boton.setAttribute("aria-controls", "greenup-panel-notificaciones");
+        boton.setAttribute("aria-expanded", "false");
         const indicador = obtenerIndicadorNotificacionesCiudadano();
         if (indicador) indicador.hidden = true;
         cargarPanelNotificacionesCiudadano();
@@ -402,6 +405,18 @@ function iniciarPanelNotificacionesCiudadano() {
         if (panel.contains(evento.target)) return;
         if (botonActual && botonActual.contains(evento.target)) return;
         panel.style.display = "none";
+        panel.setAttribute("aria-hidden", "true");
+        botonActual?.setAttribute("aria-expanded", "false");
+    });
+
+    document.addEventListener("keydown", (evento) => {
+        const panel = document.getElementById("greenup-panel-notificaciones");
+        if (evento.key === "Escape" && panel?.style.display !== "none") {
+            panel.style.display = "none";
+            panel.setAttribute("aria-hidden", "true");
+            boton?.setAttribute("aria-expanded", "false");
+            boton?.focus();
+        }
     });
 }
 

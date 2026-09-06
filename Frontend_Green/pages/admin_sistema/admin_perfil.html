@@ -15,7 +15,7 @@
   <style>
     html:not(.admin-auth-ok) body { visibility: hidden; }
   </style>
-  <script src="../../js/modal_alerts.js?v=20260827"></script>
+  <script src="../../js/modal_alerts.js?v=20260906-a11y"></script>
   <script>
     (function () {
       /*
@@ -47,12 +47,12 @@
 
   <!-- Estilos del administrador. -->
   <link rel="stylesheet" href="../../css/admin_sistema.css?v=dark-tables-1" />
-  <link rel="stylesheet" href="../../css/accessibility.css?v=20260903-wcag-light">
+  <link rel="stylesheet" href="../../css/accessibility.css?v=20260906-a11y">
 </head>
 <body class="admin-app">
   <!--
     Estructura base visible para aprender el orden de la pagina.
-    El archivo ../../js/admin_sistema_layout.js pinta el contenido dinamico de cada modulo.
+    El archivo ../../js/admin_sistema_layout.js?v=20260906-a11y pinta el contenido dinamico de cada modulo.
   -->
   <aside class="app-sidebar d-flex flex-column">
     <a class="brand-lockup navbar-brand d-inline-flex" href="admin_panel.html" aria-label="Ir al panel GreenUp">
@@ -375,7 +375,7 @@
 
     <!-- INICIO NOTA: los datos reales no se escriben a mano en cada HTML. -->
     <p class="text-muted small">
-      Las tablas, notificaciones, reportes, mapa y modales se controlan desde admin_sistema_layout.js.
+      Las tablas, notificaciones, reportes, mapa y modales se controlan desde admin_sistema_layout.js?v=20260906-a11y.
     </p>
     <!-- FIN NOTA. -->
 
@@ -439,7 +439,7 @@
     window.ADMIN_MODULE = "perfil";
   </script>
   <script src="../../js/api.js"></script>
-  <script src="../../js/admin_sistema_layout.js?v=roles-ocultar-admin-1"></script>
+  <script src="../../js/admin_sistema_layout.js?v=20260906-a11y"></script>
 </body>
 </html>
 

@@ -236,6 +236,9 @@ function crearBotonFlotanteAyudaCiudadano() {
  * Este menú reemplaza la barra lateral antigua y muestra rutas reales.
  */
 function crearMenuHamburguesaCiudadano() {
+    document.querySelectorAll('nav button[data-bs-toggle="dropdown"]').forEach((boton) => {
+        boton.setAttribute("aria-label", "Menú de tu perfil");
+    });
     const botonMenu = document.querySelector(
         '[data-bs-target="#mobileMenuSidebar"], [data-bs-target="#mobileOffcanvas"], [aria-controls="mobileMenuSidebar"], [aria-controls="mobileOffcanvas"]'
     );
@@ -256,7 +259,7 @@ function crearMenuHamburguesaCiudadano() {
 
     botonMenu.removeAttribute("data-bs-toggle");
     botonMenu.removeAttribute("data-bs-target");
-    botonMenu.removeAttribute("aria-controls");
+    botonMenu.setAttribute("aria-controls", "ciudadano-hamburger-panel");
     botonMenu.setAttribute("aria-label", "Abrir menú ciudadano");
     botonMenu.setAttribute("aria-expanded", "false");
 
@@ -297,7 +300,16 @@ function crearMenuHamburguesaCiudadano() {
         const abrir = panel.hidden;
         panel.hidden = !abrir;
         botonMenu.setAttribute("aria-expanded", String(abrir));
+        if (abrir) panel.querySelector("a")?.focus();
     }, true);
+
+    document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape" && !panel.hidden) {
+            panel.hidden = true;
+            botonMenu.setAttribute("aria-expanded", "false");
+            botonMenu.focus();
+        }
+    });
 
     panel.querySelectorAll("[data-requiere-sesion='true']").forEach((enlace) => {
         enlace.addEventListener("click", (evento) => {
@@ -975,6 +987,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.querySelector("script[data-greenup-accessibility]")) return;
     const script = document.createElement("script");
     script.dataset.greenupAccessibility = "true";
-    script.src = `${new URL("accessibility.js", document.currentScript.src).href}?v=20260901-a11y3`;
+    script.src = `${new URL("accessibility.js", document.currentScript.src).href}?v=20260906-a11y`;
     document.head.appendChild(script);
 })();

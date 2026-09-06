@@ -17,7 +17,7 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="../../css/ciudadano.css?v=20260902-rutas-transporte" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/accessibility.css?v=20260903-wcag-light">
+  <link rel="stylesheet" href="../../css/accessibility.css?v=20260906-a11y">
 </head>
 
 <body class="ciudadano-pagina-mapa">
@@ -27,8 +27,8 @@
         <div class="container-fluid px-3 px-md-5">
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar">
-                    <span class="material-symbols-outlined text-gu-primary">menu</span>
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar" aria-label="Abrir menú">
+                    <span class="material-symbols-outlined text-gu-primary" aria-hidden="true">menu</span>
                 </button>
                 <a class="navbar-brand fw-bold d-flex align-items-center" href="ciudadano_inicio.html">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoj-CAdExi-KYx7FHRuGeSuFFcVxVy8gbaNtw9yI-9LS6DH0Kq3PVFSyrfDUeobuCR2ymocLHkjIN0SlIYJ3Dmz9LT5G-TAx1-ZvXvYShKdqQsVtFL6BtU3gv2f2IjILNnLbuLalRorb1K9R7YvLB5QJD4C8sK1gpUyoSpgmXNIYr0EF3tt-hoRbHoXdpH5tBk2XOTjqpuVCDG1jBJ7GXJVIttHUHUgU3Iy0lHWUL3BAjczpgOWN-SS7Bj6_jeSDfRmCnZOsGD8qs"
@@ -53,8 +53,8 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button
-                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative">
-                    <span class="material-symbols-outlined text-gu-primary">notifications</span>
+                    class="btn btn-light rounded-circle p-2 d-flex align-items-center border-0 hover-bg-light position-relative" aria-label="Notificaciones">
+                    <span class="material-symbols-outlined text-gu-primary" aria-hidden="true">notifications</span>
                     <span
                         id="indicador-notificaciones" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ciudadano-mapa-estilo-4" hidden></span>
                 </button>
@@ -138,25 +138,27 @@
     <!-- ÁREA PRINCIPAL DEL MAPA -->
     <main>
 
+        <h1 class="visually-hidden">Mapa ecológico y puntos de reciclaje en Valledupar</h1>
+
         <!-- Panel Lateral Interactivo -->
         <div id="sidebar-panel"
             class="position-absolute start-0 top-0 bottom-0 bg-white shadow-lg m-3 rounded-4 d-flex flex-column border">
             <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold text-gu-primary mb-0 d-flex align-items-center gap-2">
-                    <span class="material-symbols-outlined text-gu-secondary">recycling</span> Puntos Eco
-                </h5>
+                <h2 class="h5 fw-bold text-gu-primary mb-0 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-gu-secondary" aria-hidden="true">recycling</span> Puntos Eco
+                </h2>
             </div>
 
             <!-- BUSCADOR Y FILTROS -->
             <div class="p-3 border-bottom bg-light">
                 <div class="mb-2 input-group">
-                    <input type="text" id="search-input" class="form-control ciudadano-mapa-estilo-6" placeholder="Buscar dirección o barrio...">
-                    <button class="btn text-white px-3 ciudadano-mapa-estilo-7" type="button" id="btn-search-address">
-                        <span class="material-symbols-outlined ciudadano-mapa-estilo-8">search</span>
+                    <input type="text" id="search-input" class="form-control ciudadano-mapa-estilo-6" placeholder="Buscar dirección o barrio..." aria-label="Buscar dirección o barrio">
+                    <button class="btn text-white px-3 ciudadano-mapa-estilo-7" type="button" id="btn-search-address" aria-label="Buscar dirección">
+                        <span class="material-symbols-outlined ciudadano-mapa-estilo-8" aria-hidden="true">search</span>
                     </button>
                 </div>
                 <div>
-                    <select id="filter-select" class="form-select form-select-sm ciudadano-mapa-estilo-9">
+                    <select id="filter-select" class="form-select form-select-sm ciudadano-mapa-estilo-9" aria-label="Filtrar puntos por tipo de residuo">
                         <option value="">Todos los residuos</option>
                         <option value="plástico">Plástico</option>
                         <option value="cartón">Cartón</option>
@@ -176,14 +178,14 @@
                 <!-- NUEVO: Botón configurado para abrir el Modal -->
                 <button id="btn-abrir-sugerencia"
                     class="btn w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-white shadow-sm ciudadano-mapa-estilo-10">
-                    <span class="material-symbols-outlined">add_location_alt</span> Sugerir Punto
+                    <span class="material-symbols-outlined" aria-hidden="true">add_location_alt</span> Sugerir Punto
                 </button>
             </div>
 
             <button id="sidebar-collapse-trigger"
                 class="btn btn-white bg-white border border-start-0 shadow-sm d-flex align-items-center justify-content-center p-0 text-gu-primary"
-                onclick="toggleSidebar()">
-                <span class="material-symbols-outlined icon-arrow transition-transform">chevron_left</span>
+                onclick="toggleSidebar()" aria-label="Ocultar o mostrar panel lateral">
+                <span class="material-symbols-outlined icon-arrow transition-transform" aria-hidden="true">chevron_left</span>
             </button>
         </div>
 
@@ -215,23 +217,23 @@
                         <span class="material-symbols-outlined text-gu-secondary">add_location_alt</span> Sugerir Nuevo
                         Punto
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <p class="text-secondary small mb-4">Ayúdanos a expandir la red de reciclaje. Indícanos dónde hay un
                         punto de acopio no registrado.</p>
                     <form id="form-sugerir-punto">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-dark">Nombre del lugar / Punto</label>
-                            <input type="text" class="form-control" placeholder="Ej. Chatarrería Don Juan" required>
+                            <label for="sugerir-nombre" class="form-label small fw-bold text-dark">Nombre del lugar / Punto</label>
+                            <input type="text" id="sugerir-nombre" class="form-control" placeholder="Ej. Chatarrería Don Juan" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-dark">Dirección aproximada</label>
-                            <input type="text" class="form-control" placeholder="Ej. Calle 44 con Carrera 4" required>
+                            <label for="sugerir-direccion" class="form-label small fw-bold text-dark">Dirección aproximada</label>
+                            <input type="text" id="sugerir-direccion" class="form-control" placeholder="Ej. Calle 44 con Carrera 4" required>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label small fw-bold text-dark">¿Qué materiales reciben?</label>
-                            <input type="text" class="form-control" placeholder="Ej. Cartón, Plástico, Aluminio..."
+                            <label for="sugerir-materiales" class="form-label small fw-bold text-dark">¿Qué materiales reciben?</label>
+                            <input type="text" id="sugerir-materiales" class="form-control" placeholder="Ej. Cartón, Plástico, Aluminio..."
                                 required>
                         </div>
                         <button type="button" id="btn-enviar-sugerencia"
@@ -248,26 +250,26 @@
             role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2 fw-medium">
-                    <span class="material-symbols-outlined">check_circle</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
                     ¡Gracias! Tu sugerencia ha sido enviada para revisión.
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+                    aria-label="Cerrar"></button>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS Bundle -->
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../../js/modal_alerts.js?v=20260827"></script>
+<script src="../../js/modal_alerts.js?v=20260906-a11y"></script>
     <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Scripts Propios -->
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/mapa.js?v=20260903-rutas-transporte"></script> <!-- Aquí se conecta el JS actualizado -->
-  <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
+  <script src="../../js/notificaciones_panel.js?v=20260906-a11y"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260906-a11y"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

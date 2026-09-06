@@ -15,7 +15,7 @@
         rel="stylesheet">
 
     <link href="../../css/ciudadano.css?v=20260902-ayuda-flotante" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/accessibility.css?v=20260903-wcag-light">
+  <link rel="stylesheet" href="../../css/accessibility.css?v=20260906-a11y">
 </head>
 
 <body class="ciudadano-pagina-inicio">
@@ -26,7 +26,7 @@
             <div class="d-flex align-items-center">
                 <button class="btn btn-light d-md-none border-0 me-2 rounded-circle p-2 d-flex align-items-center"
                     type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuSidebar"
-                    aria-controls="mobileMenuSidebar">
+                    aria-controls="mobileMenuSidebar" aria-label="Abrir menú">
                     <span class="material-symbols-outlined text-gu-primary">menu</span>
                 </button>
 
@@ -163,7 +163,7 @@
 
                     <div class="mt-4 pt-2">
                         <div class="progress ciudadano-inicio-estilo-9">
-                            <div class="progress-bar bg-success ciudadano-inicio-estilo-10" id="progreso-puntos" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-success ciudadano-inicio-estilo-10" id="progreso-puntos" role="progressbar" aria-label="Progreso de reciclaje hacia los próximos 10 kg" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <p class="text-muted small mt-2 mb-0 ciudadano-inicio-estilo-11" id="proximo-nivel">Calculando
                             próximo nivel...</p>
@@ -300,7 +300,7 @@
   </div>
 </footer>
     <script src="../../bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../../js/modal_alerts.js?v=20260827"></script>
+<script src="../../js/modal_alerts.js?v=20260906-a11y"></script>
   <script>
         document.addEventListener("DOMContentLoaded", function () {
             const observerOptions = { threshold: 0.1 };
@@ -320,8 +320,8 @@
   <script src="../../js/cargar_usuario.js"></script>
   <script src="../../js/logout.js"></script>
   <script src="../../js/dashboard_dinamico.js?v=20260813-2"></script>
-  <script src="../../js/notificaciones_panel.js"></script>
-  <script src="../../js/ciudadano_ui_fix.js?v=20260902-ayuda-flotante"></script>
+  <script src="../../js/notificaciones_panel.js?v=20260906-a11y"></script>
+  <script src="../../js/ciudadano_ui_fix.js?v=20260906-a11y"></script>
   <script src="../../js/auth.js"></script>
 </body>
 

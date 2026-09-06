@@ -2967,6 +2967,30 @@ async function cargarNotificacionesAdmin() {
         await apiAdmin(`/api/notificaciones/${id}/leida`, { method: "PUT" });
         item.classList.remove("unread");
         cargarNotificacionesAdmin();
+
+        const titulo = item.querySelector("strong").textContent.toLowerCase();
+        let moduloDestino = "";
+
+        if (titulo.includes("recicladora") || titulo.includes("aprobada") || titulo.includes("rechazada")) {
+            moduloDestino = "roles";
+        } else if (titulo.includes("punto ecológico")) {
+            moduloDestino = "puntos_reciclaje";
+        } else if (titulo.includes("educación") || titulo.includes("educativo") || titulo.includes("material")) {
+            moduloDestino = "contenido_educativo";
+        } else if (titulo.includes("usuario") || titulo.includes("inhabilitado") || titulo.includes("habilitado")) {
+            moduloDestino = "usuarios";
+        } else if (titulo.includes("novedad") || titulo.includes("noticia")) {
+            moduloDestino = "novedades";
+        } else if (titulo.includes("reciclaje") || titulo.includes("entrega")) {
+            moduloDestino = "registros_reciclaje";
+        } else {
+            moduloDestino = "panel"; // fallback
+        }
+
+        const urlDestino = `admin_${moduloDestino}.html`;
+        if (urlDestino && !window.location.pathname.endsWith(urlDestino)) {
+            window.location.href = urlDestino;
+        }
       });
     });
   } catch (error) {

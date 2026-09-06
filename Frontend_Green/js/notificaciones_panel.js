@@ -315,6 +315,29 @@ async function cargarPanelNotificacionesCiudadano() {
                 const id = boton.dataset.notificacionId;
                 await peticionSegura(`/api/notificaciones/${id}/leida`, "PUT");
                 await cargarPanelNotificacionesCiudadano();
+
+                // Navegar a la pantalla correspondiente según el título de la notificación
+                const titulo = boton.querySelector("strong").textContent.toLowerCase();
+                const esRecicladora = window.location.pathname.includes('recicladora_') || window.location.pathname.includes('mi_punto_ecologico');
+                
+                let urlDestino = "";
+                
+                if (esRecicladora) {
+                    if (titulo.includes("activada") || titulo.includes("aprobada") || titulo.includes("punto ecológico")) urlDestino = "mi_punto_ecologico.html";
+                    else if (titulo.includes("rechazada") || titulo.includes("configuración")) urlDestino = "recicladora_configuracion.html";
+                    else if (titulo.includes("educación") || titulo.includes("material")) urlDestino = "recicladora_contenido_educativo.html";
+                    else if (titulo.includes("reciclaje") || titulo.includes("entrega") || titulo.includes("validado")) urlDestino = "recicladora_registros_reciclaje.html";
+                    else urlDestino = "recicladora_panel.html"; // fallback
+                } else {
+                    if (titulo.includes("punto ecológico") || titulo.includes("mapa") || titulo.includes("ruta")) urlDestino = "ciudadano_mapa.html";
+                    else if (titulo.includes("reciclaje") || titulo.includes("validado") || titulo.includes("rechazado") || titulo.includes("entrega") || titulo.includes("kg")) urlDestino = "ciudadano_historial_reciclaje.html";
+                    else if (titulo.includes("educación") || titulo.includes("material")) urlDestino = "ciudadano_educacion.html";
+                    else urlDestino = "ciudadano_inicio.html"; // fallback
+                }
+
+                if (urlDestino && !window.location.pathname.endsWith(urlDestino)) {
+                    window.location.href = urlDestino;
+                }
             });
         });
     } catch (error) {

@@ -268,20 +268,35 @@
                                     <div class="col-12">
                                         <label class="form-label small fw-semibold text-secondary" for="password_actual">Contraseña
                                             Actual</label>
-                                        <input id="password_actual" name="password_actual" type="password"
-                                            class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+                                        <div class="position-relative">
+                                            <input id="password_actual" name="password_actual" type="password"
+                                                class="form-control pe-5" placeholder="••••••••" autocomplete="current-password" required>
+                                            <button type="button" class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none" onclick="togglePasswordVisibility('password_actual', this)" aria-label="Mostrar contraseña" aria-pressed="false">
+                                                <span class="material-symbols-outlined fs-5">visibility</span>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary" for="nueva_password">Nueva
                                             Contraseña</label>
-                                        <input id="nueva_password" name="nueva_password" type="password"
-                                            class="form-control" placeholder="••••••••" autocomplete="new-password" required>
+                                        <div class="position-relative">
+                                            <input id="nueva_password" name="nueva_password" type="password"
+                                                class="form-control pe-5" placeholder="••••••••" autocomplete="new-password" required>
+                                            <button type="button" class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none" onclick="togglePasswordVisibility('nueva_password', this)" aria-label="Mostrar contraseña" aria-pressed="false">
+                                                <span class="material-symbols-outlined fs-5">visibility</span>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-semibold text-secondary" for="confirmar_password">Confirmar Nueva
                                             Contraseña</label>
-                                        <input id="confirmar_password" name="confirmar_password" type="password"
-                                            class="form-control" placeholder="••••••••" autocomplete="new-password" required>
+                                        <div class="position-relative">
+                                            <input id="confirmar_password" name="confirmar_password" type="password"
+                                                class="form-control pe-5" placeholder="••••••••" autocomplete="new-password" required>
+                                            <button type="button" class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y text-decoration-none" onclick="togglePasswordVisibility('confirmar_password', this)" aria-label="Mostrar contraseña" aria-pressed="false">
+                                                <span class="material-symbols-outlined fs-5">visibility</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-end">

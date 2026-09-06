@@ -24,6 +24,23 @@ function obtenerTokenAjustes() {
 }
 
 /**
+ * Alterna la visibilidad de un campo de contraseña.
+ * @param {string} inputId - ID del input de contraseña
+ * @param {HTMLElement} btnElement - El botón que llamó a la función
+ */
+window.togglePasswordVisibility = function(inputId, btnElement) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const icon = btnElement.querySelector('.material-symbols-outlined');
+  const show = input.type === 'password';
+  
+  input.type = show ? 'text' : 'password';
+  btnElement.setAttribute('aria-pressed', String(show));
+  btnElement.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  if (icon) icon.textContent = show ? 'visibility_off' : 'visibility';
+};
+
+/**
  * Redirige al login cuando el ciudadano no tiene sesion activa.
  *
  * @returns {void}

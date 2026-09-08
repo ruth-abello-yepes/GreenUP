@@ -2367,6 +2367,9 @@ body.recicladora-theme-dark .profile-photo-help {
 .residuos-tipos-table td { vertical-align: middle; }
 .residuos-tipos-table td:nth-child(2) { color: var(--greenup-muted); font-size: 13px; }
 .residuos-tipos-table .btn-soft { font-size: 12px; padding: 8px 12px; }
+.residuos-tipos-table .residuo-tipo-toggle { width: 42px; height: 32px; color: #718096; }
+.residuos-tipos-table .residuo-tipo-toggle.is-active { color: #087a35; }
+.residuos-tipos-table .residuo-tipo-toggle.is-inactive { color: #718096; }
 .residuos-guia-grid .residuo-tipo-toggle { justify-self: start; margin-top: 4px; font-size: 12px; padding: 8px 12px; }
 .residuos-guia-grid .residuo-tipo-toggle.is-active { color: #087a35; background: #e5f6eb; border-color: #8bc9a0; }
 .residuos-guia-grid .residuo-tipo-toggle.is-inactive { color: #8a4b00; background: #fff5df; border-color: #e6c27a; }

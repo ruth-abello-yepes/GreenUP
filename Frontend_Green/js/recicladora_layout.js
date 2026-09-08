@@ -368,7 +368,7 @@ function renderTiposResiduoRecicladora(materiales) {
       <td><strong>${escapeHtml(tipo === "Organicos" ? "Orgánicos" : tipo === "Quimicos" ? "Químicos" : tipo === "Aprovechables" ? "Aprovechables / reciclables" : tipo)}</strong></td>
       <td>${escapeHtml(relacionados.length ? relacionados.map((item) => item.nombre).join(", ") : descripcion)}</td>
       <td><span class="status-pill status-${activo ? "success" : "danger"}">${activo ? "Activo" : "Inactivo"}</span></td>
-      <td><button class="btn-soft residuo-tipo-toggle ${activo ? "is-active" : "is-inactive"}" type="button" ${relacionados.length ? "" : "disabled"} data-tipo="${tipo}" aria-pressed="${activo}">${relacionados.length ? (activo ? "Inactivar" : "Activar") : "Sin materiales"}</button></td>
+      <td><button class="btn-icon residuo-tipo-toggle ${activo ? "is-active" : "is-inactive"}" type="button" data-tipo="${tipo}" aria-pressed="${activo}" title="${activo ? "Inactivar" : "Activar"} tipo de residuo" aria-label="${activo ? "Inactivar" : "Activar"} tipo de residuo"><span class="material-symbols-outlined">${activo ? "toggle_on" : "toggle_off"}</span></button></td>
     </tr>`;
   }).join("");
   cuerpo.querySelectorAll(".residuo-tipo-toggle").forEach((boton) => {
@@ -383,6 +383,17 @@ function renderTiposResiduoRecicladora(materiales) {
       const idsActivos = actuales
         .filter((item) => item.aceptado && clasificarResiduo(item) !== tipo)
         .map((item) => Number(item.id_tipo_material));
+      if (!idsRelacionados.length) {
+        const esperados = {
+          Aprovechables: "Plástico PET, vidrio, aluminio, cartón y papel",
+          Organicos: "Restos de comida, frutas, verduras y material vegetal",
+          Peligrosos: "Pilas, baterías, RAEE y materiales contaminados",
+          Quimicos: "Aceites usados, pinturas, solventes y productos químicos",
+        };
+        window.alert(`No hay materiales asociados a este tipo de residuo.\n\nPara habilitarlo, registra primero materiales como:\n${esperados[tipo]}.`);
+        boton.disabled = false;
+        return;
+      }
       if (!activo) idsActivos.push(...idsRelacionados);
       await fetchJson("/api/recicladoras/materiales", {
         method: "PUT",

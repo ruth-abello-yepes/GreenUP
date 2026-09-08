@@ -198,10 +198,22 @@
     <article class="table-card span-12 residuos-guia-card">
       <div class="card-title-row" style="padding: 22px 24px 0;"><h2>Residuos que recibe la recicladora</h2></div>
       <div class="residuos-guia-grid">
-        <div><strong>Aprovechables / reciclables</strong><span>Plástico, cartón, papel, vidrio y metal.</span></div>
-        <div><strong>Orgánicos</strong><span>Restos de comida, frutas, verduras y material vegetal.</span></div>
-        <div><strong>Peligrosos</strong><span>Pilas, baterías, electrónicos y materiales contaminados.</span></div>
-        <div><strong>Químicos</strong><span>Aceites usados, pinturas, solventes y productos químicos.</span></div>
+        <div class="residuo-tipo-card" data-residuo-tipo="Aprovechables">
+          <strong>Aprovechables / reciclables</strong><span>Plástico, cartón, papel, vidrio y metal.</span>
+          <button class="btn-soft residuo-tipo-toggle" type="button" disabled>Consultando...</button>
+        </div>
+        <div class="residuo-tipo-card" data-residuo-tipo="Organicos">
+          <strong>Orgánicos</strong><span>Restos de comida, frutas, verduras y material vegetal.</span>
+          <button class="btn-soft residuo-tipo-toggle" type="button" disabled>Consultando...</button>
+        </div>
+        <div class="residuo-tipo-card" data-residuo-tipo="Peligrosos">
+          <strong>Peligrosos</strong><span>Pilas, baterías, electrónicos y materiales contaminados.</span>
+          <button class="btn-soft residuo-tipo-toggle" type="button" disabled>Consultando...</button>
+        </div>
+        <div class="residuo-tipo-card" data-residuo-tipo="Quimicos">
+          <strong>Químicos</strong><span>Aceites usados, pinturas, solventes y productos químicos.</span>
+          <button class="btn-soft residuo-tipo-toggle" type="button" disabled>Consultando...</button>
+        </div>
       </div>
     </article>
   </section>

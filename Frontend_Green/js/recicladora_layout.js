@@ -351,6 +351,44 @@ function clasificarResiduo(item) {
   return "Aprovechables";
 }
 
+function renderTiposResiduoRecicladora(materiales) {
+  document.querySelectorAll(".residuo-tipo-card").forEach((card) => {
+    const tipo = card.dataset.residuoTipo;
+    const relacionados = materiales.filter((item) => clasificarResiduo(item) === tipo);
+    const activos = relacionados.filter((item) => item.aceptado);
+    const boton = card.querySelector(".residuo-tipo-toggle");
+    if (!boton) return;
+
+    if (!relacionados.length) {
+      boton.textContent = "Sin materiales configurados";
+      boton.disabled = true;
+      return;
+    }
+
+    const activo = activos.length > 0;
+    boton.textContent = activo ? "Inactivar tipo" : "Activar tipo";
+    boton.className = `btn-soft residuo-tipo-toggle ${activo ? "is-active" : "is-inactive"}`;
+    boton.disabled = false;
+    boton.setAttribute("aria-pressed", String(activo));
+    boton.onclick = async () => {
+      boton.disabled = true;
+      const actuales = await fetchJson("/api/recicladoras/materiales");
+      const idsRelacionados = actuales
+        .filter((item) => clasificarResiduo(item) === tipo)
+        .map((item) => Number(item.id_tipo_material));
+      const idsActivos = actuales
+        .filter((item) => item.aceptado && clasificarResiduo(item) !== tipo)
+        .map((item) => Number(item.id_tipo_material));
+      if (!activo) idsActivos.push(...idsRelacionados);
+      await fetchJson("/api/recicladoras/materiales", {
+        method: "PUT",
+        body: JSON.stringify({ ids_materiales: idsActivos }),
+      });
+      await refreshCurrentPage();
+    };
+  });
+}
+
 function getRegistroReciclajeState(item) {
   const estadoGuardado = String(item.estado || "").toLowerCase();
   const idEstado = Number(item.id_estado);
@@ -559,6 +597,8 @@ async function refreshCurrentPage() {
     const totalKgProcesado = confirmados.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
 
     if (current === "recicladora_residuos.html") {
+      const materiales = await fetchJson("/api/recicladoras/materiales");
+      renderTiposResiduoRecicladora(materiales);
       setText('[data-summary-label="Procesados"]', formatKg(totalKgProcesado));
       setText('[data-summary-label="En transito"]', `${pendientes.length} cargas`);
       const filasResiduos = registros.map((item) => {

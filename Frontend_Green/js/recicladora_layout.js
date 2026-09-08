@@ -105,6 +105,7 @@ async function fetchJson(endpoint, options = {}) {
       ...(options.headers || {}),
     },
   });
+  clearTimeout(timeout);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.mensaje || "No se pudo cargar la informacion");
   return data;
@@ -379,6 +380,7 @@ function renderTiposResiduoRecicladora(materiales) {
     const activo = boton.getAttribute("aria-pressed") === "true";
     boton.onclick = async () => {
       boton.disabled = true;
+      try {
       const actuales = await fetchJson("/api/recicladoras/materiales");
       const idsRelacionados = actuales
         .filter((item) => clasificarResiduo(item) === tipo)
@@ -403,9 +405,12 @@ function renderTiposResiduoRecicladora(materiales) {
         body: JSON.stringify({ ids_materiales: idsActivos }),
       });
       await refreshCurrentPage();
+      } catch (error) {
+        window.alert(`No se pudo actualizar este tipo de residuo.\n\n${error.message}`);
+        boton.disabled = false;
+      }
     };
   });
-  clearTimeout(timeout);
 }
 
 function getRegistroReciclajeState(item) {

@@ -2365,11 +2365,22 @@ body.recicladora-theme-dark .profile-photo-help {
 .residuos-guia-grid strong { color: #14783d; }
 .residuos-guia-grid span { color: var(--greenup-muted); font-size: 13px; line-height: 1.45; }
 .residuos-tipos-table td { vertical-align: middle; }
-.stats-detail-grid { margin-top: 18px; }
-.stats-list { padding: 12px 24px 22px; }
-.stats-list-row { display:flex; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid #e1ebe6; color:#163452; }
-.stats-list-row strong { color:#087a35; white-space:nowrap; }
-.stats-empty { color:#5b6d7e; padding:16px 0; }
+.stats-detail-grid { margin-top: 22px; align-items: stretch; }
+.stats-detail-grid > .admin-card,
+.stats-detail-grid > .table-card { overflow: hidden; border-top: 4px solid #0b7d3b; box-shadow: 0 14px 32px rgba(6, 59, 104, .08); }
+.stats-detail-grid > .table-card { border-top-color: #075ca8; }
+.stats-detail-grid .card-title-row { padding-bottom: 14px; }
+.stats-detail-grid .card-title-row h2 { color: #063b68; }
+.stats-list { padding: 4px 24px 22px; }
+.stats-list-row { display:flex; justify-content:space-between; align-items:center; gap:16px; margin: 0 -10px; padding:14px 10px; border-bottom:1px solid #dcebe3; color:#163452; }
+.stats-list-row:nth-child(1) { background:#e8f7ed; border-radius:8px; }
+.stats-list-row:nth-child(2) { background:#f1f8fd; border-radius:8px; }
+.stats-list-row strong { color:#087a35; white-space:nowrap; font-weight:800; }
+.stats-detail-grid .admin-table thead th { background:#063b68; color:#fff; }
+.stats-detail-grid .admin-table tbody tr:nth-child(1) td:first-child { color:#c08300; font-size:1.05rem; }
+.stats-detail-grid .admin-table tbody tr:nth-child(2) td:first-child { color:#61788d; font-size:1.05rem; }
+.stats-detail-grid .admin-table tbody tr:nth-child(3) td:first-child { color:#a26335; font-size:1.05rem; }
+.stats-empty { color:#526477; padding:16px 0; }
 @media (max-width: 900px) {
   .stats-detail-grid { grid-template-columns: 1fr; }
   .stats-detail-grid > * { grid-column: 1; min-width: 0; }

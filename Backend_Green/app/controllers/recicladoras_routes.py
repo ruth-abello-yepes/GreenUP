@@ -8,6 +8,10 @@ import pandas as pd
 from flask import Blueprint, Response, g, jsonify, request, send_file
 from psycopg2 import DatabaseError, OperationalError
 from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.pdfgen import canvas
 
 from app.services.recicladoras_service import (
@@ -340,22 +344,28 @@ def ruta_reportes_recicladora():
         )
     if formato == "pdf":
         salida = BytesIO()
-        pdf = canvas.Canvas(salida, pagesize=letter)
-        ancho, alto = letter
-        y = alto - 48
-        pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(48, y, "Reporte de recicladora")
-        y -= 28
-        pdf.setFont("Helvetica", 9)
-        for fila in filas[:40]:
-            texto = f"{fila['ID']} | {fila['Fecha']} | {fila['Usuario']} | {fila['Material']} | {fila['Cantidad kg']} kg | {fila['Estado']}"
-            pdf.drawString(48, y, texto[:120])
-            y -= 16
-            if y < 48:
-                pdf.showPage()
-                pdf.setFont("Helvetica", 9)
-                y = alto - 48
-        pdf.save()
+        pdf = SimpleDocTemplate(salida, pagesize=letter, rightMargin=34, leftMargin=34, topMargin=34, bottomMargin=34)
+        estilos = getSampleStyleSheet()
+        titulo = ParagraphStyle("TituloGreenUp", parent=estilos["Title"], fontName="Helvetica-Bold", fontSize=19, textColor=colors.HexColor("#063b68"), alignment=TA_LEFT, spaceAfter=4)
+        subtitulo = ParagraphStyle("SubtituloGreenUp", parent=estilos["Normal"], fontSize=9, textColor=colors.HexColor("#526477"), spaceAfter=16)
+        celda = ParagraphStyle("CeldaGreenUp", parent=estilos["Normal"], fontSize=8, leading=10, textColor=colors.HexColor("#23384d"))
+        cabecera = ParagraphStyle("CabeceraGreenUp", parent=celda, textColor=colors.white)
+        encabezado = [Paragraph(f"<b>{nombre}</b>", cabecera) for nombre in ("ID", "Fecha", "Usuario", "Material", "Cantidad", "Puntos", "Estado")]
+        datos = [encabezado]
+        for fila in filas:
+            datos.append([Paragraph(str(fila.get(clave) or "-"), celda) for clave in ("ID", "Fecha", "Usuario", "Material", "Cantidad kg", "Puntos", "Estado")])
+        tabla = Table(datos, colWidths=[30, 76, 105, 105, 53, 43, 58], repeatRows=1)
+        tabla.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#063b68")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#d9e4eb")),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f2f8f5")]),
+            ("LEFTPADDING", (0, 0), (-1, -1), 6), ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ("TOPPADDING", (0, 0), (-1, -1), 7), ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ]))
+        elementos = [Paragraph("GreenUp", titulo), Paragraph("Reporte de recicladora", subtitulo), tabla]
+        pdf.build(elementos)
         salida.seek(0)
         return send_file(
             salida,

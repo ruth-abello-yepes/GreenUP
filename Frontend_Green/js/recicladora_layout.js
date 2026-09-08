@@ -108,6 +108,20 @@ async function fetchJson(endpoint, options = {}) {
   });
   clearTimeout(timeout);
   const data = await response.json().catch(() => ({}));
+  if (response.status === 401) {
+    if (!sessionStorage.getItem("greenupSesionExpirada")) {
+      sessionStorage.setItem("greenupSesionExpirada", "1");
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("token");
+      if (typeof window.greenupAlert === "function") {
+        await window.greenupAlert("Tu sesión expiró. Inicia sesión nuevamente.", "Sesión expirada");
+      } else {
+        window.alert("Tu sesión expiró. Inicia sesión nuevamente.");
+      }
+      window.location.href = "../public/public_login.html";
+    }
+    throw new Error("Sesión expirada");
+  }
   if (!response.ok) throw new Error(data.mensaje || "No se pudo cargar la informacion");
   return data;
 }

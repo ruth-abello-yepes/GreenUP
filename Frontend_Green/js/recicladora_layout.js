@@ -95,8 +95,11 @@ function statusClass(status) {
 }
 
 async function fetchJson(endpoint, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
   const response = await fetch(`${getApiBase()}${endpoint}`, {
     ...options,
+    signal: options.signal || controller.signal,
     headers: {
       ...getSessionHeaders(),
       ...(options.headers || {}),
@@ -402,6 +405,7 @@ function renderTiposResiduoRecicladora(materiales) {
       await refreshCurrentPage();
     };
   });
+  clearTimeout(timeout);
 }
 
 function getRegistroReciclajeState(item) {
@@ -606,17 +610,18 @@ async function refreshCurrentPage() {
   }
 
   if (current === "recicladora_residuos.html" || current === "recicladora_registros_reciclaje.html" || current === "recicladora_pendientes.html") {
+    if (current === "recicladora_residuos.html") {
+      renderTiposResiduoRecicladora([]);
+      fetchJson("/api/recicladoras/materiales")
+        .then((materiales) => renderTiposResiduoRecicladora(materiales))
+        .catch((error) => console.warn("No se pudo cargar el catalogo de materiales:", error));
+    }
     const registros = await fetchJson("/api/recicladoras/registros");
     const pendientes = registros.filter((item) => getRegistroReciclajeState(item).pendiente);
     const confirmados = registros.filter((item) => getRegistroReciclajeState(item).confirmado);
     const totalKgProcesado = confirmados.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
 
     if (current === "recicladora_residuos.html") {
-      // Pinta los tipos de inmediato; el catalogo se completa en segundo plano.
-      renderTiposResiduoRecicladora([]);
-      fetchJson("/api/recicladoras/materiales")
-        .then((materiales) => renderTiposResiduoRecicladora(materiales))
-        .catch((error) => console.warn("No se pudo cargar el catalogo de materiales:", error));
       setText('[data-summary-label="Procesados"]', formatKg(totalKgProcesado));
       setText('[data-summary-label="En transito"]', `${pendientes.length} cargas`);
       const filasResiduos = registros.map((item) => {

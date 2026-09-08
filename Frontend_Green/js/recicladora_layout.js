@@ -612,13 +612,11 @@ async function refreshCurrentPage() {
     const totalKgProcesado = confirmados.reduce((total, item) => total + (Number(item.cantidad) || 0), 0);
 
     if (current === "recicladora_residuos.html") {
-      let materiales = [];
-      try {
-        materiales = await fetchJson("/api/recicladoras/materiales");
-      } catch (error) {
-        console.warn("No se pudo cargar el catalogo de materiales:", error);
-      }
-      renderTiposResiduoRecicladora(materiales);
+      // Pinta los tipos de inmediato; el catalogo se completa en segundo plano.
+      renderTiposResiduoRecicladora([]);
+      fetchJson("/api/recicladoras/materiales")
+        .then((materiales) => renderTiposResiduoRecicladora(materiales))
+        .catch((error) => console.warn("No se pudo cargar el catalogo de materiales:", error));
       setText('[data-summary-label="Procesados"]', formatKg(totalKgProcesado));
       setText('[data-summary-label="En transito"]', `${pendientes.length} cargas`);
       const filasResiduos = registros.map((item) => {

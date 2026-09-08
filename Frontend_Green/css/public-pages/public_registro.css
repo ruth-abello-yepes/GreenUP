@@ -438,11 +438,17 @@
 
       .formulario-contenedor {
         padding: 18px 34px;
+        align-items: flex-start;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
       }
 
       .formulario-tarjeta {
         padding: 26px 36px;
-        max-height: calc(100vh - 36px);
+        max-height: none;
+        margin: auto 0;
+        overflow: visible;
       }
 
       .titulo {

@@ -352,24 +352,28 @@ function clasificarResiduo(item) {
 }
 
 function renderTiposResiduoRecicladora(materiales) {
-  document.querySelectorAll(".residuo-tipo-card").forEach((card) => {
-    const tipo = card.dataset.residuoTipo;
+  const cuerpo = document.getElementById("residuos-tipos-body");
+  if (!cuerpo) return;
+  const tipos = [
+    ["Aprovechables", "Plástico, cartón, papel, vidrio y metal"],
+    ["Organicos", "Restos de comida, frutas, verduras y material vegetal"],
+    ["Peligrosos", "Pilas, baterías, electrónicos y materiales contaminados"],
+    ["Quimicos", "Aceites usados, pinturas, solventes y productos químicos"],
+  ];
+  cuerpo.innerHTML = tipos.map(([tipo, descripcion]) => {
     const relacionados = materiales.filter((item) => clasificarResiduo(item) === tipo);
     const activos = relacionados.filter((item) => item.aceptado);
-    const boton = card.querySelector(".residuo-tipo-toggle");
-    if (!boton) return;
-
-    if (!relacionados.length) {
-      boton.textContent = "Sin materiales configurados";
-      boton.disabled = true;
-      return;
-    }
-
     const activo = activos.length > 0;
-    boton.textContent = activo ? "Inactivar tipo" : "Activar tipo";
-    boton.className = `btn-soft residuo-tipo-toggle ${activo ? "is-active" : "is-inactive"}`;
-    boton.disabled = false;
-    boton.setAttribute("aria-pressed", String(activo));
+    return `<tr>
+      <td><strong>${escapeHtml(tipo === "Organicos" ? "Orgánicos" : tipo === "Quimicos" ? "Químicos" : tipo === "Aprovechables" ? "Aprovechables / reciclables" : tipo)}</strong></td>
+      <td>${escapeHtml(relacionados.length ? relacionados.map((item) => item.nombre).join(", ") : descripcion)}</td>
+      <td><span class="status-pill status-${activo ? "success" : "danger"}">${activo ? "Activo" : "Inactivo"}</span></td>
+      <td><button class="btn-soft residuo-tipo-toggle ${activo ? "is-active" : "is-inactive"}" type="button" ${relacionados.length ? "" : "disabled"} data-tipo="${tipo}" aria-pressed="${activo}">${relacionados.length ? (activo ? "Inactivar" : "Activar") : "Sin materiales"}</button></td>
+    </tr>`;
+  }).join("");
+  cuerpo.querySelectorAll(".residuo-tipo-toggle").forEach((boton) => {
+    const tipo = boton.dataset.tipo;
+    const activo = boton.getAttribute("aria-pressed") === "true";
     boton.onclick = async () => {
       boton.disabled = true;
       const actuales = await fetchJson("/api/recicladoras/materiales");

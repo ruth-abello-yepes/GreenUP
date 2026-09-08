@@ -405,7 +405,8 @@ function renderTiposResiduoRecicladora(materiales) {
         method: "PUT",
         body: JSON.stringify({ ids_materiales: idsActivos }),
       });
-      await refreshCurrentPage();
+      const actualizados = await fetchJson("/api/recicladoras/materiales");
+      renderTiposResiduoRecicladora(actualizados);
       } catch (error) {
         window.alert(`No se pudo actualizar este tipo de residuo.\n\n${error.message}`);
         boton.disabled = false;
@@ -801,6 +802,8 @@ function startAutoRefresh() {
     refreshCurrentPage().catch((error) => console.warn(error.message)).finally(() => { refreshEnCurso = false; });
   };
   actualizar();
+  // Gestion de residuos no se repinta sola: sus estados solo cambian al pulsar el control.
+  if (getCurrentFile() === "recicladora_residuos.html") return;
   window.setInterval(actualizar, REFRESH_INTERVAL_MS);
 }
 function bindUserMenu() {

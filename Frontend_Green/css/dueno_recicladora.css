@@ -2365,11 +2365,12 @@ body.recicladora-theme-dark .profile-photo-help {
 .residuos-guia-grid strong { color: #14783d; }
 .residuos-guia-grid span { color: var(--greenup-muted); font-size: 13px; line-height: 1.45; }
 .residuos-tipos-table td { vertical-align: middle; }
-.stats-detail-grid { margin-top: 22px; align-items: stretch; }
+.stats-detail-grid { margin: 28px 16px 34px; gap: 26px; align-items: stretch; }
 .stats-detail-grid > .admin-card,
 .stats-detail-grid > .table-card { overflow: hidden; border-top: 4px solid #0b7d3b; box-shadow: 0 14px 32px rgba(6, 59, 104, .08); }
 .stats-detail-grid > .table-card { border-top-color: #075ca8; }
 .stats-detail-grid .card-title-row { padding-bottom: 14px; }
+.stats-detail-grid .card-title-row { padding-left: 26px; padding-right: 26px; }
 .stats-detail-grid .card-title-row h2 { color: #063b68; }
 .stats-list { padding: 4px 24px 22px; }
 .stats-list-row { display:flex; justify-content:space-between; align-items:center; gap:16px; margin: 0 -10px; padding:14px 10px; border-bottom:1px solid #dcebe3; color:#163452; }
@@ -2382,7 +2383,7 @@ body.recicladora-theme-dark .profile-photo-help {
 .stats-detail-grid .admin-table tbody tr:nth-child(3) td:first-child { color:#a26335; font-size:1.05rem; }
 .stats-empty { color:#526477; padding:16px 0; }
 @media (max-width: 900px) {
-  .stats-detail-grid { grid-template-columns: 1fr; }
+  .stats-detail-grid { grid-template-columns: 1fr; margin: 22px 8px 28px; gap: 18px; }
   .stats-detail-grid > * { grid-column: 1; min-width: 0; }
   .stats-detail-grid .table-responsive { overflow-x: auto; }
   .stats-detail-grid .admin-table { min-width: 560px; }

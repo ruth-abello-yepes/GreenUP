@@ -834,8 +834,8 @@ function startAutoRefresh() {
     refreshCurrentPage().catch((error) => console.warn(error.message)).finally(() => { refreshEnCurso = false; });
   };
   actualizar();
-  // Gestion de residuos no se repinta sola: sus estados solo cambian al pulsar el control.
-  if (getCurrentFile() === "recicladora_residuos.html") return;
+  // Estas vistas conservan sus datos estables después de la carga inicial.
+  if (["recicladora_residuos.html", "recicladora_estadisticas.html"].includes(getCurrentFile())) return;
   window.setInterval(actualizar, REFRESH_INTERVAL_MS);
 }
 function bindUserMenu() {

@@ -776,7 +776,25 @@ async function refreshCurrentPage() {
   }
 
   if (current === "recicladora_estadisticas.html") {
-    const stats = await fetchJson("/api/recicladoras/estadisticas");
+    let stats;
+    try {
+      stats = await fetchJson("/api/recicladoras/estadisticas");
+    } catch (error) {
+      console.warn("Estadísticas no disponibles, usando registros:", error.message);
+      const registros = await fetchJson("/api/recicladoras/registros");
+      const confirmados = registros.filter((item) => getRegistroReciclajeState(item).confirmado);
+      const porMaterial = {};
+      const porUsuario = {};
+      confirmados.forEach((item) => {
+        const material = item.material || "Material";
+        const usuario = item.usuario || `Usuario ${item.id_usuario}`;
+        porMaterial[material] = (porMaterial[material] || 0) + (Number(item.cantidad) || 0);
+        if (!porUsuario[usuario]) porUsuario[usuario] = { usuario, cantidad: 0, registros: 0, id_usuario: item.id_usuario };
+        porUsuario[usuario].cantidad += Number(item.cantidad) || 0;
+        porUsuario[usuario].registros += 1;
+      });
+      stats = { total_kg: confirmados.reduce((sum, item) => sum + (Number(item.cantidad) || 0), 0), registros: confirmados.length, por_material: Object.entries(porMaterial).map(([material, cantidad]) => ({ material, cantidad })).sort((a, b) => b.cantidad - a.cantidad), ranking_usuarios: Object.values(porUsuario).sort((a, b) => b.cantidad - a.cantidad) };
+    }
     setText('[data-summary-label="Recuperado"]', `${Number(stats.total_kg || 0).toLocaleString("es-CO")} kg`);
     setText('[data-summary-label="Crecimiento"]', `${stats.registros || 0} registros`);
     const material = stats.por_material || [];

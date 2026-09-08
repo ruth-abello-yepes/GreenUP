@@ -2365,6 +2365,11 @@ body.recicladora-theme-dark .profile-photo-help {
 .residuos-guia-grid strong { color: #14783d; }
 .residuos-guia-grid span { color: var(--greenup-muted); font-size: 13px; line-height: 1.45; }
 .residuos-tipos-table td { vertical-align: middle; }
+.stats-detail-grid { margin-top: 18px; }
+.stats-list { padding: 12px 24px 22px; }
+.stats-list-row { display:flex; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid #e1ebe6; color:#163452; }
+.stats-list-row strong { color:#087a35; white-space:nowrap; }
+.stats-empty { color:#5b6d7e; padding:16px 0; }
 .residuos-tipos-table td:nth-child(2) { color: var(--greenup-muted); font-size: 13px; }
 .residuos-tipos-table .btn-soft { font-size: 12px; padding: 8px 12px; }
 .residuos-tipos-table .residuo-tipo-toggle { width: 42px; height: 32px; color: #718096; }

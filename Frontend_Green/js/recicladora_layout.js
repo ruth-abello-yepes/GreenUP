@@ -1,4 +1,5 @@
 const REFRESH_INTERVAL_MS = 5000;
+let refreshEnCurso = false;
 const pageExportState = { rows: [], filename: "greenup_export.csv" };
 function getCurrentFile() {
   return window.location.pathname.split("/").pop() || "recicladora_panel.html";
@@ -775,6 +776,13 @@ async function refreshCurrentPage() {
 
   if (current === "recicladora_estadisticas.html") {
     const stats = await fetchJson("/api/recicladoras/estadisticas");
+    setText('[data-summary-label="Recuperado"]', `${Number(stats.total_kg || 0).toLocaleString("es-CO")} kg`);
+    setText('[data-summary-label="Crecimiento"]', `${stats.registros || 0} registros`);
+    const material = stats.por_material || [];
+    const listaMateriales = document.getElementById("estadisticas-materiales");
+    if (listaMateriales) listaMateriales.innerHTML = material.length ? material.slice(0, 6).map((item) => `<div class="stats-list-row"><span>${escapeHtml(item.material)}</span><strong>${formatKg(item.cantidad)}</strong></div>`).join("") : '<p class="stats-empty">Aún no hay materiales confirmados.</p>';
+    const rankingTabla = document.getElementById("estadisticas-ranking");
+    if (rankingTabla) rankingTabla.innerHTML = (stats.ranking_usuarios || []).map((item, index) => `<tr><td><strong>${index + 1}</strong></td><td>${escapeHtml(item.usuario)}</td><td>${formatKg(item.cantidad)}</td><td>${item.registros}</td></tr>`).join("") || '<tr><td colspan="4" class="empty-table-cell">Aún no hay usuarios con reciclajes confirmados.</td></tr>';
     rowsToTable("Usuarios destacados", (stats.ranking_usuarios || []).map((item) => [
       `#${item.id_usuario}`,
       item.usuario,
@@ -787,8 +795,13 @@ async function refreshCurrentPage() {
 
 function startAutoRefresh() {
   if (getCurrentFile() === "recicladora_perfil.html") return;
-  refreshCurrentPage().catch((error) => console.warn(error.message));
-  window.setInterval(() => refreshCurrentPage().catch((error) => console.warn(error.message)), REFRESH_INTERVAL_MS);
+  const actualizar = () => {
+    if (refreshEnCurso) return;
+    refreshEnCurso = true;
+    refreshCurrentPage().catch((error) => console.warn(error.message)).finally(() => { refreshEnCurso = false; });
+  };
+  actualizar();
+  window.setInterval(actualizar, REFRESH_INTERVAL_MS);
 }
 function bindUserMenu() {
   const button = document.querySelector(".user-avatar");
